@@ -1,0 +1,38 @@
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments and local configuration
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and generated artefacts
+data/raw/*
+data/processed/*
+results/*
+experiments/*
+
+# Keep placeholder files for empty tracked directories
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!results/.gitkeep
+!experiments/.gitkeep
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
