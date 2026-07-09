@@ -14,14 +14,10 @@ env/
 .ipynb_checkpoints/
 
 # Data and generated artefacts
-data/raw/*
-data/processed/*
 results/*
 experiments/*
 
 # Keep placeholder files for empty tracked directories
-!data/raw/.gitkeep
-!data/processed/.gitkeep
 !results/.gitkeep
 !experiments/.gitkeep
 
@@ -36,3 +32,15 @@ Thumbs.db
 Desktop.ini
 .vscode/
 .idea/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+
+# Conda environments
+.conda/
+conda-meta/
+envs/
