@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.pytest_cache/
 
 # Virtual environments and local configuration
 .venv/
@@ -10,16 +11,36 @@ venv/
 env/
 .env
 
+# Conda environments
+.conda/
+conda-meta/
+envs/
+
 # Jupyter
 .ipynb_checkpoints/
 
 # Data and generated artefacts
+data/raw/*
+data/processed/*
 results/*
 experiments/*
+outputs/*
+bibliography/papers/*
 
 # Keep placeholder files for empty tracked directories
+!data/raw/.gitkeep
+!data/processed/.gitkeep
 !results/.gitkeep
 !experiments/.gitkeep
+!outputs/.gitkeep
+!bibliography/papers/.gitkeep
+
+# Audio assets and corpora should be stored outside git unless explicitly curated
+*.wav
+*.mp3
+*.flac
+*.aiff
+*.aif
 
 # Logs and temporary files
 *.log
@@ -32,15 +53,3 @@ Thumbs.db
 Desktop.ini
 .vscode/
 .idea/
-
-# OS and editor files
-.DS_Store
-Thumbs.db
-Desktop.ini
-.vscode/
-.idea/
-
-# Conda environments
-.conda/
-conda-meta/
-envs/

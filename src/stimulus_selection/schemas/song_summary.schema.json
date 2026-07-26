@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 1 Song Summary Row",
+  "type": "object",
+  "required": [
+    "artist",
+    "song",
+    "song_id",
+    "valid_stereo_mixes",
+    "human_mix_count",
+    "confident_real_institution_count",
+    "cross_institution_eligible",
+    "recommended_for_consideration"
+  ],
+  "properties": {
+    "cross_institution_eligible": {
+      "enum": ["true", "false"]
+    },
+    "recommended_for_consideration": {
+      "enum": ["true", "false"]
+    }
+  },
+  "additionalProperties": true
+}

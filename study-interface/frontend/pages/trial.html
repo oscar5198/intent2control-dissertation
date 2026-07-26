@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Experimental Trial | Intent2Control Listening Study</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="trial">
+  <main id="app" class="app-shell app-shell--wide" data-page-container>
+    <header class="study-brand" aria-label="Study branding">
+      <a class="brand-mark" href="index.html" aria-label="Study home">
+        <img class="brand-logo" src="../assets/images/qmul-logo.png" alt="Queen Mary University of London">
+      </a>
+      <div class="progress" data-progress aria-label="Study progress"></div>
+    </header>
+
+    <section class="main-card" aria-labelledby="page-title">
+      <div class="page-header">
+        <p class="field-help trial-kicker">Experimental Trials</p>
+        <h1 id="page-title" class="page-title" data-trial-title>Trial</h1>
+        <p class="page-intro">Listen to all three versions, rate each version, and provide one comment for each version.</p>
+      </div>
+
+      <form data-form="experimental-trial" novalidate>
+        <div class="validation-summary is-hidden" data-validation-summary tabindex="-1" aria-live="assertive">
+          Please play Version A, Version B, and Version C, set all three ratings, and enter all three comments before continuing.
+        </div>
+
+        <div class="banner banner--warning" data-trial-development-notice>
+          Experimental trial
+        </div>
+
+        <section class="section-panel trial-context" aria-labelledby="trial-scenario-heading">
+          <p class="field-help">Scenario</p>
+          <h2 id="trial-scenario-heading" data-trial-scenario-title>Loading scenario...</h2>
+          <p data-trial-scenario-text></p>
+          <p class="field-help">Music excerpt</p>
+          <p data-trial-excerpt-title>Loading excerpt...</p>
+        </section>
+
+        <section class="practice-version-grid trial-version-grid" data-trial-versions aria-label="Trial versions"></section>
+
+        <section class="section-panel is-hidden" data-trial-development-helper aria-labelledby="trial-development-helper-heading">
+          <h2 id="trial-development-helper-heading">Study review support tool</h2>
+          <p>This helper can populate valid sample records for the remaining experimental trials so the questionnaire flow can be reviewed.</p>
+          <button class="button button--secondary" type="button" data-action="complete-development-trials">Complete remaining trials for review</button>
+          <p class="validation-message is-hidden" data-development-helper-feedback aria-live="polite"></p>
+        </section>
+
+        <nav class="navigation-area" aria-label="Page navigation">
+          <button class="button button--secondary" type="button" data-action="back" data-target="practice.html" data-trial-back>Back to practice</button>
+          <button class="button button--primary" type="submit" data-submit-trial disabled>Submit trial</button>
+        </nav>
+      </form>
+    </section>
+  </main>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/timing.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/validation.js" defer></script>
+  <script src="../js/randomisation.js" defer></script>
+  <script src="../js/audio.js" defer></script>
+  <script src="../js/progress.js" defer></script>
+  <script src="../js/trial.js" defer></script>
+  <script src="../js/app.js" defer></script>
+</body>
+</html>

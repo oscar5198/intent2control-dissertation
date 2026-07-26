@@ -1,0 +1,232 @@
+/*
+  Component placeholders for the study interface.
+  Expand these sections only when implementing the corresponding wireframes.
+*/
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-size: var(--font-size-button);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color var(--transition-standard), border-color var(--transition-standard), color var(--transition-standard);
+  cursor: pointer;
+}
+
+.button--primary {
+  background: var(--colour-primary);
+  color: var(--colour-card);
+}
+
+.button--secondary {
+  background: var(--colour-card);
+  border-color: var(--colour-border);
+  color: var(--colour-text-primary);
+}
+
+.button[disabled],
+.button[aria-disabled="true"] {
+  background: var(--colour-disabled);
+  border-color: var(--colour-disabled);
+  color: var(--colour-card);
+  cursor: not-allowed;
+}
+
+/* Progress indicator */
+.progress {
+  min-width: 0;
+}
+
+.progress__label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+  color: var(--colour-text-secondary);
+  font-size: var(--font-size-help);
+}
+
+.progress__track {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--colour-border);
+}
+
+.progress__bar {
+  width: var(--progress-value, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--colour-primary);
+}
+
+@media (max-width: 36rem) {
+  .progress__label {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+/* Form fields */
+.field {
+  margin-top: var(--space-5);
+}
+
+.input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-3);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-control);
+  background: var(--colour-card);
+  color: var(--colour-text-primary);
+  font: inherit;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.required-marker {
+  color: var(--colour-error);
+  font-weight: 700;
+}
+
+.field-help {
+  margin: var(--space-2) 0 0 calc(1.25rem + var(--space-3));
+  color: var(--colour-text-secondary);
+  font-size: var(--font-size-help);
+}
+
+.field-help--flush {
+  margin-left: 0;
+}
+
+/* Checkboxes */
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.checkbox input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+}
+
+.checkbox label {
+  cursor: pointer;
+}
+
+/* Radio buttons */
+.radio-group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.radio-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-control);
+  margin-top: var(--space-3);
+  background: var(--colour-card);
+}
+
+.radio-option input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+}
+
+.radio-option label {
+  cursor: pointer;
+}
+
+/* Text areas */
+.textarea {
+  width: 100%;
+  min-height: 7.5rem;
+  padding: var(--space-3);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-control);
+  background: var(--colour-card);
+  color: var(--colour-text-primary);
+  font: inherit;
+  resize: vertical;
+}
+
+/* Sliders */
+.rating-slider {
+  width: 100%;
+  min-height: 2.75rem;
+}
+
+/* Audio controls */
+.audio-control {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Banners */
+.banner {
+  padding: var(--space-4);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  margin: var(--space-5) 0;
+  background: #f9faf8;
+}
+
+.banner--warning {
+  border-color: var(--colour-warning);
+  color: var(--colour-text-primary);
+}
+
+/* Validation messages */
+.validation-message {
+  margin-top: var(--space-2);
+  color: var(--colour-error);
+  font-size: var(--font-size-help);
+  font-weight: 600;
+}
+
+.validation-summary {
+  padding: var(--space-4);
+  border: 1px solid var(--colour-error);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-5);
+  color: var(--colour-error);
+}
+
+.feedback-area {
+  padding: var(--space-4);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  margin: var(--space-4) 0;
+  background: #f9faf8;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* Version cards */
+.version-card {
+  /* Reserved for Version A, Version B, and Version C trial cards. */
+}

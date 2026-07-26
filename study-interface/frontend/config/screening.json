@@ -1,0 +1,144 @@
+{
+  "mode": "development",
+  "productionReady": false,
+  "developmentOnly": true,
+  "developmentLabel": "Audio Screening",
+  "screeningInstructions": "Listen to Version A, Version B, and Version C. Decide whether Version A matches Version B or Version C. You must play all three versions before selecting an answer.",
+  "itemCount": 3,
+  "minimumScore": 2,
+  "maximumAttempts": 2,
+  "retryEnabled": true,
+  "failureBehaviour": "Development-only final-fail message; production exclusion or continuation handling remains TBC.",
+  "placeholderNotes": "Development-only Version A/B/C matching screening using duplicated DU-H.mp3 assets. These are not final validated screening stimuli. Final stimuli, score threshold, attempts limit, and exclusion procedure must be replaced before pilot testing.",
+  "developmentBypass": {
+    "enabled": false,
+    "label": "Continue to instructions",
+    "requiresFrontendDevelopmentMode": true
+  },
+  "items": [
+    {
+      "id": "screening_item_01",
+      "questionType": "abx",
+      "prompt": "Which version matches Version A?",
+      "audioChoices": [
+        {
+          "id": "version_a",
+          "label": "Version A",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-01-x.mp3"
+        },
+        {
+          "id": "version_b",
+          "label": "Version B",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-01-a.mp3"
+        },
+        {
+          "id": "version_c",
+          "label": "Version C",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-01-b.mp3"
+        }
+      ],
+      "answerOptions": [
+        {
+          "value": "version_b",
+          "label": "Version B"
+        },
+        {
+          "value": "version_c",
+          "label": "Version C"
+        }
+      ],
+      "correctAnswer": "version_b",
+      "requiredAudioChoices": [
+        "version_a",
+        "version_b",
+        "version_c"
+      ],
+      "developmentLogic": "Version A is a duplicate of Version B for development testing."
+    },
+    {
+      "id": "screening_item_02",
+      "questionType": "abx",
+      "prompt": "Which version matches Version A?",
+      "audioChoices": [
+        {
+          "id": "version_a",
+          "label": "Version A",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-02-x.mp3"
+        },
+        {
+          "id": "version_b",
+          "label": "Version B",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-02-a.mp3"
+        },
+        {
+          "id": "version_c",
+          "label": "Version C",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-02-b.mp3"
+        }
+      ],
+      "answerOptions": [
+        {
+          "value": "version_b",
+          "label": "Version B"
+        },
+        {
+          "value": "version_c",
+          "label": "Version C"
+        }
+      ],
+      "correctAnswer": "version_c",
+      "requiredAudioChoices": [
+        "version_a",
+        "version_b",
+        "version_c"
+      ],
+      "developmentLogic": "Version A is a duplicate of Version C for development testing."
+    },
+    {
+      "id": "screening_item_03",
+      "questionType": "abx",
+      "prompt": "Which version matches Version A?",
+      "audioChoices": [
+        {
+          "id": "version_a",
+          "label": "Version A",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-03-x.mp3"
+        },
+        {
+          "id": "version_b",
+          "label": "Version B",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-03-a.mp3"
+        },
+        {
+          "id": "version_c",
+          "label": "Version C",
+          "audioPath": "assets/audio/screening-development/screening-dev-item-03-b.mp3"
+        }
+      ],
+      "answerOptions": [
+        {
+          "value": "version_b",
+          "label": "Version B"
+        },
+        {
+          "value": "version_c",
+          "label": "Version C"
+        }
+      ],
+      "correctAnswer": "version_b",
+      "requiredAudioChoices": [
+        "version_a",
+        "version_b",
+        "version_c"
+      ],
+      "developmentLogic": "Version A is a duplicate of Version B for development testing."
+    }
+  ],
+  "unresolvedValues": {
+    "finalStimuli": "TBC",
+    "validatedScreeningDesign": "TBC",
+    "productionMinimumScore": "TBC",
+    "productionMaximumAttempts": "TBC",
+    "productionFailureOrExclusionBehaviour": "TBC"
+  }
+}

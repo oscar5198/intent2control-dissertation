@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 1 Mix Inventory Row",
+  "type": "object",
+  "required": [
+    "artist",
+    "song",
+    "song_id",
+    "mix_id",
+    "mixer_id",
+    "mixer_institution_code",
+    "institution_category",
+    "source_path",
+    "duration_seconds",
+    "readable",
+    "valid_for_analysis"
+  ],
+  "properties": {
+    "institution_category": {
+      "enum": ["university_or_institution", "automated_system", "unknown"]
+    },
+    "mix_type": {
+      "enum": ["human_mix", "original_release", "analogue_mix", "automated_mix", "unknown"]
+    },
+    "duplicate_file_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the source file when present."
+    }
+  },
+  "additionalProperties": true
+}

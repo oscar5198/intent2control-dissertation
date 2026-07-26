@@ -1,0 +1,233 @@
+"use strict";
+
+/*
+  Randomisation responsibilities.
+  Responsibilities:
+  - Temporary frontend group assignment for development.
+  - Scenario order randomisation.
+  - Excerpt order randomisation.
+  - Neutral Version A/B/C mapping.
+  - Use cryptographically secure randomness where possible.
+  - No final balancing algorithm yet.
+*/
+
+window.StudyApp = window.StudyApp || {};
+
+window.StudyApp.randomisation = (function () {
+  var trialOrderAlgorithm = "scenario_pairs_v1";
+  var excerptLabelMappingKey = "experimental.excerptLabelMapping";
+
+  function getSecureRandomNumber() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var values = new Uint32Array(1);
+      window.crypto.getRandomValues(values);
+      return values[0] / 4294967296;
+    }
+
+    return Math.random();
+  }
+
+  function shuffle(items) {
+    var result = items.slice();
+    var index = result.length;
+    var randomIndex;
+    var temporaryValue;
+
+    while (index > 0) {
+      randomIndex = Math.floor(getSecureRandomNumber() * index);
+      index -= 1;
+      temporaryValue = result[index];
+      result[index] = result[randomIndex];
+      result[randomIndex] = temporaryValue;
+    }
+
+    return result;
+  }
+
+  function assignGroup(groups) {
+    var stored = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.groupAssignment");
+    var groupList = Array.isArray(groups) ? groups : [];
+    var selectedGroup;
+
+    if (stored && groupList.some(function (group) { return group.id === stored.groupId; })) {
+      return stored;
+    }
+
+    if (groupList.length === 0) {
+      return null;
+    }
+
+    selectedGroup = groupList[Math.floor(getSecureRandomNumber() * groupList.length)];
+    stored = {
+      groupId: selectedGroup.id,
+      assignedAt: new Date().toISOString(),
+      method: "temporary_frontend_secure_random_if_available",
+      finalServerSideBalancing: "TBC"
+    };
+
+    if (window.StudyApp.storage) {
+      window.StudyApp.storage.setItem("experimental.groupAssignment", stored);
+    }
+
+    return stored;
+  }
+
+  function buildScenarioOrder(scenarios) {
+    return shuffle(Array.isArray(scenarios) ? scenarios : []);
+  }
+
+  function buildExcerptOrder(excerptIds) {
+    return shuffle(Array.isArray(excerptIds) ? excerptIds : []);
+  }
+
+  function assignExcerptLabels(group) {
+    var stored = window.StudyApp.storage && window.StudyApp.storage.getItem(excerptLabelMappingKey);
+    var excerptIds = group && Array.isArray(group.excerptIds) ? group.excerptIds : [];
+    var mapping;
+
+    if (stored && stored.groupId === group.id && stored.labelsByExcerptId) {
+      return stored;
+    }
+
+    mapping = {
+      groupId: group.id,
+      generatedAt: new Date().toISOString(),
+      method: "stable_participant_facing_song_labels",
+      labelsByExcerptId: {}
+    };
+
+    excerptIds.forEach(function (excerptId, index) {
+      mapping.labelsByExcerptId[excerptId] = "Song " + String.fromCharCode(65 + index);
+    });
+
+    if (window.StudyApp.storage) {
+      window.StudyApp.storage.setItem(excerptLabelMappingKey, mapping);
+    }
+
+    return mapping;
+  }
+
+  function mapNeutralMixLabels(mixes, labels) {
+    var mixList = shuffle(Array.isArray(mixes) ? mixes : []);
+    var labelList = Array.isArray(labels) ? labels : ["Version A", "Version B", "Version C"];
+
+    return labelList.map(function (label, index) {
+      var mix = mixList[index];
+      return {
+        neutralLabel: label,
+        actualMixId: mix ? mix.actualMixId : "TBC",
+        realMixIdentity: mix ? mix.realMixIdentity : "TBC",
+        audioPath: mix ? mix.audioPath : "TBC"
+      };
+    });
+  }
+
+  function buildTrialOrder(config, groupAssignment) {
+    var stored = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.trialOrder");
+    var group = config.groups.find(function (item) {
+      return item.id === groupAssignment.groupId;
+    });
+    var submittedTrials = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.submittedTrials");
+    var scenarioOrder;
+    var trials = [];
+    var storedCompatible;
+
+    if (!group) {
+      return null;
+    }
+
+    assignExcerptLabels(group);
+
+    if (stored && Array.isArray(stored.trials) && stored.trials.length === config.trialGeneration.trialsPerParticipant) {
+      storedCompatible = isCompatibleTrialOrder(stored, config, group);
+      if (storedCompatible) {
+        return stored;
+      }
+
+      if (Array.isArray(submittedTrials) && submittedTrials.length > 0) {
+        stored.developmentCompatibilityWarning = "This study session contains submitted trials from an earlier trial-order format. The current order has been preserved; start a fresh session to review grouped scenario-pair randomisation.";
+        return stored;
+      }
+    }
+
+    scenarioOrder = buildScenarioOrder(config.scenarios);
+    scenarioOrder.forEach(function (scenario) {
+      buildExcerptOrder(group.excerptIds).forEach(function (excerptId) {
+        var excerpt = config.excerpts.find(function (item) {
+          return item.id === excerptId;
+        });
+
+        trials.push({
+          trialIndex: trials.length + 1,
+          scenarioId: scenario.id,
+          excerptId: excerptId,
+          versionMappings: mapNeutralMixLabels(excerpt ? excerpt.mixes : [], config.versionLabels)
+        });
+      });
+    });
+
+    stored = {
+      groupId: group.id,
+      generatedAt: new Date().toISOString(),
+      method: "temporary_frontend_secure_random_if_available",
+      algorithm: trialOrderAlgorithm,
+      trials: trials
+    };
+
+    if (window.StudyApp.storage) {
+      window.StudyApp.storage.setItem("experimental.trialOrder", stored);
+    }
+
+    return stored;
+  }
+
+  function isCompatibleTrialOrder(stored, config, group) {
+    if (!stored || stored.groupId !== group.id || stored.algorithm !== trialOrderAlgorithm) {
+      return false;
+    }
+
+    return isGroupedScenarioPairOrder(stored.trials, config.trialGeneration.trialsPerParticipant, group.excerptIds);
+  }
+
+  function isGroupedScenarioPairOrder(trials, expectedTrialCount, excerptIds) {
+    var scenarioCounts = {};
+    var index;
+    var first;
+    var second;
+
+    if (!Array.isArray(trials) || trials.length !== expectedTrialCount || trials.length % 2 !== 0) {
+      return false;
+    }
+
+    for (index = 0; index < trials.length; index += 2) {
+      first = trials[index];
+      second = trials[index + 1];
+
+      if (!first || !second || first.scenarioId !== second.scenarioId) {
+        return false;
+      }
+
+      if (excerptIds.indexOf(first.excerptId) === -1 || excerptIds.indexOf(second.excerptId) === -1 || first.excerptId === second.excerptId) {
+        return false;
+      }
+
+      scenarioCounts[first.scenarioId] = (scenarioCounts[first.scenarioId] || 0) + 2;
+    }
+
+    return Object.keys(scenarioCounts).every(function (scenarioId) {
+      return scenarioCounts[scenarioId] === 2;
+    });
+  }
+
+  return {
+    getSecureRandomNumber: getSecureRandomNumber,
+    shuffle: shuffle,
+    assignGroup: assignGroup,
+    buildScenarioOrder: buildScenarioOrder,
+    buildExcerptOrder: buildExcerptOrder,
+    assignExcerptLabels: assignExcerptLabels,
+    isGroupedScenarioPairOrder: isGroupedScenarioPairOrder,
+    mapNeutralMixLabels: mapNeutralMixLabels,
+    buildTrialOrder: buildTrialOrder
+  };
+}());

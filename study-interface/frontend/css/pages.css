@@ -1,0 +1,320 @@
+/*
+  Page-specific placeholders.
+  Keep page-level rules minimal and reuse shared layout/component styles wherever possible.
+*/
+
+/* Landing page */
+.overview-list {
+  display: grid;
+  gap: var(--space-3);
+  padding-left: 1.25rem;
+}
+
+/* Participant Information Sheet page */
+.section-panel {
+  padding: var(--space-6);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  margin-top: var(--space-6);
+  background: var(--colour-card);
+}
+
+.section-panel > h2 {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-section-heading);
+}
+
+.document-link-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+}
+
+.document-content {
+  max-width: 70ch;
+  font-size: var(--font-size-long-reading);
+  line-height: var(--line-height-long-reading);
+}
+
+.document-content h2 {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-section-heading);
+}
+
+.document-content h3 {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-subsection-heading);
+}
+
+.document-meta {
+  padding: var(--space-4);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-6);
+  background: #f9faf8;
+}
+
+.document-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin: var(--space-6) 0;
+}
+
+/* Consent page */
+.consent-list {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.consent-item {
+  padding: var(--space-4);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  background: var(--colour-card);
+}
+
+@media (max-width: 36rem) {
+  .section-panel {
+    padding: var(--space-5);
+  }
+
+  .document-link-group {
+    flex-direction: column;
+  }
+
+  .document-link-group .button {
+    width: 100%;
+  }
+}
+
+/* Listening setup page */
+.section-panel .audio-control {
+  margin-top: var(--space-4);
+}
+
+/* Audio screening page */
+.screening-audio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-5) 0;
+}
+
+.audio-choice-card {
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  background: var(--colour-card);
+}
+
+.audio-choice-card h3 {
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-subsection-heading);
+}
+
+@media (max-width: 48rem) {
+  .screening-audio-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Instructions page */
+.example-scale {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  color: var(--colour-text-secondary);
+  font-weight: 600;
+}
+
+.example-scale__track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--colour-border);
+}
+
+.example-control {
+  padding: var(--space-3);
+  border: 1px dashed var(--colour-border);
+  border-radius: var(--radius-control);
+  color: var(--colour-text-secondary);
+}
+
+/* Practice trial page */
+.practice-context {
+  max-width: 72ch;
+}
+
+.practice-version-grid {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.practice-version-grid--example {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.version-card {
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  background: var(--colour-card);
+}
+
+.version-card h3 {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-section-heading);
+}
+
+.rating-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.rating-endpoint {
+  max-width: 7rem;
+  color: var(--colour-text-secondary);
+  font-size: var(--font-size-help);
+  font-weight: 600;
+}
+
+.rating-endpoint--max {
+  text-align: right;
+}
+
+.rating-value {
+  margin-top: var(--space-2);
+  color: var(--colour-text-secondary);
+  font-size: var(--font-size-help);
+  font-weight: 600;
+}
+
+@media (max-width: 48rem) {
+  .practice-version-grid--example {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Experimental trial page */
+.trial-context {
+  max-width: 78ch;
+}
+
+.trial-kicker {
+  margin-left: 0;
+}
+
+.trial-task-section {
+  margin-top: var(--space-7);
+}
+
+.trial-task-section h2 {
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-section-heading);
+}
+
+.trial-section-intro {
+  max-width: 72ch;
+  margin-bottom: var(--space-4);
+  color: var(--colour-text-secondary);
+}
+
+.trial-control-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.trial-comment-grid .textarea {
+  min-height: 10rem;
+}
+
+@media (max-width: 48rem) {
+  .trial-control-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 36rem) {
+  .trial-control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rating-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .rating-endpoint,
+  .rating-endpoint--max {
+    max-width: none;
+    text-align: left;
+  }
+}
+
+/* Demographic questionnaire page */
+.questionnaire-list {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.question-panel {
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-card);
+  background: var(--colour-card);
+}
+
+.question-status {
+  display: inline-block;
+  margin-left: var(--space-2);
+  color: var(--colour-text-secondary);
+  font-size: var(--font-size-help);
+  font-weight: 600;
+}
+
+/* Post-task questionnaire page */
+
+/* Review and final submission page */
+.completion-list {
+  display: grid;
+  gap: var(--space-3);
+  padding-left: 1.25rem;
+}
+
+.completion-list__item {
+  color: var(--colour-error);
+  font-weight: 600;
+}
+
+.completion-list__item--complete {
+  color: var(--colour-success);
+}
+
+.payload-preview {
+  max-height: 24rem;
+  overflow: auto;
+  padding: var(--space-4);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius-control);
+  background: #f9faf8;
+  color: var(--colour-text-primary);
+  font-size: var(--font-size-help);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Completion page */

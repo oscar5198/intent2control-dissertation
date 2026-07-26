@@ -1,0 +1,50 @@
+{
+  "productionReady": false,
+  "developmentOnly": true,
+  "developmentLabel": "Practice trial",
+  "practiceScenario": {
+    "id": "practice_scenario_development",
+    "title": "Practice scenario",
+    "text": "Imagine you are listening to music in an everyday situation. Use this practice page to try the rating and comment controls before the main study begins."
+  },
+  "practiceExcerpt": {
+    "id": "practice_excerpt_development",
+    "title": "Practice excerpt"
+  },
+  "ratingScale": {
+    "minimum": 0,
+    "maximum": 100,
+    "step": 1,
+    "leftEndpointLabel": "0 - Least preferred",
+    "rightEndpointLabel": "100 - Most preferred",
+    "midpointLabel": null
+  },
+  "commentsRequired": true,
+  "commentPrompt": "Please briefly explain what influenced your preference for this mix.",
+  "commentMeaningfulResponseThreshold": null,
+  "audioPlaybackRequired": false,
+  "versions": [
+    {
+      "id": "practice_version_a",
+      "label": "Version A",
+      "audioPath": "assets/audio/setup-test-development.mp3"
+    },
+    {
+      "id": "practice_version_b",
+      "label": "Version B",
+      "audioPath": "assets/audio/setup-test-development.mp3"
+    },
+    {
+      "id": "practice_version_c",
+      "label": "Version C",
+      "audioPath": "assets/audio/setup-test-development.mp3"
+    }
+  ],
+  "unresolvedValues": {
+    "finalPracticeScenario": "TBC",
+    "finalPracticeExcerpt": "TBC",
+    "finalPracticeAudio": "TBC",
+    "commentMeaningfulResponseThreshold": "TBC",
+    "practiceAudioPlaybackRequirement": "TBC"
+  }
+}

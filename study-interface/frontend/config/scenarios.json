@@ -1,0 +1,29 @@
+{
+  "scenarios": [
+    {
+      "id": "edr_1_relaxation",
+      "title": "EDR-1 — Unwinding After a Demanding Day",
+      "approvedText": "You have finished everything that required your attention for the day. You now have some uninterrupted time at home and do not need to complete any other tasks. You feel mentally tired and would like to settle into a calmer state. You decide to spend some time listening to music while you unwind."
+    },
+    {
+      "id": "edr_2_distraction",
+      "title": "EDR-2 — Taking Your Mind Off Everyday Concerns",
+      "approvedText": "You are travelling alone to a familiar destination and have some time before you arrive. A few everyday concerns have been going through your mind repeatedly. There is nothing you can do about them at that moment, and you would prefer not to keep thinking about them. You listen to music to occupy your attention during the journey."
+    },
+    {
+      "id": "edr_3_enjoyment",
+      "title": "EDR-3 — Enjoying Unstructured Free Time",
+      "approvedText": "You have some free time at home and nothing in particular that you need to do. You are not feeling tired or worried, but you would like to enjoy the time rather than let it pass uneventfully. You choose to listen to music for entertainment. You want the listening experience to feel pleasant and engaging."
+    },
+    {
+      "id": "fm_1_focus",
+      "title": "FM-1 — Sustaining Concentration During Focused Work",
+      "approvedText": "You are working on a task that requires sustained concentration for an extended period. You understand what you need to do, but your attention has started to drift. You want to remain mentally engaged and make steady progress without becoming distracted. You listen to music while continuing the task."
+    },
+    {
+      "id": "fm_2_motivation",
+      "title": "FM-2 — Maintaining Energy During Physical Activity",
+      "approvedText": "You are partway through an individual exercise session. The activity requires continued physical effort, but your energy and motivation have begun to decrease. You want to maintain your momentum and complete the session with consistent effort. You listen to music while you continue exercising."
+    }
+  ]
+}

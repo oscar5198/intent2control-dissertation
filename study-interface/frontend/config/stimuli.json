@@ -1,0 +1,384 @@
+{
+  "productionReady": true,
+  "developmentOnly": false,
+  "developmentLabel": "Experimental trial",
+  "replacementRequiredBeforePilot": false,
+  "notes": "Final experimental audio stimuli integrated for supervisor review and pilot preparation. Participant-facing pages must continue to show only Song A/Song B and Version A/Version B/Version C labels.",
+  "sourceMetadata": {
+    "finalStimulusReport": "outputs/final_stimuli/final_stimulus_report.md",
+    "frontendManifest": "outputs/final_stimuli/metadata/frontend_stimulus_manifest.json",
+    "finalSelection": "outputs/final_stimuli/metadata/final_selection.csv",
+    "provenance": "outputs/final_stimuli/metadata/provenance.csv",
+    "groupAllocationSource": "outputs/stimulus_selection/01_dataset_and_song_selection/reports/four_song_selection_report.md"
+  },
+  "versionLabels": [
+    "Version A",
+    "Version B",
+    "Version C"
+  ],
+  "groups": [
+    {
+      "id": "group_01",
+      "sourceAllocationLabel": "Group A",
+      "excerptIds": [
+        "group_01_song_a_lead_me",
+        "group_01_song_b_red_to_blue"
+      ]
+    },
+    {
+      "id": "group_02",
+      "sourceAllocationLabel": "Group B",
+      "excerptIds": [
+        "group_02_song_a_in_the_meantime",
+        "group_02_song_b_pouring_room"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "edr_1_relaxation",
+      "title": "EDR-1 - Unwinding After a Demanding Day",
+      "text": "You have finished everything that required your attention for the day. You now have some uninterrupted time at home and do not need to complete any other tasks. You feel mentally tired and would like to settle into a calmer state. You decide to spend some time listening to music while you unwind."
+    },
+    {
+      "id": "edr_2_distraction",
+      "title": "EDR-2 - Taking Your Mind Off Everyday Concerns",
+      "text": "You are travelling alone to a familiar destination and have some time before you arrive. A few everyday concerns have been going through your mind repeatedly. There is nothing you can do about them at that moment, and you would prefer not to keep thinking about them. You listen to music to occupy your attention during the journey."
+    },
+    {
+      "id": "edr_3_enjoyment",
+      "title": "EDR-3 - Enjoying Unstructured Free Time",
+      "text": "You have some free time at home and nothing in particular that you need to do. You are not feeling tired or worried, but you would like to enjoy the time rather than let it pass uneventfully. You choose to listen to music for entertainment. You want the listening experience to feel pleasant and engaging."
+    },
+    {
+      "id": "fm_1_focus",
+      "title": "FM-1 - Sustaining Concentration During Focused Work",
+      "text": "You are working on a task that requires sustained concentration for an extended period. You understand what you need to do, but your attention has started to drift. You want to remain mentally engaged and make steady progress without becoming distracted. You listen to music while continuing the task."
+    },
+    {
+      "id": "fm_2_motivation",
+      "title": "FM-2 - Maintaining Energy During Physical Activity",
+      "text": "You are partway through an individual exercise session. The activity requires continued physical effort, but your energy and motivation have begun to decrease. You want to maintain your momentum and complete the session with consistent effort. You listen to music while you continue exercising."
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "group_01_song_a_lead_me",
+      "groupId": "group_01",
+      "participantTitle": "Music excerpt: Song A",
+      "participantLabel": "Song A",
+      "finalExcerptName": "Lead Me",
+      "artist": "The DoneFors",
+      "sourceSongId": "lead_me",
+      "audioSource": "outputs/final_stimuli/stimuli/Lead Me",
+      "mixes": [
+        {
+          "slot": "mix_01",
+          "actualMixId": "mix_9346b5d4ade2",
+          "stimulusId": "lead_me_mcg_a",
+          "realMixIdentity": "Lead Me / McG-A / representative",
+          "analyticalRole": "representative",
+          "originalMixName": "McG-A",
+          "originalDatasetFilename": "McG-A.mp3",
+          "sourceFilename": "McG-A_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_01/song_a/mix_01.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "77d762610eacf5347d2276d4de51f250696fe64c9cf679e253bd6cfeac03de75"
+          }
+        },
+        {
+          "slot": "mix_02",
+          "actualMixId": "mix_d5b28dfc8a93",
+          "stimulusId": "lead_me_pxl_l1",
+          "realMixIdentity": "Lead Me / PXL-L1 / contrast_1",
+          "analyticalRole": "contrast_1",
+          "originalMixName": "PXL-L1",
+          "originalDatasetFilename": "PXL-L1.mp3",
+          "sourceFilename": "PXL-L1_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_01/song_a/mix_02.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "02eabf47249ce3536ad2f77c8be35980be7733d21e899a7ca71997d662c820f6"
+          }
+        },
+        {
+          "slot": "mix_03",
+          "actualMixId": "mix_f1f7973e5bac",
+          "stimulusId": "lead_me_du_d",
+          "realMixIdentity": "Lead Me / DU-D / contrast_2",
+          "analyticalRole": "contrast_2",
+          "originalMixName": "DU-D",
+          "originalDatasetFilename": "DU-D.mp3",
+          "sourceFilename": "DU-D_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_01/song_a/mix_03.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "1f75bf8005a843e416e61a3b8dbd23ccc1f4ebd1b28aeadb9a4149b22d4b316e"
+          }
+        }
+      ]
+    },
+    {
+      "id": "group_01_song_b_red_to_blue",
+      "groupId": "group_01",
+      "participantTitle": "Music excerpt: Song B",
+      "participantLabel": "Song B",
+      "finalExcerptName": "Red To Blue",
+      "artist": "Broken Crank",
+      "sourceSongId": "red_to_blue",
+      "audioSource": "outputs/final_stimuli/stimuli/Red To Blue",
+      "mixes": [
+        {
+          "slot": "mix_01",
+          "actualMixId": "mix_e2654ec905ad",
+          "stimulusId": "red_to_blue_mcg_a",
+          "realMixIdentity": "Red To Blue / McG-A / representative",
+          "analyticalRole": "representative",
+          "originalMixName": "McG-A",
+          "originalDatasetFilename": "McG-A.mp3",
+          "sourceFilename": "McG-A_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_01/song_b/mix_01.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "f14a0ca36c50cc785561163cd26542dcb47fc9fa704ceef4cb3126bebdd76ba5"
+          }
+        },
+        {
+          "slot": "mix_02",
+          "actualMixId": "mix_7ac13e0b6376",
+          "stimulusId": "red_to_blue_mcg_b",
+          "realMixIdentity": "Red To Blue / McG-B / contrast_1",
+          "analyticalRole": "contrast_1",
+          "originalMixName": "McG-B",
+          "originalDatasetFilename": "McG-B.mp3",
+          "sourceFilename": "McG-B_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_01/song_b/mix_02.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "474dfe24df9b9817e75a103b2dd9b0c65ff65a9e3641776f2aeb212cb904d528"
+          }
+        },
+        {
+          "slot": "mix_03",
+          "actualMixId": "mix_dcc6aef84d67",
+          "stimulusId": "red_to_blue_mcg_f",
+          "realMixIdentity": "Red To Blue / McG-F / contrast_2",
+          "analyticalRole": "contrast_2",
+          "originalMixName": "McG-F",
+          "originalDatasetFilename": "McG-F.mp3",
+          "sourceFilename": "McG-F_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_01/song_b/mix_03.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "4054e12f4541a3b339d07ee2e021e56898958a7cce0da5ce4e314b64191b1a80"
+          }
+        }
+      ]
+    },
+    {
+      "id": "group_02_song_a_in_the_meantime",
+      "groupId": "group_02",
+      "participantTitle": "Music excerpt: Song A",
+      "participantLabel": "Song A",
+      "finalExcerptName": "In The Meantime",
+      "artist": "Fredy V",
+      "sourceSongId": "in_the_meantime",
+      "audioSource": "outputs/final_stimuli/stimuli/In The Meantime",
+      "mixes": [
+        {
+          "slot": "mix_01",
+          "actualMixId": "mix_efdedc0a36e7",
+          "stimulusId": "in_the_meantime_ucp_a4",
+          "realMixIdentity": "In The Meantime / UCP-A4 / representative",
+          "analyticalRole": "representative",
+          "originalMixName": "UCP-A4",
+          "originalDatasetFilename": "UCP-A4.mp3",
+          "sourceFilename": "UCP-A4_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_02/song_a/mix_01.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "a0bebed18f4c3d9daa82bd0a0f732c501d723e264aebaabd777f3b964685876b"
+          }
+        },
+        {
+          "slot": "mix_02",
+          "actualMixId": "mix_22efc79c8253",
+          "stimulusId": "in_the_meantime_du_j",
+          "realMixIdentity": "In The Meantime / DU-J / contrast_1",
+          "analyticalRole": "contrast_1",
+          "originalMixName": "DU-J",
+          "originalDatasetFilename": "DU-J.mp3",
+          "sourceFilename": "DU-J_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_02/song_a/mix_02.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "d543d1df22f5381c62266924098b43c085221af5080841251c6b126e12462c20"
+          }
+        },
+        {
+          "slot": "mix_03",
+          "actualMixId": "mix_c7bdcba64775",
+          "stimulusId": "in_the_meantime_qut_b",
+          "realMixIdentity": "In The Meantime / QUT-B / contrast_2",
+          "analyticalRole": "contrast_2",
+          "originalMixName": "QUT-B",
+          "originalDatasetFilename": "QUT-B.mp3",
+          "sourceFilename": "QUT-B_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_02/song_a/mix_03.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "f0d132bdef6baa4273ae62c1769221a87d2bce29bf1d4ed0bb683c834886c17b"
+          }
+        }
+      ]
+    },
+    {
+      "id": "group_02_song_b_pouring_room",
+      "groupId": "group_02",
+      "participantTitle": "Music excerpt: Song B",
+      "participantLabel": "Song B",
+      "finalExcerptName": "Pouring Room",
+      "artist": "The DoneFors",
+      "sourceSongId": "pouring_room",
+      "audioSource": "outputs/final_stimuli/stimuli/Pouring Room",
+      "mixes": [
+        {
+          "slot": "mix_01",
+          "actualMixId": "mix_0ddb25d6180b",
+          "stimulusId": "pouring_room_mcg_q",
+          "realMixIdentity": "Pouring Room / McG-Q / representative",
+          "analyticalRole": "representative",
+          "originalMixName": "McG-Q",
+          "originalDatasetFilename": "McG-Q.mp3",
+          "sourceFilename": "McG-Q_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_02/song_b/mix_01.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "fe0e67258e9b93f23a2edb3a2e1c09a425514fa2e01d2811f43a2fa2dbd4260a"
+          }
+        },
+        {
+          "slot": "mix_02",
+          "actualMixId": "mix_132e75f34470",
+          "stimulusId": "pouring_room_mcg_pro1",
+          "realMixIdentity": "Pouring Room / McG-pro1 / contrast_1",
+          "analyticalRole": "contrast_1",
+          "originalMixName": "McG-pro1",
+          "originalDatasetFilename": "McG-pro1.mp3",
+          "sourceFilename": "McG-pro1_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_02/song_b/mix_02.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "4e6f81933f4f72b62b426ebb154807cab764eb9ba09ae4749aaac284697a973a"
+          }
+        },
+        {
+          "slot": "mix_03",
+          "actualMixId": "mix_cbf8555ee2b2",
+          "stimulusId": "pouring_room_mcg_x",
+          "realMixIdentity": "Pouring Room / McG-X / contrast_2",
+          "analyticalRole": "contrast_2",
+          "originalMixName": "McG-X",
+          "originalDatasetFilename": "McG-X.mp3",
+          "sourceFilename": "McG-X_28sec.wav",
+          "audioPath": "assets/audio/experimental/group_02/song_b/mix_03.wav",
+          "technicalMetadata": {
+            "format": "wav",
+            "durationSeconds": 28,
+            "sampleRateHz": 44100,
+            "channels": 2,
+            "bitDepth": 24,
+            "bytes": 7408844,
+            "sha256": "e36f0802b6c7f800e38eaac46d97e75c854568c3985f9b340b322ff1559b9d07"
+          }
+        }
+      ]
+    }
+  ],
+  "trialGeneration": {
+    "scenariosPerParticipant": 5,
+    "excerptsPerGroup": 2,
+    "trialsPerParticipant": 10,
+    "versionsPerTrial": 3,
+    "ratingsPerParticipant": 30,
+    "commentsPerParticipant": 30,
+    "scenarioOrder": "randomised",
+    "excerptOrderWithinScenario": "randomised",
+    "versionMapping": "randomised_per_trial"
+  },
+  "ratingScale": {
+    "minimum": 0,
+    "maximum": 100,
+    "step": 1,
+    "leftEndpointLabel": "0 - Least preferred",
+    "rightEndpointLabel": "100 - Most preferred",
+    "midpointLabel": null
+  },
+  "validation": {
+    "playbackRequiredForAllVersions": true,
+    "ratingInteractionRequiredForAllVersions": true,
+    "commentsRequiredForAllVersions": true,
+    "commentPrompt": "Please briefly explain what influenced your preference for this mix.",
+    "commentMeaningfulResponseThreshold": null
+  },
+  "unresolvedValues": {
+    "serverSideBalancedGroupAssignment": "TBC",
+    "commentMeaningfulResponseThreshold": "TBC"
+  }
+}

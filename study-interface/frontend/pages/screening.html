@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Screening | Intent2Control Listening Study</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="screening">
+  <main id="app" class="app-shell" data-page-container>
+    <header class="study-brand" aria-label="Study branding">
+      <a class="brand-mark" href="index.html" aria-label="Study home">
+        <img class="brand-logo" src="../assets/images/qmul-logo.png" alt="Queen Mary University of London">
+      </a>
+      <div class="progress" data-progress aria-label="Study progress"></div>
+    </header>
+
+    <section class="main-card" aria-labelledby="page-title">
+      <div class="page-header">
+        <h1 id="page-title" class="page-title">Audio Screening</h1>
+        <p class="page-intro">Complete the audio screening before continuing to the study instructions.</p>
+      </div>
+
+      <div class="validation-summary is-hidden" data-validation-summary tabindex="-1">
+        Please complete the current screening requirement before continuing.
+      </div>
+
+      <div id="screening-development-warning" class="banner banner--warning is-hidden" data-screening-development-warning>
+        Audio Screening
+      </div>
+      <div id="screening-route-warning" class="banner banner--warning is-hidden" data-screening-route-warning>
+        Listening setup has not been completed. Please return to Listening Setup before continuing.
+      </div>
+
+      <section class="section-panel" aria-labelledby="screening-instructions-heading">
+        <h2 id="screening-instructions-heading">Screening instructions</h2>
+        <p data-screening-instructions>Loading screening configuration...</p>
+      </section>
+
+      <section class="section-panel" aria-labelledby="screening-item-heading" data-screening-item-section>
+        <p class="progress__label" data-screening-item-progress aria-live="polite">Question 1 of 3</p>
+        <h2 id="screening-item-heading" data-screening-item-heading>Screening item</h2>
+        <p data-screening-item-prompt></p>
+        <div class="screening-audio-grid" data-screening-audio></div>
+        <fieldset class="field" data-screening-answers>
+          <legend class="field__label">Answer</legend>
+        </fieldset>
+        <p id="screening-answer-error" class="validation-message is-hidden">Please play all required audio choices and select an answer before submitting.</p>
+        <nav class="navigation-area" aria-label="Screening item navigation">
+          <button class="button button--secondary" type="button" data-action="back" data-target="listening-setup.html">Back</button>
+          <button class="button button--primary" type="button" data-action="submit-screening-answer" disabled>Next</button>
+        </nav>
+      </section>
+
+      <section class="section-panel is-hidden" aria-labelledby="screening-result-heading" data-screening-result>
+        <h2 id="screening-result-heading">Screening result</h2>
+        <div data-screening-feedback class="feedback-area" aria-live="polite"></div>
+        <div class="navigation-area">
+          <button class="button button--secondary is-hidden" type="button" data-action="development-bypass">Continue to instructions</button>
+          <button class="button button--secondary is-hidden" type="button" data-action="retry-screening">Retry screening</button>
+          <button class="button button--primary" type="button" data-action="continue-after-screening">Continue to instructions</button>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/timing.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/validation.js" defer></script>
+  <script src="../js/audio.js" defer></script>
+  <script src="../js/progress.js" defer></script>
+  <script src="../js/app.js" defer></script>
+</body>
+</html>

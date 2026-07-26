@@ -1,0 +1,82 @@
+[
+  {
+    "short_name": "RMS",
+    "full_name": "Root mean square energy",
+    "interpretation": "Average waveform energy per channel.",
+    "scalar_or_vector": "vector",
+    "units": "linear amplitude",
+    "expected_input": "(batch, channels, samples)",
+    "output_shape": "(batch, channels)",
+    "parameters": {"epsilon_clamp": 1e-8},
+    "source_paper": "Diff-MST paper associated with https://github.com/sai-soum/Diff-MST",
+    "source_repository": "https://github.com/sai-soum/Diff-MST.git",
+    "source_commit": "3b90ef838272b827c86610cf25b510a23a4147fd",
+    "source_function": "mst/loss.py::compute_rms"
+  },
+  {
+    "short_name": "CF",
+    "full_name": "Crest factor",
+    "interpretation": "Peak-to-RMS ratio per channel.",
+    "scalar_or_vector": "vector",
+    "units": "dB",
+    "expected_input": "(batch, channels, samples)",
+    "output_shape": "(batch, channels)",
+    "parameters": {"epsilon_clamp": 1e-8},
+    "source_paper": "Diff-MST paper associated with https://github.com/sai-soum/Diff-MST",
+    "source_repository": "https://github.com/sai-soum/Diff-MST.git",
+    "source_commit": "3b90ef838272b827c86610cf25b510a23a4147fd",
+    "source_function": "mst/loss.py::compute_crest_factor"
+  },
+  {
+    "short_name": "SW",
+    "full_name": "Stereo width",
+    "interpretation": "Difference-signal energy divided by sum-signal energy.",
+    "scalar_or_vector": "scalar",
+    "units": "ratio",
+    "expected_input": "(batch, 2, samples)",
+    "output_shape": "(batch,)",
+    "parameters": {"epsilon_clamp": 1e-8},
+    "source_paper": "Diff-MST paper associated with https://github.com/sai-soum/Diff-MST",
+    "source_repository": "https://github.com/sai-soum/Diff-MST.git",
+    "source_commit": "3b90ef838272b827c86610cf25b510a23a4147fd",
+    "source_function": "mst/loss.py::compute_stereo_width"
+  },
+  {
+    "short_name": "SI",
+    "full_name": "Stereo imbalance",
+    "interpretation": "Right-channel energy minus left-channel energy divided by total stereo energy.",
+    "scalar_or_vector": "scalar",
+    "units": "ratio",
+    "expected_input": "(batch, 2, samples)",
+    "output_shape": "(batch,)",
+    "parameters": {"epsilon_clamp": 1e-8},
+    "source_paper": "Diff-MST paper associated with https://github.com/sai-soum/Diff-MST",
+    "source_repository": "https://github.com/sai-soum/Diff-MST.git",
+    "source_commit": "3b90ef838272b827c86610cf25b510a23a4147fd",
+    "source_function": "mst/loss.py::compute_stereo_imbalance"
+  },
+  {
+    "short_name": "BS",
+    "full_name": "Bark-spectrum representation",
+    "interpretation": "Log Bark-band magnitude spectrum averaged over STFT frames.",
+    "scalar_or_vector": "matrix",
+    "units": "natural log magnitude",
+    "expected_input": "(batch, channels, samples); stereo and mid-side require exactly two channels",
+    "output_shape": "mono: (batch, 24, 1); stereo: (batch, 24, 2); mid-side: (batch, 24, 2)",
+    "parameters": {
+      "fft_size": 32768,
+      "n_bands": 24,
+      "sample_rate": 44100,
+      "f_min": 20.0,
+      "f_max": 20000.0,
+      "mode": "mid-side",
+      "hop_length": "fft_size // 4",
+      "window": "Hann",
+      "epsilon": 1e-8
+    },
+    "source_paper": "Diff-MST paper associated with https://github.com/sai-soum/Diff-MST",
+    "source_repository": "https://github.com/sai-soum/Diff-MST.git",
+    "source_commit": "3b90ef838272b827c86610cf25b510a23a4147fd",
+    "source_function": "mst/loss.py::compute_barkspectrum"
+  }
+]
