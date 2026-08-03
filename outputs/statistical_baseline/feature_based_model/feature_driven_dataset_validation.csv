@@ -1,0 +1,11 @@
+check,passed,observed,expected
+expected_rows,True,1200,1200
+forty_participants,True,40,40
+thirty_ratings_per_participant,True,[30],30
+four_songs,True,4,4
+twelve_stimuli,True,12,12
+five_episodes,True,5,5
+three_stimuli_per_participant_song_episode,True,[3],3
+correct_group_song_assignments,True,"{'Group_1': ['Song_1', 'Song_2'], 'Group_2': ['Song_3', 'Song_4']}","{'Group_1': ['Song_1', 'Song_2'], 'Group_2': ['Song_3', 'Song_4']}"
+no_missing_model_variables,True,all checked,no missing
+rating_range_valid,True,"[36.4, 99.6]",0-100

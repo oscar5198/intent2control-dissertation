@@ -1,0 +1,13 @@
+item,value
+notebook,notebooks/Statistical Baseline/_02_categorical_stimulus_model.ipynb
+primary_formula,rating ~ episode * stimulus_id + (1 | participant_id)
+comparison_formula,rating ~ 1 + (1 | participant_id)
+sampling,"{""draws"": 1000, ""tune"": 1000, ""chains"": 4, ""cores"": 1, ""target_accept"": 0.95, ""random_seed"": 42, ""inference_method"": ""nutpie""}"
+intercept_model_elapsed_minutes,0.112
+categorical_model_elapsed_minutes,0.146
+divergences,0
+maximum_rhat,1.012
+minimum_effective_sample_size,498.7
+posterior_predictive_outside_0_100_proportion,0.00655
+effect_recovery_rmse,2.1659
+cell_mean_94pct_hdi_coverage,0.95

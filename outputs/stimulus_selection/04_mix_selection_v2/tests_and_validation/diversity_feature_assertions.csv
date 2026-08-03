@@ -1,0 +1,5 @@
+artist,song,diversity_scalar_features,qc_only_features,combined_coordinate_count,contains_stereo_imbalance,assertion
+Broken Crank,Red To Blue,rms_mean|crest_factor_mean|stereo_width,stereo_imbalance,8,false,passed
+Fredy V,In The Meantime,rms_mean|crest_factor_mean|stereo_width,stereo_imbalance,11,false,passed
+The DoneFors,Lead Me,rms_mean|crest_factor_mean|stereo_width,stereo_imbalance,12,false,passed
+The DoneFors,Pouring Room,rms_mean|crest_factor_mean|stereo_width,stereo_imbalance,8,false,passed

@@ -1,0 +1,9 @@
+song,condition,mix_names,maximum_lag_samples,maximum_ms_offset,minimum_correlation,confidence,automatic_result,visual_result,manual_status,overall_recommendation
+I'd Like To Know,Similar Ratings,PXL-S3|PXL-S5|PXL-S1,0,0,0.628771284689,0.628771284689,PASS,figures_generated,pending,suitable_for_supervisor_review
+I'd Like To Know,Wide Ratings,PXL-S2|PXL-S6|PXL-S7,0,0,0.696629889617,0.696629889617,PASS,figures_generated,pending,suitable_for_supervisor_review
+New Skin,Similar Ratings,DU-Q|DU-R|DU-O,0,0,0.69137434048,0.69137434048,PASS,figures_generated,pending,suitable_for_supervisor_review
+New Skin,Wide Ratings,DU-U|DU-T|DU-S,512,11.6099773243,0.793336319226,0.793336319226,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+No Prize,Similar Ratings,McG-L|McG-pro2|McG-N,512,11.6099773243,0.552615798816,0.552615798816,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+No Prize,Wide Ratings,McG-K|McG-P|McG-O,0,0,0.506411055304,0.506411055304,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+Vermont,Similar Ratings,DU-P2|DU-O2|PXL-L3,512,11.6099773243,0.671673197205,0.671673197205,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+Vermont,Wide Ratings,PXL-L1|PXL-L4|PXL-L5,0,0,0.740536530439,0.740536530439,PASS,figures_generated,pending,suitable_for_supervisor_review

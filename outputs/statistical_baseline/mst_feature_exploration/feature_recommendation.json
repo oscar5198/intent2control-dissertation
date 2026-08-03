@@ -1,0 +1,43 @@
+{
+  "authoritative_final_stimulus_source": "outputs\\stimulus_selection\\06_final_summaries\\final_selected_mixes.csv",
+  "authoritative_raw_feature_source": "outputs\\stimulus_selection\\03_feature_extraction\\tables\\raw_diffmst_features.csv",
+  "recommended_scalar_predictors": [
+    "z_RMS",
+    "z_CF",
+    "z_SW",
+    "z_SI"
+  ],
+  "standardisation_recommended": true,
+  "standardisation_reason": "Raw feature units differ substantially; z-scoring across the final selected stimuli gives comparable coefficient scales for the next model.",
+  "bs_representation_found": "48 raw Bark mid/side bands plus within-song Bark PCA scores",
+  "bs_scalar_found": false,
+  "bs_recommendation": "Do not invent a scalar BS value. For the next dissertation model, either exclude BS initially or include a very small pre-specified Bark PCA representation only with a clear caveat that existing PCs are within-song selection diagnostics.",
+  "bark_pca_available": true,
+  "retained_bark_pc_counts_by_song": {
+    "Red To Blue": 5,
+    "In The Meantime": 8,
+    "Lead Me": 9,
+    "Pouring Room": 5
+  },
+  "feature_interactions_recommended_initially": false,
+  "interaction_reason": "Only twelve stimulus-level feature combinations are available; episode-by-feature interactions would be high risk.",
+  "strongest_pearson_correlation": {
+    "method": "pearson",
+    "feature_a": "SW",
+    "feature_b": "SI",
+    "r": 0.5594302989547988,
+    "abs_r": 0.5594302989547988,
+    "above_0_70": false,
+    "above_0_90": false
+  },
+  "strongest_spearman_correlation": {
+    "method": "spearman",
+    "feature_a": "RMS",
+    "feature_b": "SI",
+    "r": -0.8111888111888111,
+    "abs_r": 0.8111888111888111,
+    "above_0_70": true,
+    "above_0_90": false
+  },
+  "near_constant_scalar_features": []
+}

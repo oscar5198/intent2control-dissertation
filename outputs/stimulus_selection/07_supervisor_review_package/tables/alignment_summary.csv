@@ -1,0 +1,9 @@
+song,condition,mix_names,maximum_lag_samples,maximum_ms_offset,minimum_correlation,confidence,automatic_result,visual_result,manual_status,overall_recommendation
+In The Meantime,Similar Ratings,QUT-B|DU-H|DU-I,1536,34.8299319728,0.554726736911,0.554726736911,FAIL,figures_generated,pending,requires_alignment_review_before_supervisor_review
+In The Meantime,Wide Ratings,DU-K|QUT-pro|DU-N,1024,23.2199546485,0.682056501594,0.682056501594,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+Lead Me,Similar Ratings,DU-D|DU-E|QUT-F,2048,46.4399092971,0.459662289545,0.459662289545,FAIL,figures_generated,pending,requires_alignment_review_before_supervisor_review
+Lead Me,Wide Ratings,PXL-L1|PXL-L4|McG-pro2,2048,46.4399092971,0.492359529944,0.492359529944,FAIL,figures_generated,pending,requires_alignment_review_before_supervisor_review
+Pouring Room,Similar Ratings,McG-R|McG-T|McG-X,0,0,0.363658807987,0.363658807987,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+Pouring Room,Wide Ratings,McG-pro1|McG-U|McG-V,2560,58.0498866213,0.285609441946,0.285609441946,FAIL,figures_generated,pending,requires_alignment_review_before_supervisor_review
+Red To Blue,Similar Ratings,McG-B|McG-G|McG-F,512,11.6099773243,0.575262122091,0.575262122091,REVIEW,figures_generated,pending,suitable_for_supervisor_review
+Red To Blue,Wide Ratings,McG-C|McG-H|McG-pro1,0,0,0.710419546762,0.710419546762,PASS,figures_generated,pending,suitable_for_supervisor_review

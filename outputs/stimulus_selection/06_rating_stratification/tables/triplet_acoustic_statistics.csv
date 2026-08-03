@@ -1,0 +1,81 @@
+song,triplet_id,condition,minimum_acoustic_distance,mean_acoustic_distance,acoustic_score
+In The Meantime,InTheMeantime_SimilarRatings_00189,Similar Ratings,3.41830268237,4.34380541171,0.946073161462
+In The Meantime,InTheMeantime_SimilarRatings_00461,Similar Ratings,3.13630445374,3.2537342211,0.77827904672
+In The Meantime,InTheMeantime_SimilarRatings_00211,Similar Ratings,3.52199243066,4.36037826367,0.975351057942
+In The Meantime,InTheMeantime_SimilarRatings_00174,Similar Ratings,3.37008746851,4.35409616196,0.933977537387
+In The Meantime,InTheMeantime_SimilarRatings_00188,Similar Ratings,2.86055060316,4.00146749537,0.767223605481
+In The Meantime,InTheMeantime_SimilarRatings_00180,Similar Ratings,3.35601357334,3.92869710529,0.894301535738
+In The Meantime,InTheMeantime_SimilarRatings_00205,Similar Ratings,3.13630445374,4.65252336298,0.896298046835
+In The Meantime,InTheMeantime_SimilarRatings_00220,Similar Ratings,3.28528530809,4.1233717366,0.891709593843
+In The Meantime,InTheMeantime_SimilarRatings_00190,Similar Ratings,3.20659552719,4.37347980113,0.891654041395
+In The Meantime,InTheMeantime_SimilarRatings_00193,Similar Ratings,3.27928337606,4.30659505634,0.905554788271
+In The Meantime,InTheMeantime_WideRatings_00189,Wide Ratings,3.41830268237,4.34380541171,0.946073161462
+In The Meantime,InTheMeantime_WideRatings_00174,Wide Ratings,3.37008746851,4.35409616196,0.933977537387
+In The Meantime,InTheMeantime_WideRatings_00205,Wide Ratings,3.13630445374,4.65252336298,0.896298046835
+In The Meantime,InTheMeantime_WideRatings_00220,Wide Ratings,3.28528530809,4.1233717366,0.891709593843
+In The Meantime,InTheMeantime_WideRatings_00190,Wide Ratings,3.20659552719,4.37347980113,0.891654041395
+In The Meantime,InTheMeantime_WideRatings_00211,Wide Ratings,3.52199243066,4.36037826367,0.975351057942
+In The Meantime,InTheMeantime_WideRatings_00193,Wide Ratings,3.27928337606,4.30659505634,0.905554788271
+In The Meantime,InTheMeantime_WideRatings_00231,Wide Ratings,3.04915038868,4.32714902076,0.845411907008
+In The Meantime,InTheMeantime_WideRatings_00223,Wide Ratings,2.97056012406,4.15926881741,0.810116497524
+In The Meantime,InTheMeantime_WideRatings_00232,Wide Ratings,2.88941707978,3.90109608392,0.766516523996
+Lead Me,LeadMe_SimilarRatings_00209,Similar Ratings,3.16805889374,3.36903625283,0.974978095356
+Lead Me,LeadMe_SimilarRatings_00216,Similar Ratings,3.2282673575,3.39630458349,1
+Lead Me,LeadMe_SimilarRatings_00242,Similar Ratings,2.93661002842,3.35848670741,0.892264955895
+Lead Me,LeadMe_SimilarRatings_00215,Similar Ratings,2.78016793791,3.37564875875,0.839829158513
+Lead Me,LeadMe_SimilarRatings_00173,Similar Ratings,2.84064614514,3.18582992266,0.833918115372
+Lead Me,LeadMe_SimilarRatings_00355,Similar Ratings,2.84064614514,3.13661192027,0.826883540398
+Lead Me,LeadMe_SimilarRatings_00175,Similar Ratings,2.93661002842,3.20789732741,0.870741687324
+Lead Me,LeadMe_SimilarRatings_00284,Similar Ratings,2.8747131098,3.39020459667,0.875081361703
+Lead Me,LeadMe_SimilarRatings_00679,Similar Ratings,2.78016793791,3.13393691768,0.805282041897
+Lead Me,LeadMe_SimilarRatings_00591,Similar Ratings,3.08444132181,3.1779783964,0.918333030177
+Lead Me,LeadMe_WideRatings_00216,Wide Ratings,3.2282673575,3.39630458349,1
+Lead Me,LeadMe_WideRatings_00591,Wide Ratings,3.08444132181,3.1779783964,0.918333030177
+Lead Me,LeadMe_WideRatings_00366,Wide Ratings,2.92257247514,3.05614907295,0.844127618423
+Lead Me,LeadMe_WideRatings_00588,Wide Ratings,2.82776691448,3.08378887071,0.814814946243
+Lead Me,LeadMe_WideRatings_00209,Wide Ratings,3.16805889374,3.36903625283,0.974978095356
+Lead Me,LeadMe_WideRatings_00185,Wide Ratings,2.92257247514,3.203358044,0.865167735727
+Lead Me,LeadMe_WideRatings_00282,Wide Ratings,2.8747131098,3.11910743511,0.836334293238
+Lead Me,LeadMe_WideRatings_00213,Wide Ratings,2.82776691448,3.16459805929,0.826364750544
+Lead Me,LeadMe_WideRatings_00284,Wide Ratings,2.8747131098,3.39020459667,0.875081361703
+Lead Me,LeadMe_WideRatings_00348,Wide Ratings,2.84064614514,3.11310902412,0.823524345042
+Pouring Room,PouringRoom_SimilarRatings_00019,Similar Ratings,1.88514897969,2.62783949143,0.778089173035
+Pouring Room,PouringRoom_SimilarRatings_00038,Similar Ratings,2.24349284301,2.59371918068,0.992275146122
+Pouring Room,PouringRoom_SimilarRatings_00020,Similar Ratings,2.05828285308,2.38653682629,0.830674378083
+Pouring Room,PouringRoom_SimilarRatings_00039,Similar Ratings,2.24349284301,2.38240795817,0.944434189193
+Pouring Room,PouringRoom_SimilarRatings_00009,Similar Ratings,2.12138547376,2.60865236481,0.920038860107
+Pouring Room,PouringRoom_SimilarRatings_00050,Similar Ratings,1.88514897969,2.42247942422,0.731595560375
+Pouring Room,PouringRoom_SimilarRatings_00021,Similar Ratings,1.9297504407,2.39181594373,0.752273584457
+Pouring Room,PouringRoom_SimilarRatings_00010,Similar Ratings,2.12138547376,2.49142992842,0.893499647169
+Pouring Room,PouringRoom_SimilarRatings_00051,Similar Ratings,1.94282540096,2.25373373245,0.729108611272
+Pouring Room,PouringRoom_SimilarRatings_00053,Similar Ratings,1.88514897969,2.20321724965,0.681954504284
+Pouring Room,PouringRoom_WideRatings_00038,Wide Ratings,2.24349284301,2.59371918068,0.992275146122
+Pouring Room,PouringRoom_WideRatings_00039,Wide Ratings,2.24349284301,2.38240795817,0.944434189193
+Pouring Room,PouringRoom_WideRatings_00009,Wide Ratings,2.12138547376,2.60865236481,0.920038860107
+Pouring Room,PouringRoom_WideRatings_00010,Wide Ratings,2.12138547376,2.49142992842,0.893499647169
+Pouring Room,PouringRoom_WideRatings_00020,Wide Ratings,2.05828285308,2.38653682629,0.830674378083
+Pouring Room,PouringRoom_WideRatings_00044,Wide Ratings,1.88514897969,2.31475180575,0.707205978536
+Pouring Room,PouringRoom_WideRatings_00025,Wide Ratings,1.92838325294,2.0946650109,0.684151822656
+Pouring Room,PouringRoom_WideRatings_00021,Wide Ratings,1.9297504407,2.39181594373,0.752273584457
+Pouring Room,PouringRoom_WideRatings_00051,Wide Ratings,1.94282540096,2.25373373245,0.729108611272
+Pouring Room,PouringRoom_WideRatings_00052,Wide Ratings,1.9297504407,2.16492406377,0.700905159593
+Red To Blue,RedToBlue_SimilarRatings_00059,Similar Ratings,2.59969815564,2.74048811256,0.990141444634
+Red To Blue,RedToBlue_SimilarRatings_00066,Similar Ratings,2.20895117647,2.6095128006,0.816401800379
+Red To Blue,RedToBlue_SimilarRatings_00075,Similar Ratings,2.40210411945,2.56433410661,0.884061281355
+Red To Blue,RedToBlue_SimilarRatings_00035,Similar Ratings,2.20895117647,2.38834564219,0.779736440508
+Red To Blue,RedToBlue_SimilarRatings_00040,Similar Ratings,2.19547731062,2.40621465482,0.777456562842
+Red To Blue,RedToBlue_SimilarRatings_00031,Similar Ratings,2.19547731062,2.5654681551,0.803857801345
+Red To Blue,RedToBlue_SimilarRatings_00069,Similar Ratings,2.17469013793,2.69677620418,0.817538625108
+Red To Blue,RedToBlue_SimilarRatings_00052,Similar Ratings,2.25877221386,2.79995537769,0.867357277936
+Red To Blue,RedToBlue_SimilarRatings_00065,Similar Ratings,2.17469013793,2.32546138202,0.755981603363
+Red To Blue,RedToBlue_SimilarRatings_00029,Similar Ratings,2.25877221386,2.5618877136,0.827890131729
+Red To Blue,RedToBlue_WideRatings_00059,Wide Ratings,2.59969815564,2.74048811256,0.990141444634
+Red To Blue,RedToBlue_WideRatings_00023,Wide Ratings,2.23642122835,2.47348397246,0.80453844179
+Red To Blue,RedToBlue_WideRatings_00075,Wide Ratings,2.40210411945,2.56433410661,0.884061281355
+Red To Blue,RedToBlue_WideRatings_00082,Wide Ratings,2.00224974868,2.31301259983,0.686827121692
+Red To Blue,RedToBlue_WideRatings_00016,Wide Ratings,2.07673702912,2.59336515177,0.76228478263
+Red To Blue,RedToBlue_WideRatings_00069,Wide Ratings,2.17469013793,2.69677620418,0.817538625108
+Red To Blue,RedToBlue_WideRatings_00052,Wide Ratings,2.25877221386,2.79995537769,0.867357277936
+Red To Blue,RedToBlue_WideRatings_00015,Wide Ratings,2.07673702912,2.1626161318,0.69087468746
+Red To Blue,RedToBlue_WideRatings_00073,Wide Ratings,1.72551509663,2.39387696154,0.59256484553
+Red To Blue,RedToBlue_WideRatings_00029,Wide Ratings,2.25877221386,2.5618877136,0.827890131729

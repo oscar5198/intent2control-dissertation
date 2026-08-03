@@ -1,0 +1,103 @@
+{
+  "run_tag": "phase3c_final_highrep_v1",
+  "candidate_participant_counts": [
+    20,
+    30,
+    40,
+    50,
+    60,
+    80
+  ],
+  "n_replications": 20,
+  "sampling_config": {
+    "draws": 400,
+    "tune": 400,
+    "chains": 2,
+    "cores": 1,
+    "target_accept": 0.95,
+    "inference_method": "nutpie"
+  },
+  "model_formula": "rating ~ episode + z_RMS + z_CF + z_SW + z_SI + episode:z_SW + episode:z_SI + (1 | participant_id)",
+  "scenarios": {
+    "moderate_effects": {
+      "grand_mean": 63.0,
+      "episode_effects": {
+        "Relaxation": 0.0,
+        "Distraction": -2.5,
+        "Enjoyment": 3.0,
+        "Focus": 1.5,
+        "Motivation": 2.5
+      },
+      "feature_effects": {
+        "z_RMS": 2.5,
+        "z_CF": -1.8,
+        "z_SW": 2.2,
+        "z_SI": -1.2
+      },
+      "interactions": {
+        "Focus:z_SW": 2.0,
+        "Motivation:z_SW": 2.5,
+        "Distraction:z_SI": 1.8
+      },
+      "participant_sd": 7.0,
+      "residual_sd": 8.5
+    },
+    "smaller_effects_harder_study": {
+      "grand_mean": 63.0,
+      "episode_effects": {
+        "Relaxation": 0.0,
+        "Distraction": -2.5,
+        "Enjoyment": 3.0,
+        "Focus": 1.5,
+        "Motivation": 2.5
+      },
+      "feature_effects": {
+        "z_RMS": 1.5,
+        "z_CF": -1.08,
+        "z_SW": 1.32,
+        "z_SI": -0.72
+      },
+      "interactions": {
+        "Focus:z_SW": 1.2,
+        "Motivation:z_SW": 1.5,
+        "Distraction:z_SI": 1.08
+      },
+      "participant_sd": 7.0,
+      "residual_sd": 8.5
+    },
+    "higher_noise_moderate_effects": {
+      "grand_mean": 63.0,
+      "episode_effects": {
+        "Relaxation": 0.0,
+        "Distraction": -2.5,
+        "Enjoyment": 3.0,
+        "Focus": 1.5,
+        "Motivation": 2.5
+      },
+      "feature_effects": {
+        "z_RMS": 2.5,
+        "z_CF": -1.8,
+        "z_SW": 2.2,
+        "z_SI": -1.2
+      },
+      "interactions": {
+        "Focus:z_SW": 2.0,
+        "Motivation:z_SW": 2.5,
+        "Distraction:z_SI": 1.8
+      },
+      "participant_sd": 10.0,
+      "residual_sd": 12.0
+    }
+  },
+  "operational_criteria": {
+    "max_divergences": 0,
+    "max_rhat": 1.05,
+    "min_ess": 50
+  },
+  "strict_criteria": {
+    "max_divergences": 0,
+    "max_rhat": 1.01,
+    "min_ess": 100
+  },
+  "config_hash": "350ccb9c668fdd57"
+}

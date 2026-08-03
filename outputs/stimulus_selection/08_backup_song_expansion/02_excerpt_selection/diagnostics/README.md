@@ -1,0 +1,1 @@
+Stage 2 backup diagnostics were generated in the scratch pipeline work root during validation. They are not copied here verbatim because the long nested diagnostic filenames exceed reliable Windows path lengths under the final output root. Alignment QA figures and the supervisor booklet in Phase G/H provide the retained visual review evidence.

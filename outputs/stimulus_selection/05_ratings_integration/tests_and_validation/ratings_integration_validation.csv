@@ -1,0 +1,6 @@
+check,observed,expected,passed
+retained_mix_count,92,92,true
+duplicate_retained_mix_rows,0,0,true
+rating_range_0_1,0.0..1.0,0..1,0
+candidate_pool_preserved,59,59,true
+no_self_excluded_summary,not_created,not_feasible,true

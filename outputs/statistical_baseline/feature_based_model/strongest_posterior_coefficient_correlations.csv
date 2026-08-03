@@ -1,0 +1,13 @@
+coefficient_a,coefficient_b,correlation,abs_correlation
+z_SW,"episode:z_SW[('Enjoyment',)]",-0.692698782706181,0.692698782706181
+"episode:z_SW[('Relaxation',)]",z_SW,-0.679705672141458,0.679705672141458
+"episode:z_SW[('Focus',)]",z_SW,-0.6772289287116118,0.6772289287116118
+z_SW,"episode:z_SW[('Motivation',)]",-0.6769546447112581,0.6769546447112581
+z_SI,"episode:z_SI[('Enjoyment',)]",-0.6612280936538992,0.6612280936538992
+z_SI,"episode:z_SI[('Motivation',)]",-0.6508846412758396,0.6508846412758396
+z_SI,"episode:z_SI[('Focus',)]",-0.650033204724756,0.650033204724756
+z_SI,"episode:z_SI[('Relaxation',)]",-0.6391137804131206,0.6391137804131206
+"episode:z_SW[('Relaxation',)]","episode:z_SI[('Relaxation',)]",-0.540792992666277,0.540792992666277
+"episode:z_SI[('Motivation',)]","episode:z_SW[('Motivation',)]",-0.5285661121039522,0.5285661121039522
+"episode:z_SI[('Enjoyment',)]","episode:z_SW[('Enjoyment',)]",-0.5058933718709244,0.5058933718709244
+"episode:z_SW[('Focus',)]","episode:z_SI[('Focus',)]",-0.5051724497431036,0.5051724497431036

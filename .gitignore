@@ -28,6 +28,39 @@ experiments/*
 outputs/*
 bibliography/papers/*
 
+# Curated synthetic analysis inputs used by the dissertation notebooks
+!data/processed/synthetic/
+data/processed/synthetic/**
+!data/processed/synthetic/**/
+!data/processed/synthetic/**/*.csv
+
+# Curated lightweight outputs used for dissertation review and reproducibility
+!outputs/final_stimuli/
+outputs/final_stimuli/**
+!outputs/final_stimuli/**/
+!outputs/final_stimuli/**/*.csv
+!outputs/final_stimuli/**/*.json
+!outputs/final_stimuli/**/*.md
+
+!outputs/statistical_baseline/
+outputs/statistical_baseline/**
+!outputs/statistical_baseline/**/
+!outputs/statistical_baseline/**/*.csv
+!outputs/statistical_baseline/**/*.json
+!outputs/statistical_baseline/**/*.md
+!outputs/statistical_baseline/**/*.png
+!outputs/statistical_baseline/**/*.txt
+
+!outputs/stimulus_selection/
+outputs/stimulus_selection/**
+!outputs/stimulus_selection/**/
+!outputs/stimulus_selection/**/*.csv
+!outputs/stimulus_selection/**/*.json
+!outputs/stimulus_selection/**/*.md
+!outputs/stimulus_selection/**/*.pdf
+!outputs/stimulus_selection/**/*.png
+!outputs/stimulus_selection/**/*.py
+
 # Keep placeholder files for empty tracked directories
 !data/raw/.gitkeep
 !data/processed/.gitkeep
@@ -42,6 +75,13 @@ bibliography/papers/*
 *.flac
 *.aiff
 *.aif
+!study-interface/frontend/assets/audio/
+!study-interface/frontend/assets/audio/experimental/
+!study-interface/frontend/assets/audio/experimental/**/
+!study-interface/frontend/assets/audio/experimental/**/*.wav
+!study-interface/frontend/assets/audio/pre-experiment-normalized/
+!study-interface/frontend/assets/audio/pre-experiment-normalized/**/
+!study-interface/frontend/assets/audio/pre-experiment-normalized/**/*.wav
 
 # Logs and temporary files
 *.log

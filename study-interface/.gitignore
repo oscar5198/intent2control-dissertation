@@ -23,3 +23,7 @@ Thumbs.db
 
 frontend/assets/audio/*
 !frontend/assets/audio/.gitkeep
+!frontend/assets/audio/experimental/
+!frontend/assets/audio/experimental/**
+!frontend/assets/audio/pre-experiment-normalized/
+!frontend/assets/audio/pre-experiment-normalized/**

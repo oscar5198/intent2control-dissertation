@@ -1,0 +1,4 @@
+quantity,observed,posterior_predictive_mean,ppc_hdi_3%,ppc_hdi_97%
+observed_mean,66.7346,66.722,65.9662,67.4471
+observed_sd,12.9772,13.3089,12.6756,13.9481
+ppc_outside_0_100_proportion,0.0,0.0066,,

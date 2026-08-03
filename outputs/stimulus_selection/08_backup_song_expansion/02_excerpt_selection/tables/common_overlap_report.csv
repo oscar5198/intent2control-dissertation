@@ -1,0 +1,5 @@
+artist,song,reference_mix_id,retained_mix_count,excluded_mix_count,common_aligned_start_seconds,common_aligned_end_seconds,common_overlap_seconds,target_excerpt_seconds,sufficient_overlap,minimum_alignment_confidence,notes
+Dawn Langstroth,No Prize,mix_176dff701046,9,0,0.010431,62.782167,62.771736,28.000000,true,0.700000,reference selected near median duration/common sample rate: McG-K
+Filthybird,I'd Like To Know,mix_65f41f41d3ab,7,0,0.000454,52.144250,52.143796,28.000000,true,0.700000,reference selected near median duration/common sample rate: PXL-S3
+The Districts,Vermont,mix_0ae655011992,7,0,0.000454,53.137696,53.137242,28.000000,true,0.700000,reference selected near median duration/common sample rate: PXL-L1
+Torres,New Skin,mix_221967d4097c,7,0,0.010431,57.136500,57.126069,28.000000,true,0.700000,reference selected near median duration/common sample rate: DU-Q

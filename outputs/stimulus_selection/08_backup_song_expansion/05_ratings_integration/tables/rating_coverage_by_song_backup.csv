@@ -1,0 +1,5 @@
+song,retained_mix_count,rated_retained_mix_count,unrated_retained_mix_count,acoustic_candidate_pool_size,rated_acoustic_pool_count,unrated_acoustic_pool_count,total_rating_rows,rating_count_minimum,rating_count_median,rating_count_maximum,mixes_below_warning_threshold,evaluator_institutions_represented,years_represented,sessions_represented,experiments_represented
+I'd Like To Know,7,7,0,7,7,0,210,30,30,30,0,PXL|QM|SMC,2015,30,3
+New Skin,7,7,0,7,7,0,371,53,53,53,0,DU|QM|SMC,2015,53,3
+No Prize,9,9,0,9,9,0,342,38,38,38,0,McG|QM|SMC,2013|2015,38,3
+Vermont,7,7,0,7,7,0,171,13,29,29,0,PXL|QM|SMC,2015,29,3

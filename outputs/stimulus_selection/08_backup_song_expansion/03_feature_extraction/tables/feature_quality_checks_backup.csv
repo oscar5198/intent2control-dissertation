@@ -1,0 +1,70 @@
+song,check,severity,passed,details
+Dawn Langstroth - No Prize,missing_values,error,true,ok rows checked
+Dawn Langstroth - No Prize,nan,error,true,finite numeric feature matrix
+Dawn Langstroth - No Prize,inf,error,true,finite numeric feature matrix
+Dawn Langstroth - No Prize,incorrect_sample_count,error,true,expected 1234800
+Dawn Langstroth - No Prize,incorrect_channel_count,error,true,expected stereo
+Dawn Langstroth - No Prize,zero_variance_feature_dimensions,warning,true,
+Dawn Langstroth - No Prize,near_zero_variance_feature_dimensions,warning,true,
+Dawn Langstroth - No Prize,extreme_rms,warning,true,min=0.0382059; max=0.162479
+Dawn Langstroth - No Prize,extreme_crest_factor,warning,true,min=13.6817; max=18.5489
+Dawn Langstroth - No Prize,extreme_stereo_width,warning,true,min=0.0186138; max=0.129983
+Dawn Langstroth - No Prize,extreme_absolute_stereo_imbalance,warning,true,max_abs=0.0910624
+Dawn Langstroth - No Prize,highly_correlated_scalar_features,warning,false,rms_left~rms_right=0.998; rms_left~rms_mean=0.999; rms_right~rms_mean=0.999
+Dawn Langstroth - No Prize,bark_bins_zero_or_near_zero_variance,warning,true,
+Dawn Langstroth - No Prize,duplicate_or_near_duplicate_feature_vectors,warning,true,
+Dawn Langstroth - No Prize,suspicious_all_zero_or_constant_bark_outputs,warning,true,
+Dawn Langstroth - No Prize,possible_excerpt_conversion_error,error,true,source interval durations checked
+Dawn Langstroth - No Prize,possible_decoder_inconsistency,warning,true,soundfile
+Filthybird - I'd Like To Know,missing_values,error,true,ok rows checked
+Filthybird - I'd Like To Know,nan,error,true,finite numeric feature matrix
+Filthybird - I'd Like To Know,inf,error,true,finite numeric feature matrix
+Filthybird - I'd Like To Know,incorrect_sample_count,error,true,expected 1234800
+Filthybird - I'd Like To Know,incorrect_channel_count,error,true,expected stereo
+Filthybird - I'd Like To Know,zero_variance_feature_dimensions,warning,true,
+Filthybird - I'd Like To Know,near_zero_variance_feature_dimensions,warning,true,
+Filthybird - I'd Like To Know,extreme_rms,warning,true,min=0.0548075; max=0.0632446
+Filthybird - I'd Like To Know,extreme_crest_factor,warning,true,min=14.7642; max=17.4849
+Filthybird - I'd Like To Know,extreme_stereo_width,warning,true,min=0.0243665; max=0.146867
+Filthybird - I'd Like To Know,extreme_absolute_stereo_imbalance,warning,true,max_abs=0.0736308
+Filthybird - I'd Like To Know,highly_correlated_scalar_features,warning,true,
+Filthybird - I'd Like To Know,bark_bins_zero_or_near_zero_variance,warning,true,
+Filthybird - I'd Like To Know,duplicate_or_near_duplicate_feature_vectors,warning,true,
+Filthybird - I'd Like To Know,suspicious_all_zero_or_constant_bark_outputs,warning,true,
+Filthybird - I'd Like To Know,possible_excerpt_conversion_error,error,true,source interval durations checked
+Filthybird - I'd Like To Know,possible_decoder_inconsistency,warning,true,soundfile
+The Districts - Vermont,missing_values,error,true,ok rows checked
+The Districts - Vermont,nan,error,true,finite numeric feature matrix
+The Districts - Vermont,inf,error,true,finite numeric feature matrix
+The Districts - Vermont,incorrect_sample_count,error,true,expected 1234800
+The Districts - Vermont,incorrect_channel_count,error,true,expected stereo
+The Districts - Vermont,zero_variance_feature_dimensions,warning,true,
+The Districts - Vermont,near_zero_variance_feature_dimensions,warning,true,
+The Districts - Vermont,extreme_rms,warning,true,min=0.0499599; max=0.0565968
+The Districts - Vermont,extreme_crest_factor,warning,true,min=12.2698; max=18.1297
+The Districts - Vermont,extreme_stereo_width,warning,true,min=0.0502258; max=0.128092
+The Districts - Vermont,extreme_absolute_stereo_imbalance,warning,true,max_abs=0.0288573
+The Districts - Vermont,highly_correlated_scalar_features,warning,false,rms_right~rms_mean=0.986; crest_factor_left~crest_factor_right=0.980; crest_factor_left~crest_factor_mean=0.996; crest_factor_right~crest_factor_mean=0.994
+The Districts - Vermont,bark_bins_zero_or_near_zero_variance,warning,true,
+The Districts - Vermont,duplicate_or_near_duplicate_feature_vectors,warning,true,
+The Districts - Vermont,suspicious_all_zero_or_constant_bark_outputs,warning,true,
+The Districts - Vermont,possible_excerpt_conversion_error,error,true,source interval durations checked
+The Districts - Vermont,possible_decoder_inconsistency,warning,true,soundfile
+Torres - New Skin,missing_values,error,true,ok rows checked
+Torres - New Skin,nan,error,true,finite numeric feature matrix
+Torres - New Skin,inf,error,true,finite numeric feature matrix
+Torres - New Skin,incorrect_sample_count,error,true,expected 1234800
+Torres - New Skin,incorrect_channel_count,error,true,expected stereo
+Torres - New Skin,zero_variance_feature_dimensions,warning,true,
+Torres - New Skin,near_zero_variance_feature_dimensions,warning,true,
+Torres - New Skin,extreme_rms,warning,true,min=0.0537556; max=0.0609256
+Torres - New Skin,extreme_crest_factor,warning,true,min=14.2176; max=20.7074
+Torres - New Skin,extreme_stereo_width,warning,true,min=0.0675236; max=0.230609
+Torres - New Skin,extreme_absolute_stereo_imbalance,warning,true,max_abs=0.200627
+Torres - New Skin,highly_correlated_scalar_features,warning,true,
+Torres - New Skin,bark_bins_zero_or_near_zero_variance,warning,true,
+Torres - New Skin,duplicate_or_near_duplicate_feature_vectors,warning,true,
+Torres - New Skin,suspicious_all_zero_or_constant_bark_outputs,warning,true,
+Torres - New Skin,possible_excerpt_conversion_error,error,true,source interval durations checked
+Torres - New Skin,possible_decoder_inconsistency,warning,true,soundfile
+ALL,row_count,error,true,ok=30; total=30

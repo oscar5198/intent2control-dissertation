@@ -1,0 +1,5 @@
+quantity,mean,hdi_3%,hdi_97%
+intercept,66.719,64.428,68.978
+participant_sd,7.524,5.943,9.472
+residual_sd,10.797,10.387,11.226
+ICC,0.326,0.231,0.438

@@ -1,0 +1,5 @@
+artist,song,retained_mix_count,candidate_pool_target,candidate_pool_actual,bark_pc_count,bark_variance_explained,medoid_original_name,minimum_pairwise_distance_within_pool,mean_pairwise_distance_within_pool,stereo_imbalance_flags_in_pool,unrated_mixes_in_pool,notes
+Broken Crank,Red To Blue,10,all_valid,10,5,0.962635896758,McG-A,1.68830575362e-16,2.00650967753,1,1,Candidate pool only; no preference ratings used for selection.
+Fredy V,In The Meantime,36,20,20,8,0.955874659521,UCP-A4,0.918554639901,2.25525629169,2,0,Candidate pool only; no preference ratings used for selection.
+The DoneFors,Lead Me,37,20,20,9,0.950354194436,CNS-C,1.23314937975,2.31002777249,0,0,Candidate pool only; no preference ratings used for selection.
+The DoneFors,Pouring Room,9,all_valid,9,5,0.970524623082,McG-W,1.915750571e-16,1.97346301503,1,1,Candidate pool only; no preference ratings used for selection.

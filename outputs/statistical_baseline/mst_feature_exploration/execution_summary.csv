@@ -1,0 +1,13 @@
+item,value
+notebook,notebooks/Statistical Baseline/_03_mst_feature_exploration.ipynb
+loaded_files,outputs\stimulus_selection\03_feature_extraction\tables\raw_diffmst_features.csv; outputs\stimulus_selection\03_feature_extraction\tables\feature_schema.json; outputs\stimulus_selection\04_mix_selection\tables\processed_features.csv; outputs\stimulus_selection\04_mix_selection\tables\bark_pca_scores.csv; outputs\stimulus_selection\04_mix_selection\tables\bark_pca_explained_variance.csv; outputs\stimulus_selection\04_mix_selection\tables\bark_pca_loadings.csv; outputs\stimulus_selection\04_mix_selection\tables\final_mix_selection_summary.csv; outputs\stimulus_selection\06_final_summaries\final_selected_mixes.csv
+scalar_features_available,"RMS, CF, SW, SI"
+bs_representation,48 Bark mid/side raw columns; within-song PCA scores available
+pca_available,True
+strongest_pearson,SW vs SI: r=0.559
+strongest_spearman,RMS vs SI: rho=-0.811
+bs_recommendation,"Do not invent a scalar BS value. For the next dissertation model, either exclude BS initially or include a very small pre-specified Bark PCA representation only with a clear caveat that existing PCs are within-song selection diagnostics."
+recommended_predictors,"z_RMS, z_CF, z_SW, z_SI"
+standardisation_recommended,True
+feature_interactions_feasible_initially,False
+export_directory,outputs\statistical_baseline\mst_feature_exploration

@@ -1,0 +1,13 @@
+artist,song,analytical_role,original_mix_name,original_dataset_filename,institution_code,stimulus_wav,original_source_path
+Fredy V,In The Meantime,representative,UCP-A4,UCP-A4.mp3,UCP,stimuli/In The Meantime/representative/UCP-A4_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\InTheMeantime\UCP-A4.mp3
+Fredy V,In The Meantime,contrast_1,DU-J,DU-J.mp3,DU,stimuli/In The Meantime/contrast_1/DU-J_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\InTheMeantime\DU-J.mp3
+Fredy V,In The Meantime,contrast_2,QUT-B,QUT-B.mp3,QUT,stimuli/In The Meantime/contrast_2/QUT-B_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\InTheMeantime\QUT-B.mp3
+The DoneFors,Lead Me,representative,McG-A,McG-A.mp3,McG,stimuli/Lead Me/representative/McG-A_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\LeadMe\McG-A.mp3
+The DoneFors,Lead Me,contrast_1,PXL-L1,PXL-L1.mp3,PXL,stimuli/Lead Me/contrast_1/PXL-L1_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\LeadMe\PXL-L1.mp3
+The DoneFors,Lead Me,contrast_2,DU-D,DU-D.mp3,DU,stimuli/Lead Me/contrast_2/DU-D_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\LeadMe\DU-D.mp3
+The DoneFors,Pouring Room,representative,McG-Q,McG-Q.mp3,McG,stimuli/Pouring Room/representative/McG-Q_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\PouringRoom\McG-Q.mp3
+The DoneFors,Pouring Room,contrast_1,McG-pro1,McG-pro1.mp3,McG,stimuli/Pouring Room/contrast_1/McG-pro1_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\PouringRoom\McG-pro1.mp3
+The DoneFors,Pouring Room,contrast_2,McG-X,McG-X.mp3,McG,stimuli/Pouring Room/contrast_2/McG-X_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\PouringRoom\McG-X.mp3
+Broken Crank,Red To Blue,representative,McG-A,McG-A.mp3,McG,stimuli/Red To Blue/representative/McG-A_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\RedToBlue\McG-A.mp3
+Broken Crank,Red To Blue,contrast_1,McG-B,McG-B.mp3,McG,stimuli/Red To Blue/contrast_1/McG-B_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\RedToBlue\McG-B.mp3
+Broken Crank,Red To Blue,contrast_2,McG-F,McG-F.mp3,McG,stimuli/Red To Blue/contrast_2/McG-F_28sec.wav,C:\Users\oscar\OneDrive\Public share - Mix Eval Dataset\MixEvaluation\audio\RedToBlue\McG-F.mp3

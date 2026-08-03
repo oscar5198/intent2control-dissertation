@@ -1,0 +1,45 @@
+artist,song,method,original_mix_names,mix_ids,contains_medoid,minimum_pairwise_distance,mean_pairwise_distance,maximum_pairwise_distance,unique_institution_count
+Broken Crank,Red To Blue,A_representative_plus_maximum_contrasts,McG-B|McG-F|McG-A,mix_7ac13e0b6376|mix_dcc6aef84d67|mix_e2654ec905ad,true,1.90107445204,2.02376227096,2.19763346655,1
+Broken Crank,Red To Blue,B_unconstrained_maximum_dispersion,McG-D|McG-G|McG-F,mix_8978729ff911|mix_b4b312ffa4d6|mix_dcc6aef84d67,false,2.42683208672,2.52974050577,2.62709013065,1
+Broken Crank,Red To Blue,C_exact_k_medoids_k3,McG-pro1|McG-F|McG-A,mix_808780e357c9|mix_dcc6aef84d67|mix_e2654ec905ad,true,1.50858652104,2.16366796823,3.00983848936,1
+Broken Crank,Red To Blue,D_institution_aware_representative_plus_contrasts,McG-B|McG-F|McG-A,mix_7ac13e0b6376|mix_dcc6aef84d67|mix_e2654ec905ad,true,1.90107445204,2.02376227096,2.19763346655,1
+Broken Crank,Red To Blue,sensitivity_primary_combined,McG-B|McG-F|McG-A,mix_7ac13e0b6376|mix_dcc6aef84d67|mix_e2654ec905ad,true,1.90107445204,2.02376227096,2.19763346655,1
+Broken Crank,Red To Blue,sensitivity_rms_excluded,McG-B|McG-F|McG-A,mix_7ac13e0b6376|mix_dcc6aef84d67|mix_e2654ec905ad,true,1.90107445204,2.02376227096,2.19763346655,1
+Broken Crank,Red To Blue,sensitivity_scalar_only,McG-B|McG-F|McG-E,mix_7ac13e0b6376|mix_dcc6aef84d67|mix_f4f9bdec5b71,false,2.19763346655,2.38517952618,2.50260678251,1
+Broken Crank,Red To Blue,sensitivity_bark_only,McG-D|McG-G|McG-A,mix_8978729ff911|mix_b4b312ffa4d6|mix_e2654ec905ad,true,1.40760770597,1.87732470711,2.53529929995,1
+Broken Crank,Red To Blue,sensitivity_manhattan,McG-B|McG-F|McG-A,mix_7ac13e0b6376|mix_dcc6aef84d67|mix_e2654ec905ad,true,1.90107445204,2.02376227096,2.19763346655,1
+Broken Crank,Red To Blue,sensitivity_equal_dimension_weighting,McG-D|McG-G|McG-A,mix_8978729ff911|mix_b4b312ffa4d6|mix_e2654ec905ad,true,1.40760770597,1.87732470711,2.53529929995,1
+Broken Crank,Red To Blue,sensitivity_paper_weight_inspired_secondary,McG-pro1|McG-G|McG-A,mix_808780e357c9|mix_b4b312ffa4d6|mix_e2654ec905ad,true,1.50858652104,1.76735080402,2.10439877562,1
+Fredy V,In The Meantime,A_representative_plus_maximum_contrasts,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,B_unconstrained_maximum_dispersion,DU-J|QUT-B|QUT-pro,mix_22efc79c8253|mix_c7bdcba64775|mix_cdaef40f2b94,false,5.08851443149,5.79042118617,6.89955901876,2
+Fredy V,In The Meantime,C_exact_k_medoids_k3,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,D_institution_aware_representative_plus_contrasts,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,sensitivity_primary_combined,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,sensitivity_rms_excluded,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,sensitivity_scalar_only,QUT-A|DU-J|PXL-S1,mix_13f0eed08780|mix_22efc79c8253|mix_2eae3034bad8,false,2.02488642887,4.31792261093,6.1610881001,3
+Fredy V,In The Meantime,sensitivity_bark_only,DU-K|QUT-B|UCP-A4,mix_56e65a3ce054|mix_c7bdcba64775|mix_efdedc0a36e7,true,1.81833883809,3.12838937584,4.01760870438,3
+Fredy V,In The Meantime,sensitivity_manhattan,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,sensitivity_equal_dimension_weighting,DU-J|QUT-B|UCP-A4,mix_22efc79c8253|mix_c7bdcba64775|mix_efdedc0a36e7,true,4.01760870438,5.39329692158,6.89955901876,3
+Fredy V,In The Meantime,sensitivity_paper_weight_inspired_secondary,DU-H|QUT-B|UCP-A4,mix_302f0efe8a80|mix_c7bdcba64775|mix_efdedc0a36e7,true,1.76827262482,3.31883512468,4.17062404485,3
+The DoneFors,Lead Me,A_representative_plus_maximum_contrasts,McG-A|PXL-L1|DU-D,mix_9346b5d4ade2|mix_d5b28dfc8a93|mix_f1f7973e5bac,true,2.5765061173,2.85864759339,3.09351018348,3
+The DoneFors,Lead Me,B_unconstrained_maximum_dispersion,DU-E|QUT-F|DU-D,mix_271852ba8676|mix_4e2cf7c970a8|mix_f1f7973e5bac,false,3.22140898988,3.30861053095,3.40110963295,2
+The DoneFors,Lead Me,C_exact_k_medoids_k3,McG-C|McG-A|UCP-A1,mix_7b5a2d66116b|mix_9346b5d4ade2|mix_d2a4240adfd8,true,1.17154077027,1.27659862425,1.45585336484,2
+The DoneFors,Lead Me,D_institution_aware_representative_plus_contrasts,McG-A|PXL-L1|DU-D,mix_9346b5d4ade2|mix_d5b28dfc8a93|mix_f1f7973e5bac,true,2.5765061173,2.85864759339,3.09351018348,3
+The DoneFors,Lead Me,sensitivity_primary_combined,McG-A|PXL-L1|DU-D,mix_9346b5d4ade2|mix_d5b28dfc8a93|mix_f1f7973e5bac,true,2.5765061173,2.85864759339,3.09351018348,3
+The DoneFors,Lead Me,sensitivity_rms_excluded,McG-A|PXL-L1|DU-D,mix_9346b5d4ade2|mix_d5b28dfc8a93|mix_f1f7973e5bac,true,2.5765061173,2.85864759339,3.09351018348,3
+The DoneFors,Lead Me,sensitivity_scalar_only,DU-F|QUT-A|McG-pro2,mix_3a41a8db47bc|mix_864280f1b98b|mix_d3e3580b6e30,false,2.47559816518,2.5896908555,2.75081380926,3
+The DoneFors,Lead Me,sensitivity_bark_only,McG-A|PXL-L1|DU-D,mix_9346b5d4ade2|mix_d5b28dfc8a93|mix_f1f7973e5bac,true,2.5765061173,2.85864759339,3.09351018348,3
+The DoneFors,Lead Me,sensitivity_manhattan,McG-A|PXL-L4|DU-D,mix_9346b5d4ade2|mix_c7d9a071ba25|mix_f1f7973e5bac,true,2.09949637658,2.56835881644,2.90592647939,3
+The DoneFors,Lead Me,sensitivity_equal_dimension_weighting,McG-A|PXL-L1|DU-D,mix_9346b5d4ade2|mix_d5b28dfc8a93|mix_f1f7973e5bac,true,2.5765061173,2.85864759339,3.09351018348,3
+The DoneFors,Lead Me,sensitivity_paper_weight_inspired_secondary,DU-E|McG-A|PXL-L1,mix_271852ba8676|mix_9346b5d4ade2|mix_d5b28dfc8a93,true,2.26364515753,2.55622867987,2.82853476479,3
+The DoneFors,Pouring Room,A_representative_plus_maximum_contrasts,McG-Q|McG-pro1|McG-X,mix_0ddb25d6180b|mix_132e75f34470|mix_cbf8555ee2b2,true,1.91632161813,2.01213224466,2.16557128399,1
+The DoneFors,Pouring Room,B_unconstrained_maximum_dispersion,McG-U|McG-pro|McG-T,mix_37681ed84b6b|mix_9f79c0810c7e|mix_be2ccd4c43ff,false,2.09494644986,2.40039694177,2.6415347095,1
+The DoneFors,Pouring Room,C_exact_k_medoids_k3,McG-Q|McG-pro1|McG-X,mix_0ddb25d6180b|mix_132e75f34470|mix_cbf8555ee2b2,true,1.91632161813,2.01213224466,2.16557128399,1
+The DoneFors,Pouring Room,D_institution_aware_representative_plus_contrasts,McG-Q|McG-pro1|McG-X,mix_0ddb25d6180b|mix_132e75f34470|mix_cbf8555ee2b2,true,1.91632161813,2.01213224466,2.16557128399,1
+The DoneFors,Pouring Room,sensitivity_primary_combined,McG-Q|McG-pro1|McG-X,mix_0ddb25d6180b|mix_132e75f34470|mix_cbf8555ee2b2,true,1.91632161813,2.01213224466,2.16557128399,1
+The DoneFors,Pouring Room,sensitivity_rms_excluded,McG-R|McG-Q|McG-X,mix_0ba76f420c1d|mix_0ddb25d6180b|mix_cbf8555ee2b2,true,1.68073488725,2.21401976732,3.00682058284,1
+The DoneFors,Pouring Room,sensitivity_scalar_only,McG-pro1|McG-W|McG-T,mix_132e75f34470|mix_786fc67a9418|mix_be2ccd4c43ff,false,2.00180859564,2.32247319763,2.50090133128,1
+The DoneFors,Pouring Room,sensitivity_bark_only,McG-Q|McG-T|McG-X,mix_0ddb25d6180b|mix_be2ccd4c43ff|mix_cbf8555ee2b2,true,1.75348855756,1.8381488708,1.95450383185,1
+The DoneFors,Pouring Room,sensitivity_manhattan,McG-Q|McG-T|McG-X,mix_0ddb25d6180b|mix_be2ccd4c43ff|mix_cbf8555ee2b2,true,1.75348855756,1.8381488708,1.95450383185,1
+The DoneFors,Pouring Room,sensitivity_equal_dimension_weighting,McG-Q|McG-T|McG-X,mix_0ddb25d6180b|mix_be2ccd4c43ff|mix_cbf8555ee2b2,true,1.75348855756,1.8381488708,1.95450383185,1
+The DoneFors,Pouring Room,sensitivity_paper_weight_inspired_secondary,McG-Q|McG-pro1|McG-X,mix_0ddb25d6180b|mix_132e75f34470|mix_cbf8555ee2b2,true,1.91632161813,2.01213224466,2.16557128399,1

@@ -1,0 +1,5 @@
+participant_id,group,song_id,episode,joint_highest_rated_mix,stimulus_id,rating
+P004,Group_1,Song_1,Distraction,Mix_2,Song_1_Mix_2,70.7
+P004,Group_1,Song_1,Distraction,Mix_3,Song_1_Mix_3,70.7
+P031,Group_2,Song_3,Enjoyment,Mix_3,Song_3_Mix_3,100.0
+P031,Group_2,Song_3,Enjoyment,Mix_1,Song_3_Mix_1,100.0

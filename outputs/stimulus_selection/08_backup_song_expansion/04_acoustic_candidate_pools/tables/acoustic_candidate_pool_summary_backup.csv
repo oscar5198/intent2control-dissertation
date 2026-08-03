@@ -1,0 +1,5 @@
+artist,song,retained_mix_count,candidate_pool_target,candidate_pool_actual,bark_pc_count,bark_variance_explained,medoid_original_name,minimum_pairwise_distance_within_pool,mean_pairwise_distance_within_pool,stereo_imbalance_flags_in_pool,unrated_mixes_in_pool,notes
+Dawn Langstroth,No Prize,9,all_valid,9,3,0.969427364915,McG-M,0.582884902312,1.82136183632,0,0,Candidate pool only; no preference ratings used for selection.
+Filthybird,I'd Like To Know,7,all_valid,7,5,0.979747157294,PXL-S2,0.949392070054,2.02062896792,0,0,Candidate pool only; no preference ratings used for selection.
+The Districts,Vermont,7,all_valid,7,5,0.976030690677,PXL-L1,0.896004763486,1.8911072924,0,0,Candidate pool only; no preference ratings used for selection.
+Torres,New Skin,7,all_valid,7,4,0.969235962566,DU-P,0.836949409196,1.98683873482,0,0,Candidate pool only; no preference ratings used for selection.

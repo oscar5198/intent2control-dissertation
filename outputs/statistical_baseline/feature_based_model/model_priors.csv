@@ -1,0 +1,7 @@
+term,prior,rating_point_interpretation
+Intercept,"Normal(65, 20)",overall rating location on the 0-100 scale
+episode,"Normal(0, 8)",episode deviations from Relaxation
+"z_RMS, z_CF, z_SW, z_SI","Normal(0, 8)",rating-point change per 1 SD feature increase
+"episode:z_SW, episode:z_SI","Normal(0, 5)",additional context-specific rating-point change per 1 SD feature increase
+participant SD,HalfNormal(10),between-participant intercept variation
+residual SD,HalfNormal(15),within-cell residual variation

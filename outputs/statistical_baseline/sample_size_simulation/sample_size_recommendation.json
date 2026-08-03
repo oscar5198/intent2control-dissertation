@@ -1,0 +1,50 @@
+{
+  "run_tag": "phase3c_final_highrep_v1",
+  "config_hash": "350ccb9c668fdd57",
+  "requested_replications_per_condition": 20,
+  "replications_per_condition_used": 20,
+  "attempted_fits": 360,
+  "completed_fits": 360,
+  "failed_fits": 0,
+  "operational_criteria": {
+    "max_divergences": 0,
+    "max_rhat": 1.05,
+    "min_ess": 50
+  },
+  "strict_criteria": {
+    "max_divergences": 0,
+    "max_rhat": 1.01,
+    "min_ess": 100
+  },
+  "adequacy_criteria": {
+    "operational_success_rate_min": 0.9,
+    "cell_mean_rmse_max": 1.75,
+    "cell_mean_coverage_range": [
+      0.8,
+      0.98
+    ],
+    "winner_accuracy_min": 0.85,
+    "mean_true_winner_probability_min": 0.8,
+    "average_cell_hdi_width_max": 6.5
+  },
+  "scenario_minimum_passing_n": [],
+  "scenario_minimum_recovery_passing_n": [
+    {
+      "scenario": "higher_noise_moderate_effects",
+      "minimum_recovery_passing_n": 60
+    },
+    {
+      "scenario": "moderate_effects",
+      "minimum_recovery_passing_n": 30
+    },
+    {
+      "scenario": "smaller_effects_harder_study",
+      "minimum_recovery_passing_n": 40
+    }
+  ],
+  "recommended_analysable_participants": 60,
+  "recommendation_text": "Sixty analysable participants is recommended: 40 and 50 perform well under the moderate scenario, but 60 is the smallest tested sample clearing the final recovery/uncertainty criteria across all three scenarios.",
+  "diagnostic_note": "Operational and strict convergence rates are reported separately. They were often limited by the intentionally reduced two-chain repeated-simulation MCMC configuration; there were no divergent transitions in the repeated fits, and the production-quality confirmation fit is used to check the recommended design under the final analysis configuration.",
+  "recruitment_guidance": "At least 60 complete analysable participants should be retained, with recruitment above this number to accommodate incomplete responses, screening exclusions, or unusable data.",
+  "forty_to_fifty_defensible": false
+}
