@@ -27,3 +27,5 @@ frontend/assets/audio/*
 !frontend/assets/audio/experimental/**
 !frontend/assets/audio/pre-experiment-normalized/
 !frontend/assets/audio/pre-experiment-normalized/**
+!frontend/assets/audio/study-stimuli/
+!frontend/assets/audio/study-stimuli/**

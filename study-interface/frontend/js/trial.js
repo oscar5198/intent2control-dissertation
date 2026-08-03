@@ -32,6 +32,11 @@ window.StudyApp.trial = (function () {
         return;
       }
 
+      if (currentTrialOrder.developmentCompatibilityWarning) {
+        showSummary(currentTrialOrder.developmentCompatibilityWarning);
+        return;
+      }
+
       completedCount = countCompletedTrials();
       if (completedCount >= config.trialGeneration.trialsPerParticipant) {
         if (window.StudyApp.navigation) {
@@ -597,6 +602,7 @@ window.StudyApp.trial = (function () {
       trialIndex: currentTrial.trialIndex,
       scenarioId: currentTrial.scenarioId,
       excerptId: currentTrial.excerptId,
+      stimulusConfigurationVersion: currentConfig.stimulusConfigurationVersion || null,
       scenarioTitle: scenario ? getParticipantScenarioTitle(scenario) : null,
       neutralExcerptTitle: excerpt ? getParticipantExcerptTitle(excerpt.id) : null,
       trialStartTimestamp: currentTrialStartTimestamp,
@@ -609,6 +615,7 @@ window.StudyApp.trial = (function () {
           trialIndex: currentTrial.trialIndex,
           scenarioId: currentTrial.scenarioId,
           excerptId: currentTrial.excerptId,
+          stimulusConfigurationVersion: currentConfig.stimulusConfigurationVersion || null,
           neutralDisplayLabel: mapping.neutralLabel,
           actualMixId: mapping.actualMixId,
           audioPath: mapping.audioPath,
@@ -720,6 +727,7 @@ window.StudyApp.trial = (function () {
         trialIndex: trial.trialIndex,
         scenarioId: trial.scenarioId,
         excerptId: trial.excerptId,
+        stimulusConfigurationVersion: currentConfig.stimulusConfigurationVersion || null,
         scenarioTitle: scenario ? getParticipantScenarioTitle(scenario) : null,
         neutralExcerptTitle: excerpt ? getParticipantExcerptTitle(excerpt.id) : null,
         trialStartTimestamp: startTimestamp,
@@ -736,6 +744,7 @@ window.StudyApp.trial = (function () {
             trialIndex: trial.trialIndex,
             scenarioId: trial.scenarioId,
             excerptId: trial.excerptId,
+            stimulusConfigurationVersion: currentConfig.stimulusConfigurationVersion || null,
             neutralDisplayLabel: mapping.neutralLabel,
             actualMixId: mapping.actualMixId,
             audioPath: mapping.audioPath,

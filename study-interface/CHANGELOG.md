@@ -56,10 +56,12 @@ The format is based on Keep a Changelog.
 
 ### Changed
 
+- Consolidated all active frontend audio into `frontend/assets/audio/study-stimuli/`, updated configuration paths, and added a researcher-facing master audio manifest.
 - Reordered the participant flow so the Post-task Questionnaire now appears before the Demographic Questionnaire, with route guards, page progress, and review prerequisites updated accordingly.
 - Updated Post-task Questionnaire agreement questions to use a horizontal Strongly disagree to Strongly agree Likert layout where space allows.
 - Removed `Prefer not to say` from the post-task listening-device and completion-location questions and added required conditional detail fields when `Other` is selected.
 - Replaced native participant-facing audio controls with shared volume-free controls and rebuilt temporary Pre-Study Listening Task stimuli from same-song, same-excerpt Mix Evaluation Dataset mix versions.
+- Updated the Main Study mix sets from the revised rating-stratification candidate-review outputs, normalised frontend copies to -20.8 LUFS, documented the new researcher-facing manifest, and added stimulus-configuration version handling for stale local trial orders.
 - Renamed the participant-facing Audio Screening stage to Pre-Study Listening Task, prepared a six-item two-segment by three-repetition structure with persisted randomised order, hid participant-facing score feedback, and added shared reset-on-switch controlled audio behaviour.
 - Revised the landing-page study title and description following supervisor feedback.
 - Revised the Listening Setup introductory sentence following supervisor feedback.

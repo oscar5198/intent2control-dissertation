@@ -82,6 +82,10 @@ outputs/stimulus_selection/**
 !study-interface/frontend/assets/audio/pre-experiment-normalized/
 !study-interface/frontend/assets/audio/pre-experiment-normalized/**/
 !study-interface/frontend/assets/audio/pre-experiment-normalized/**/*.wav
+!study-interface/frontend/assets/audio/study-stimuli/
+!study-interface/frontend/assets/audio/study-stimuli/**/
+!study-interface/frontend/assets/audio/study-stimuli/**/*.md
+!study-interface/frontend/assets/audio/study-stimuli/**/*.wav
 
 # Logs and temporary files
 *.log

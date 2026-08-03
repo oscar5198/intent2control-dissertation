@@ -116,6 +116,8 @@ The participant-facing interface must consistently show Version A, Version B, an
 
 The final experimental stimuli are configured in `frontend/config/stimuli.json` and documented for researchers in `docs/final-stimuli-manifest.md`. Participant-facing trial screens must continue to show only `Music excerpt: Song A` or `Music excerpt: Song B` plus neutral Version A/B/C labels, while response records preserve the internal mix IDs and neutral frontend audio paths needed for analysis.
 
+The active Main Study stimulus configuration version is stored in `frontend/config/stimuli.json` as `stimulusConfigurationVersion`. Persisted local trial orders include this version so outdated development mappings can be detected after a stimulus update.
+
 ## Rating
 
 Represents a participant's preference rating for one mix presentation.
@@ -159,6 +161,7 @@ Suggested fields:
 - Actual mix identifier.
 - Audio path.
 - Final experimental stimulus manifest reference, where needed for researcher-side analysis.
+- Stimulus configuration version.
 - Rating value from 0 to 100.
 - Required comment text.
 - Audio played state.

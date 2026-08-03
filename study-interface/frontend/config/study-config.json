@@ -20,7 +20,7 @@
   "setupTestAudio": {
     "id": "setup-test-audio",
     "label": "Test audio",
-    "audioPath": "assets/audio/pre-experiment-normalized/setup-test-development-normalized.wav",
+    "audioPath": "assets/audio/study-stimuli/listening-setup/setup_test_audio.wav",
     "finalAudioRequired": true,
     "status": "temporary-development",
     "developmentNotice": "Playback test",

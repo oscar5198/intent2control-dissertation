@@ -28,19 +28,19 @@
     {
       "id": "practice_version_a",
       "label": "Version A",
-      "audioPath": "assets/audio/pre-experiment-normalized/practice/practice-version-a-dataset-mix-01.wav",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_a.wav",
       "practiceMixDescription": "existing dataset mix"
     },
     {
       "id": "practice_version_b",
       "label": "Version B",
-      "audioPath": "assets/audio/pre-experiment-normalized/practice/practice-version-b-dataset-mix-02.wav",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_b.wav",
       "practiceMixDescription": "existing dataset mix"
     },
     {
       "id": "practice_version_c",
       "label": "Version C",
-      "audioPath": "assets/audio/pre-experiment-normalized/practice/practice-version-c-dataset-mix-03.wav",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_c.wav",
       "practiceMixDescription": "existing dataset mix"
     }
   ],

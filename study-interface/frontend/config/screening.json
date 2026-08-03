@@ -11,7 +11,7 @@
   "retryEnabled": true,
   "failureBehaviour": "Development-only final-fail message; production exclusion or continuation handling remains TBC.",
   "stimulusNotes": "Development-only Version A/B/C pre-study listening task generated from temporary same-song, same-excerpt mix comparisons. These are not final scientifically validated pre-study stimuli. Final segment identities, selection criteria, scientific score threshold, attempts limit, and exclusion procedure require supervisor approval before pilot testing.",
-  "sourceAudio": "External Mix Evaluation Dataset source mixes for InTheMeantime; active participant-facing excerpts are the normalized WAV files listed in each segment.",
+  "sourceAudio": "Consolidated frontend copies under assets/audio/study-stimuli/pre-study-listening-task/; source mixes remain external Mix Evaluation Dataset files for InTheMeantime.",
   "presentationStructure": {
     "segmentCount": 2,
     "repetitionsPerSegment": 3,
@@ -37,9 +37,9 @@
       "excerptStartSeconds": 42,
       "excerptEndSeconds": 48,
       "comparisonOffsetSecondsRelativeToReference": 0,
-      "matchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-01-version-a.wav",
-      "matchDuplicateAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-01-version-b.wav",
-      "nonMatchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-01-version-c.wav",
+      "matchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/reference_mix.wav",
+      "matchDuplicateAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/matching_duplicate.wav",
+      "nonMatchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/alternative_mix.wav",
       "answerOptions": [
         {
           "value": "version_b",
@@ -68,9 +68,9 @@
       "excerptStartSeconds": 54,
       "excerptEndSeconds": 60,
       "comparisonOffsetSecondsRelativeToReference": -0.00225,
-      "matchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-02-version-a.wav",
-      "matchDuplicateAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-02-version-b.wav",
-      "nonMatchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-02-version-c.wav",
+      "matchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/reference_mix.wav",
+      "matchDuplicateAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/matching_duplicate.wav",
+      "nonMatchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/alternative_mix.wav",
       "answerOptions": [
         {
           "value": "version_b",

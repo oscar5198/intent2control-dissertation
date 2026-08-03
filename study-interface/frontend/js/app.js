@@ -996,7 +996,7 @@ window.StudyApp.app = (function () {
     var developmentNotice = document.querySelector("[data-setup-development-notice]");
     var requiredItems = Array.prototype.slice.call(document.querySelectorAll("[data-setup-required]"));
     var audioAvailable = false;
-    var setupAudioPath = "../assets/audio/pre-experiment-normalized/setup-test-development-normalized.wav";
+    var setupAudioPath = "../assets/audio/study-stimuli/listening-setup/setup_test_audio.wav";
 
     if (window.StudyApp.audio) {
       window.StudyApp.audio.setupAudioControls(document);

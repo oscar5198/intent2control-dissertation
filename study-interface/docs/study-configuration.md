@@ -54,13 +54,13 @@ excerpts:
   - id: group_01_song_a_lead_me
     final_excerpt_name: Lead Me
     participant_label: Song A
-    audio_source: frontend/assets/audio/experimental/group_01/song_a/
+    audio_source: frontend/assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/
     group: group_01
     mix_slots:
       - slot: mix_01
         display_label: Version A, Version B, or Version C
         real_mix_identity: mix_9346b5d4ade2
-        audio_filename: mix_01.wav
+        audio_filename: researcher-readable mix filename defined in frontend/config/stimuli.json
       - slot: mix_02
         display_label: Version A, Version B, or Version C
         real_mix_identity: mix_d5b28dfc8a93
@@ -72,7 +72,7 @@ excerpts:
   - id: group_01_song_b_red_to_blue
     final_excerpt_name: Red To Blue
     participant_label: Song B
-    audio_source: frontend/assets/audio/experimental/group_01/song_b/
+    audio_source: frontend/assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/
     group: group_01
     mix_slots:
       - slot: mix_01
@@ -90,7 +90,7 @@ excerpts:
   - id: group_02_song_a_in_the_meantime
     final_excerpt_name: In The Meantime
     participant_label: Song A
-    audio_source: frontend/assets/audio/experimental/group_02/song_a/
+    audio_source: frontend/assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/
     group: group_02
     mix_slots:
       - slot: mix_01
@@ -108,7 +108,7 @@ excerpts:
   - id: group_02_song_b_pouring_room
     final_excerpt_name: Pouring Room
     participant_label: Song B
-    audio_source: frontend/assets/audio/experimental/group_02/song_b/
+    audio_source: frontend/assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/
     group: group_02
     mix_slots:
       - slot: mix_01
@@ -203,13 +203,13 @@ audio_playback:
       - elapsed/duration time display
     individual_volume_icon_visible: false
   setup_test_audio:
-    configured_temporary_development_path: frontend/assets/audio/setup-test-development.mp3
+    configured_temporary_development_path: frontend/assets/audio/study-stimuli/listening-setup/setup_test_audio.wav
     final_file: TBC
     progression_if_file_missing: blocked
   playback_event_recording: TBC
-  experimental_audio_format: WAV, 44.1 kHz, stereo, 24-bit PCM
-  experimental_loudness_preparation: -20.8 LUFS according to final stimulus report
-  experimental_normalisation_policy: final experimental stimuli already prepared
+  experimental_audio_format: WAV, 44.1 kHz, stereo, 16-bit PCM frontend copies
+  experimental_loudness_preparation: -20.8 LUFS integrated
+  experimental_normalisation_policy: revised rating-stratification candidate-review audio normalised during frontend integration where needed
 
 pre_study_listening_task:
   configuration_file: frontend/config/screening.json
@@ -230,7 +230,7 @@ pre_study_listening_task:
     matching_answer_randomised_between:
       - Version B
       - Version C
-  temporary_audio_directory: frontend/assets/audio/pre-experiment-normalized/screening/
+  temporary_audio_directory: frontend/assets/audio/study-stimuli/pre-study-listening-task/
   source_audio_preserved_as: external Mix Evaluation Dataset source mixes, not copied into the participant-facing interface
   temporary_audio_source: WAV clips generated from original Mix Evaluation Dataset InTheMeantime mix files
   temporary_segments:
@@ -291,7 +291,7 @@ pre_study_listening_task:
   temporary_maximum_attempts: 2
   temporary_retry_enabled: true
   temporary_failure_behaviour: development message only
-  final_stimuli: outputs/final_stimuli/metadata/frontend_stimulus_manifest.json
+  final_stimuli: TBC
   final_two_segments: TBC
   brecht_preference_based_selection_criteria: TBC
   brecht_preference_results: TBC
@@ -320,7 +320,7 @@ practice_trial:
   practice_excerpt_id: practice_excerpt_practice_song
   participant_excerpt_label: Practice song
   scenario_text: Imagine you are having dinner at a quiet restaurant with someone you recently started dating. The conversation is relaxed, and soft background music is playing while you enjoy the evening. Listen to the three versions of the same music clip and decide which versions feel most suitable for this situation.
-  audio_source: frontend/assets/audio/practice/
+  audio_source: frontend/assets/audio/study-stimuli/practice-trial/coldstar/
   audio_source_type: practice-only real Mix Evaluation Dataset song excerpt using three existing dataset mixes, independent from the main experimental songs
   participant_facing_real_song_title_displayed: false
   participant_facing_mix_identities_displayed: false
@@ -478,6 +478,7 @@ frontend_development_trial_system:
   experimental_stimuli_production_ready: true
   full_study_production_ready: false
   config_file: frontend/config/stimuli.json
+  stimulus_configuration_version: rating_stratification_v2_2026-08-03
   approved_scenario_wording_inserted: true
   interaction_sequence:
     - Listen to the versions
@@ -507,6 +508,8 @@ frontend_development_trial_system:
     compatibility_behaviour:
       old_unsubmitted_trial_order: regenerate
       old_submitted_trial_order: preserve_and_show_development_warning
+      stimulus_version_mismatch_before_submission: regenerate_order_with_new_mix_set
+      stimulus_version_mismatch_after_submission: preserve_old_records_and_require_fresh_mock_session
   version_mapping:
     labels:
       - Version A
@@ -526,10 +529,12 @@ frontend_development_trial_system:
     practice_response_separation: required
     duplicate_submitted_trial_records: not_allowed
   experimental_audio:
-    current_path: frontend/assets/audio/experimental/
-    status: final_experimental_stimuli_integrated
+    current_path: frontend/assets/audio/study-stimuli/main-study/
+    status: revised_rating_stratification_main_study_stimuli_integrated
     replacement_required_before_pilot: false
     manifest: docs/final-stimuli-manifest.md
+    master_audio_manifest: docs/study-audio-manifest.md
+    source: outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/
 ```
 
 ## Unresolved values

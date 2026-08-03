@@ -83,6 +83,7 @@
 - [x] Implement response-time recording for experimental trials.
 - [x] Store submitted trial records separately from practice responses.
 - [x] Replace development experimental stimuli before pilot.
+- [x] Update Main Study mix sets from revised rating-stratification outputs.
 
 ## Phase 5 - Demographics and final submission
 

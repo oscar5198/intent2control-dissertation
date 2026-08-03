@@ -145,9 +145,11 @@ window.StudyApp.randomisation = (function () {
       }
 
       if (Array.isArray(submittedTrials) && submittedTrials.length > 0) {
-        stored.developmentCompatibilityWarning = "This study session contains submitted trials from an earlier trial-order format. The current order has been preserved; start a fresh session to review grouped scenario-pair randomisation.";
+        stored.developmentCompatibilityWarning = "This study session contains submitted trials from an earlier stimulus configuration. The current order has been preserved; start a fresh session before continuing with the revised audio materials.";
         return stored;
       }
+
+      clearUnsubmittedExperimentalTrialState();
     }
 
     scenarioOrder = buildScenarioOrder(config.scenarios);
@@ -171,6 +173,7 @@ window.StudyApp.randomisation = (function () {
       generatedAt: new Date().toISOString(),
       method: "temporary_frontend_secure_random_if_available",
       algorithm: trialOrderAlgorithm,
+      stimulusConfigurationVersion: getStimulusConfigurationVersion(config),
       trials: trials
     };
 
@@ -186,7 +189,72 @@ window.StudyApp.randomisation = (function () {
       return false;
     }
 
-    return isGroupedScenarioPairOrder(stored.trials, config.trialGeneration.trialsPerParticipant, group.excerptIds);
+    if (stored.stimulusConfigurationVersion !== getStimulusConfigurationVersion(config)) {
+      return false;
+    }
+
+    return isGroupedScenarioPairOrder(stored.trials, config.trialGeneration.trialsPerParticipant, group.excerptIds) && usesConfiguredMixes(stored.trials, config);
+  }
+
+  function getStimulusConfigurationVersion(config) {
+    return config && config.stimulusConfigurationVersion ? config.stimulusConfigurationVersion : "unversioned";
+  }
+
+  function usesConfiguredMixes(trials, config) {
+    var mixIdsByExcerpt = {};
+
+    if (!Array.isArray(config.excerpts)) {
+      return false;
+    }
+
+    config.excerpts.forEach(function (excerpt) {
+      mixIdsByExcerpt[excerpt.id] = Array.isArray(excerpt.mixes) ? excerpt.mixes.map(function (mix) {
+        return mix.actualMixId;
+      }) : [];
+    });
+
+    return trials.every(function (trial) {
+      var expectedMixIds = mixIdsByExcerpt[trial.excerptId] || [];
+      var mappedMixIds = Array.isArray(trial.versionMappings) ? trial.versionMappings.map(function (mapping) {
+        return mapping.actualMixId;
+      }) : [];
+
+      return expectedMixIds.length === mappedMixIds.length && expectedMixIds.every(function (mixId) {
+        return mappedMixIds.indexOf(mixId) !== -1;
+      });
+    });
+  }
+
+  function clearUnsubmittedExperimentalTrialState() {
+    var namespace;
+
+    if (!window.StudyApp.storage) {
+      return;
+    }
+
+    [
+      "experimental.trialOrder",
+      "experimental.currentTrialIndex",
+      "experimental.currentResponses",
+      "experimental.completedTrialIndices"
+    ].forEach(function (key) {
+      window.StudyApp.storage.removeItem(key);
+    });
+
+    if (!window.StudyApp.storage.isAvailable || !window.StudyApp.storage.isAvailable() || !window.StudyApp.storage.getNamespace) {
+      return;
+    }
+
+    namespace = window.StudyApp.storage.getNamespace();
+    Object.keys(window.localStorage).forEach(function (key) {
+      if (key.indexOf(namespace + "experimental.unsavedTrial.") === 0 ||
+          key.indexOf(namespace + "experimental.firstPlay.") === 0 ||
+          key.indexOf(namespace + "audio.played.experimental.") === 0 ||
+          key.indexOf(namespace + "timing.trialStart.experimental_trial_") === 0 ||
+          key.indexOf(namespace + "timing.trialSubmission.experimental_trial_") === 0) {
+        window.localStorage.removeItem(key);
+      }
+    });
   }
 
   function isGroupedScenarioPairOrder(trials, expectedTrialCount, excerptIds) {
