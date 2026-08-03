@@ -29,9 +29,11 @@ The format is based on Keep a Changelog.
 - Audio Screening page driven by the new `frontend/config/screening.json` development configuration.
 - Three-item development-only ABX screening structure with X, A, and B audio choices and answer controls.
 - Temporary development screening audio assets under `frontend/assets/audio/screening-development/`.
+- Audited and regenerated development audio screening assets under `frontend/assets/audio/screening-development/`.
 - Instructions page with required task acknowledgement.
 - Development-only Practice Trial page driven by `frontend/config/practice.json`.
 - Practice trial validation for deliberately touched 0-100 sliders and required comments.
+- Shared multi-marker 0-100 preference scale for Practice Trial and Main Study ratings, with marker-triggered audio playback and unchanged stored rating semantics.
 - Development-only experimental stimuli configuration in `frontend/config/stimuli.json`.
 - Experimental Trial page driven by persisted group assignment, generated trial order, and per-trial Version A/B/C mappings.
 - Experimental trial validation requiring playback start, deliberate rating, and required non-whitespace comment for Version A, Version B, and Version C.
@@ -54,6 +56,23 @@ The format is based on Keep a Changelog.
 
 ### Changed
 
+- Reordered the participant flow so the Post-task Questionnaire now appears before the Demographic Questionnaire, with route guards, page progress, and review prerequisites updated accordingly.
+- Updated Post-task Questionnaire agreement questions to use a horizontal Strongly disagree to Strongly agree Likert layout where space allows.
+- Removed `Prefer not to say` from the post-task listening-device and completion-location questions and added required conditional detail fields when `Other` is selected.
+- Replaced native participant-facing audio controls with shared volume-free controls and rebuilt temporary Pre-Study Listening Task stimuli from same-song, same-excerpt Mix Evaluation Dataset mix versions.
+- Renamed the participant-facing Audio Screening stage to Pre-Study Listening Task, prepared a six-item two-segment by three-repetition structure with persisted randomised order, hid participant-facing score feedback, and added shared reset-on-switch controlled audio behaviour.
+- Revised the landing-page study title and description following supervisor feedback.
+- Revised the Listening Setup introductory sentence following supervisor feedback.
+- Refreshed the participant-facing Participant Information Sheet and Consent Form PDFs from the latest approved participant-material source files.
+- Replaced the synthetic Practice Trial audio with a real unused Mix Evaluation Dataset song excerpt, stored separately from all experimental songs under `frontend/assets/audio/practice/`.
+- Replaced the processed Practice Trial mix variants with three direct excerpts from existing Mix Evaluation Dataset mixes for the selected practice song.
+- Updated the Practice Trial scenario presentation so `Practice scenario` appears as the section label and `Dinner Date` appears as the scenario title.
+- Updated README documentation to state that the practice song is intentionally separate from all experimental songs.
+- Added a frontend favicon asset so static browser review does not produce a default missing-favicon request.
+- Added a Main Study transition page between Practice Trial and the first experimental listening task, and updated participant-facing trial count wording to `Listening Task X of 10`.
+- Replaced the Demographic Questionnaire `Nationality` field with the approved cultural influence country question and helper text.
+- Updated the landing-page duration to 20-25 minutes and simplified the Review and Final Submission page by removing the visible completion summary.
+- Updated the Completion page visible identifier label from `Participant ID` to `Study ID`.
 - Aligned documentation with the frozen experimental design.
 - Documented required comment behaviour for every mix version.
 - Documented estimated study duration and target sample sizes.
@@ -74,6 +93,10 @@ The format is based on Keep a Changelog.
 - Replaced the missing setup-audio placeholder path with temporary development audio for interface testing, with documentation that it is not a final screening or experimental stimulus and must be replaced before pilot or production use.
 - Implemented development-only screening scoring with a temporary 2 out of 3 threshold, maximum 2 attempts, retry behaviour, and `productionReady: false`.
 - Updated Audio Screening participant-facing terminology from X/A/B labels to Version A, Version B, and Version C labels.
+- Replaced invalid duplicated development screening audio with short ABX-style WAV clips generated from non-overlapping DU-H source-audio segments.
+- Redesigned Audio Screening so all three screening items appear together on one scrollable page with one final `Submit screening` action.
+- Refined the Instructions page example layout to mirror the real Listen, Rate, and Explain trial structure using non-interactive controls.
+- Refined the Practice Trial page by removing the duplicate banner, centring the scenario card, adding a realistic practice-only restaurant scenario, replacing setup-test audio with independent practice WAV mixes, and requiring playback of all three practice versions before completion.
 - Documented that practice responses are excluded from main analysis and stored under separate `practice.*` temporary keys.
 - Documented untouched-slider validation behaviour and required whitespace-sensitive practice comments.
 - Documented temporary frontend group assignment, persisted trial-order randomisation, excerpt-order randomisation, and mix-label mapping randomisation.

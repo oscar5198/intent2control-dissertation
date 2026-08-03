@@ -7,14 +7,15 @@ This document describes the intended screen sequence for the listening study int
 1. Landing page.
 2. Study Information and Consent.
 3. Eligibility and listening setup.
-4. Audio screening.
+4. Pre-Study Listening Task.
 5. Instructions.
 6. Practice trial.
-7. Ten experimental trials.
-8. Demographic questionnaire.
+7. Main Study transition.
+8. Ten main study listening tasks.
 9. Post-task questionnaire.
-10. Review and final submission.
-11. Completion page.
+10. Demographic questionnaire.
+11. Review and final submission.
+12. Completion page.
 
 ## Landing page
 
@@ -28,38 +29,44 @@ The participant cannot continue until the PIS and consent documents have each be
 
 ## Eligibility and listening setup
 
-This screen confirms the participant's listening setup before screening. It reminds participants to use headphones or earphones, choose a quiet environment, and set a comfortable device volume. The implemented placeholder requires the setup test audio to be played at least once and requires the three setup confirmations before continuing.
+This screen confirms the participant's listening setup before the study. It reminds participants to use headphones or earphones, choose a quiet environment, and set a comfortable device volume. The implemented placeholder requires the setup test audio to be played at least once and requires the three setup confirmations before continuing.
 
 The setup test audio path is currently `frontend/assets/audio/setup-test-development.mp3`. This is temporary development audio and must be replaced before pilot or production use. If the configured file is absent or fails to load, progression is blocked and a warning is shown.
 
-## Audio screening
+## Pre-Study Listening Task
 
-This screen presents the configured audio screening structure using `frontend/config/screening.json`. The current development-only implementation supports three matching items using participant-facing labels Version A, Version B, and Version C. Each item requires all three versions to be played and asks which version matches Version A.
+This screen presents the configured pre-study listening structure using `frontend/config/screening.json`. The current development-only implementation supports six matching presentations using participant-facing labels Version A, Version B, and Version C. The six presentations are generated from two internal segment identities, with each segment repeated three times. Presentation order is randomised once per attempt and persisted so refresh does not reshuffle the task. Each item requires all three versions to be played and asks whether Version A matches Version B or Version C.
 
-For development testing only, the temporary threshold is 2 out of 3, retry is enabled, and the maximum attempt count is 2. The temporary stimuli are duplicated `DU-H.mp3` assets under `frontend/assets/audio/screening-development/`; they are not final validated screening stimuli. The configuration is marked `productionReady: false`. Final screening stimuli, threshold, attempts policy, failure/exclusion behaviour, and production retry policy remain TBC. The development bypass is disabled by default and must not be enabled in production.
+The current development audio alignment audit found that the matching pair inside each current item is sample-identical and aligned, while the non-matching option is a different musical segment. No audio correction has been made because the final two segment/song selections and scientific selection criteria remain TBC. Internal scoring remains stored for inclusion/exclusion analysis, but participant-facing numerical score feedback is hidden. For development testing only, the temporary threshold remains configured as 2, retry is enabled, and the maximum attempt count is 2. The configuration is marked `productionReady: false`. Final validated pre-study stimuli, scientific pass criteria, attempts policy, failure/exclusion behaviour, and production retry policy remain TBC. The development bypass is disabled by default and must not be enabled in production.
 
 ## Instructions
 
-This screen explains the task structure before the practice trial and experimental trials. It tells participants that they will read scenarios, imagine themselves in the situation, listen to Version A, Version B, and Version C, replay freely, rate each version on the 0-100 preference scale, and provide one required comment per version.
+This screen explains the task structure before the Practice Trial and main study listening tasks. It tells participants that they will read scenarios, imagine themselves in the situation, listen to Version A, Version B, and Version C, replay freely, place the three version markers on one shared 0-100 preference scale, and provide one required comment per version.
 
 The participant cannot continue until the acknowledgement `I understand how to complete the listening task.` is checked. This acknowledgement is stored separately from consent and practice responses.
 
 ## Practice trial
 
-The practice trial allows participants to try the rating and playback interface before the experimental trials. It is clearly labelled as practice and states that responses are not included in the main analysis.
+The practice trial allows participants to try the rating and playback interface before the main study listening tasks. It is clearly labelled as practice and states that responses are not included in the main analysis.
 
-The current practice trial is development-only and configured by `frontend/config/practice.json` with `productionReady: false`. It uses temporary scenario wording, a temporary practice excerpt, neutral labels Version A, Version B, and Version C, and temporary audio copied from existing development assets. Final practice wording and audio remain TBC.
+The current practice trial is configured by `frontend/config/practice.json` with `productionReady: false`. It uses the practice-only Dinner Date scenario, a real unused Mix Evaluation Dataset song excerpt, and neutral labels Version A, Version B, and Version C. Supervisor approval for the practice scenario and practice audio remains TBC.
 
-Practice uses the same grouped layout as the experimental trials: Listen to the versions, Rate the versions, then Explain your ratings. All three practice sliders must be deliberately interacted with; the default visual slider position does not count as a response. All three comments are required, and whitespace-only comments are invalid. Practice data is stored only under `practice.*` temporary keys and must not be mixed with main experimental responses. Practice audio playback is currently not required for completion; whether to require playback remains configurable/TBC.
+Practice uses the same grouped layout as the main study listening tasks: Listen to the versions, place Version A, Version B, and Version C on one shared preference scale, then explain the ratings. All three practice audio versions must be played, all three practice markers must be deliberately positioned, and the default visual marker position does not count as a response. All three comments are required, and whitespace-only comments are invalid. Practice data is stored only under `practice.*` temporary keys and must not be mixed with main experimental responses.
 
-## Experimental trials
+## Main Study transition
 
-The experimental section contains:
+After a valid Practice Trial submission, participants are routed to `frontend/pages/main-study.html` before any experimental response is collected. This transition page confirms that the Practice Trial has finished and that the following listening tasks are part of the main study. Its primary action, `Begin Main Study`, routes to the first experimental listening task.
+
+Direct navigation to the Main Study transition is blocked unless the Practice Trial has been completed. Direct navigation to the first listening task also remains blocked until practice completion.
+
+## Main study listening tasks
+
+The main study section contains:
 
 - Five contextual listening scenarios.
 - Two excerpts in each scenario.
 - Three mix versions for each excerpt.
-- Ten total trials.
+- Ten total listening tasks.
 - Thirty mix ratings in total.
 - Thirty required mix comments in total.
 - Neutral version labels: Version A, Version B, and Version C.
@@ -72,37 +79,39 @@ The interface should avoid showing real mix identifiers to participants. Display
 
 A participant cannot proceed from a trial until all three ratings and all three associated comments are completed. Empty or whitespace-only comments must not be accepted. The minimum meaningful response threshold is TBC.
 
-The implemented trial page is driven by `frontend/config/stimuli.json`, which is marked `productionReady: true` for experimental stimuli only. Approved scenario titles and wording are inserted in `frontend/config/scenarios.json` and `frontend/config/stimuli.json`. Scenario prefixes such as EDR-1 and FM-2 remain internal only and must not be shown in participant-facing trial titles. Final excerpt names, mix identities, production audio files, and group allocation provenance are documented for researchers in `docs/final-stimuli-manifest.md` and must not be shown in participant-facing trial pages.
+The implemented listening-task page is driven by `frontend/config/stimuli.json`, which is marked `productionReady: true` for experimental stimuli only. Approved scenario titles and wording are inserted in `frontend/config/scenarios.json` and `frontend/config/stimuli.json`. Scenario prefixes such as EDR-1 and FM-2 remain internal only and must not be shown in participant-facing listening-task titles. Final excerpt names, mix identities, production audio files, and group allocation provenance are documented for researchers in `docs/final-stimuli-manifest.md` and must not be shown in participant-facing pages.
 
-The trial interaction sequence is grouped as Listen to the versions, Rate the versions, then Explain your ratings. Desktop layouts present the three Version A/B/C audio controls, rating controls, and comment controls in grouped grids where space allows; tablet layouts may wrap to two columns; mobile stacks controls vertically without horizontal scrolling.
+The trial interaction sequence is grouped as Listen to the versions, place the Version A/B/C markers on the shared preference scale, then explain the ratings. Desktop layouts present the three Version A/B/C audio controls, one horizontal shared rating scale with three draggable markers, and grouped comment boxes. Tablet layouts wrap audio/comment cards where needed. Mobile keeps the shared-rating concept by switching the scale to a vertical orientation without horizontal scrolling.
 
-It assigns one of two groups using temporary frontend randomness, persists the assignment, maps the group's two assigned excerpts to stable participant-facing labels `Song A` and `Song B`, generates ten trials from five scenarios and the two songs assigned to the participant's group, and persists the generated order. Every scenario appears exactly twice and both assigned songs appear once within each scenario.
+It assigns one of two groups using temporary frontend randomness, persists the assignment, maps the group's two assigned excerpts to stable participant-facing labels `Song A` and `Song B`, generates ten listening tasks from five scenarios and the two songs assigned to the participant's group, and persists the generated order. Every scenario appears exactly twice and both assigned songs appear once within each scenario.
 
-Trial generation randomises the five-scenario order once per participant. Within each scenario, the order of Song A and Song B may be randomised, but both song trials must remain adjacent before the participant moves to another scenario. Older unsubmitted development trial orders may be regenerated into this grouped scenario-pair structure; older submitted development sessions must be preserved and shown with a warning to start a fresh session for randomisation testing.
+Trial generation randomises the five-scenario order once per participant. Within each scenario, the order of Song A and Song B may be randomised, but both song listening tasks must remain adjacent before the participant moves to another scenario. Older unsubmitted development trial orders may be regenerated into this grouped scenario-pair structure; older submitted development sessions must be preserved and shown with a warning to start a fresh session for randomisation testing.
 
 For each generated trial, three actual mix IDs are independently randomly mapped to neutral labels Version A, Version B, and Version C. The neutral labels are shown to participants; actual mix IDs are stored internally for analysis and are not displayed. Current audio paths are temporary development placeholders and must be replaced before pilot use.
 
-A participant cannot submit an experimental trial until Version A, Version B, and Version C have each successfully started playback, all three sliders have been deliberately interacted with, and all three comments contain non-whitespace text. Full playback is not required. Only one version should play at a time.
+A participant cannot submit a main study listening task until Version A, Version B, and Version C have each successfully started playback, all three shared-scale markers have been deliberately positioned, and all three comments contain non-whitespace text. Full playback is not required. Only one version should play at a time. Selecting a marker also plays the corresponding version from 0:00 using the same controlled playback behaviour as the audio buttons.
 
-Trial 1 allows Back to Practice. Back is hidden/disabled from later trials to avoid accidental editing of submitted trials or corruption of timing/randomisation state. Submitted trial records are append-once by trial index; refresh restores the current unsubmitted trial and unsaved current-trial responses without duplicating completed records.
+Listening Task 1 allows Back to the Main Study transition page. Back is hidden/disabled from later listening tasks to avoid accidental editing of submitted trials or corruption of timing/randomisation state. Submitted trial records are append-once by trial index; refresh restores the current unsubmitted trial and unsaved current-trial responses without duplicating completed records.
 
 Response-time recording is confirmed. Trial timing must include trial start and trial submission timestamps. Detailed audio playback-event logging remains TBC.
-
-## Demographic questionnaire
-
-This screen collects anonymous demographic responses for age range, optional gender, nationality, music listening habits, music production or audio engineering experience, and hearing difficulty. Age range, nationality, music listening habits, production/audio experience, and hearing difficulty are required. Gender is optional.
-
-The current implementation uses structured development response options from `frontend/config/questionnaires.json`. Final response-option wording remains TBC and must be checked before pilot use.
 
 ## Post-task questionnaire
 
 This screen collects post-task feedback on ability to immerse in the scenarios, task difficulty, prior familiarity with the songs, listening device used, location or environment where the study was completed, and additional comments. Additional comments are optional. The other current post-task fields are required.
 
+The agreement-scale question uses a horizontal Strongly disagree to Strongly agree layout where space allows. The listening-device and completion-location questions omit `Prefer not to say`; selecting `Other` reveals a required detail field, and choosing another option clears that detail response.
+
 The current implementation uses structured development response options from `frontend/config/questionnaires.json`. Final response-option wording remains TBC.
+
+## Demographic questionnaire
+
+This screen collects anonymous demographic responses for age range, optional gender, country that most influenced musical and cultural background, music listening habits, music production or audio engineering experience, and hearing difficulty. Age range, cultural influence country, music listening habits, production/audio experience, and hearing difficulty are required. Gender is optional.
+
+The current implementation uses structured development response options from `frontend/config/questionnaires.json`. Final response-option wording remains TBC and must be checked before pilot use.
 
 ## Review and final submission
 
-This screen allows participants to confirm final submission. It shows only a concise completion summary: consent, listening setup, screening, instructions, practice, ten experimental trials, demographics, and post-task questionnaire. It must not display all ratings, comments, or real mix mappings.
+This screen allows participants to confirm final submission after consent, listening setup, screening, instructions, practice, ten main study listening tasks, post-task questionnaire, and demographic questionnaire are complete. It must not display all ratings, comments, or real mix mappings.
 
 Final submission creates a temporary local development payload and marks the session as submitted. The payload is not production persistence and is not sent to a backend. Backend submission remains TBC.
 
@@ -112,4 +121,4 @@ This screen thanks the participant, shows the anonymous development session ID, 
 
 ## Development-only helpers
 
-An optional trial-completion helper can create placeholder ratings, comments, playback states, first-play timestamps, trial start timestamps, and trial submission timestamps for remaining experimental trials. It preserves the generated group assignment, trial order, and mix-label mappings. It is disabled by default, hidden unless explicit frontend development mode is enabled, requires an explicit second button selection before use, and must never appear in production.
+An optional trial-completion helper can create placeholder ratings, comments, playback states, first-play timestamps, trial start timestamps, and trial submission timestamps for remaining main study listening tasks. It preserves the generated group assignment, trial order, and mix-label mappings. It is disabled by default, hidden unless explicit frontend development mode is enabled, requires an explicit second button selection before use, and must never appear in production.

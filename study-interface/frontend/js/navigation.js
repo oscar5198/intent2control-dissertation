@@ -19,9 +19,10 @@ window.StudyApp.navigation = (function () {
     "screening.html",
     "instructions.html",
     "practice.html",
+    "main-study.html",
     "trial.html",
-    "demographics.html",
     "post-task.html",
+    "demographics.html",
     "review.html",
     "completion.html"
   ];
@@ -49,6 +50,8 @@ window.StudyApp.navigation = (function () {
   }
 
   function isRouteAllowed(pageId) {
+    normaliseQuestionnaireOrderState();
+
     if (hasFinalSubmission() && pageId !== "completion") {
       return false;
     }
@@ -65,16 +68,20 @@ window.StudyApp.navigation = (function () {
       return Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("practice.completed") === true);
     }
 
+    if (pageId === "main-study") {
+      return Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("practice.completed") === true);
+    }
+
     if (pageId === "demographics") {
-      return hasCompletedExperimentalTrials();
+      return Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("postTask.completed") === true);
     }
 
     if (pageId === "post-task") {
-      return Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("demographics.completed") === true);
+      return hasCompletedExperimentalTrials();
     }
 
     if (pageId === "review") {
-      return Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("postTask.completed") === true);
+      return Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("postTask.completed") === true && window.StudyApp.storage.getItem("demographics.completed") === true);
     }
 
     if (pageId === "completion") {
@@ -92,16 +99,19 @@ window.StudyApp.navigation = (function () {
       return "instructions.html";
     }
     if (pageId === "trial") {
+      return "main-study.html";
+    }
+    if (pageId === "main-study") {
       return "practice.html";
     }
     if (pageId === "demographics") {
-      return window.StudyApp.storage && window.StudyApp.storage.getItem("practice.completed") === true ? "trial.html" : "practice.html";
+      return "post-task.html";
     }
     if (pageId === "post-task") {
-      return "demographics.html";
+      return window.StudyApp.storage && window.StudyApp.storage.getItem("practice.completed") === true ? "trial.html" : "practice.html";
     }
     if (pageId === "review") {
-      return "post-task.html";
+      return "demographics.html";
     }
     if (pageId === "completion") {
       return "review.html";
@@ -112,6 +122,20 @@ window.StudyApp.navigation = (function () {
   function hasCompletedExperimentalTrials() {
     var records = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.submittedTrials");
     return Array.isArray(records) && records.length === 10;
+  }
+
+  function normaliseQuestionnaireOrderState() {
+    if (!window.StudyApp.storage || hasFinalSubmission()) {
+      return false;
+    }
+
+    if (window.StudyApp.storage.getItem("demographics.completed") === true && window.StudyApp.storage.getItem("postTask.completed") !== true) {
+      window.StudyApp.storage.removeItem("demographics.completed");
+      window.StudyApp.storage.removeItem("timing.pageCompletion.demographics");
+      return true;
+    }
+
+    return false;
   }
 
   function hasFinalSubmission() {

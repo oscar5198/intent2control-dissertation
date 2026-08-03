@@ -340,10 +340,13 @@ def _plot_diagnostics(output_root: Path, song_slug: str, mixes: list[MixAudio], 
     if mixes:
         times, activity, _, _ = _activity_curves(mixes, common[0], common[1], 0.25)
         curve = np.mean(activity, axis=0) if activity.size else np.zeros_like(times)
+        fig_root.mkdir(parents=True, exist_ok=True)
         plt.figure(figsize=(10, 4)); plt.plot(times, curve)
         for c in candidates:
             plt.axvspan(c["start"], c["end"], alpha=0.18)
-        plt.xlabel("Aligned seconds"); plt.ylabel("Mean activity z-score"); plt.tight_layout(); plt.savefig(fig_root / "activity_curve_with_candidate_windows.png"); plt.close()
+        activity_path = fig_root / "activity_curve_with_candidate_windows.png"
+        activity_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.xlabel("Aligned seconds"); plt.ylabel("Mean activity z-score"); plt.tight_layout(); plt.savefig(str(activity_path)); plt.close()
 
 
 def run_align_excerpts(config: SelectionConfig) -> Stage2Result:

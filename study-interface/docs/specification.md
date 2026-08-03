@@ -56,11 +56,12 @@ The intended participant flow is:
 4. Audio screening.
 5. Instructions.
 6. Practice trial.
-7. Ten experimental trials.
-8. Demographic questionnaire.
+7. Main Study transition.
+8. Ten experimental trials.
 9. Post-task questionnaire.
-10. Review and final submission.
-11. Completion page.
+10. Demographic questionnaire.
+11. Review and final submission.
+12. Completion page.
 
 The approved Participant Information Sheet and Consent Form remain separate documents, but they are presented through one combined participant-facing web page.
 
@@ -142,7 +143,7 @@ The demographic questionnaire must include:
 
 - Age range.
 - Gender, optional.
-- Nationality.
+- Country that most influenced the participant's musical and cultural background.
 - Music listening habits.
 - Music production or audio engineering experience.
 - Hearing difficulty.

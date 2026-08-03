@@ -137,9 +137,27 @@ rating_scale:
   minimum: 0
   maximum: 100
   construct: preference
-  left_endpoint_label: 0 - Least preferred
-  right_endpoint_label: 100 - Most preferred
+  interface: shared multi-marker preference scale for Practice Trial and Main Study listening tasks
+  markers:
+    - Version A
+    - Version B
+    - Version C
+  anchors:
+    - value: 0
+      label: Bad
+    - value: 25
+      label: Poor
+    - value: 50
+      label: Fair
+    - value: 75
+      label: Good
+    - value: 100
+      label: Excellent
   midpoint_label: null
+  marker_triggered_audio_playback: true
+  desktop_layout: horizontal shared scale
+  mobile_layout: vertical shared scale where needed
+  stored_rating_semantics: one integer 0-100 rating per version remains unchanged
 
 comments:
   per_mix_comment_field: true
@@ -165,6 +183,25 @@ response_time:
 audio_playback:
   replay_allowed: true
   replay_limit: none
+  comparative_audio_policy:
+    applies_to:
+      - Pre-Study Listening Task
+      - Practice Trial
+      - Main Study listening tasks
+    one_audio_playing_at_a_time: true
+    reset_previous_version_to_start_on_switch: true
+    start_newly_selected_version_from_start: true
+    seeking_prevented_in_javascript: true
+    individual_player_volume_fixed: true
+    playback_rate_fixed: true
+    download_discouraged_where_browser_supported: true
+    native_controls_hidden: true
+    custom_controls:
+      - Play/Pause
+      - Restart
+      - progress display
+      - elapsed/duration time display
+    individual_volume_icon_visible: false
   setup_test_audio:
     configured_temporary_development_path: frontend/assets/audio/setup-test-development.mp3
     final_file: TBC
@@ -174,29 +211,93 @@ audio_playback:
   experimental_loudness_preparation: -20.8 LUFS according to final stimulus report
   experimental_normalisation_policy: final experimental stimuli already prepared
 
-audio_screening:
+pre_study_listening_task:
   configuration_file: frontend/config/screening.json
   mode: development
   production_ready: false
-  current_placeholder_structure: three-item Version A/B/C matching task
-  item_count: 3
-  temporary_audio_directory: frontend/assets/audio/screening-development/
-  temporary_audio_source: duplicated DU-H.mp3 assets
+  participant_facing_label: Pre-Study Listening Task
+  current_development_structure: six-item Version A/B/C matching task shown on one scrollable page
+  participant_flow_step_count: one study step
+  item_count: 6
+  segment_count: 2
+  repetitions_per_segment: 3
+  presentation_order:
+    randomised_once_per_attempt: true
+    persisted_on_refresh: true
+    storage_key_pattern: screening.presentationOrder.attemptN
+  answer_position:
+    version_a_role: matching reference
+    matching_answer_randomised_between:
+      - Version B
+      - Version C
+  temporary_audio_directory: frontend/assets/audio/pre-experiment-normalized/screening/
+  source_audio_preserved_as: external Mix Evaluation Dataset source mixes, not copied into the participant-facing interface
+  temporary_audio_source: WAV clips generated from original Mix Evaluation Dataset InTheMeantime mix files
+  temporary_segments:
+    prestudy_segment_01:
+      song: InTheMeantime
+      reference_mix: DU-H
+      comparison_mix: DU-M
+      excerpt_start_seconds: 42.0
+      excerpt_end_seconds: 48.0
+      comparison_offset_seconds_relative_to_reference: 0.0
+      files:
+        Version A source: screening-item-01-version-a.wav
+        matching duplicate source: screening-item-01-version-b.wav
+        non_matching source: screening-item-01-version-c.wav
+    prestudy_segment_02:
+      song: InTheMeantime
+      reference_mix: DU-H
+      comparison_mix: DU-J
+      excerpt_start_seconds: 54.0
+      excerpt_end_seconds: 60.0
+      comparison_offset_seconds_relative_to_reference: -0.00225
+      files:
+        Version A source: screening-item-02-version-a.wav
+        matching duplicate source: screening-item-02-version-b.wav
+        non_matching source: screening-item-02-version-c.wav
+  participant_facing_score_displayed: false
+  internal_scoring_stored: true
+  stored_per_presentation:
+    - segment internal ID
+    - repetition number
+    - presentation order
+    - Version A/B/C mapping
+    - participant answer
+    - correct answer
+    - correctness
+    - playback state
+    - timing fields
   required_audio_choices_per_item:
-    - X
-    - A
-    - B
+    - Version A
+    - Version B
+    - Version C
   answer_options:
-    - A
-    - B
+    - Version B
+    - Version C
+  development_answer_position_policy: randomised per generated presentation and persisted with the presentation order
+  current_alignment_audit:
+    matching_pair_aligned: true
+    matching_pair_offset_seconds: 0.000
+    previous_non_matching_option: used a different musical segment in the temporary development files
+    audio_correction_made: true
+    current_non_matching_option: different mix of the same song and same aligned excerpt
+    final_scientific_selection_status: final two segment/song selections and scientific selection criteria remain TBC
+  old_screening_audit:
+    previous_files_identical: true
+    previous_answer_key_valid: false
+    reason: all previous configured MP3 files had identical byte hashes and therefore did not create a perceptual matching task
   temporary_minimum_score: 2
   temporary_maximum_attempts: 2
   temporary_retry_enabled: true
   temporary_failure_behaviour: development message only
   final_stimuli: outputs/final_stimuli/metadata/frontend_stimulus_manifest.json
-  correct_answers: TBC
-  minimum_score: TBC
-  maximum_attempts: TBC
+  final_two_segments: TBC
+  brecht_preference_based_selection_criteria: TBC
+  brecht_preference_results: TBC
+  production_correct_answers: TBC
+  production_minimum_score: TBC
+  production_maximum_attempts: TBC
   failure_or_exclusion_behaviour: TBC
   development_bypass:
     default_enabled: false
@@ -213,23 +314,40 @@ practice_trial:
   mode: development
   production_ready: false
   responses_excluded_from_main_analysis: true
-  practice_scenario_id: practice_scenario_development
-  practice_excerpt_id: practice_excerpt_development
-  temporary_audio_source: frontend/assets/audio/setup-test-development.mp3
+  practice_scenario_id: practice_scenario_restaurant
+  practice_scenario_label: Practice scenario
+  practice_scenario_title: Dinner Date
+  practice_excerpt_id: practice_excerpt_practice_song
+  participant_excerpt_label: Practice song
+  scenario_text: Imagine you are having dinner at a quiet restaurant with someone you recently started dating. The conversation is relaxed, and soft background music is playing while you enjoy the evening. Listen to the three versions of the same music clip and decide which versions feel most suitable for this situation.
+  audio_source: frontend/assets/audio/practice/
+  audio_source_type: practice-only real Mix Evaluation Dataset song excerpt using three existing dataset mixes, independent from the main experimental songs
+  participant_facing_real_song_title_displayed: false
+  participant_facing_mix_identities_displayed: false
+  excerpt_start_seconds: 12.0
+  excerpt_end_seconds: 40.0
+  duration_seconds: approximately 28
   version_labels:
     - Version A
     - Version B
     - Version C
+  practice_mix_versions:
+    - file: practice-version-a-dataset-mix-01.wav
+      role: existing dataset mix
+    - file: practice-version-b-dataset-mix-02.wav
+      role: existing dataset mix
+    - file: practice-version-c-dataset-mix-03.wav
+      role: existing dataset mix
   rating_scale:
     minimum: 0
     maximum: 100
     step: 1
-    untouched_slider_counts_as_complete: false
+    untouched_marker_counts_as_complete: false
   comments_required: true
   whitespace_only_comments_allowed: false
   meaningful_response_threshold: TBC
-  audio_playback_required_for_completion: false
-  audio_playback_requirement_final: TBC
+  audio_playback_required_for_completion: true
+  audio_playback_requirement_final: confirmed_for_current_practice_interface
   route_requires_instruction_acknowledgement: true
   trial_route_requires_practice_completion: true
 
@@ -266,7 +384,9 @@ questionnaires:
     - id: gender
       optional: true
       response_options: TBC
-    - id: nationality
+    - id: cultural_influence_country
+      label: Which country has most influenced your musical and cultural background?
+      helper_text: For example, this could be the country where you spent most of your childhood or formative years.
       response_options: TBC
     - id: music_listening_habits
       response_options: TBC
@@ -277,14 +397,23 @@ questionnaires:
   post_task:
     - id: scenario_immersion
       response_options: TBC
+      layout: horizontal_likert_where_space_allows
     - id: task_difficulty
       response_options: TBC
     - id: prior_excerpt_familiarity
       response_options: TBC
     - id: headphones_or_earphones_used
       response_options: TBC
+      prefer_not_to_say: false
+      other_detail:
+        enabled: true
+        required_when_other_selected: true
     - id: completion_location_or_environment
       response_options: TBC
+      prefer_not_to_say: false
+      other_detail:
+        enabled: true
+        required_when_other_selected: true
     - id: additional_comments
       optional: true
 
@@ -410,9 +539,7 @@ frontend_development_trial_system:
 - Eligibility criteria and listening setup wording: TBC.
 - Final setup test audio file: TBC.
 - Audio screening instructions, stimuli, correct answers, pass rule, retry behaviour, and exclusion procedure: TBC.
-- Final practice scenario wording: TBC.
-- Final practice excerpt and audio: TBC.
-- Practice-specific audio playback requirement: TBC.
+- Supervisor approval for the practice scenario and practice audio: TBC.
 - Comment validation meaningful response threshold: TBC.
 - Randomisation balancing strategy: TBC.
 - Final server-side randomisation balancing strategy: TBC.

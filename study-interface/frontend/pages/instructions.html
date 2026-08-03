@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=scale-interaction-20260802">
 </head>
 <body data-page="instructions">
   <main id="app" class="app-shell app-shell--wide" data-page-container>
@@ -31,53 +31,35 @@
         </div>
 
         <section class="section-panel" aria-labelledby="task-overview-heading">
-          <h2 id="task-overview-heading">Listening task</h2>
+          <h2 id="task-overview-heading">How the study works</h2>
+          <ol class="instruction-steps">
+            <li>
+              <h3>Read the scenario</h3>
+              <p>Imagine yourself in the situation described.</p>
+            </li>
+            <li>
+              <h3>Listen to the three versions</h3>
+              <p>You may replay the versions and compare them in any order.</p>
+            </li>
+            <li>
+              <h3>Rate each version</h3>
+              <p>Place the Version A, Version B, and Version C markers on the shared 0-100 preference scale to show how much you would prefer to listen to each version in that situation.</p>
+            </li>
+            <li>
+              <h3>Briefly explain your ratings</h3>
+              <p>Write a short comment explaining why you gave each rating.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="section-panel section-panel--secondary" aria-labelledby="additional-information-heading">
+          <h2 id="additional-information-heading">Additional information</h2>
           <ul class="overview-list">
-            <li>Read a short listening scenario and imagine yourself in that situation.</li>
-            <li>Listen to three different versions (mixes) of the same music audio clip.</li>
-            <li>You may listen in any order and replay versions as many times as needed.</li>
-            <li>Rate each version on a continuous 0–100 preference scale according to how well it matches the listening scenario.</li>
-            <li>Provide one required comment for each version.</li>
-            <li>For each listening scenario, you will listen to two different music audio clips. Each audio clip has three different versions (mixes), and you will rate and comment on all three versions before moving to the next audio clip.</li>
-            <li>The versions will use neutral labels such as Version A, Version B, and Version C.</li>
-            <li>You will not be told the underlying mix identities.</li>
-            <li>You can continue from each trial only after all required ratings and comments are complete.</li>
+            <li>You may listen to the versions in any order.</li>
+            <li>You may replay the versions as many times as you wish.</li>
+            <li>The preference scale uses Bad, Poor, Fair, Good, and Excellent anchors, while still allowing any value from 0 to 100.</li>
+            <li>You can continue only after completing all required ratings and comments.</li>
           </ul>
-        </section>
-
-        <section class="section-panel" aria-labelledby="scale-heading">
-          <h2 id="scale-heading">Preference scale</h2>
-          <p>Use the 0-100 scale to show your preference for each version. The endpoint wording remains governed by the approved study configuration; no midpoint label has been approved.</p>
-          <div class="example-scale" aria-label="Example non-functional preference scale">
-            <span>0</span>
-            <div class="example-scale__track" aria-hidden="true"></div>
-            <span>100</span>
-          </div>
-        </section>
-
-        <section class="section-panel" aria-labelledby="example-heading">
-          <h2 id="example-heading">Example layout</h2>
-          <p>This example is for explanation only. It does not play audio or save responses.</p>
-          <div class="practice-version-grid practice-version-grid--example" aria-label="Non-functional example trial layout">
-            <article class="version-card">
-              <h3>Version A</h3>
-              <div class="example-control">Audio player</div>
-              <div class="example-control">0-100 rating slider</div>
-              <div class="example-control">Required comment</div>
-            </article>
-            <article class="version-card">
-              <h3>Version B</h3>
-              <div class="example-control">Audio player</div>
-              <div class="example-control">0-100 rating slider</div>
-              <div class="example-control">Required comment</div>
-            </article>
-            <article class="version-card">
-              <h3>Version C</h3>
-              <div class="example-control">Audio player</div>
-              <div class="example-control">0-100 rating slider</div>
-              <div class="example-control">Required comment</div>
-            </article>
-          </div>
         </section>
 
         <section class="section-panel" aria-labelledby="instructions-acknowledgement-heading">
@@ -102,6 +84,6 @@
   <script src="../js/navigation.js" defer></script>
   <script src="../js/validation.js" defer></script>
   <script src="../js/progress.js" defer></script>
-  <script src="../js/app.js" defer></script>
+  <script src="../js/app.js?v=scale-interaction-20260802" defer></script>
 </body>
 </html>

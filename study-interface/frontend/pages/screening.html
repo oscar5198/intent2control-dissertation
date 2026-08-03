@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Audio Screening | Intent2Control Listening Study</title>
+  <title>Pre-Study Listening Task | Intent2Control Listening Study</title>
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=instructions-scale-20260802">
 </head>
 <body data-page="screening">
   <main id="app" class="app-shell" data-page-container>
@@ -21,58 +21,54 @@
 
     <section class="main-card" aria-labelledby="page-title">
       <div class="page-header">
-        <h1 id="page-title" class="page-title">Audio Screening</h1>
-        <p class="page-intro">Complete the audio screening before continuing to the study instructions.</p>
+        <h1 id="page-title" class="page-title">Pre-Study Listening Task</h1>
+        <p class="page-intro">Complete this short listening task before continuing to the study instructions.</p>
       </div>
 
       <div class="validation-summary is-hidden" data-validation-summary tabindex="-1">
-        Please complete the current screening requirement before continuing.
+        Please complete the current listening task requirement before continuing.
       </div>
 
       <div id="screening-development-warning" class="banner banner--warning is-hidden" data-screening-development-warning>
-        Audio Screening
+        Pre-Study Listening Task
       </div>
       <div id="screening-route-warning" class="banner banner--warning is-hidden" data-screening-route-warning>
         Listening setup has not been completed. Please return to Listening Setup before continuing.
       </div>
 
-      <section class="section-panel" aria-labelledby="screening-instructions-heading">
-        <h2 id="screening-instructions-heading">Screening instructions</h2>
-        <p data-screening-instructions>Loading screening configuration...</p>
+      <section class="section-panel" aria-labelledby="screening-instructions-heading" data-screening-instructions-section>
+        <h2 id="screening-instructions-heading">Instructions</h2>
+        <p data-screening-instructions>Loading listening task configuration...</p>
       </section>
 
-      <section class="section-panel" aria-labelledby="screening-item-heading" data-screening-item-section>
-        <p class="progress__label" data-screening-item-progress aria-live="polite">Question 1 of 3</p>
-        <h2 id="screening-item-heading" data-screening-item-heading>Screening item</h2>
-        <p data-screening-item-prompt></p>
-        <div class="screening-audio-grid" data-screening-audio></div>
-        <fieldset class="field" data-screening-answers>
-          <legend class="field__label">Answer</legend>
-        </fieldset>
-        <p id="screening-answer-error" class="validation-message is-hidden">Please play all required audio choices and select an answer before submitting.</p>
-        <nav class="navigation-area" aria-label="Screening item navigation">
+      <section class="section-panel" aria-labelledby="screening-items-heading" data-screening-item-section>
+        <h2 id="screening-items-heading">Listening items</h2>
+        <div class="screening-item-list" data-screening-items></div>
+        <p id="screening-answer-error" class="validation-message is-hidden">Please play all required audio choices and select an answer for each listening item before submitting.</p>
+        <nav class="navigation-area" aria-label="Listening item navigation">
           <button class="button button--secondary" type="button" data-action="back" data-target="listening-setup.html">Back</button>
-          <button class="button button--primary" type="button" data-action="submit-screening-answer" disabled>Next</button>
+          <button class="button button--primary" type="button" data-action="submit-screening-answer" disabled>Submit listening task</button>
         </nav>
       </section>
 
       <section class="section-panel is-hidden" aria-labelledby="screening-result-heading" data-screening-result>
-        <h2 id="screening-result-heading">Screening result</h2>
+        <h2 id="screening-result-heading">Task complete</h2>
         <div data-screening-feedback class="feedback-area" aria-live="polite"></div>
         <div class="navigation-area">
           <button class="button button--secondary is-hidden" type="button" data-action="development-bypass">Continue to instructions</button>
-          <button class="button button--secondary is-hidden" type="button" data-action="retry-screening">Retry screening</button>
+          <button class="button button--secondary is-hidden" type="button" data-action="retry-screening">Repeat listening task</button>
           <button class="button button--primary" type="button" data-action="continue-after-screening">Continue to instructions</button>
         </div>
       </section>
     </section>
   </main>
-  <script src="../js/storage.js" defer></script>
-  <script src="../js/timing.js" defer></script>
-  <script src="../js/navigation.js" defer></script>
-  <script src="../js/validation.js" defer></script>
-  <script src="../js/audio.js" defer></script>
-  <script src="../js/progress.js" defer></script>
-  <script src="../js/app.js" defer></script>
+  <script src="../js/storage.js?v=20260731-prestudy" defer></script>
+  <script src="../js/timing.js?v=20260731-prestudy" defer></script>
+  <script src="../js/navigation.js?v=20260731-prestudy" defer></script>
+  <script src="../js/validation.js?v=20260731-prestudy" defer></script>
+  <script src="../js/randomisation.js?v=20260731-prestudy" defer></script>
+  <script src="../js/audio.js?v=audio-play-reset-20260731" defer></script>
+  <script src="../js/progress.js?v=20260731-prestudy" defer></script>
+  <script src="../js/app.js?v=instructions-scale-20260802" defer></script>
 </body>
 </html>

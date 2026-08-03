@@ -9,6 +9,10 @@ from stimulus_selection.config import load_config
 from stimulus_selection.diffmst_validation import run_diffmst_feature_validation
 from stimulus_selection.feature_extraction import run_feature_extraction
 from stimulus_selection.mix_selection import run_mix_selection
+from stimulus_selection.mix_selection_v2 import run_mix_selection_v2
+from stimulus_selection.ratings_integration import run_ratings_integration
+from stimulus_selection.rating_stratification import run_rating_stratification
+from stimulus_selection.alignment_verification import run_alignment_verification
 from stimulus_selection.output_layout import stage1_reports, stage1_tables
 from stimulus_selection.paths import ensure_output_root
 from stimulus_selection.reports import write_markdown_report
@@ -134,6 +138,14 @@ def main() -> None:
     extract.add_argument("--config", required=True, help="Path to selection YAML config.")
     select = subparsers.add_parser("select-mixes", help="Run Stage 4 preprocessing and final analytical mix selection.")
     select.add_argument("--config", required=True, help="Path to selection YAML config.")
+    select_v2 = subparsers.add_parser("select-mixes-v2", help="Run corrected Stage 4 v2 acoustic candidate-pool generation.")
+    select_v2.add_argument("--config", required=True, help="Path to selection YAML config.")
+    ratings = subparsers.add_parser("integrate-ratings", help="Run Phase 2A prior-rating ingestion and aggregation.")
+    ratings.add_argument("--config", required=True, help="Path to selection YAML config.")
+    stratify = subparsers.add_parser("stratify-ratings", help="Run Phase 2B rating-stratified supervisor recommendation sets.")
+    stratify.add_argument("--config", required=True, help="Path to selection YAML config.")
+    verify_alignment = subparsers.add_parser("verify-alignment", help="Run Phase 2C alignment QA for recommended triplets.")
+    verify_alignment.add_argument("--config", required=True, help="Path to selection YAML config.")
     args = parser.parse_args()
 
     if args.command == "inventory":
@@ -153,6 +165,49 @@ def main() -> None:
         counts = run_extract_features(args.config)
     elif args.command == "select-mixes":
         counts = run_select_mixes(args.config)
+    elif args.command == "select-mixes-v2":
+        config = load_config(args.config)
+        result = run_mix_selection_v2(config, args.config)
+        counts = {
+            "retained_counts": {s.song: s.retained_count for s in result.song_summaries},
+            "candidate_pool_sizes": {s.song: s.candidate_pool_actual for s in result.song_summaries},
+            "bark_pca_components": {s.song: s.bark_components for s in result.song_summaries},
+            "medoids": {s.song: s.medoid_original_name for s in result.song_summaries},
+            "candidate_pool_csv": result.candidate_pool_path,
+            "report": result.report_path,
+            "preview_file_count": len(result.preview_files),
+        }
+    elif args.command == "integrate-ratings":
+        config = load_config(args.config)
+        result = run_ratings_integration(config, args.config)
+        counts = {
+            "evaluation_rows": result.evaluation_rows,
+            "retained_mixes": result.retained_mixes,
+            "rated_retained_mixes": result.rated_retained_mixes,
+            "unrated_retained_mixes": result.unrated_retained_mixes,
+            "report": result.report_path,
+            "coverage_by_song": result.coverage_by_song_path,
+        }
+    elif args.command == "stratify-ratings":
+        config = load_config(args.config)
+        result = run_rating_stratification(config, args.config)
+        counts = {
+            "recommended_rows": result.recommended_rows,
+            "audio_files": result.audio_files,
+            "supervisor_shortlist": result.supervisor_shortlist_path,
+            "report": result.report_path,
+        }
+    elif args.command == "verify-alignment":
+        config = load_config(args.config)
+        result = run_alignment_verification(config)
+        counts = {
+            "triplets_verified": result.triplets_verified,
+            "pairwise_rows": result.pairwise_rows,
+            "rapid_switch_files": result.rapid_switch_files,
+            "figures": result.figures,
+            "maximum_ms_offset": round(result.maximum_ms_offset, 6),
+            "report": result.report_path,
+        }
     else:
         raise ValueError(args.command)
     for key, value in counts.items():

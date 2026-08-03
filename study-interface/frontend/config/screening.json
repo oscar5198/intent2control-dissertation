@@ -2,41 +2,44 @@
   "mode": "development",
   "productionReady": false,
   "developmentOnly": true,
-  "developmentLabel": "Audio Screening",
-  "screeningInstructions": "Listen to Version A, Version B, and Version C. Decide whether Version A matches Version B or Version C. You must play all three versions before selecting an answer.",
-  "itemCount": 3,
+  "developmentLabel": "Pre-Study Listening Task",
+  "screeningInstructions": "Before beginning the main study, please complete this short listening task.\n\nFor each item, listen carefully to Version A, Version B, and Version C. Version A is identical to one of the other two versions. After listening to all three versions, select whether Version A matches Version B or Version C.\n\nYou may replay the versions as needed before submitting your answer.",
+  "itemCount": 6,
+  "preStudyStimulusVersion": "same-excerpt-mix-v1",
   "minimumScore": 2,
   "maximumAttempts": 2,
   "retryEnabled": true,
   "failureBehaviour": "Development-only final-fail message; production exclusion or continuation handling remains TBC.",
-  "placeholderNotes": "Development-only Version A/B/C matching screening using duplicated DU-H.mp3 assets. These are not final validated screening stimuli. Final stimuli, score threshold, attempts limit, and exclusion procedure must be replaced before pilot testing.",
+  "stimulusNotes": "Development-only Version A/B/C pre-study listening task generated from temporary same-song, same-excerpt mix comparisons. These are not final scientifically validated pre-study stimuli. Final segment identities, selection criteria, scientific score threshold, attempts limit, and exclusion procedure require supervisor approval before pilot testing.",
+  "sourceAudio": "External Mix Evaluation Dataset source mixes for InTheMeantime; active participant-facing excerpts are the normalized WAV files listed in each segment.",
+  "presentationStructure": {
+    "segmentCount": 2,
+    "repetitionsPerSegment": 3,
+    "presentationCount": 6,
+    "randomisePresentationOrder": true,
+    "persistPresentationOrder": true,
+    "randomiseAnswerPosition": true,
+    "finalSegmentSelection": "TBC"
+  },
   "developmentBypass": {
     "enabled": false,
     "label": "Continue to instructions",
     "requiresFrontendDevelopmentMode": true
   },
-  "items": [
+  "segments": [
     {
-      "id": "screening_item_01",
+      "id": "prestudy_segment_01",
       "questionType": "abx",
       "prompt": "Which version matches Version A?",
-      "audioChoices": [
-        {
-          "id": "version_a",
-          "label": "Version A",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-01-x.mp3"
-        },
-        {
-          "id": "version_b",
-          "label": "Version B",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-01-a.mp3"
-        },
-        {
-          "id": "version_c",
-          "label": "Version C",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-01-b.mp3"
-        }
-      ],
+      "sourceSong": "InTheMeantime",
+      "referenceMixId": "DU-H",
+      "comparisonMixId": "DU-M",
+      "excerptStartSeconds": 42,
+      "excerptEndSeconds": 48,
+      "comparisonOffsetSecondsRelativeToReference": 0,
+      "matchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-01-version-a.wav",
+      "matchDuplicateAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-01-version-b.wav",
+      "nonMatchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-01-version-c.wav",
       "answerOptions": [
         {
           "value": "version_b",
@@ -53,29 +56,21 @@
         "version_b",
         "version_c"
       ],
-      "developmentLogic": "Version A is a duplicate of Version B for development testing."
+      "developmentLogic": "Temporary segment definition. Version A uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of Version A, and the non-matching option uses the DU-M mix from the same song and same aligned excerpt. The matching answer position is randomised between Version B and Version C. Final pre-study stimulus selection remains TBC."
     },
     {
-      "id": "screening_item_02",
+      "id": "prestudy_segment_02",
       "questionType": "abx",
       "prompt": "Which version matches Version A?",
-      "audioChoices": [
-        {
-          "id": "version_a",
-          "label": "Version A",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-02-x.mp3"
-        },
-        {
-          "id": "version_b",
-          "label": "Version B",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-02-a.mp3"
-        },
-        {
-          "id": "version_c",
-          "label": "Version C",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-02-b.mp3"
-        }
-      ],
+      "sourceSong": "InTheMeantime",
+      "referenceMixId": "DU-H",
+      "comparisonMixId": "DU-J",
+      "excerptStartSeconds": 54,
+      "excerptEndSeconds": 60,
+      "comparisonOffsetSecondsRelativeToReference": -0.00225,
+      "matchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-02-version-a.wav",
+      "matchDuplicateAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-02-version-b.wav",
+      "nonMatchAudioPath": "assets/audio/pre-experiment-normalized/screening/screening-item-02-version-c.wav",
       "answerOptions": [
         {
           "value": "version_b",
@@ -92,51 +87,14 @@
         "version_b",
         "version_c"
       ],
-      "developmentLogic": "Version A is a duplicate of Version C for development testing."
-    },
-    {
-      "id": "screening_item_03",
-      "questionType": "abx",
-      "prompt": "Which version matches Version A?",
-      "audioChoices": [
-        {
-          "id": "version_a",
-          "label": "Version A",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-03-x.mp3"
-        },
-        {
-          "id": "version_b",
-          "label": "Version B",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-03-a.mp3"
-        },
-        {
-          "id": "version_c",
-          "label": "Version C",
-          "audioPath": "assets/audio/screening-development/screening-dev-item-03-b.mp3"
-        }
-      ],
-      "answerOptions": [
-        {
-          "value": "version_b",
-          "label": "Version B"
-        },
-        {
-          "value": "version_c",
-          "label": "Version C"
-        }
-      ],
-      "correctAnswer": "version_b",
-      "requiredAudioChoices": [
-        "version_a",
-        "version_b",
-        "version_c"
-      ],
-      "developmentLogic": "Version A is a duplicate of Version B for development testing."
+      "developmentLogic": "Temporary segment definition. Version A uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of Version A, and the non-matching option uses the DU-J mix from the same song and same aligned excerpt. The matching answer position is randomised between Version B and Version C. Final pre-study stimulus selection remains TBC."
     }
   ],
   "unresolvedValues": {
-    "finalStimuli": "TBC",
-    "validatedScreeningDesign": "TBC",
+    "finalPreStudySegments": "TBC",
+    "validatedPreStudyListeningDesign": "TBC",
+    "brechtPreferenceBasedSelectionCriteria": "TBC",
+    "brechtPreferenceResults": "TBC",
     "productionMinimumScore": "TBC",
     "productionMaximumAttempts": "TBC",
     "productionFailureOrExclusionBehaviour": "TBC"

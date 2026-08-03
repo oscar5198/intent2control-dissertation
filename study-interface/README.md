@@ -18,11 +18,12 @@ The intended participant flow is:
 4. Audio screening.
 5. Instructions.
 6. Practice trial.
-7. Ten experimental trials.
-8. Demographic questionnaire.
+7. Main Study transition.
+8. Ten experimental listening tasks.
 9. Post-task questionnaire.
-10. Review and final submission.
-11. Completion page.
+10. Demographic questionnaire.
+11. Review and final submission.
+12. Completion page.
 
 ## Experimental structure
 
@@ -48,6 +49,10 @@ The estimated study duration is 15-20 minutes. The main-study target sample is a
 
 The approved Participant Information Sheet and consent form are stored under `docs/participant-materials/`. Participant-facing PDF copies are stored under `frontend/assets/documents/`. Those approved documents are the authoritative source for participant-facing wording. Interface text must continue to be checked against them before final release.
 
+## Practice Trial Audio
+
+The Practice Trial uses an independent real song excerpt from the Mix Evaluation Dataset. This practice song is intentionally separate from all four experimental songs and is shown to participants only as `Practice song` with neutral Version A, Version B, and Version C labels.
+
 ## Hosting and backend status
 
 The final hosting and backend technology are still to be confirmed with QMUL. The application must eventually be deployable on QMUL-managed infrastructure, but no framework, package manager, backend, or database has been selected yet.
@@ -69,4 +74,4 @@ Research audio may not be licensed for public distribution, so files inside `fro
 
 Current status: Phase 2B frontend scaffold.
 
-Implemented participant-facing pages currently cover the landing page, combined Study Information and Consent page, Listening Setup page, and Audio Screening placeholder flow. Later pages remain shells. No backend, generated participant data, real audio files, real credentials, or deployment configuration have been added.
+Implemented participant-facing pages currently cover the full static frontend flow through completion for development testing. No backend, generated participant data, real credentials, or deployment configuration have been added.

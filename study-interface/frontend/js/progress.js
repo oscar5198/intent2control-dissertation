@@ -12,19 +12,20 @@ window.StudyApp = window.StudyApp || {};
 
 window.StudyApp.progress = (function () {
   var stages = {
-    "landing": { label: "Welcome", index: 1, total: 11, value: 9 },
-    "study-information-consent": { label: "Participant Information Sheet and Consent Form", index: 2, total: 11, value: 18 },
-    "participant-information-deprecated": { label: "Redirecting", index: 2, total: 11, value: 18 },
-    "consent-deprecated": { label: "Redirecting", index: 2, total: 11, value: 18 },
-    "listening-setup": { label: "Listening setup", index: 3, total: 11, value: 27 },
-    "screening": { label: "Audio screening", index: 4, total: 11, value: 36 },
-    "instructions": { label: "Instructions", index: 5, total: 11, value: 45 },
-    "practice": { label: "Practice trial", index: 6, total: 11, value: 55 },
-    "trial": { label: "Experimental trials", index: 7, total: 11, value: 64 },
-    "demographics": { label: "Demographic questionnaire", index: 8, total: 11, value: 73 },
-    "post-task": { label: "Post-task questionnaire", index: 9, total: 11, value: 82 },
-    "review": { label: "Review and final submission", index: 10, total: 11, value: 91 },
-    "completion": { label: "Completion", index: 11, total: 11, value: 100 }
+    "landing": { label: "Welcome", index: 1, total: 12, value: 8 },
+    "study-information-consent": { label: "Participant Information Sheet and Consent Form", index: 2, total: 12, value: 17 },
+    "participant-information-deprecated": { label: "Redirecting", index: 2, total: 12, value: 17 },
+    "consent-deprecated": { label: "Redirecting", index: 2, total: 12, value: 17 },
+    "listening-setup": { label: "Listening setup", index: 3, total: 12, value: 25 },
+    "screening": { label: "Pre-Study Listening Task", index: 4, total: 12, value: 33 },
+    "instructions": { label: "Instructions", index: 5, total: 12, value: 42 },
+    "practice": { label: "Practice trial", index: 6, total: 12, value: 50 },
+    "main-study": { label: "Main Study", index: 7, total: 12, value: 58 },
+    "trial": { label: "Main Study", index: 8, total: 12, value: 67 },
+    "post-task": { label: "Post-task questionnaire", index: 9, total: 12, value: 75 },
+    "demographics": { label: "Demographic questionnaire", index: 10, total: 12, value: 83 },
+    "review": { label: "Review and final submission", index: 11, total: 12, value: 92 },
+    "completion": { label: "Completion", index: 12, total: 12, value: 100 }
   };
 
   function calculateProgress(pageId, trialIndex) {
@@ -33,15 +34,15 @@ window.StudyApp.progress = (function () {
     if (pageId === "trial") {
       resolvedTrialIndex = resolveTrialIndex(trialIndex);
       return {
-        label: "Experimental Trials",
-        detail: "Trial " + resolvedTrialIndex + " of 10",
-        index: 7,
-        total: 11,
-        value: Math.min(72, 64 + Math.round((resolvedTrialIndex - 1) * (8 / 9)))
+        label: "Main Study",
+        detail: "Listening Task " + resolvedTrialIndex + " of 10",
+        index: 8,
+        total: 12,
+        value: Math.min(74, 67 + Math.round((resolvedTrialIndex - 1) * (7 / 9)))
       };
     }
 
-    return stages[pageId] || { label: "Study", index: 0, total: 11, value: 0 };
+    return stages[pageId] || { label: "Study", index: 0, total: 12, value: 0 };
   }
 
   function getProgressLabel(pageId, trialIndex) {

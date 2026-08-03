@@ -116,6 +116,119 @@ mix_selection:
   avoid_near_duplicates: true
   require_manual_review_for_flagged_outliers: true
   deterministic_seed: 42
+mix_selection_v2:
+  methodology_version: "2.0"
+  status: "candidate_pool_generation"
+  scalar_features:
+  - rms_mean
+  - crest_factor_mean
+  - stereo_width
+  qc_only_features:
+  - stereo_imbalance
+  bark_variance_threshold: 0.95
+  primary_distance: "euclidean"
+  equal_block_weighting: true
+  deterministic_seed: 42
+  candidate_pool:
+    Lead Me: 20
+    In The Meantime: 20
+    Red To Blue: "all_valid"
+    Pouring Room: "all_valid"
+  expected_retained_counts:
+    Lead Me: 37
+    In The Meantime: 36
+    Red To Blue: 10
+    Pouring Room: 9
+  stereo_imbalance_qc:
+    enabled: true
+    use_absolute_value: true
+    review_threshold_method: "robust_within_song"
+    exclude_automatically: false
+backup_song_expansion:
+  methodology_version: "1.0"
+  status: "supervisor_review_candidates"
+  exclude_main_songs: true
+  number_of_backup_songs: 4
+  target_excerpt_seconds: 28.0
+  output_root: "outputs/stimulus_selection/08_backup_song_expansion"
+  excluded_main_songs:
+    - artist: The DoneFors
+      song: Lead Me
+    - artist: Fredy V
+      song: In The Meantime
+    - artist: Broken Crank
+      song: Red To Blue
+    - artist: The DoneFors
+      song: Pouring Room
+  diversity_features:
+    scalar:
+      - rms_mean
+      - crest_factor_mean
+      - stereo_width
+    spectral:
+      - bark_mid_01_to_24
+      - bark_side_01_to_24
+    qc_only:
+      - stereo_imbalance
+  acoustic_method:
+    robust_scaling: "within_song_median_iqr"
+    bark_pca_variance_threshold: 0.95
+    block_weighting: "equal_scalar_and_bark"
+    distance: "combined_euclidean"
+    candidate_pool_selection: "deterministic_farthest_point"
+  rating_method:
+    source: "mix_evaluation_relationship_tables/data/evaluations.csv"
+    join_key: "mix_id"
+    scope: "within_song"
+    minimum_rating_count_warning: 5
+  selected_backup_songs:
+    - artist: The Districts
+      song: Vermont
+    - artist: Filthybird
+      song: "I'd Like To Know"
+    - artist: Torres
+      song: New Skin
+    - artist: Dawn Langstroth
+      song: No Prize
+ratings_integration:
+  methodology_version: "1.0"
+  canonical_source:
+    evaluations_csv: "C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset/mix_evaluation_relationship_tables/data/evaluations.csv"
+    schema_md: "C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset/mix_evaluation_relationship_tables/SCHEMA.md"
+  rating_column: "preference_score_0_1"
+  join_key: "mix_id"
+  analysis_scope: "within_song"
+  preserve_unrated_mixes: true
+  self_rating_policy: "inspect_and_report"
+  aggregation:
+    mean: true
+    median: true
+    standard_deviation: true
+    interquartile_range: true
+    minimum: true
+    maximum: true
+    standard_error: true
+    confidence_interval_95: true
+  minimum_rating_count_warning: 5
+  expected_retained_counts:
+    Lead Me: 37
+    In The Meantime: 36
+    Red To Blue: 10
+    Pouring Room: 9
+  deterministic: true
+rating_stratification:
+  methodology_version: "1.0"
+  status: "supervisor_recommendations"
+  acoustic_distance_source: "outputs/stimulus_selection/04_mix_selection_v2/tables/pairwise_distances_v2.csv"
+  candidate_pool_source: "outputs/stimulus_selection/04_mix_selection_v2/tables/acoustic_candidate_pool.csv"
+  ratings_source: "outputs/stimulus_selection/05_ratings_integration/tables/mix_preference_rating_summary_within_song.csv"
+  acoustic_weight: 0.8
+  rating_weight: 0.2
+  qc_review_penalty: 0.05
+  qc_caution_penalty: 0.025
+  top_n_per_condition: 10
+  prefer_unique_mixes_across_conditions: true
+  deterministic: true
 stage4_review:
   status: "approved"
   reviewer: "Oscar"

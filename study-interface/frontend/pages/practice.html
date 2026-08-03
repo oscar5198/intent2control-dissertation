@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=preference-initial-markers-20260802">
 </head>
 <body data-page="practice">
   <main id="app" class="app-shell app-shell--wide" data-page-container>
@@ -30,23 +30,16 @@
           Please complete all required practice ratings and comments before continuing.
         </div>
 
-        <div class="banner banner--warning" data-practice-development-notice>
-          Practice trial
-        </div>
-
         <section class="section-panel practice-context" aria-labelledby="practice-scenario-heading">
-          <p class="field-help">Scenario</p>
           <h2 id="practice-scenario-heading" data-practice-scenario-title>Loading practice scenario...</h2>
           <p data-practice-scenario-text></p>
-          <p class="field-help">Music excerpt</p>
-          <p data-practice-excerpt-title></p>
         </section>
 
-        <section class="practice-version-grid" data-practice-versions aria-label="Practice versions"></section>
+        <section class="trial-evaluation-stack" data-practice-versions aria-label="Practice versions"></section>
 
-        <nav class="navigation-area" aria-label="Page navigation">
+        <nav class="navigation-area navigation-area--primary-right" aria-label="Page navigation">
           <button class="button button--secondary" type="button" data-action="back" data-target="instructions.html">Back</button>
-          <button class="button button--primary" type="submit" data-practice-complete disabled>Complete practice</button>
+          <button class="button button--primary primary-action" type="submit" data-practice-complete disabled>Submit</button>
         </nav>
       </form>
     </section>
@@ -55,9 +48,9 @@
   <script src="../js/timing.js" defer></script>
   <script src="../js/navigation.js" defer></script>
   <script src="../js/validation.js" defer></script>
-  <script src="../js/audio.js" defer></script>
+  <script src="../js/audio.js?v=scale-interaction-20260802" defer></script>
   <script src="../js/progress.js" defer></script>
-  <script src="../js/trial.js" defer></script>
-  <script src="../js/app.js" defer></script>
+  <script src="../js/trial.js?v=preference-initial-markers-20260802" defer></script>
+  <script src="../js/app.js?v=preference-initial-markers-20260802" defer></script>
 </body>
 </html>

@@ -30,12 +30,13 @@
 - [x] Add participant-facing PIS and consent PDF assets.
 - [x] Redirect deprecated separate PIS and consent pages.
 - [x] Implement Listening Setup page with setup confirmations and placeholder audio gate.
-- [x] Implement configuration-driven development Audio Screening page.
+- [x] Implement configuration-driven development Pre-Study Listening Task page.
 - [x] Implement Instructions page with required task acknowledgement.
 - [x] Implement development Practice Trial page.
 - [x] Implement development Experimental Trial page.
 - [x] Insert approved experimental scenario wording.
 - [x] Refine Practice and Experimental Trial layout to grouped Listen, Rate, Explain sections.
+- [x] Replace separate rating sliders with shared multi-marker preference scale for Practice and Main Study.
 - [x] Add temporary frontend group assignment.
 - [x] Add persisted ten-trial generation.
 - [x] Refine ten-trial generation to preserve adjacent scenario pairs.
@@ -51,14 +52,21 @@
 - [x] Add navigation between all remaining study screens.
 - [x] Add review completion summary.
 
-## Phase 3 - Audio screening and practice
+## Phase 3 - Pre-study listening task and practice
 
-- [x] Implement initial audio screening flow scaffold.
-- [x] Add temporary development audio screening stimuli.
-- [x] Implement temporary development audio screening pass, fail, and retry paths.
-- [ ] Add final audio screening stimuli.
-- [ ] Define screening pass rule.
-- [ ] Confirm screening retry and failure/exclusion behaviour.
+- [x] Implement initial Pre-Study Listening Task flow scaffold.
+- [x] Add temporary development pre-study listening stimuli.
+- [x] Audit and replace invalid duplicated development pre-study listening stimuli.
+- [x] Present all development pre-study listening items on one page.
+- [x] Implement temporary development pre-study listening pass, fail, and retry paths.
+- [x] Prepare six-item two-segment by three-repetition structure with persisted randomised order.
+- [x] Hide numerical score feedback from participants while preserving internal scoring.
+- [x] Implement shared reset-on-switch comparative playback behaviour.
+- [x] Prevent seeking and individual player-volume changes in comparative listening controls.
+- [ ] Add final pre-study listening stimuli.
+- [ ] Define final pre-study pass rule.
+- [ ] Confirm pre-study retry and failure/exclusion behaviour.
+- [ ] Confirm Brecht preference-based segment-selection criteria and results.
 - [x] Implement practice trial.
 - [ ] Replace development practice content before pilot.
 
@@ -69,7 +77,7 @@
 - [x] Implement scenario and excerpt presentation.
 - [x] Hide internal scenario prefixes from participant-facing trial titles.
 - [x] Implement Version A, Version B, and Version C display labels.
-- [x] Implement 0-100 rating controls.
+- [x] Implement shared 0-100 rating controls.
 - [x] Implement required comment fields.
 - [x] Require successful playback start for Version A, Version B, and Version C before trial submission.
 - [x] Implement response-time recording for experimental trials.

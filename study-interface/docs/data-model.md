@@ -128,6 +128,8 @@ Suggested fields:
 - Rating value from 0 to 100.
 - Submitted timestamp.
 
+The participant-facing Practice Trial and Main Study interface may collect these values through one shared multi-marker preference scale, but the stored semantics remain unchanged: each Version A/B/C presentation has exactly one integer 0-100 rating.
+
 ## Participant comment
 
 Represents the participant's required comment associated with one mix rating.
@@ -192,7 +194,7 @@ Suggested fields:
 - Response value.
 - Submitted timestamp.
 
-The demographic questionnaire currently includes age range, optional gender, nationality, music listening habits, music production or audio engineering experience, and hearing difficulty. Final response options are TBC.
+The demographic questionnaire currently includes age range, optional gender, country that most influenced musical and cultural background, music listening habits, music production or audio engineering experience, and hearing difficulty. Final response options are TBC.
 
 ## Post-task response
 
@@ -205,7 +207,7 @@ Suggested fields:
 - Response value.
 - Submitted timestamp.
 
-The post-task questionnaire currently includes ability to immerse in the scenarios, task difficulty, prior familiarity with the songs, listening device used, location or environment where the study was completed, and additional comments. Final response options are TBC.
+The post-task questionnaire currently includes ability to immerse in the scenarios, task difficulty, prior familiarity with the songs, listening device used, location or environment where the study was completed, and additional comments. The listening-device and completion-location fields store the selected option as `other` when applicable and store the accompanying required detail in companion detail fields. Final response options are TBC.
 
 ## Final submission
 

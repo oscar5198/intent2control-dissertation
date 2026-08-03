@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=instructions-scale-20260802">
 </head>
 <body data-page="listening-setup">
   <main id="app" class="app-shell" data-page-container>
@@ -22,7 +22,7 @@
     <section class="main-card" aria-labelledby="page-title">
       <div class="page-header">
         <h1 id="page-title" class="page-title">Listening Setup</h1>
-        <p class="page-intro">Prepare your listening conditions before the audio screening test.</p>
+        <p class="page-intro">Prepare your listening conditions before the study.</p>
       </div>
 
       <form data-form="listening-setup" novalidate>
@@ -46,9 +46,8 @@
           <div id="setup-audio-warning" class="banner banner--warning is-hidden" data-setup-audio-warning>
             The setup test audio could not be loaded. Continue is disabled until setup audio is available and has started playing.
           </div>
-          <p class="field-help is-hidden" data-setup-development-notice>Playback test</p>
           <audio id="setup-test-audio" class="audio-control" controls preload="none" data-audio-id="setup-test-audio" data-required-audio aria-label="Test audio">
-            <source src="../assets/audio/setup-test-development.mp3" type="audio/mpeg">
+            <source src="../assets/audio/pre-experiment-normalized/setup-test-development-normalized.wav" type="audio/wav">
           </audio>
           <p id="setup-audio-error" class="validation-message is-hidden">Please play the test audio before continuing.</p>
         </section>
@@ -89,8 +88,8 @@
   <script src="../js/timing.js" defer></script>
   <script src="../js/navigation.js" defer></script>
   <script src="../js/validation.js" defer></script>
-  <script src="../js/audio.js" defer></script>
+  <script src="../js/audio.js?v=audio-play-reset-20260731" defer></script>
   <script src="../js/progress.js" defer></script>
-  <script src="../js/app.js" defer></script>
+  <script src="../js/app.js?v=instructions-scale-20260802" defer></script>
 </body>
 </html>

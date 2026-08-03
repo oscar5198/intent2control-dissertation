@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=instructions-scale-20260802">
 </head>
 <body data-page="review">
   <main id="app" class="app-shell app-shell--wide" data-page-container>
@@ -22,7 +22,6 @@
     <section class="main-card" aria-labelledby="page-title">
       <div class="page-header">
         <h1 id="page-title" class="page-title">Review and Final Submission</h1>
-        <p class="page-intro">Please check that all required stages are complete before submitting your responses.</p>
       </div>
 
       <form data-form="review" novalidate>
@@ -30,15 +29,10 @@
           Final submission is blocked until all required study stages are complete.
         </div>
 
-        <section class="section-panel" aria-labelledby="completion-summary-heading">
-          <h2 id="completion-summary-heading">Completion summary</h2>
-          <ul class="completion-list" data-completion-summary></ul>
-        </section>
-
         <section class="section-panel" aria-labelledby="final-submit-heading">
           <h2 id="final-submit-heading">Before final submission</h2>
-          <p>After final submission, you should not use the browser Back button to change responses.</p>
-          <p>Your responses will be recorded for this study session.</p>
+          <p>Once you select Final Submit, your responses will be recorded for this study session.</p>
+          <p>You will not be able to change your responses after final submission.</p>
         </section>
 
         <section class="section-panel is-hidden" data-development-payload-panel aria-labelledby="development-payload-heading">
@@ -52,7 +46,7 @@
         </section>
 
         <nav class="navigation-area" aria-label="Page navigation">
-          <button class="button button--secondary" type="button" data-action="back" data-target="post-task.html">Back</button>
+          <button class="button button--secondary" type="button" data-action="back" data-target="demographics.html">Back</button>
           <button class="button button--primary" type="submit" data-final-submit>Final Submit</button>
         </nav>
       </form>
@@ -60,9 +54,9 @@
   </main>
   <script src="../js/storage.js" defer></script>
   <script src="../js/timing.js" defer></script>
-  <script src="../js/navigation.js" defer></script>
+  <script src="../js/navigation.js?v=questionnaire-flow-20260802" defer></script>
   <script src="../js/validation.js" defer></script>
-  <script src="../js/progress.js" defer></script>
-  <script src="../js/app.js" defer></script>
+  <script src="../js/progress.js?v=questionnaire-flow-20260802" defer></script>
+  <script src="../js/app.js?v=questionnaire-flow-20260802" defer></script>
 </body>
 </html>

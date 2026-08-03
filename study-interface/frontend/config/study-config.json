@@ -1,5 +1,5 @@
 {
-  "studyTitle": "Choosing the Preferred Music Mix for Different Listening Situations - An Online Listening Study",
+  "studyTitle": "Music Mix Preferences in Everyday Listening Situations - An Online Listening Study",
   "estimatedDuration": "15-20 minutes",
   "minimumAge": 18,
   "groupCount": 2,
@@ -20,7 +20,7 @@
   "setupTestAudio": {
     "id": "setup-test-audio",
     "label": "Test audio",
-    "audioPath": "assets/audio/setup-test-development.mp3",
+    "audioPath": "assets/audio/pre-experiment-normalized/setup-test-development-normalized.wav",
     "finalAudioRequired": true,
     "status": "temporary-development",
     "developmentNotice": "Playback test",
@@ -34,9 +34,10 @@
     "screening.html",
     "instructions.html",
     "practice.html",
+    "main-study.html",
     "trial.html",
-    "demographics.html",
     "post-task.html",
+    "demographics.html",
     "review.html",
     "completion.html"
   ],

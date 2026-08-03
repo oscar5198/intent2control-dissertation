@@ -1,15 +1,15 @@
 {
   "productionReady": false,
-  "developmentOnly": true,
+  "developmentOnly": false,
   "developmentLabel": "Practice trial",
   "practiceScenario": {
-    "id": "practice_scenario_development",
-    "title": "Practice scenario",
-    "text": "Imagine you are listening to music in an everyday situation. Use this practice page to try the rating and comment controls before the main study begins."
+    "id": "practice_scenario_restaurant",
+    "title": "Dinner Date",
+    "text": "Imagine you are having dinner at a quiet restaurant with someone you recently started dating. The conversation is relaxed, and soft background music is playing while you enjoy the evening. Listen to the three versions of the same music clip and decide which versions feel most suitable for this situation."
   },
   "practiceExcerpt": {
-    "id": "practice_excerpt_development",
-    "title": "Practice excerpt"
+    "id": "practice_excerpt_practice_song",
+    "title": "Practice song"
   },
   "ratingScale": {
     "minimum": 0,
@@ -22,29 +22,31 @@
   "commentsRequired": true,
   "commentPrompt": "Please briefly explain what influenced your preference for this mix.",
   "commentMeaningfulResponseThreshold": null,
-  "audioPlaybackRequired": false,
+  "audioPlaybackRequired": true,
+  "practiceAudioNotes": "Practice-only real Mix Evaluation Dataset song excerpt using three existing dataset mixes. This is independent from the four main experimental songs, uses participant-facing neutral labels only, and is not stored under experimental assets.",
   "versions": [
     {
       "id": "practice_version_a",
       "label": "Version A",
-      "audioPath": "assets/audio/setup-test-development.mp3"
+      "audioPath": "assets/audio/pre-experiment-normalized/practice/practice-version-a-dataset-mix-01.wav",
+      "practiceMixDescription": "existing dataset mix"
     },
     {
       "id": "practice_version_b",
       "label": "Version B",
-      "audioPath": "assets/audio/setup-test-development.mp3"
+      "audioPath": "assets/audio/pre-experiment-normalized/practice/practice-version-b-dataset-mix-02.wav",
+      "practiceMixDescription": "existing dataset mix"
     },
     {
       "id": "practice_version_c",
       "label": "Version C",
-      "audioPath": "assets/audio/setup-test-development.mp3"
+      "audioPath": "assets/audio/pre-experiment-normalized/practice/practice-version-c-dataset-mix-03.wav",
+      "practiceMixDescription": "existing dataset mix"
     }
   ],
   "unresolvedValues": {
-    "finalPracticeScenario": "TBC",
-    "finalPracticeExcerpt": "TBC",
-    "finalPracticeAudio": "TBC",
+    "supervisorApprovalForPracticeScenarioAndAudio": "TBC",
     "commentMeaningfulResponseThreshold": "TBC",
-    "practiceAudioPlaybackRequirement": "TBC"
+    "practiceAudioPlaybackRequirement": "confirmed_for_current_practice_interface"
   }
 }

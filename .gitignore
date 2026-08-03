@@ -18,6 +18,7 @@ envs/
 
 # Jupyter
 .ipynb_checkpoints/
+.jupyter/
 
 # Data and generated artefacts
 data/raw/*
@@ -46,6 +47,7 @@ bibliography/papers/*
 *.log
 *.tmp
 *.temp
+tmp/
 
 # OS and editor files
 .DS_Store

@@ -36,11 +36,12 @@ frontend/
 4. `pages/screening.html`
 5. `pages/instructions.html`
 6. `pages/practice.html`
-7. `pages/trial.html`
-8. `pages/demographics.html`
+7. `pages/main-study.html`
+8. `pages/trial.html`
 9. `pages/post-task.html`
-10. `pages/review.html`
-11. `pages/completion.html`
+10. `pages/demographics.html`
+11. `pages/review.html`
+12. `pages/completion.html`
 
 Deprecated redirect pages:
 
@@ -56,8 +57,8 @@ The approved Participant Information Sheet and consent form in `../docs/particip
 Current configuration files include:
 
 - `config/study-config.json` for frozen study constants, page sequence, retention, temporary setup audio metadata, and unresolved values.
-- `config/screening.json` for the development-only audio-screening structure.
-- `config/practice.json` for the development-only practice trial structure.
+- `config/screening.json` for the development-only Pre-Study Listening Task structure.
+- `config/practice.json` for the practice trial structure, practice-only scenario, and independent practice audio paths.
 - `config/stimuli.json` for the experimental trial structure, group definitions, internal scenario identifiers, final experimental excerpt mappings, three mix slots per excerpt, neutral Version A/B/C labels, and final experimental audio paths.
 - `config/scenarios.json`, `config/questionnaires.json`, and `config/stimuli.example.json` for later study content.
 
@@ -105,10 +106,11 @@ Current status: Phase 2B frontend architecture scaffold with participant-facing 
 - Landing page.
 - Combined Study Information and Consent page.
 - Listening Setup.
-- Audio Screening placeholder flow.
+- Pre-Study Listening Task placeholder flow.
 - Instructions.
 - Practice Trial.
-- Experimental Trial system.
+- Main Study transition.
+- Experimental listening task system.
 - Demographic Questionnaire.
 - Post-task Questionnaire.
 - Review and Final Submission.
@@ -124,21 +126,29 @@ assets/audio/setup-test-development.mp3
 
 The file is stored at `frontend/assets/audio/setup-test-development.mp3`. It is temporary test audio for interface development only, is not a final screening or experimental stimulus, and must be replaced before pilot or production use. If the configured file is missing or cannot load, the page shows a warning and progression remains disabled.
 
-The Audio Screening page is driven by `config/screening.json`. It currently implements a development-only three-item matching flow using Version A, Version B, and Version C labels. Participants play all three versions and answer which version matches Version A. The duplicated `DU-H.mp3` assets are stored under:
+The Pre-Study Listening Task page is driven by `config/screening.json`. It implements a development-only six-item matching flow using Version A, Version B, and Version C labels. The six presentations are generated as two internal segment identities repeated three times each, randomised once per attempt, and persisted under the existing localStorage namespace so refresh does not reshuffle the task. For every item, participants must play all three versions and answer whether Version A matches Version B or Version C before selecting `Submit listening task`.
+
+If older local development sessions contain an incompatible pre-study presentation order from the previous three-item structure, the page removes only the current attempt's pre-study listening task keys and regenerates the six-item order. This avoids mixing old and new task schemas without wiping unrelated study progress.
 
 ```text
 assets/audio/screening-development/
 ```
 
-For development testing only, the temporary pass threshold is 2 out of 3, retry is enabled, and the maximum attempt count is 2. `productionReady` is set to `false`. These values and audio files are not final validated screening stimuli and must be replaced before pilot or production use. Final stimuli, threshold, attempts policy, and exclusion/failure procedure remain TBC.
+The previous duplicated MP3 screening files were audited and replaced because they were byte-for-byte identical. The current development files are WAV clips rebuilt from original Mix Evaluation Dataset files for `InTheMeantime`. Each temporary segment uses one common 6-second musical time region across all versions: Version A is a DU-H reference mix excerpt, the matching answer is an identical duplicate of that excerpt, and the non-matching option is a different mix of the same song and same aligned excerpt. Segment 1 uses DU-H and DU-M from 42-48 seconds; Segment 2 uses DU-H and DU-J from 54-60 seconds with a -0.00225 second comparison offset. For development testing only, the temporary pass threshold is 2 out of 6, retry is enabled, and the maximum attempt count is 2. Internal answers, correctness, attempt records, aggregate score, segment ID, repetition number, presentation order, and Version A/B/C mapping are stored, but no numerical score is shown to participants. `productionReady` is set to `false`. These files are not final validated pre-study stimuli. Final supervisor-approved segment/song selections, Brecht preference-based selection criteria/results, scientific pass criteria, attempts policy, and exclusion/failure procedure remain TBC.
 
-Audio controls remain native browser controls so that play, pause, replay, seeking, and volume remain available and keyboard accessible. Where supported by the browser, the frontend discourages downloading, playback-speed changes, picture-in-picture, and remote playback through the native control surface using `controlsList`, `disablePictureInPicture`, and `disableRemotePlayback`. This is a convenience measure for the listening-test interface only; it is not a security mechanism, and browser support may differ.
+Audio controls use a minimal shared custom interface with Play/Pause, Restart, progress, and time display. Native browser audio controls are hidden so participant-facing speaker/volume, download, and playback-speed controls are not shown. Shared audio behaviour enforces one comparative audio source at a time; when participants switch from one version to another, the previous version pauses and resets to 0:00, and the newly selected version starts from 0:00. The frontend also prevents participant seeking by restoring the last allowed playback position, fixes individual player volume at normal playback level, and keeps playback rate at 1. This is a convenience and consistency measure for the listening-test interface only; it is not a security mechanism.
 
 The Instructions page requires the acknowledgement `I understand how to complete the listening task.` before Practice Trial can be opened.
 
-The Practice Trial page is driven by `config/practice.json`. It uses temporary development content and the existing setup-test MP3 for all three neutral versions. Practice responses are stored only under `practice.*` temporary keys and are excluded from main analysis. Sliders must be deliberately interacted with; the default visual slider position does not count as a completed rating. Required comments reject empty or whitespace-only text. Final practice wording, audio, and any practice-specific audio-play requirement remain subject to replacement before pilot use.
+The Practice Trial page is driven by `config/practice.json`. It uses a practice-only restaurant scenario and an independent real song excerpt from the Mix Evaluation Dataset that is not one of the four main experimental songs. Three existing dataset mix versions from that song are excerpted into practice WAV files and stored separately under:
 
-The Experimental Trial page is driven by `config/stimuli.json`. It assigns one of two groups using temporary frontend randomness, persists the assignment, generates ten scenario-by-excerpt trials as five adjacent scenario pairs, persists trial order, and randomly maps actual mix IDs to the neutral participant-facing labels Version A, Version B, and Version C for every trial. Final server-side balanced group assignment remains TBC.
+```text
+assets/audio/practice/
+```
+
+The three versions are direct 28-second excerpts from existing dataset mixes using identical start and end timestamps. They are not newly processed, synthesised, or stem-rebalanced practice mixes. The practice song is intentionally separate from all experimental songs and is stored outside the experimental audio assets. Practice responses are stored only under `practice.*` temporary keys and are excluded from main analysis. Participants must play all three practice versions, deliberately position all three Version A/B/C markers on the shared 0-100 preference scale, and provide all three required comments before continuing. The default visual marker position does not count as a completed rating, and required comments reject empty or whitespace-only text.
+
+The Main Study transition page appears after successful practice completion and before the first response-collecting listening task. The experimental listening task page is driven by `config/stimuli.json`. It assigns one of two groups using temporary frontend randomness, persists the assignment, generates ten scenario-by-excerpt trials as five adjacent scenario pairs, persists trial order, and randomly maps actual mix IDs to the neutral participant-facing labels Version A, Version B, and Version C for every task. Final server-side balanced group assignment remains TBC.
 
 The approved experimental scenario titles and text are now configured in `config/scenarios.json` and embedded in `config/stimuli.json`. Scenario prefixes such as EDR-1 and FM-2 remain internal configuration identifiers only and are stripped from participant-facing trial titles. Each participant's two assigned excerpts are mapped once to stable neutral labels, `Song A` and `Song B`, and the mapping is persisted under `experimental.excerptLabelMapping` so it does not change on refresh. Researcher-facing final excerpt names, mix identities, and production audio files are documented in `../docs/final-stimuli-manifest.md`; they must not be displayed to participants.
 
@@ -152,13 +162,13 @@ Experimental trial randomisation uses the `scenario_pairs_v1` development algori
 
 If an older stored development trial order is found before any experimental trial has been submitted, the order is regenerated using the grouped scenario-pair structure. If submitted trials already exist, the current order is preserved and the trial page shows a development warning to start a fresh session when testing the updated randomisation.
 
-Practice and Experimental Trial pages share the same grouped interaction sequence:
+Practice and main study listening task pages share the same grouped interaction sequence:
 
 1. Listen to the versions.
-2. Rate the versions.
+2. Place Version A, Version B, and Version C on one shared preference scale.
 3. Explain your ratings.
 
-Each experimental trial requires successful playback start for Version A, Version B, and Version C, deliberate interaction with all three 0-100 sliders, and one non-whitespace comment for each version. Rating controls show `0 - Least preferred` and `100 - Most preferred` endpoint labels and no midpoint label. The page stores submitted trial records under `experimental.submittedTrials` separately from practice responses. After ten submitted trial records, the participant is routed to `demographics.html`.
+Each experimental trial requires successful playback start for Version A, Version B, and Version C, deliberate positioning of all three draggable 0-100 preference markers, and one non-whitespace comment for each version. The shared scale shows Bad, Poor, Fair, Good, and Excellent anchors at 0, 25, 50, 75, and 100 while preserving continuous integer ratings. Selecting a marker plays the corresponding version from 0:00 using the same controlled audio logic as the compact Play/Pause buttons. Desktop uses a horizontal shared scale; narrow mobile layouts switch to a vertical shared scale to avoid horizontal overflow. The page stores submitted trial records under `experimental.submittedTrials` separately from practice responses, with the rating field still containing one 0-100 value per version. After ten submitted trial records, the participant is routed to `post-task.html`.
 
 The current experimental audio paths use final WAV stimuli copied under:
 
@@ -168,13 +178,13 @@ assets/audio/experimental/
 
 There are 12 experimental files in total: two groups, two songs per group, and three mix slots per song. The frontend filenames are neutral, for example `assets/audio/experimental/group_01/song_a/mix_01.wav`, while the researcher-facing source mapping is preserved in `../docs/final-stimuli-manifest.md` and `config/stimuli.json`. These files are final experimental stimuli, not setup-test, screening, or practice stimuli.
 
-The Demographic Questionnaire and Post-task Questionnaire are driven by `config/questionnaires.json`. The required demographic fields are age range, nationality, music listening habits, music production or audio engineering experience, and hearing difficulty. Gender is optional. Post-task additional comments are optional. The structured options are development options and remain subject to final approval before pilot use.
+The Post-task Questionnaire and Demographic Questionnaire are driven by `config/questionnaires.json`. The post-task questionnaire appears immediately after the ten main study listening tasks, followed by the demographic questionnaire and final review. Post-task agreement questions use a horizontal Strongly disagree to Strongly agree Likert layout where space allows. The listening-device and completion-location questions do not include a `Prefer not to say` option; selecting `Other` reveals a required detail text field while preserving the selected `Other` value. The required demographic fields are age range, country that most influenced the participant's musical and cultural background, music listening habits, music production or audio engineering experience, and hearing difficulty. Gender is optional. Post-task additional comments are optional. The structured options are development options and remain subject to final approval before pilot use.
 
 The Review and Final Submission page creates a temporary local development payload only. This payload is stored in `localStorage` under `final.payload`, is not production-safe, and is not submitted to a backend. Production backend submission remains TBC.
 
 The Completion page shows the anonymous development session ID and confirms only that responses have been recorded in the current study session. It must not claim that responses have been securely submitted to QMUL until backend submission exists.
 
-An optional development-only trial-completion helper exists on the Experimental Trial page. It is hidden unless `appEnvironment` is `development` and `frontendDevelopmentMode` is explicitly `true` in `config/study-config.json`. It requires a second explicit button selection before creating placeholder trial records and must never be enabled in production.
+An optional development-only trial-completion helper exists on the listening task page. It is hidden unless `appEnvironment` is `development` and `frontendDevelopmentMode` is explicitly `true` in `config/study-config.json`. It requires a second explicit button selection before creating placeholder trial records and must never be enabled in production.
 
 ## Temporary Development Storage Keys
 
@@ -198,12 +208,8 @@ Current keys include:
 - `timing.pageEntry.screening`
 - `timing.pageCompletion.screening`
 - `timing.screeningStart.attempt1`
-- `timing.screeningItemStart.attempt1.screening_item_01`
-- `timing.screeningItemStart.attempt1.screening_item_02`
-- `timing.screeningItemStart.attempt1.screening_item_03`
-- `timing.screeningItemSubmission.attempt1.screening_item_01`
-- `timing.screeningItemSubmission.attempt1.screening_item_02`
-- `timing.screeningItemSubmission.attempt1.screening_item_03`
+- `timing.screeningItemStart.attempt1.prestudy_segment_01_rep1_order1`
+- `timing.screeningItemSubmission.attempt1.prestudy_segment_01_rep1_order1`
 - `timing.screeningCompletion.attempt1`
 - `timing.pageEntry.instructions`
 - `timing.pageCompletion.instructions`
@@ -231,6 +237,7 @@ Current keys include:
 - `screening.activeAttempt`
 - `screening.attemptNumber`
 - `screening.currentItemIndex`
+- `screening.presentationOrder.attempt1`
 - `screening.selectedAnswers`
 - `screening.playedStates.attempt1`
 - `screening.itemResponses`

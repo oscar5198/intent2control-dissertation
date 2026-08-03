@@ -70,6 +70,10 @@
   margin-top: var(--space-8);
 }
 
+.navigation-area--primary-right .button--primary {
+  margin-left: auto;
+}
+
 @media (max-width: 48rem) {
   .app-shell,
   .app-shell--wide {
@@ -95,6 +99,11 @@
 
   .navigation-area {
     flex-direction: column;
+  }
+
+  .navigation-area--primary-right .button--primary {
+    width: 100%;
+    margin-left: 0;
   }
 
   .study-brand {

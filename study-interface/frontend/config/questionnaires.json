@@ -36,13 +36,14 @@
       "unresolved": "Final response options TBC. This question is optional."
     },
     {
-      "id": "nationality",
+      "id": "cultural_influence_country",
       "type": "text",
-      "label": "Nationality",
+      "label": "Which country has most influenced your musical and cultural background?",
+      "helperText": "For example, this could be the country where you spent most of your childhood or formative years.",
       "required": true,
       "finalOptionsApproved": false,
       "maxLength": 80,
-      "unresolved": "Dropdown list or final text-input policy TBC. Do not request names, addresses, or contact details."
+      "unresolved": "Final text-input policy TBC. Do not request names, addresses, or contact details."
     },
     {
       "id": "music_listening_habits",
@@ -144,9 +145,15 @@
         { "value": "headphones", "label": "Headphones" },
         { "value": "earphones", "label": "Earphones" },
         { "value": "phone_or_laptop_speakers", "label": "Phone or laptop speakers" },
-        { "value": "other", "label": "Other" },
-        { "value": "prefer_not_to_say", "label": "Prefer not to say" }
+        { "value": "other", "label": "Other" }
       ],
+      "otherDetail": {
+        "enabled": true,
+        "id": "headphones_or_earphones_used_other_detail",
+        "label": "Please specify what you used for listening.",
+        "placeholder": "Please specify...",
+        "maxLength": 120
+      },
       "unresolved": "Final response options TBC."
     },
     {
@@ -159,9 +166,15 @@
         { "value": "quiet_private_space", "label": "Quiet private space" },
         { "value": "shared_indoor_space", "label": "Shared indoor space" },
         { "value": "public_space", "label": "Public space" },
-        { "value": "other", "label": "Other environment" },
-        { "value": "prefer_not_to_say", "label": "Prefer not to say" }
+        { "value": "other", "label": "Other environment" }
       ],
+      "otherDetail": {
+        "enabled": true,
+        "id": "completion_location_or_environment_other_detail",
+        "label": "Please specify where you completed the study.",
+        "placeholder": "Please specify...",
+        "maxLength": 120
+      },
       "unresolved": "Final response options TBC."
     },
     {
