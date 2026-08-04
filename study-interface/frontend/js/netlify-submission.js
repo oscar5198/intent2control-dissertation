@@ -77,6 +77,7 @@ window.StudyApp.netlifySubmission = (function () {
     var controller = window.AbortController ? new AbortController() : null;
     var timeoutId = null;
     var body = toUrlEncodedBody(payload);
+    var submissionUrl = getSubmissionUrl();
 
     if (controller) {
       timeoutId = window.setTimeout(function () {
@@ -84,7 +85,9 @@ window.StudyApp.netlifySubmission = (function () {
       }, SUBMISSION_TIMEOUT_MS);
     }
 
-    return fetch("/", {
+    logSubmissionDiagnostic("Submitting Netlify form.", null, submissionUrl);
+
+    return fetch(submissionUrl, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: body,
@@ -94,15 +97,44 @@ window.StudyApp.netlifySubmission = (function () {
         window.clearTimeout(timeoutId);
       }
       if (!response.ok) {
+        logSubmissionDiagnostic("Netlify form submission failed.", response, submissionUrl);
         throw new Error("Submission request failed.");
       }
+      logSubmissionDiagnostic("Netlify form submission succeeded.", response, submissionUrl);
       return response;
     }).catch(function (error) {
       if (timeoutId) {
         window.clearTimeout(timeoutId);
       }
+      logSubmissionDiagnostic("Netlify form submission error.", null, submissionUrl, error);
       throw error;
     });
+  }
+
+  function getSubmissionUrl() {
+    var pathname = window.location && window.location.pathname ? window.location.pathname : "";
+    if (!pathname || pathname === "/") {
+      return "/index.html";
+    }
+    return pathname;
+  }
+
+  function logSubmissionDiagnostic(message, response, submissionUrl, error) {
+    if (!isDevelopmentDiagnosticsEnabled() || !window.console || !window.console.info) {
+      return;
+    }
+    window.console.info("[listening-study submission]", {
+      message: message,
+      requestUrl: submissionUrl,
+      responseStatus: response ? response.status : null,
+      responseStatusText: response ? response.statusText : null,
+      errorName: error ? error.name : null
+    });
+  }
+
+  function isDevelopmentDiagnosticsEnabled() {
+    var hostname = window.location && window.location.hostname ? window.location.hostname : "";
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "";
   }
 
   function toUrlEncodedBody(payload) {
@@ -391,6 +423,7 @@ window.StudyApp.netlifySubmission = (function () {
     getFormName: getFormName,
     buildSubmissionPayload: buildSubmissionPayload,
     buildAndSubmit: buildAndSubmit,
+    getSubmissionUrl: getSubmissionUrl,
     submitPayload: submitPayload,
     toUrlEncodedBody: toUrlEncodedBody,
     validatePayload: validatePayload

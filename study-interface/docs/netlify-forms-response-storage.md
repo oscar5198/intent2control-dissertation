@@ -9,7 +9,7 @@ The deployed static frontend submits the final listening-study response to Netli
 - Submission code: `study-interface/frontend/js/netlify-submission.js`
 - Study version constant: `STUDY_VERSION = "2026-08-04-v1"` in `netlify-submission.js`
 
-Netlify detects the hidden form at deploy time. The review page sends a URL-encoded `POST /` with `form-name=listening-study`. No API keys or secrets are used in the frontend.
+Netlify detects the hidden form at deploy time. The review page sends a URL-encoded `POST` to the current deployed HTML path, normally `/pages/review.html`, with `form-name=listening-study`. No API keys or secrets are used in the frontend.
 
 ## Exported CSV columns
 
@@ -98,7 +98,7 @@ After confirmed success, a small local marker is stored in `final.submissionResu
 
 ## Testing
 
-Run a local HTTP server from `study-interface/frontend`, complete the flow for Group 1 and Group 2, and use browser devtools or a fetch mock to inspect the final `POST /`. Direct Netlify Forms storage cannot be fully verified locally; after deployment, complete a pilot submission and confirm it appears under Netlify Site dashboard -> Forms -> `listening-study`.
+Run a local HTTP server from `study-interface/frontend`, complete the flow for Group 1 and Group 2, and use browser devtools or a fetch mock to inspect the final `POST` to the current review-page path. Direct Netlify Forms storage cannot be fully verified locally; after deployment, complete a pilot submission and confirm it appears under Netlify Site dashboard -> Forms -> `listening-study`.
 
 Before launch, export pilot/test submissions from Netlify, confirm `study_version`, then delete pilot/test submissions from the Netlify Forms dashboard so launch data starts cleanly.
 
