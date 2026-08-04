@@ -82,9 +82,9 @@ Do not assume Python will be the production server. This is only a local develop
 
 ## Storage
 
-`js/storage.js` is a temporary local development state abstraction. Browser `localStorage` is not the final secure research-data store and must not be used as production persistence for participant responses.
+`js/storage.js` is a temporary local state abstraction for in-progress study state and retry support. Confirmed final submissions for the deployed static site are stored through Netlify Forms.
 
-Final data persistence depends on the confirmed QMUL backend, secure storage, and data governance requirements.
+See `../docs/netlify-forms-response-storage.md` for the form name, exported CSV columns, JSON field structures, testing workflow, and analysis export utility.
 
 ## Data and Asset Safety
 

@@ -97,12 +97,15 @@ window.StudyApp.storage = (function () {
     "timing.pageEntry.review",
     "timing.pageCompletion.review",
     "timing.pageEntry.completion",
-    "session.developmentId",
+    "session.studyId",
     "demographics.responses",
     "demographics.completed",
     "postTask.responses",
     "postTask.completed",
     "final.payload",
+    "final.submissionInProgress",
+    "final.submissionCompleted",
+    "final.submissionResult",
     "final.submitted",
     "timing.finalSubmission"
   ];
@@ -182,8 +185,8 @@ window.StudyApp.storage = (function () {
     return documentedDevelopmentKeys.slice();
   }
 
-  function getOrCreateDevelopmentSessionId() {
-    var existing = getItem("session.developmentId");
+  function getOrCreateStudyId() {
+    var existing = getItem("session.studyId");
     var generated;
 
     if (existing) {
@@ -199,12 +202,15 @@ window.StudyApp.storage = (function () {
         return value.toString(16).padStart(8, "0");
       }).join("");
     } else {
-      generated = "dev_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 12);
+      generated = "study_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 12);
     }
 
-    generated = "dev_session_" + generated;
-    setItem("session.developmentId", generated);
+    setItem("session.studyId", generated);
     return generated;
+  }
+
+  function getOrCreateDevelopmentSessionId() {
+    return getOrCreateStudyId();
   }
 
   return {
@@ -216,6 +222,7 @@ window.StudyApp.storage = (function () {
     removeItem: removeItem,
     resetStudyState: resetStudyState
     ,
+    getOrCreateStudyId: getOrCreateStudyId,
     getOrCreateDevelopmentSessionId: getOrCreateDevelopmentSessionId
   };
 }());

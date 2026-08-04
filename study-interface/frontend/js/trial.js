@@ -13,6 +13,7 @@
 window.StudyApp = window.StudyApp || {};
 
 window.StudyApp.trial = (function () {
+  var maxTrialCommentLength = 1000;
   var currentConfig = null;
   var currentTrialOrder = null;
   var currentTrial = null;
@@ -453,6 +454,7 @@ window.StudyApp.trial = (function () {
     comment.id = versionId + "-comment";
     comment.name = versionId + "Comment";
     comment.className = "textarea";
+    comment.maxLength = maxTrialCommentLength;
     comment.setAttribute("data-trial-comment", versionId);
     comment.setAttribute("aria-describedby", versionId + "-comment-error");
     comment.addEventListener("input", function () {
@@ -534,7 +536,8 @@ window.StudyApp.trial = (function () {
       var versionId = getVersionId(mapping.neutralLabel);
       var audioPlayed = hasAudioPlayed(versionId);
       var ratingSet = state.ratingTouched[versionId] === true && typeof state.ratings[versionId] === "number";
-      var commentValid = window.StudyApp.validation.validateRequiredComment(state.comments[versionId]);
+      var commentText = typeof state.comments[versionId] === "string" ? state.comments[versionId] : "";
+      var commentValid = window.StudyApp.validation.validateRequiredComment(commentText) && commentText.length <= maxTrialCommentLength;
       var audioError = document.getElementById(versionId + "-audio-required-error") || document.getElementById(versionId + "-played-status");
       var ratingInput = document.querySelector("[data-trial-rating='" + versionId + "']");
       var ratingError = document.getElementById(versionId + "-rating-error");
@@ -554,6 +557,9 @@ window.StudyApp.trial = (function () {
           commentInput.setAttribute("aria-invalid", String(!commentValid));
         }
         setError(ratingError, !ratingSet);
+        if (commentError) {
+          commentError.textContent = commentText.length > maxTrialCommentLength ? "Keep this comment under " + maxTrialCommentLength + " characters." : "Provide a comment for " + mapping.neutralLabel + ".";
+        }
         setError(commentError, !commentValid);
       }
 
@@ -618,6 +624,7 @@ window.StudyApp.trial = (function () {
           stimulusConfigurationVersion: currentConfig.stimulusConfigurationVersion || null,
           neutralDisplayLabel: mapping.neutralLabel,
           actualMixId: mapping.actualMixId,
+          stimulusId: mapping.stimulusId || null,
           audioPath: mapping.audioPath,
           rating: state.ratings[versionId],
           comment: state.comments[versionId],
@@ -747,6 +754,7 @@ window.StudyApp.trial = (function () {
             stimulusConfigurationVersion: currentConfig.stimulusConfigurationVersion || null,
             neutralDisplayLabel: mapping.neutralLabel,
             actualMixId: mapping.actualMixId,
+            stimulusId: mapping.stimulusId || null,
             audioPath: mapping.audioPath,
             rating: 50 + mappingIndex,
             comment: "Sample comment for " + mapping.neutralLabel + ".",

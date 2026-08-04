@@ -116,7 +116,9 @@ window.StudyApp.randomisation = (function () {
       return {
         neutralLabel: label,
         actualMixId: mix ? mix.actualMixId : "TBC",
+        stimulusId: mix ? mix.stimulusId : "TBC",
         realMixIdentity: mix ? mix.realMixIdentity : "TBC",
+        originalMixName: mix ? mix.originalMixName : "TBC",
         audioPath: mix ? mix.audioPath : "TBC"
       };
     });

@@ -137,7 +137,7 @@ window.StudyApp.app = (function () {
             window.StudyApp.timing.recordStudyStart();
           }
           if (window.StudyApp.storage) {
-            window.StudyApp.storage.getOrCreateDevelopmentSessionId();
+            window.StudyApp.storage.getOrCreateStudyId();
           }
           if (window.StudyApp.navigation) {
             navigated = window.StudyApp.navigation.navigateTo("study-information-consent.html");
@@ -2470,15 +2470,19 @@ window.StudyApp.app = (function () {
 
   function handleFinalSubmit(currentPage) {
     var summary = document.querySelector("[data-validation-summary]");
-    var payload;
+    var button = document.querySelector("[data-final-submit]");
 
-    if (window.StudyApp.storage && window.StudyApp.storage.getItem("final.submitted") === true) {
+    if (window.StudyApp.storage && window.StudyApp.storage.getItem("final.submissionCompleted") === true) {
       setError(summary, true);
       if (summary) {
         summary.textContent = "This study session has already been submitted.";
         summary.focus();
       }
       window.StudyApp.navigation.navigateTo("completion.html");
+      return false;
+    }
+
+    if (window.StudyApp.storage && window.StudyApp.storage.getItem("final.submissionInProgress") === true) {
       return false;
     }
 
@@ -2492,27 +2496,65 @@ window.StudyApp.app = (function () {
       return false;
     }
 
-    payload = buildFinalPayload();
     if (window.StudyApp.storage) {
-      window.StudyApp.storage.setItem("final.payload", payload);
-      window.StudyApp.storage.setItem("final.submitted", true);
+      window.StudyApp.storage.setItem("final.submissionInProgress", true);
     }
-    if (window.StudyApp.timing) {
-      window.StudyApp.timing.recordFinalSubmission();
-      window.StudyApp.timing.recordPageCompletion(currentPage);
+    setDisabled(button, true);
+    setError(summary, true);
+    if (summary) {
+      summary.textContent = "Saving your responses...";
+      summary.focus();
     }
-    window.StudyApp.navigation.navigateTo("completion.html");
+
+    window.StudyApp.netlifySubmission.buildAndSubmit().then(function (payload) {
+      if (window.StudyApp.storage) {
+        window.StudyApp.storage.setItem("final.payload", payload);
+        window.StudyApp.storage.setItem("final.submissionInProgress", false);
+        window.StudyApp.storage.setItem("final.submissionCompleted", true);
+        window.StudyApp.storage.setItem("final.submitted", true);
+        window.StudyApp.storage.setItem("final.submissionResult", {
+          submittedAt: payload.completed_at,
+          studyId: payload.study_id,
+          formName: window.StudyApp.netlifySubmission.getFormName()
+        });
+      }
+      if (window.StudyApp.timing) {
+        window.StudyApp.timing.recordFinalSubmission();
+        window.StudyApp.timing.recordPageCompletion(currentPage);
+      }
+      window.StudyApp.navigation.navigateTo("completion.html");
+    }).catch(function () {
+      if (window.StudyApp.storage) {
+        window.StudyApp.storage.setItem("final.submissionInProgress", false);
+      }
+      setDisabled(button, false);
+      setError(summary, true);
+      if (summary) {
+        summary.textContent = "Your responses could not be saved. Please check your connection and try Final Submit again. Your answers have not been cleared.";
+        summary.focus();
+      }
+    });
+
     return true;
   }
 
   function buildFinalPayload() {
+    if (window.StudyApp.netlifySubmission) {
+      return {
+        status: "available_asynchronously",
+        formName: window.StudyApp.netlifySubmission.getFormName(),
+        studyVersion: window.StudyApp.netlifySubmission.getStudyVersion(),
+        studyId: window.StudyApp.storage.getOrCreateStudyId()
+      };
+    }
+
     var finalTimestamp = window.StudyApp.timing ? window.StudyApp.timing.nowIsoString() : new Date().toISOString();
 
     return {
       developmentOnly: true,
       productionSafe: false,
       warning: "Study session data for review.",
-      sessionId: window.StudyApp.storage.getOrCreateDevelopmentSessionId(),
+      study_id: window.StudyApp.storage.getOrCreateStudyId(),
       studyVersion: "phase_2b_development",
       timestamps: collectTimingValues(),
       consent: {
@@ -2581,7 +2623,24 @@ window.StudyApp.app = (function () {
 
   function inspectPayload() {
     var preview = document.querySelector("[data-payload-preview]");
-    var payload = window.StudyApp.storage && (window.StudyApp.storage.getItem("final.payload") || buildFinalPayload());
+    var storedPayload = window.StudyApp.storage && window.StudyApp.storage.getItem("final.payload");
+    if (window.StudyApp.netlifySubmission && !storedPayload) {
+      window.StudyApp.netlifySubmission.buildSubmissionPayload().then(function (payload) {
+        if (preview) {
+          preview.textContent = JSON.stringify(payload, null, 2);
+          preview.classList.remove("is-hidden");
+          preview.focus();
+        }
+      }).catch(function () {
+        if (preview) {
+          preview.textContent = "Submission payload could not be prepared. Please complete all required study stages first.";
+          preview.classList.remove("is-hidden");
+          preview.focus();
+        }
+      });
+      return;
+    }
+    var payload = storedPayload || buildFinalPayload();
     if (preview) {
       preview.textContent = JSON.stringify(payload, null, 2);
       preview.classList.remove("is-hidden");
@@ -2590,7 +2649,17 @@ window.StudyApp.app = (function () {
   }
 
   function downloadPayload() {
-    var payload = window.StudyApp.storage && (window.StudyApp.storage.getItem("final.payload") || buildFinalPayload());
+    var storedPayload = window.StudyApp.storage && window.StudyApp.storage.getItem("final.payload");
+    if (window.StudyApp.netlifySubmission && !storedPayload) {
+      window.StudyApp.netlifySubmission.buildSubmissionPayload().then(triggerPayloadDownload).catch(function () {
+        inspectPayload();
+      });
+      return;
+    }
+    triggerPayloadDownload(storedPayload || buildFinalPayload());
+  }
+
+  function triggerPayloadDownload(payload) {
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     var link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -2602,9 +2671,9 @@ window.StudyApp.app = (function () {
   }
 
   function initialiseCompletion() {
-    var sessionId = document.querySelector("[data-session-id]");
-    if (sessionId && window.StudyApp.storage) {
-      sessionId.textContent = window.StudyApp.storage.getOrCreateDevelopmentSessionId();
+    var studyId = document.querySelector("[data-session-id]");
+    if (studyId && window.StudyApp.storage) {
+      studyId.textContent = window.StudyApp.storage.getOrCreateStudyId();
     }
   }
 
