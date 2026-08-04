@@ -182,7 +182,7 @@ window.StudyApp.app = (function () {
           window.StudyApp.timing.recordPageCompletion(currentPage);
         }
         if (window.StudyApp.navigation) {
-          window.StudyApp.navigation.navigateTo("trial.html");
+          window.location.href = "trial.html?v=scale-active-summary-20260804";
         }
       });
     }
@@ -408,7 +408,7 @@ window.StudyApp.app = (function () {
       window.StudyApp.timing.recordPageCompletion(currentPage);
     }
     if (window.StudyApp.navigation) {
-      window.StudyApp.navigation.navigateTo("practice.html");
+      window.location.href = "practice.html?v=scale-active-summary-20260804";
     }
     return true;
   }
@@ -462,7 +462,6 @@ window.StudyApp.app = (function () {
     }
 
     container.innerHTML = "";
-    container.appendChild(createPracticeAudioSection(config));
     container.appendChild(createPracticeSharedRatingSection(config));
     container.appendChild(createPracticeCommentSection(config));
 
@@ -472,24 +471,24 @@ window.StudyApp.app = (function () {
     return true;
   }
 
-  function createPracticeAudioSection(config) {
-    return createPracticeSection("Listen to Version A, B, and C", "You may replay the versions and compare them in any order.", "trial-audio-grid", config.versions.map(function (version) {
-      return createPracticeAudioCard(config, version);
-    }));
-  }
-
   function createPracticeSharedRatingSection(config) {
     var section = document.createElement("section");
+    var header = document.createElement("div");
     var heading = document.createElement("h2");
     var intro = document.createElement("p");
     var scale = createPracticePreferenceScale(config);
+    var audioBank = createPracticeAudioBank(config);
 
     section.className = "trial-task-section shared-rating-section";
+    header.className = "shared-rating-section__header";
     heading.textContent = "Place the versions on the preference scale";
     intro.className = "trial-section-intro";
-    intro.textContent = "Drag, click, or use the keyboard to position Version A, Version B, and Version C on one shared 0-100 preference scale.";
-    section.appendChild(heading);
+    intro.textContent = "Drag each marker to set its preference rating. Click or tap a marker to play that version.";
+    header.appendChild(heading);
+    header.appendChild(createSharedStopAudioControl("practice"));
+    section.appendChild(header);
     section.appendChild(intro);
+    section.appendChild(audioBank);
     section.appendChild(scale);
     return section;
   }
@@ -517,19 +516,6 @@ window.StudyApp.app = (function () {
       valueList.appendChild(createPracticePreferenceValue(version));
     });
 
-    track.addEventListener("click", function (event) {
-      var selectedMarker = getSelectedPreferenceMarker(scale);
-      if (event.target.closest && event.target.closest(".preference-marker")) {
-        return;
-      }
-      if (!selectedMarker) {
-        return;
-      }
-      playPracticeMarkerAudio(selectedMarker.getAttribute("data-practice-rating"));
-      setPracticeMarkerFromPointer(config, selectedMarker, track, event, true);
-      selectedMarker.focus({ preventScroll: true });
-    });
-
     track.appendChild(markerLayer);
     scale.appendChild(track);
     scale.appendChild(anchorRow);
@@ -545,45 +531,20 @@ window.StudyApp.app = (function () {
     marker.id = version.id + "-rating";
     marker.name = version.id + "Rating";
     marker.className = "preference-marker preference-marker--" + (index + 1) + " preference-marker--unset";
-    marker.tabIndex = 0;
+    marker.tabIndex = -1;
     marker.textContent = version.label.replace("Version ", "");
-    marker.setAttribute("role", "slider");
+    marker.setAttribute("aria-label", version.label + " audio marker");
+    marker.setAttribute("data-version-display-label", version.label);
     marker.setAttribute("data-practice-rating", version.id);
     marker.setAttribute("data-audio-id-target", "practice." + version.id);
-    marker.setAttribute("aria-label", "Preference rating for " + version.label);
-    marker.setAttribute("aria-valuemin", String(config.ratingScale.minimum));
-    marker.setAttribute("aria-valuemax", String(config.ratingScale.maximum));
-    marker.setAttribute("aria-valuenow", String(initialValue));
-    marker.setAttribute("aria-valuetext", version.label + " not set");
     marker.setAttribute("aria-describedby", version.id + "-rating-value " + version.id + "-rating-error");
     setPreferenceMarkerPosition(marker, initialValue);
 
-    marker.addEventListener("pointerdown", function (event) {
-      event.preventDefault();
-      selectPreferenceMarker(marker);
-      marker.focus({ preventScroll: true });
+    attachPreferenceMarkerPointerHandlers(marker, track, function () {
       playPracticeMarkerAudio(version.id);
+    }, function (event) {
       setPracticeMarkerFromPointer(config, marker, track, event, true);
-      marker.setPointerCapture(event.pointerId);
     });
-    marker.addEventListener("pointermove", function (event) {
-      if (marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
-        setPracticeMarkerFromPointer(config, marker, track, event, true);
-      }
-    });
-    marker.addEventListener("pointerup", function (event) {
-      if (marker.releasePointerCapture && marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
-        marker.releasePointerCapture(event.pointerId);
-      }
-    });
-    marker.addEventListener("keydown", function (event) {
-      selectPreferenceMarker(marker);
-      handlePracticeMarkerKeydown(config, marker, version.id, event);
-    });
-    marker.addEventListener("focus", function () {
-      selectPreferenceMarker(marker);
-    });
-
     return marker;
   }
 
@@ -598,11 +559,27 @@ window.StudyApp.app = (function () {
   }
 
   function createPracticePreferenceValue(version) {
-    var item = document.createElement("p");
-    item.id = version.id + "-rating-value";
+    var item = document.createElement("div");
+    var rating = document.createElement("p");
+    var ratingError = document.createElement("p");
+    var playedStatus = document.createElement("p");
+
     item.className = "rating-value shared-preference-scale__value";
-    item.textContent = version.label + ": Not set";
-    item.setAttribute("aria-live", "polite");
+    item.setAttribute("data-rating-summary-version", version.id);
+    rating.id = version.id + "-rating-value";
+    rating.className = "shared-preference-scale__rating-text";
+    rating.textContent = version.label + ": Not set";
+    rating.setAttribute("aria-live", "polite");
+    ratingError.id = version.id + "-rating-error";
+    ratingError.className = "validation-message is-hidden";
+    ratingError.textContent = "Set a rating for " + version.label + ".";
+    playedStatus.id = version.id + "-played-status";
+    playedStatus.className = "field-help field-help--flush trial-played-status";
+    playedStatus.textContent = "Required: play this version before completing practice.";
+    playedStatus.setAttribute("aria-live", "polite");
+    item.appendChild(rating);
+    item.appendChild(ratingError);
+    item.appendChild(playedStatus);
     return item;
   }
 
@@ -613,47 +590,10 @@ window.StudyApp.app = (function () {
     setPracticeMarkerRating(config, marker, versionId, value, touched);
   }
 
-  function handlePracticeMarkerKeydown(config, marker, versionId, event) {
-    var handled = true;
-    var currentValue = Number(marker.getAttribute("aria-valuenow") || 50);
-    var nextValue = currentValue;
-
-    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
-      nextValue = currentValue - 1;
-    } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
-      nextValue = currentValue + 1;
-    } else if (event.key === "PageDown") {
-      nextValue = currentValue - 10;
-    } else if (event.key === "PageUp") {
-      nextValue = currentValue + 10;
-    } else if (event.key === "Home") {
-      nextValue = 0;
-    } else if (event.key === "End") {
-      nextValue = 100;
-    } else if (event.key === " " || event.key === "Spacebar" || event.key === "Enter") {
-      playPracticeMarkerAudio(versionId);
-      setPracticeMarkerRating(config, marker, versionId, currentValue, true);
-    } else {
-      handled = false;
-    }
-
-    if (!handled) {
-      return;
-    }
-
-    event.preventDefault();
-    if (nextValue !== currentValue) {
-      playPracticeMarkerAudio(versionId);
-      setPracticeMarkerRating(config, marker, versionId, nextValue, true);
-    }
-  }
-
   function setPracticeMarkerRating(config, marker, versionId, value, touched) {
     var boundedValue = Math.max(config.ratingScale.minimum, Math.min(config.ratingScale.maximum, Number(value)));
     setPreferenceMarkerPosition(marker, boundedValue);
     marker.classList.toggle("preference-marker--unset", touched !== true);
-    marker.setAttribute("aria-valuenow", String(boundedValue));
-    marker.setAttribute("aria-valuetext", touched ? String(boundedValue) : "Not set");
     marker.setAttribute("aria-invalid", "false");
     storePracticeRating(versionId, boundedValue, touched);
     updatePracticeRatingValue(versionId, boundedValue, touched);
@@ -681,6 +621,61 @@ window.StudyApp.app = (function () {
     return true;
   }
 
+  function attachPreferenceMarkerPointerHandlers(marker, track, playCallback, dragCallback) {
+    var dragThresholdPixels = 8;
+    var pointerState = null;
+
+    marker.addEventListener("pointerdown", function (event) {
+      event.preventDefault();
+      selectPreferenceMarker(marker);
+      pointerState = {
+        id: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        dragging: false
+      };
+      if (marker.setPointerCapture) {
+        marker.setPointerCapture(event.pointerId);
+      }
+    });
+
+    marker.addEventListener("pointermove", function (event) {
+      var deltaX;
+      var deltaY;
+      if (!pointerState || pointerState.id !== event.pointerId) {
+        return;
+      }
+      deltaX = event.clientX - pointerState.startX;
+      deltaY = event.clientY - pointerState.startY;
+      if (!pointerState.dragging && Math.sqrt(deltaX * deltaX + deltaY * deltaY) >= dragThresholdPixels) {
+        pointerState.dragging = true;
+        if (typeof playCallback === "function") {
+          playCallback();
+        }
+      }
+      if (pointerState.dragging && typeof dragCallback === "function") {
+        dragCallback(event);
+      }
+    });
+
+    marker.addEventListener("pointerup", function (event) {
+      if (marker.releasePointerCapture && marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
+        marker.releasePointerCapture(event.pointerId);
+      }
+      if (pointerState && pointerState.id === event.pointerId && !pointerState.dragging && typeof playCallback === "function") {
+        playCallback();
+      }
+      pointerState = null;
+    });
+
+    marker.addEventListener("pointercancel", function (event) {
+      if (marker.releasePointerCapture && marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
+        marker.releasePointerCapture(event.pointerId);
+      }
+      pointerState = null;
+    });
+  }
+
   function getPreferenceValueFromPointer(rect, event) {
     if (rect.height > rect.width * 1.5) {
       return Math.round(((rect.bottom - event.clientY) / rect.height) * 100);
@@ -693,12 +688,63 @@ window.StudyApp.app = (function () {
     if (window.StudyApp.audio) {
       window.StudyApp.audio.playAudioFromBeginning("practice." + versionId);
     }
+    updateSharedStopAudioControls();
   }
 
   function setActivePreferenceMarker(audioId) {
     Array.prototype.slice.call(document.querySelectorAll(".preference-marker, .version-card--audio")).forEach(function (element) {
       element.classList.toggle("is-playing", element.getAttribute("data-audio-id-target") === audioId || element.getAttribute("data-audio-card-id") === audioId);
     });
+    updateSharedPlaybackStatus(audioId);
+    updateSharedStopAudioControls();
+  }
+
+  function createSharedStopAudioControl(context) {
+    var wrapper = document.createElement("div");
+    var button = document.createElement("button");
+
+    wrapper.className = "shared-audio-control-row";
+    button.type = "button";
+    button.className = "button button--secondary";
+    button.textContent = "Stop audio";
+    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
+    button.setAttribute("data-stop-shared-audio", context || "");
+    button.addEventListener("click", function () {
+      if (window.StudyApp.audio) {
+        window.StudyApp.audio.stopActiveAudio();
+      }
+      setActivePreferenceMarker(null);
+    });
+    wrapper.appendChild(button);
+    return wrapper;
+  }
+
+  function updateSharedStopAudioControls() {
+    var hasPlayingAudio = Array.prototype.slice.call(document.querySelectorAll("audio[data-audio-id]")).some(function (audioElement) {
+      return !audioElement.paused && !audioElement.ended;
+    });
+    Array.prototype.slice.call(document.querySelectorAll("[data-stop-shared-audio]")).forEach(function (button) {
+      setDisabled(button, !hasPlayingAudio);
+    });
+  }
+
+  function updateSharedPlaybackStatus(audioId) {
+    var marker = audioId ? document.querySelector("[data-audio-id-target='" + audioId + "']") : null;
+    var versionId = marker ? marker.getAttribute("data-practice-rating") || marker.getAttribute("data-trial-rating") : null;
+    Array.prototype.slice.call(document.querySelectorAll("[data-rating-summary-version]")).forEach(function (summary) {
+      summary.classList.toggle("is-playing", Boolean(versionId && summary.getAttribute("data-rating-summary-version") === versionId));
+    });
+  }
+
+  function createPracticeAudioBank(config) {
+    var bank = document.createElement("div");
+    bank.className = "marker-audio-bank";
+    bank.setAttribute("aria-hidden", "true");
+    config.versions.forEach(function (version) {
+      bank.appendChild(createPracticeAudioElement(config, version));
+    });
+    return bank;
   }
 
   function createPracticeSection(headingText, introText, gridClassName, cards) {
@@ -725,32 +771,23 @@ window.StudyApp.app = (function () {
     return section;
   }
 
-  function createPracticeAudioCard(config, version) {
-    var card = document.createElement("article");
-    var heading = document.createElement("h3");
+  function createPracticeAudioElement(config, version) {
     var audio = document.createElement("audio");
     var source = document.createElement("source");
     var audioError = document.createElement("p");
-    var playedStatus = document.createElement("p");
 
-    card.className = "version-card version-card--audio";
-    card.setAttribute("data-audio-card-id", "practice." + version.id);
-    heading.textContent = version.label;
     audio.className = "audio-control";
-    audio.controls = true;
+    audio.controls = false;
     audio.preload = "none";
     audio.setAttribute("aria-label", "Practice " + version.label + " audio");
     audio.setAttribute("data-audio-id", "practice." + version.id);
+    audio.setAttribute("data-marker-controlled-audio", "true");
     source.src = "../" + version.audioPath;
     source.type = getAudioMimeType(version.audioPath);
     audio.appendChild(source);
     audioError.id = version.id + "-audio-error";
     audioError.className = "validation-message is-hidden";
     audioError.textContent = version.label + " audio could not be loaded.";
-    playedStatus.id = version.id + "-played-status";
-    playedStatus.className = "field-help field-help--flush trial-played-status";
-    playedStatus.textContent = "Required: play this version before completing practice.";
-    playedStatus.setAttribute("aria-live", "polite");
     audio.addEventListener("playing", function () {
       if (window.StudyApp.audio) {
         window.StudyApp.audio.markAudioPlayed("practice." + version.id);
@@ -767,11 +804,10 @@ window.StudyApp.app = (function () {
       setActivePreferenceMarker(null);
     });
 
-    card.appendChild(heading);
-    card.appendChild(audio);
-    card.appendChild(audioError);
-    card.appendChild(playedStatus);
-    return card;
+    var wrapper = document.createElement("div");
+    wrapper.appendChild(audio);
+    wrapper.appendChild(audioError);
+    return wrapper;
   }
 
   function createRatingAnchorScale() {
@@ -834,8 +870,6 @@ window.StudyApp.app = (function () {
       if (ratingControl && touched[version.id] === true && typeof ratings[version.id] !== "undefined") {
         setPreferenceMarkerPosition(ratingControl, ratings[version.id]);
         ratingControl.classList.remove("preference-marker--unset");
-        ratingControl.setAttribute("aria-valuenow", String(ratings[version.id]));
-        ratingControl.setAttribute("aria-valuetext", String(ratings[version.id]));
         updatePracticeRatingValue(version.id, ratings[version.id], true);
       }
       if (comment && typeof comments[version.id] === "string") {
@@ -888,7 +922,7 @@ window.StudyApp.app = (function () {
 
   function getPracticeVersionLabel(versionId) {
     var marker = document.querySelector("[data-practice-rating='" + versionId + "']");
-    return marker ? marker.getAttribute("aria-label").replace("Preference rating for ", "") : versionId;
+    return marker ? marker.getAttribute("data-version-display-label") || marker.textContent.trim() : versionId;
   }
 
   function updatePracticeCompletionState(config) {
@@ -938,7 +972,7 @@ window.StudyApp.app = (function () {
         }
       }
       if (!audioPlayed && !firstInvalid) {
-        firstInvalid = audioElement;
+        firstInvalid = ratingControl || audioElement;
       }
       if (!ratingValid && !firstInvalid) {
         firstInvalid = ratingControl;
@@ -983,7 +1017,7 @@ window.StudyApp.app = (function () {
       window.StudyApp.timing.recordPageCompletion(currentPage);
     }
     if (window.StudyApp.navigation) {
-      window.StudyApp.navigation.navigateTo("main-study.html");
+      window.location.href = "main-study.html?v=scale-active-summary-20260804";
     }
     return true;
   }
@@ -1133,9 +1167,7 @@ window.StudyApp.app = (function () {
       window.StudyApp.timing.recordListeningSetupCompletion();
       window.StudyApp.timing.recordPageCompletion(currentPage);
     }
-    if (window.StudyApp.navigation) {
-      window.StudyApp.navigation.navigateTo("screening.html");
-    }
+    window.location.href = "screening.html?v=reference-ab-v4";
 
     return true;
   }
@@ -1159,6 +1191,7 @@ window.StudyApp.app = (function () {
       screeningState.selectedAnswers = getStoredScreeningSelectedAnswers();
       screeningState.complete = window.StudyApp.storage && window.StudyApp.storage.getItem("screening.activeAttempt") === false;
       screeningState.presentationOrder = prepareScreeningPresentations(screeningState.config, screeningState.attemptNumber);
+      sanitizeScreeningSelectedAnswers();
 
       if (window.StudyApp.storage && !screeningState.complete) {
         window.StudyApp.storage.setItem("screening.activeAttempt", true);
@@ -1199,7 +1232,7 @@ window.StudyApp.app = (function () {
     var instructions = document.querySelector("[data-screening-instructions]");
 
     if (instructions) {
-      instructions.textContent = config.screeningInstructions;
+      instructions.innerHTML = formatScreeningInstructions(config.screeningInstructions);
     }
 
     if (warning) {
@@ -1227,6 +1260,9 @@ window.StudyApp.app = (function () {
 
     if (storedOrder !== null) {
       resetIncompatibleScreeningAttemptState(attemptNumber);
+      screeningState.selectedAnswers = {};
+      screeningState.responses = [];
+      screeningState.scores = [];
     }
 
     if (!config || !Array.isArray(config.segments) || !config.segments.length) {
@@ -1254,7 +1290,7 @@ window.StudyApp.app = (function () {
     });
 
     if (structure.randomisePresentationOrder === true && window.StudyApp.randomisation) {
-      presentations = window.StudyApp.randomisation.shuffle(presentations);
+      presentations = shuffleScreeningPresentations(presentations, structure);
     }
 
     return presentations.map(function (presentation, index) {
@@ -1264,26 +1300,88 @@ window.StudyApp.app = (function () {
     });
   }
 
+  function shuffleScreeningPresentations(presentations, structure) {
+    var attempts = 0;
+    var shuffled = presentations;
+
+    while (attempts < 20) {
+      shuffled = window.StudyApp.randomisation.shuffle(presentations);
+      if (!isGroupedScreeningSegmentOrder(shuffled, structure)) {
+        return shuffled;
+      }
+      attempts += 1;
+    }
+
+    return buildInterleavedScreeningFallback(presentations);
+  }
+
+  function isGroupedScreeningSegmentOrder(presentations, structure) {
+    var repetitions = typeof structure.repetitionsPerSegment === "number" ? structure.repetitionsPerSegment : 1;
+    var segmentOrder;
+
+    if (!Array.isArray(presentations) || presentations.length !== repetitions * 2) {
+      return false;
+    }
+
+    segmentOrder = presentations.map(function (presentation) {
+      return presentation.segmentId;
+    });
+
+    return segmentOrder.slice(0, repetitions).every(function (segmentId) {
+      return segmentId === segmentOrder[0];
+    }) && segmentOrder.slice(repetitions).every(function (segmentId) {
+      return segmentId === segmentOrder[repetitions];
+    }) && segmentOrder[0] !== segmentOrder[repetitions];
+  }
+
+  function buildInterleavedScreeningFallback(presentations) {
+    var groups = {};
+    var segmentIds = [];
+    var interleaved = [];
+
+    presentations.forEach(function (presentation) {
+      if (!groups[presentation.segmentId]) {
+        groups[presentation.segmentId] = [];
+        segmentIds.push(presentation.segmentId);
+      }
+      groups[presentation.segmentId].push(presentation);
+    });
+
+    if (segmentIds.length !== 2) {
+      return presentations;
+    }
+
+    segmentIds = window.StudyApp.randomisation.shuffle(segmentIds);
+    groups[segmentIds[0]] = window.StudyApp.randomisation.shuffle(groups[segmentIds[0]]);
+    groups[segmentIds[1]] = window.StudyApp.randomisation.shuffle(groups[segmentIds[1]]);
+
+    [segmentIds[0], segmentIds[1], segmentIds[0], segmentIds[1], segmentIds[0], segmentIds[1]].forEach(function (segmentId) {
+      interleaved.push(groups[segmentId].shift());
+    });
+
+    return interleaved;
+  }
+
   function createScreeningPresentation(segment, repetitionNumber) {
-    var matchAnswerOptions = window.StudyApp.randomisation ? window.StudyApp.randomisation.shuffle(["version_b", "version_c"]) : ["version_b", "version_c"];
+    var matchAnswerOptions = window.StudyApp.randomisation ? window.StudyApp.randomisation.shuffle(["version_a", "version_b"]) : ["version_a", "version_b"];
     var matchAnswer = matchAnswerOptions[0];
-    var nonMatchAnswer = matchAnswer === "version_b" ? "version_c" : "version_b";
+    var nonMatchAnswer = matchAnswer === "version_a" ? "version_b" : "version_a";
     var audioChoices = [
       {
-        id: "version_a",
-        label: "Version A",
+        id: "reference",
+        label: "Reference",
         audioPath: segment.matchAudioPath,
         internalRole: "reference_match"
       },
       {
         id: matchAnswer,
-        label: matchAnswer === "version_b" ? "Version B" : "Version C",
+        label: matchAnswer === "version_a" ? "Version A" : "Version B",
         audioPath: segment.matchDuplicateAudioPath || segment.matchAudioPath,
         internalRole: "matching_answer"
       },
       {
         id: nonMatchAnswer,
-        label: nonMatchAnswer === "version_b" ? "Version B" : "Version C",
+        label: nonMatchAnswer === "version_a" ? "Version A" : "Version B",
         audioPath: segment.nonMatchAudioPath,
         internalRole: "non_matching_answer"
       }
@@ -1305,34 +1403,47 @@ window.StudyApp.app = (function () {
       excerptEndSeconds: segment.excerptEndSeconds,
       comparisonOffsetSecondsRelativeToReference: segment.comparisonOffsetSecondsRelativeToReference,
       questionType: segment.questionType || "abx",
-      prompt: segment.prompt || "Which version matches Version A?",
+      prompt: segment.prompt || "Which of A or B matches the Reference?",
       audioChoices: audioChoices,
       answerOptions: [
+        { value: "version_a", label: "Version A" },
         { value: "version_b", label: "Version B" },
-        { value: "version_c", label: "Version C" }
       ],
       correctAnswer: matchAnswer,
-      requiredAudioChoices: segment.requiredAudioChoices || ["version_a", "version_b", "version_c"],
+      requiredAudioChoices: segment.requiredAudioChoices || ["reference", "version_a", "version_b"],
       versionMapping: {
-        version_a: "matching_reference",
-        version_b: matchAnswer === "version_b" ? "matching_answer" : "non_matching_answer",
-        version_c: matchAnswer === "version_c" ? "matching_answer" : "non_matching_answer"
+        reference: "matching_reference",
+        version_a: matchAnswer === "version_a" ? "matching_answer" : "non_matching_answer",
+        version_b: matchAnswer === "version_b" ? "matching_answer" : "non_matching_answer"
       },
       developmentLogic: segment.developmentLogic
     };
   }
 
   function getVersionSortIndex(versionId) {
-    if (versionId === "version_a") {
+    if (versionId === "reference") {
       return 1;
     }
-    if (versionId === "version_b") {
+    if (versionId === "version_a") {
       return 2;
     }
-    if (versionId === "version_c") {
+    if (versionId === "version_b") {
       return 3;
     }
     return 99;
+  }
+
+  function getScreeningChoiceDisplayLabel(choiceId) {
+    if (choiceId === "reference") {
+      return "Reference";
+    }
+    if (choiceId === "version_a") {
+      return "Version A";
+    }
+    if (choiceId === "version_b") {
+      return "Version B";
+    }
+    return "";
   }
 
   function isValidScreeningPresentationOrder(order, config) {
@@ -1352,6 +1463,10 @@ window.StudyApp.app = (function () {
     if (!order.every(function (item) {
       return isValidScreeningPresentationItem(item, config);
     })) {
+      return false;
+    }
+
+    if (isGroupedScreeningSegmentOrder(order, structure)) {
       return false;
     }
 
@@ -1380,7 +1495,7 @@ window.StudyApp.app = (function () {
     if (!item.id || !item.segmentId || typeof item.repetitionNumber !== "number" || typeof item.presentationOrder !== "number") {
       return false;
     }
-    if (["version_b", "version_c"].indexOf(item.correctAnswer) === -1) {
+    if (["version_a", "version_b"].indexOf(item.correctAnswer) === -1) {
       return false;
     }
     if (!Array.isArray(item.audioChoices) || item.audioChoices.length !== 3 || !Array.isArray(item.answerOptions) || item.answerOptions.length !== 2) {
@@ -1389,11 +1504,13 @@ window.StudyApp.app = (function () {
     choiceIds = item.audioChoices.map(function (choice) {
       return choice && choice.id;
     }).sort();
-    if (choiceIds.join("|") !== "version_a|version_b|version_c") {
+    if (choiceIds.join("|") !== "reference|version_a|version_b") {
       return false;
     }
     return item.audioChoices.every(function (choice) {
-      return choice.label && choice.audioPath && choice.audioPath.indexOf("assets/audio/") === 0;
+      return choice.label === getScreeningChoiceDisplayLabel(choice.id) && choice.audioPath && choice.audioPath.indexOf("assets/audio/") === 0;
+    }) && item.answerOptions.every(function (option) {
+      return option && option.label === getScreeningChoiceDisplayLabel(option.value);
     });
   }
 
@@ -1456,7 +1573,7 @@ window.StudyApp.app = (function () {
       itemProgress.className = "progress__label";
       itemProgress.textContent = "Listening item " + (index + 1) + " of " + items.length;
       heading.textContent = "Listening item " + (index + 1);
-      prompt.textContent = item.prompt === "TBC" ? "Listen to the versions and choose the match." : item.prompt;
+      prompt.innerHTML = item.prompt === "TBC" ? "Listen to the versions and choose the match." : "<strong>" + escapeHtml(item.prompt) + "</strong>";
       audioContainer.className = "screening-audio-grid";
       audioContainer.setAttribute("data-screening-audio", item.id);
       answerContainer.className = "field";
@@ -1465,7 +1582,7 @@ window.StudyApp.app = (function () {
       legend.textContent = "Answer for listening item " + (index + 1);
       error.id = item.id + "-error";
       error.className = "validation-message is-hidden";
-      error.textContent = "Play Version A, Version B, and Version C, then select an answer for this item.";
+      error.textContent = "Play the Reference, Version A, and Version B, then select an answer for this item.";
 
       answerContainer.appendChild(legend);
       itemSection.appendChild(itemProgress);
@@ -1493,13 +1610,13 @@ window.StudyApp.app = (function () {
       card.className = "audio-choice-card";
 
       var label = document.createElement("h3");
-      label.textContent = choice.label;
+      label.textContent = getScreeningChoiceDisplayLabel(choice.id);
 
       var audio = document.createElement("audio");
       audio.className = "audio-control";
       audio.controls = true;
       audio.preload = "none";
-      audio.setAttribute("aria-label", choice.label);
+      audio.setAttribute("aria-label", getScreeningChoiceDisplayLabel(choice.id));
       audio.setAttribute("data-audio-id", getScreeningAudioId(item.id, choice.id));
 
       var source = document.createElement("source");
@@ -1509,7 +1626,7 @@ window.StudyApp.app = (function () {
 
       var warning = document.createElement("p");
       warning.className = "validation-message is-hidden";
-      warning.textContent = choice.label + " could not be loaded.";
+      warning.textContent = getScreeningChoiceDisplayLabel(choice.id) + " could not be loaded.";
       audio.addEventListener("playing", function () {
         storeScreeningPlayedState(item.id, choice.id);
         updateScreeningSubmitState();
@@ -1541,6 +1658,12 @@ window.StudyApp.app = (function () {
 
     item.answerOptions.forEach(function (option) {
       var wrapper = document.createElement("div");
+      var displayLabel = getScreeningChoiceDisplayLabel(option.value);
+
+      if (!displayLabel) {
+        return;
+      }
+
       wrapper.className = "radio-option";
 
       var input = document.createElement("input");
@@ -1559,7 +1682,7 @@ window.StudyApp.app = (function () {
 
       var label = document.createElement("label");
       label.setAttribute("for", input.id);
-      label.textContent = option.label;
+      label.textContent = displayLabel;
 
       wrapper.appendChild(input);
       wrapper.appendChild(label);
@@ -1711,13 +1834,13 @@ window.StudyApp.app = (function () {
     }
 
     if (missingAudioLabels.length > 0) {
-      itemError.textContent = "Please listen to all three versions before answering. Still needed: " + missingAudioLabels.join(", ") + ".";
+      itemError.textContent = "Please listen to the Reference, Version A, and Version B before answering. Still needed: " + missingAudioLabels.join(", ") + ".";
       setError(itemError, true);
       return;
     }
 
     if (showErrors && !answered) {
-      itemError.textContent = "Select whether Version A matches Version B or Version C.";
+      itemError.textContent = "Select whether Version A or Version B matches the Reference.";
       setError(itemError, true);
       return;
     }
@@ -1934,8 +2057,44 @@ window.StudyApp.app = (function () {
     return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
   }
 
+  function sanitizeScreeningSelectedAnswers() {
+    var changed = false;
+    Object.keys(screeningState.selectedAnswers || {}).forEach(function (itemId) {
+      if (["version_a", "version_b"].indexOf(screeningState.selectedAnswers[itemId]) === -1) {
+        delete screeningState.selectedAnswers[itemId];
+        changed = true;
+      }
+    });
+    if (changed && window.StudyApp.storage) {
+      screeningState.responses = [];
+      screeningState.scores = [];
+      window.StudyApp.storage.setItem("screening.selectedAnswers", screeningState.selectedAnswers);
+      window.StudyApp.storage.setItem("screening.itemResponses", []);
+      window.StudyApp.storage.setItem("screening.itemScores", []);
+    }
+  }
+
   function getScreeningAudioId(itemId, choiceId) {
     return "screening.attempt" + screeningState.attemptNumber + "." + itemId + "." + choiceId;
+  }
+
+  function formatScreeningInstructions(text) {
+    return escapeHtml(text || "").split(/\n\s*\n/).map(function (paragraph) {
+      var trimmed = paragraph.trim();
+      if (trimmed === "Which of A or B matches the Reference?") {
+        return '<p class="prestudy-key-question"><strong>Which of A or B matches the Reference?</strong></p>';
+      }
+      return "<p>" + trimmed + "</p>";
+    }).join("");
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function storeScreeningPlayedState(itemId, choiceId) {
@@ -1989,7 +2148,7 @@ window.StudyApp.app = (function () {
       var choice = Array.isArray(item.audioChoices) && item.audioChoices.find(function (audioChoice) {
         return audioChoice.id === choiceId;
       });
-      return choice ? choice.label : choiceId;
+      return getScreeningChoiceDisplayLabel(choiceId) || (choice ? choice.label : choiceId);
     });
   }
 

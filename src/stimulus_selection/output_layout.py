@@ -150,7 +150,7 @@ def manual_review_instructions(root: Path) -> Path:
 
 
 def summaries(root: Path) -> Path:
-    return root / "06_final_summaries"
+    return root / "archive" / "medoid_contrast_legacy" / "06_final_summaries"
 
 
 def provenance(root: Path) -> Path:

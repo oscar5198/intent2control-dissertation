@@ -1,6 +1,8 @@
 # Final Stimuli Manifest
 
-This researcher-facing manifest documents the experimental audio files integrated into the study interface on 2026-08-03.
+This researcher-facing manifest documents the experimental audio files integrated into the study interface. The active frontend copies were refreshed on 2026-08-04 from corrected 5 ms boundary-fade source WAVs.
+
+Current status: technically integrated; perceptual approval pending. The active triplets must not be presented as definitively approved for perceptual quality until researcher and supervisor listening review is complete.
 
 Participant-facing pages must not display artist names, song titles, source filenames, original mix names, analytical roles, candidate-category names, or internal mix identifiers. Participants should see only:
 
@@ -10,10 +12,10 @@ Participant-facing pages must not display artist names, song titles, source file
 
 ## Stimulus Configuration Version
 
-- Current frontend stimulus configuration version: `rating_stratification_v2_2026-08-03`
+- Current frontend stimulus configuration version: `rating_stratification_v3_fade_update_2026-08-04`
 - Target integrated loudness: `-20.8 LUFS`
 - Frontend filenames are researcher-readable inside the controlled consolidated audio folder, but do not encode participant-facing Version A/B/C labels.
-- Source candidate audio remains unchanged under `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/`.
+- Source candidate audio under `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/` now reflects the corrected 5 ms boundary-fade update; source files under `outputs/` were not modified by the frontend integration step.
 
 ## Source Materials
 
@@ -23,8 +25,11 @@ Revised Main Study stimuli were selected from the rating-stratified supervisor-r
 - `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/`
 - `outputs/stimulus_selection/05_alignment_verification/tables/alignment_summary.csv`
 - `outputs/stimulus_selection/05_alignment_verification/tables/pairwise_alignment_verification.csv`
+- `outputs/stimulus_selection/audio_fade_revision/tables/fade_revision_manifest.csv`
 
 Participant-group allocation is unchanged from the existing frontend configuration.
+
+Algorithmic acoustic/rating diversity does not guarantee acceptable production quality. Informal researcher listening found that several selected mixes, particularly in Wide Ratings sets, sounded subjectively poor or production-unbalanced. Candidate pools remain available for supervisor review and possible replacement decisions.
 
 ## Group Mapping
 
@@ -48,18 +53,18 @@ Participant-group allocation is unchanged from the existing frontend configurati
 
 | Group | Participant excerpt | Artist | Song | Slot | Source mix | Internal mix ID | Source WAV | Frontend WAV | Source LUFS | Final LUFS | True peak dBTP |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: |
-| `group_01` | Song A | The DoneFors | Lead Me | `mix_01` | PXL-L1 | `mix_d5b28dfc8a93` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Lead Me/Wide Ratings/PXL-L1_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav` | -22.187 | -20.800 | -6.018 |
-| `group_01` | Song A | The DoneFors | Lead Me | `mix_02` | PXL-L4 | `mix_c7d9a071ba25` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Lead Me/Wide Ratings/PXL-L4_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l4.wav` | -22.264 | -20.800 | -7.024 |
-| `group_01` | Song A | The DoneFors | Lead Me | `mix_03` | McG-pro2 | `mix_d3e3580b6e30` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Lead Me/Wide Ratings/McG-pro2_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/mcg_pro2.wav` | -21.239 | -20.800 | -1.802 |
-| `group_01` | Song B | Broken Crank | Red To Blue | `mix_01` | McG-C | `mix_5143d2ee3859` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Red To Blue/Wide Ratings/McG-C_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_c.wav` | -23.576 | -20.800 | -6.353 |
-| `group_01` | Song B | Broken Crank | Red To Blue | `mix_02` | McG-H | `mix_5b76bf1a027d` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Red To Blue/Wide Ratings/McG-H_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_h.wav` | -23.392 | -20.800 | -8.792 |
-| `group_01` | Song B | Broken Crank | Red To Blue | `mix_03` | McG-pro1 | `mix_808780e357c9` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Red To Blue/Wide Ratings/McG-pro1_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_pro1.wav` | -24.954 | -20.800 | -6.483 |
-| `group_02` | Song A | Fredy V | In The Meantime | `mix_01` | DU-K | `mix_56e65a3ce054` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/In The Meantime/Wide Ratings/DU-K_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_k.wav` | -23.260 | -20.800 | -1.111 |
-| `group_02` | Song A | Fredy V | In The Meantime | `mix_02` | QUT-pro | `mix_cdaef40f2b94` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/In The Meantime/Wide Ratings/QUT-pro_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_pro.wav` | -22.619 | -20.800 | -8.942 |
-| `group_02` | Song A | Fredy V | In The Meantime | `mix_03` | DU-N | `mix_29131e66c9d7` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/In The Meantime/Wide Ratings/DU-N_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_n.wav` | -22.785 | -20.800 | -6.185 |
-| `group_02` | Song B | The DoneFors | Pouring Room | `mix_01` | McG-R | `mix_0ba76f420c1d` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Pouring Room/Similar Ratings/McG-R_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_r.wav` | -21.962 | -20.800 | -5.837 |
-| `group_02` | Song B | The DoneFors | Pouring Room | `mix_02` | McG-T | `mix_be2ccd4c43ff` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Pouring Room/Similar Ratings/McG-T_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_t.wav` | -21.978 | -20.800 | -2.439 |
-| `group_02` | Song B | The DoneFors | Pouring Room | `mix_03` | McG-X | `mix_cbf8555ee2b2` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Pouring Room/Similar Ratings/McG-X_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_x.wav` | -21.739 | -20.800 | -3.257 |
+| `group_01` | Song A | The DoneFors | Lead Me | `mix_01` | PXL-L1 | `mix_d5b28dfc8a93` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Lead Me/Wide Ratings/PXL-L1_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav` | -22.016 | -20.800 | -6.189 |
+| `group_01` | Song A | The DoneFors | Lead Me | `mix_02` | PXL-L4 | `mix_c7d9a071ba25` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Lead Me/Wide Ratings/PXL-L4_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l4.wav` | -22.088 | -20.800 | -7.199 |
+| `group_01` | Song A | The DoneFors | Lead Me | `mix_03` | McG-pro2 | `mix_d3e3580b6e30` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Lead Me/Wide Ratings/McG-pro2_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/mcg_pro2.wav` | -21.076 | -20.800 | -1.965 |
+| `group_01` | Song B | Broken Crank | Red To Blue | `mix_01` | McG-C | `mix_5143d2ee3859` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Red To Blue/Wide Ratings/McG-C_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_c.wav` | -23.461 | -20.800 | -6.469 |
+| `group_01` | Song B | Broken Crank | Red To Blue | `mix_02` | McG-H | `mix_5b76bf1a027d` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Red To Blue/Wide Ratings/McG-H_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_h.wav` | -23.271 | -20.800 | -8.913 |
+| `group_01` | Song B | Broken Crank | Red To Blue | `mix_03` | McG-pro1 | `mix_808780e357c9` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Red To Blue/Wide Ratings/McG-pro1_28sec.wav` | `assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_pro1.wav` | -24.848 | -20.800 | -6.590 |
+| `group_02` | Song A | Fredy V | In The Meantime | `mix_01` | DU-K | `mix_56e65a3ce054` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/In The Meantime/Wide Ratings/DU-K_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_k.wav` | -23.090 | -20.800 | -1.468 |
+| `group_02` | Song A | Fredy V | In The Meantime | `mix_02` | QUT-pro | `mix_cdaef40f2b94` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/In The Meantime/Wide Ratings/QUT-pro_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_pro.wav` | -22.504 | -20.800 | -9.056 |
+| `group_02` | Song A | Fredy V | In The Meantime | `mix_03` | DU-N | `mix_29131e66c9d7` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/In The Meantime/Wide Ratings/DU-N_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_n.wav` | -22.688 | -20.800 | -6.283 |
+| `group_02` | Song B | The DoneFors | Pouring Room | `mix_01` | McG-R | `mix_0ba76f420c1d` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Pouring Room/Similar Ratings/McG-R_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_r.wav` | -21.972 | -20.800 | -5.827 |
+| `group_02` | Song B | The DoneFors | Pouring Room | `mix_02` | McG-T | `mix_be2ccd4c43ff` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Pouring Room/Similar Ratings/McG-T_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_t.wav` | -21.956 | -20.800 | -2.461 |
+| `group_02` | Song B | The DoneFors | Pouring Room | `mix_03` | McG-X | `mix_cbf8555ee2b2` | `outputs/stimulus_selection/06_rating_stratification/candidate_review_audio/Pouring Room/Similar Ratings/McG-X_28sec.wav` | `assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_x.wav` | -21.744 | -20.800 | -3.252 |
 
 ## Excerpt Timing
 
@@ -82,34 +87,36 @@ All 12 frontend WAV files were decoded after integration and checked with Python
 | Channels | Stereo |
 | Bit depth | 16-bit PCM frontend copies, matching the revised candidate-review WAV subtype |
 | Integrated loudness | -20.800 LUFS for all frontend copies |
-| True peak | Safe after integration; highest measured frontend value was -1.111 dBTP |
+| True peak | Safe after integration; highest measured frontend value was -1.468 dBTP |
 | Non-silent audio | Passed; all selected files contain valid non-silent stereo audio |
 | Duplicate-file check | Passed; all selected source SHA-256 hashes are distinct within song sets |
 
 ## Normalisation
 
-The candidate-review WAV files were not already at -20.8 LUFS. The frontend copies were therefore loudness-normalised to -20.8 LUFS. Source files under `outputs/` were not modified.
+The corrected 5 ms boundary-fade candidate-review WAV files were not already at -20.8 LUFS. The frontend copies were therefore loudness-normalised to -20.8 LUFS. Source files under `outputs/` were not modified by this integration step.
 
 | Song | Slot | Mix | Source LUFS | Gain target | Normalisation method | Final LUFS | Final true peak dBTP |
 | --- | --- | --- | ---: | ---: | --- | ---: | ---: |
-| Lead Me | `mix_01` | PXL-L1 | -22.187 | 1.387 dB | integrated_loudness_gain_only | -20.800 | -6.018 |
-| Lead Me | `mix_02` | PXL-L4 | -22.264 | 1.464 dB | integrated_loudness_gain_only | -20.800 | -7.024 |
-| Lead Me | `mix_03` | McG-pro2 | -21.239 | 0.439 dB | integrated_loudness_gain_only | -20.800 | -1.802 |
-| Red To Blue | `mix_01` | McG-C | -23.576 | 2.776 dB | integrated_loudness_gain_only | -20.800 | -6.353 |
-| Red To Blue | `mix_02` | McG-H | -23.392 | 2.592 dB | integrated_loudness_gain_only | -20.800 | -8.792 |
-| Red To Blue | `mix_03` | McG-pro1 | -24.954 | 4.154 dB | integrated_loudness_gain_only | -20.800 | -6.483 |
-| In The Meantime | `mix_01` | DU-K | -23.260 | 2.460 dB | integrated_loudness_gain_plus_minimal_soft_peak_safety | -20.800 | -1.111 |
-| In The Meantime | `mix_02` | QUT-pro | -22.619 | 1.819 dB | integrated_loudness_gain_only | -20.800 | -8.942 |
-| In The Meantime | `mix_03` | DU-N | -22.785 | 1.985 dB | integrated_loudness_gain_only | -20.800 | -6.185 |
-| Pouring Room | `mix_01` | McG-R | -21.962 | 1.162 dB | integrated_loudness_gain_only | -20.800 | -5.837 |
-| Pouring Room | `mix_02` | McG-T | -21.978 | 1.178 dB | integrated_loudness_gain_only | -20.800 | -2.439 |
-| Pouring Room | `mix_03` | McG-X | -21.739 | 0.939 dB | integrated_loudness_gain_only | -20.800 | -3.257 |
+| Lead Me | `mix_01` | PXL-L1 | -22.016 | 1.216 dB | integrated_loudness_gain_only | -20.800 | -6.189 |
+| Lead Me | `mix_02` | PXL-L4 | -22.088 | 1.288 dB | integrated_loudness_gain_only | -20.800 | -7.199 |
+| Lead Me | `mix_03` | McG-pro2 | -21.076 | 0.276 dB | integrated_loudness_gain_only | -20.800 | -1.965 |
+| Red To Blue | `mix_01` | McG-C | -23.461 | 2.661 dB | integrated_loudness_gain_only | -20.800 | -6.469 |
+| Red To Blue | `mix_02` | McG-H | -23.271 | 2.471 dB | integrated_loudness_gain_only | -20.800 | -8.913 |
+| Red To Blue | `mix_03` | McG-pro1 | -24.848 | 4.048 dB | integrated_loudness_gain_only | -20.800 | -6.590 |
+| In The Meantime | `mix_01` | DU-K | -23.090 | 2.293 dB | integrated_loudness_gain_plus_minimal_soft_peak_safety | -20.800 | -1.468 |
+| In The Meantime | `mix_02` | QUT-pro | -22.504 | 1.704 dB | integrated_loudness_gain_only | -20.800 | -9.056 |
+| In The Meantime | `mix_03` | DU-N | -22.688 | 1.888 dB | integrated_loudness_gain_only | -20.800 | -6.283 |
+| Pouring Room | `mix_01` | McG-R | -21.972 | 1.172 dB | integrated_loudness_gain_only | -20.800 | -5.827 |
+| Pouring Room | `mix_02` | McG-T | -21.956 | 1.156 dB | integrated_loudness_gain_only | -20.800 | -2.461 |
+| Pouring Room | `mix_03` | McG-X | -21.744 | 0.944 dB | integrated_loudness_gain_only | -20.800 | -3.252 |
 
-Only `In The Meantime / DU-K` required the peak-safety path because direct LUFS gain would have exceeded full scale. The frontend copy uses minimal soft peak-safety during loudness normalisation; all other selected files use integrated loudness gain only.
+Only `In The Meantime / DU-K` required the peak-safety path because direct LUFS gain would have exceeded full scale and produced an unsafe true peak. The frontend copy uses minimal soft peak-safety during loudness normalisation; all other selected files use integrated loudness gain only.
 
 ## Alignment Evidence
 
 Alignment values below come from the existing Stage 5 alignment-verification tables.
+
+Post-update offset estimates from the regenerated frontend WAVs matched the pre-update frontend offset estimates, indicating that the fade update did not introduce additional timing shifts.
 
 | Song | Category | Maximum offset | Minimum correlation | Automatic result | Overall recommendation |
 | --- | --- | ---: | ---: | --- | --- |

@@ -1,13 +1,13 @@
 stimulus_id,song_id,mix_id,RMS,CF,SW,SI,BS_representation,missing_scalar_feature,missing_bark_bands
-Song_3_Mix_1,Song_3,Mix_1,0.0551882460713,16.9929389954,0.0901865363121,-0.0182541050017,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_3_Mix_2,Song_3,Mix_2,0.0524793677032,18.2260742188,0.220763251185,0.595546245575,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_3_Mix_3,Song_3,Mix_3,0.0560294315219,17.366355896,0.000543582602404,0.000562923552934,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_1_Mix_1,Song_1,Mix_1,0.0656963214278,18.5800933838,0.0740834772587,-0.0248056594282,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_1_Mix_2,Song_1,Mix_2,0.0591329820454,16.9195213318,0.0170932952315,-0.0129087874666,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_1_Mix_3,Song_1,Mix_3,0.0625870004296,13.8143320084,0.117576912045,-0.0521329641342,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_4_Mix_1,Song_4,Mix_1,0.0592991933227,18.8200149536,0.193889960647,0.0562552511692,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_4_Mix_2,Song_4,Mix_2,0.0646217316389,18.2459716797,0.0750391855836,-0.0488145165145,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_1_Mix_1,Song_1,Mix_1,0.0591329820454,16.9195213318,0.0170932952315,-0.0129087874666,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_1_Mix_2,Song_1,Mix_2,0.0588876381516,15.6746520996,0.149041607976,0.109930999577,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_1_Mix_3,Song_1,Mix_3,0.0730051249266,20.1463222504,0.0392760001123,-0.00143597240094,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_2_Mix_1,Song_2,Mix_1,0.0524239987135,16.3483963013,0.0995679274201,0.00644245976582,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_2_Mix_2,Song_2,Mix_2,0.0509140118957,14.4373073578,0.111657723784,-0.0336204059422,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_2_Mix_3,Song_2,Mix_3,0.0437414124608,15.9809007645,0.0225380174816,-0.00970399286598,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_3_Mix_1,Song_3,Mix_1,0.0539390221238,22.5979270935,0.15773075819,0.0170408543199,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_3_Mix_2,Song_3,Mix_2,0.0560023784637,14.1143035889,0.212649226189,-0.0385963246226,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_3_Mix_3,Song_3,Mix_3,0.055811535567,16.6369094849,0.0505010820925,-0.0127661842853,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_4_Mix_1,Song_4,Mix_1,0.060190629214,16.5152053833,0.14739459753,-0.0638295859098,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
+Song_4_Mix_2,Song_4,Mix_2,0.0587656274438,20.841550827,0.217380493879,-0.0455747283995,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
 Song_4_Mix_3,Song_4,Mix_3,0.0612343810499,19.9389343262,0.147577553988,-0.0265915170312,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_2_Mix_1,Song_2,Mix_1,0.0523102395236,15.7125759125,0.0545476786792,0.0265296716243,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_2_Mix_2,Song_2,Mix_2,0.0454737171531,17.6194152832,0.134228721261,0.126785472035,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False
-Song_2_Mix_3,Song_2,Mix_3,0.0481000468135,14.4258899689,0.249741911888,0.0995422303677,48 raw Bark mid/side bands; within-song Bark PCA scores available,False,False

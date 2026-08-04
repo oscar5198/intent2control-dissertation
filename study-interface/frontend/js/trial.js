@@ -96,7 +96,6 @@ window.StudyApp.trial = (function () {
 
     if (versionContainer) {
       versionContainer.innerHTML = "";
-      versionContainer.appendChild(createTrialAudioSection());
       versionContainer.appendChild(createTrialSharedRatingSection());
       versionContainer.appendChild(createTrialCommentSection());
       if (window.StudyApp.audio) {
@@ -141,22 +140,24 @@ window.StudyApp.trial = (function () {
     return section;
   }
 
-  function createTrialAudioSection() {
-    return createTrialSection("Listen to Version A, B, and C", "You may replay the versions and compare them in any order.", "trial-audio-grid", currentTrial.versionMappings.map(createAudioCard));
-  }
-
   function createTrialSharedRatingSection() {
     var section = document.createElement("section");
+    var header = document.createElement("div");
     var heading = document.createElement("h2");
     var intro = document.createElement("p");
     var scale = createTrialPreferenceScale();
+    var audioBank = createTrialAudioBank();
 
     section.className = "trial-task-section shared-rating-section";
+    header.className = "shared-rating-section__header";
     heading.textContent = "Place the versions on the preference scale";
     intro.className = "trial-section-intro";
-    intro.textContent = "Drag, click, or use the keyboard to position Version A, Version B, and Version C on one shared 0-100 preference scale.";
-    section.appendChild(heading);
+    intro.textContent = "Drag each marker to set its preference rating. Click or tap a marker to play that version.";
+    header.appendChild(heading);
+    header.appendChild(createSharedStopAudioControl("trial"));
+    section.appendChild(header);
     section.appendChild(intro);
+    section.appendChild(audioBank);
     section.appendChild(scale);
     return section;
   }
@@ -182,19 +183,6 @@ window.StudyApp.trial = (function () {
       valueList.appendChild(createTrialPreferenceValue(mapping));
     });
 
-    track.addEventListener("click", function (event) {
-      var selectedMarker = getSelectedPreferenceMarker(scale);
-      if (event.target.closest && event.target.closest(".preference-marker")) {
-        return;
-      }
-      if (!selectedMarker) {
-        return;
-      }
-      playTrialMarkerAudio(selectedMarker.getAttribute("data-audio-id-target"));
-      setTrialMarkerFromPointer(selectedMarker, track, event, true);
-      selectedMarker.focus({ preventScroll: true });
-    });
-
     track.appendChild(markerLayer);
     scale.appendChild(track);
     scale.appendChild(anchorRow);
@@ -212,45 +200,20 @@ window.StudyApp.trial = (function () {
     marker.id = versionId + "-rating";
     marker.name = versionId + "Rating";
     marker.className = "preference-marker preference-marker--" + (index + 1) + " preference-marker--unset";
-    marker.tabIndex = 0;
+    marker.tabIndex = -1;
     marker.textContent = mapping.neutralLabel.replace("Version ", "");
-    marker.setAttribute("role", "slider");
+    marker.setAttribute("aria-label", mapping.neutralLabel + " audio marker");
+    marker.setAttribute("data-version-display-label", mapping.neutralLabel);
     marker.setAttribute("data-trial-rating", versionId);
     marker.setAttribute("data-audio-id-target", audioId);
-    marker.setAttribute("aria-label", "Preference rating for " + mapping.neutralLabel);
-    marker.setAttribute("aria-valuemin", String(currentConfig.ratingScale.minimum));
-    marker.setAttribute("aria-valuemax", String(currentConfig.ratingScale.maximum));
-    marker.setAttribute("aria-valuenow", String(initialValue));
-    marker.setAttribute("aria-valuetext", mapping.neutralLabel + " not set");
     marker.setAttribute("aria-describedby", versionId + "-rating-value " + versionId + "-rating-error");
     setPreferenceMarkerPosition(marker, initialValue);
 
-    marker.addEventListener("pointerdown", function (event) {
-      event.preventDefault();
-      selectPreferenceMarker(marker);
-      marker.focus({ preventScroll: true });
+    attachPreferenceMarkerPointerHandlers(marker, track, function () {
       playTrialMarkerAudio(audioId);
+    }, function (event) {
       setTrialMarkerFromPointer(marker, track, event, true);
-      marker.setPointerCapture(event.pointerId);
     });
-    marker.addEventListener("pointermove", function (event) {
-      if (marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
-        setTrialMarkerFromPointer(marker, track, event, true);
-      }
-    });
-    marker.addEventListener("pointerup", function (event) {
-      if (marker.releasePointerCapture && marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
-        marker.releasePointerCapture(event.pointerId);
-      }
-    });
-    marker.addEventListener("keydown", function (event) {
-      selectPreferenceMarker(marker);
-      handleTrialMarkerKeydown(marker, versionId, audioId, event);
-    });
-    marker.addEventListener("focus", function () {
-      selectPreferenceMarker(marker);
-    });
-
     return marker;
   }
 
@@ -266,11 +229,27 @@ window.StudyApp.trial = (function () {
 
   function createTrialPreferenceValue(mapping) {
     var versionId = getVersionId(mapping.neutralLabel);
-    var item = document.createElement("p");
-    item.id = versionId + "-rating-value";
+    var item = document.createElement("div");
+    var rating = document.createElement("p");
+    var ratingError = document.createElement("p");
+    var playedStatus = document.createElement("p");
+
     item.className = "rating-value shared-preference-scale__value";
-    item.textContent = mapping.neutralLabel + ": Not set";
-    item.setAttribute("aria-live", "polite");
+    item.setAttribute("data-rating-summary-version", versionId);
+    rating.id = versionId + "-rating-value";
+    rating.className = "shared-preference-scale__rating-text";
+    rating.textContent = mapping.neutralLabel + ": Not set";
+    rating.setAttribute("aria-live", "polite");
+    ratingError.id = versionId + "-rating-error";
+    ratingError.className = "validation-message is-hidden";
+    ratingError.textContent = "Set a rating for " + mapping.neutralLabel + ".";
+    playedStatus.id = versionId + "-played-status";
+    playedStatus.className = "field-help field-help--flush trial-played-status";
+    playedStatus.textContent = "Required: play this version before submitting.";
+    playedStatus.setAttribute("aria-live", "polite");
+    item.appendChild(rating);
+    item.appendChild(ratingError);
+    item.appendChild(playedStatus);
     return item;
   }
 
@@ -281,47 +260,10 @@ window.StudyApp.trial = (function () {
     setTrialMarkerRating(marker, versionId, value, touched);
   }
 
-  function handleTrialMarkerKeydown(marker, versionId, audioId, event) {
-    var handled = true;
-    var currentValue = Number(marker.getAttribute("aria-valuenow") || 50);
-    var nextValue = currentValue;
-
-    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
-      nextValue = currentValue - 1;
-    } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
-      nextValue = currentValue + 1;
-    } else if (event.key === "PageDown") {
-      nextValue = currentValue - 10;
-    } else if (event.key === "PageUp") {
-      nextValue = currentValue + 10;
-    } else if (event.key === "Home") {
-      nextValue = 0;
-    } else if (event.key === "End") {
-      nextValue = 100;
-    } else if (event.key === " " || event.key === "Spacebar" || event.key === "Enter") {
-      playTrialMarkerAudio(audioId);
-      setTrialMarkerRating(marker, versionId, currentValue, true);
-    } else {
-      handled = false;
-    }
-
-    if (!handled) {
-      return;
-    }
-
-    event.preventDefault();
-    if (nextValue !== currentValue) {
-      playTrialMarkerAudio(audioId);
-      setTrialMarkerRating(marker, versionId, nextValue, true);
-    }
-  }
-
   function setTrialMarkerRating(marker, versionId, value, touched) {
     var boundedValue = Math.max(currentConfig.ratingScale.minimum, Math.min(currentConfig.ratingScale.maximum, Number(value)));
     setPreferenceMarkerPosition(marker, boundedValue);
     marker.classList.toggle("preference-marker--unset", touched !== true);
-    marker.setAttribute("aria-valuenow", String(boundedValue));
-    marker.setAttribute("aria-valuetext", touched ? String(boundedValue) : "Not set");
     marker.setAttribute("aria-invalid", "false");
     storeUnsavedRating(versionId, boundedValue, touched);
     updateRatingValue(versionId, boundedValue, touched);
@@ -349,6 +291,61 @@ window.StudyApp.trial = (function () {
     return true;
   }
 
+  function attachPreferenceMarkerPointerHandlers(marker, track, playCallback, dragCallback) {
+    var dragThresholdPixels = 8;
+    var pointerState = null;
+
+    marker.addEventListener("pointerdown", function (event) {
+      event.preventDefault();
+      selectPreferenceMarker(marker);
+      pointerState = {
+        id: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        dragging: false
+      };
+      if (marker.setPointerCapture) {
+        marker.setPointerCapture(event.pointerId);
+      }
+    });
+
+    marker.addEventListener("pointermove", function (event) {
+      var deltaX;
+      var deltaY;
+      if (!pointerState || pointerState.id !== event.pointerId) {
+        return;
+      }
+      deltaX = event.clientX - pointerState.startX;
+      deltaY = event.clientY - pointerState.startY;
+      if (!pointerState.dragging && Math.sqrt(deltaX * deltaX + deltaY * deltaY) >= dragThresholdPixels) {
+        pointerState.dragging = true;
+        if (typeof playCallback === "function") {
+          playCallback();
+        }
+      }
+      if (pointerState.dragging && typeof dragCallback === "function") {
+        dragCallback(event);
+      }
+    });
+
+    marker.addEventListener("pointerup", function (event) {
+      if (marker.releasePointerCapture && marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
+        marker.releasePointerCapture(event.pointerId);
+      }
+      if (pointerState && pointerState.id === event.pointerId && !pointerState.dragging && typeof playCallback === "function") {
+        playCallback();
+      }
+      pointerState = null;
+    });
+
+    marker.addEventListener("pointercancel", function (event) {
+      if (marker.releasePointerCapture && marker.hasPointerCapture && marker.hasPointerCapture(event.pointerId)) {
+        marker.releasePointerCapture(event.pointerId);
+      }
+      pointerState = null;
+    });
+  }
+
   function getPreferenceValueFromPointer(rect, event) {
     if (rect.height > rect.width * 1.5) {
       return Math.round(((rect.bottom - event.clientY) / rect.height) * 100);
@@ -361,33 +358,80 @@ window.StudyApp.trial = (function () {
     if (window.StudyApp.audio) {
       window.StudyApp.audio.playAudioFromBeginning(audioId);
     }
+    updateSharedStopAudioControls();
   }
 
   function setActivePreferenceMarker(audioId) {
     Array.prototype.slice.call(document.querySelectorAll(".preference-marker, .version-card--audio")).forEach(function (element) {
       element.classList.toggle("is-playing", element.getAttribute("data-audio-id-target") === audioId || element.getAttribute("data-audio-card-id") === audioId);
     });
+    updateSharedPlaybackStatus(audioId);
+    updateSharedStopAudioControls();
   }
 
-  function createAudioCard(mapping) {
-    var card = document.createElement("article");
-    var heading = document.createElement("h3");
+  function createSharedStopAudioControl(context) {
+    var wrapper = document.createElement("div");
+    var button = document.createElement("button");
+
+    wrapper.className = "shared-audio-control-row";
+    button.type = "button";
+    button.className = "button button--secondary";
+    button.textContent = "Stop audio";
+    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
+    button.setAttribute("data-stop-shared-audio", context || "");
+    button.addEventListener("click", function () {
+      if (window.StudyApp.audio) {
+        window.StudyApp.audio.stopActiveAudio();
+      }
+      setActivePreferenceMarker(null);
+    });
+    wrapper.appendChild(button);
+    return wrapper;
+  }
+
+  function updateSharedStopAudioControls() {
+    var hasPlayingAudio = Array.prototype.slice.call(document.querySelectorAll("audio[data-audio-id]")).some(function (audioElement) {
+      return !audioElement.paused && !audioElement.ended;
+    });
+    Array.prototype.slice.call(document.querySelectorAll("[data-stop-shared-audio]")).forEach(function (button) {
+      button.disabled = !hasPlayingAudio;
+      button.setAttribute("aria-disabled", String(!hasPlayingAudio));
+    });
+  }
+
+  function updateSharedPlaybackStatus(audioId) {
+    var marker = audioId ? document.querySelector("[data-audio-id-target='" + audioId + "']") : null;
+    var versionId = marker ? marker.getAttribute("data-practice-rating") || marker.getAttribute("data-trial-rating") : null;
+    Array.prototype.slice.call(document.querySelectorAll("[data-rating-summary-version]")).forEach(function (summary) {
+      summary.classList.toggle("is-playing", Boolean(versionId && summary.getAttribute("data-rating-summary-version") === versionId));
+    });
+  }
+
+  function createTrialAudioBank() {
+    var bank = document.createElement("div");
+    bank.className = "marker-audio-bank";
+    bank.setAttribute("aria-hidden", "true");
+    currentTrial.versionMappings.forEach(function (mapping) {
+      bank.appendChild(createAudioElement(mapping));
+    });
+    return bank;
+  }
+
+  function createAudioElement(mapping) {
     var audio = document.createElement("audio");
     var source = document.createElement("source");
     var audioError = document.createElement("p");
-    var playedStatus = document.createElement("p");
     var versionId = getVersionId(mapping.neutralLabel);
     var audioId = getAudioId(currentTrial.trialIndex, versionId);
 
-    card.className = "version-card version-card--audio";
-    card.setAttribute("data-audio-card-id", audioId);
-    heading.textContent = mapping.neutralLabel;
     audio.className = "audio-control";
-    audio.controls = true;
+    audio.controls = false;
     audio.preload = "none";
     audio.setAttribute("aria-label", mapping.neutralLabel + " audio");
     audio.setAttribute("data-audio-id", audioId);
-    source.src = "../" + mapping.audioPath;
+    audio.setAttribute("data-marker-controlled-audio", "true");
+    source.src = buildMainStudyAudioUrl(mapping.audioPath);
     source.type = getAudioMimeType(mapping.audioPath);
     audio.appendChild(source);
     audio.addEventListener("playing", function () {
@@ -409,16 +453,10 @@ window.StudyApp.trial = (function () {
     audioError.id = versionId + "-audio-error";
     audioError.className = "validation-message is-hidden";
     audioError.textContent = "The audio for " + mapping.neutralLabel + " could not be loaded.";
-    playedStatus.id = versionId + "-played-status";
-    playedStatus.className = "field-help field-help--flush trial-played-status";
-    playedStatus.textContent = "Required: play this version before submitting.";
-    playedStatus.setAttribute("aria-live", "polite");
-
-    card.appendChild(heading);
-    card.appendChild(audio);
-    card.appendChild(audioError);
-    card.appendChild(playedStatus);
-    return card;
+    var wrapper = document.createElement("div");
+    wrapper.appendChild(audio);
+    wrapper.appendChild(audioError);
+    return wrapper;
   }
 
   function createRatingAnchorScale() {
@@ -482,8 +520,6 @@ window.StudyApp.trial = (function () {
       if (ratingControl && state.ratingTouched[versionId] === true && typeof state.ratings[versionId] !== "undefined") {
         setPreferenceMarkerPosition(ratingControl, state.ratings[versionId]);
         ratingControl.classList.remove("preference-marker--unset");
-        ratingControl.setAttribute("aria-valuenow", String(state.ratings[versionId]));
-        ratingControl.setAttribute("aria-valuetext", String(state.ratings[versionId]));
         updateRatingValue(versionId, state.ratings[versionId], true);
       }
       if (comment && typeof state.comments[versionId] === "string") {
@@ -564,7 +600,7 @@ window.StudyApp.trial = (function () {
       }
 
       if (!audioPlayed && !firstInvalid) {
-        firstInvalid = audioElement;
+        firstInvalid = ratingInput || audioElement;
       }
       if (!ratingSet && !firstInvalid) {
         firstInvalid = ratingInput;
@@ -861,7 +897,7 @@ window.StudyApp.trial = (function () {
 
   function getTrialVersionLabel(versionId) {
     var marker = document.querySelector("[data-trial-rating='" + versionId + "']");
-    return marker ? marker.getAttribute("aria-label").replace("Preference rating for ", "") : versionId;
+    return marker ? marker.getAttribute("data-version-display-label") || marker.textContent.trim() : versionId;
   }
 
   function updateProgress() {
@@ -953,6 +989,15 @@ window.StudyApp.trial = (function () {
       }
       return response.json();
     });
+  }
+
+  function buildMainStudyAudioUrl(audioPath) {
+    var version = currentConfig && currentConfig.stimulusConfigurationVersion;
+    var path = "../" + audioPath;
+    if (!version) {
+      return path;
+    }
+    return path + (path.indexOf("?") === -1 ? "?" : "&") + "v=" + encodeURIComponent(version);
   }
 
   function getAudioMimeType(path) {

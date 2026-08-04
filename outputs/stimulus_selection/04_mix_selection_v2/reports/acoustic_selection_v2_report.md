@@ -51,7 +51,7 @@ Automated assertions verified that `stereo_imbalance` is absent from the v2 scal
 
 - Review previews generated: 59.
 - Location: `outputs/stimulus_selection/04_mix_selection_v2/candidate_pool_previews/`.
-- Policy: raw level with review fade; no loudness normalisation, limiting, or compression.
+- Policy: raw level with fixed 5 ms half-cosine anti-click boundary fade; no loudness normalisation, limiting, or compression.
 
 ## Phase 2 Readiness
 

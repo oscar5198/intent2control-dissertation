@@ -56,7 +56,13 @@ The format is based on Keep a Changelog.
 
 ### Changed
 
+- Updated the Pre-Study Listening Task to use participant-facing Reference, Version A, and Version B ABX terminology, with A/B answer mapping and incompatible old B/C local state invalidated.
+- Hardened Pre-Study Listening Task rendering so stale saved audio-card labels cannot display old Version A/B/C headings.
+- Updated Pre-Study Listening Task cache-busting and schema versioning to force the Reference/Version A/Version B interface after stale browser state.
+- Refined Practice Trial and Main Study shared preference-scale interaction so marker click/tap plays audio without changing ratings, marker drag sets ratings, empty scale clicks do nothing, separate Version A/B/C playback controls are removed, one shared `Stop audio` button controls playback, and verbal anchors align precisely with 0, 25, 50, 75, and 100.
 - Consolidated all active frontend audio into `frontend/assets/audio/study-stimuli/`, updated configuration paths, and added a researcher-facing master audio manifest.
+- Refreshed the active Main Study frontend WAV files from corrected 5 ms boundary-fade source excerpts, retained the approved song/mix selection, updated the stimulus configuration version, and refreshed researcher-facing audio manifests.
+- Added stimulus-version cache-busting to Main Study audio requests so browsers fetch the refreshed fade-corrected WAV files even when physical filenames are unchanged.
 - Reordered the participant flow so the Post-task Questionnaire now appears before the Demographic Questionnaire, with route guards, page progress, and review prerequisites updated accordingly.
 - Updated Post-task Questionnaire agreement questions to use a horizontal Strongly disagree to Strongly agree Likert layout where space allows.
 - Removed `Prefer not to say` from the post-task listening-device and completion-location questions and added required conditional detail fields when `Other` is selected.

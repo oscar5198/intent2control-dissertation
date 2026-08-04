@@ -37,6 +37,8 @@
 - [x] Insert approved experimental scenario wording.
 - [x] Refine Practice and Experimental Trial layout to grouped Listen, Rate, Explain sections.
 - [x] Replace separate rating sliders with shared multi-marker preference scale for Practice and Main Study.
+- [x] Remove separate Practice and Main Study playback buttons in favour of marker-triggered playback and one shared Stop audio button.
+- [x] Separate marker click/tap playback from marker drag rating behaviour.
 - [x] Add temporary frontend group assignment.
 - [x] Add persisted ten-trial generation.
 - [x] Refine ten-trial generation to preserve adjacent scenario pairs.
@@ -63,6 +65,7 @@
 - [x] Hide numerical score feedback from participants while preserving internal scoring.
 - [x] Implement shared reset-on-switch comparative playback behaviour.
 - [x] Prevent seeking and individual player-volume changes in comparative listening controls.
+- [x] Update Pre-Study Listening Task participant labels to Reference, Version A, and Version B.
 - [ ] Add final pre-study listening stimuli.
 - [ ] Define final pre-study pass rule.
 - [ ] Confirm pre-study retry and failure/exclusion behaviour.

@@ -6,7 +6,20 @@ minimum_duration_seconds: 20
 require_stereo: true
 target_sample_rate: 44100
 target_excerpt_seconds: 28.0
-fade_seconds: 1.0
+fade_seconds: 0.005
+audio_boundary_processing:
+  methodology_version: "2.0"
+  supervisor_revision_date: "2026-08-04"
+  fade_required: true
+  fade_in_ms: 5.0
+  fade_out_ms: 5.0
+  fade_shape: "half_cosine"
+  apply_identically_to_all_versions: true
+  candidate_review_loudness_policy: "preserve_raw_level"
+  final_stimulus_loudness_policy: "preserve_existing_target"
+  exact_duration_seconds: 28.0
+  target_sample_rate: 44100
+  deterministic: true
 alignment:
   analysis_downmix: mono
   coarse_sample_rate: 11025

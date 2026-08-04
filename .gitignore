@@ -87,6 +87,13 @@ outputs/stimulus_selection/**
 !study-interface/frontend/assets/audio/study-stimuli/**/*.md
 !study-interface/frontend/assets/audio/study-stimuli/**/*.wav
 
+# Curated supervisor review package audio is intentionally versioned.
+!outputs/stimulus_selection/07_supervisor_review_package/Main_Study_Candidates/**/*.wav
+!outputs/stimulus_selection/07_supervisor_review_package/Backup_Candidates/**/*.wav
+
+# Exclude duplicate artifacts produced by an abandoned local copy attempt.
+outputs/stimulus_selection/07_supervisor_review_package/archive/duplicate_nested_copy_attempt_2026-08-03/
+
 # Logs and temporary files
 *.log
 *.tmp

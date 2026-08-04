@@ -29,6 +29,22 @@ class ExcerptSelectionConfig:
 
 
 @dataclass(frozen=True)
+class AudioBoundaryProcessingConfig:
+    methodology_version: str
+    supervisor_revision_date: str
+    fade_required: bool
+    fade_in_ms: float
+    fade_out_ms: float
+    fade_shape: str
+    apply_identically_to_all_versions: bool
+    candidate_review_loudness_policy: str
+    final_stimulus_loudness_policy: str
+    exact_duration_seconds: float
+    target_sample_rate: int
+    deterministic: bool
+
+
+@dataclass(frozen=True)
 class SelectionConfig:
     dataset_root: Path
     relationship_tables_root: Path
@@ -45,6 +61,7 @@ class SelectionConfig:
     fade_seconds: float
     alignment: AlignmentConfig
     excerpt_selection: ExcerptSelectionConfig
+    audio_boundary_processing: AudioBoundaryProcessingConfig
     analysis_excerpt_root: Path
     preview_excerpt_root: Path
 
@@ -70,6 +87,7 @@ def load_config(path: str | Path) -> SelectionConfig:
     repo_root = _repo_root_from_config(config_path)
     alignment_raw = raw.get("alignment", {})
     excerpt_raw = raw.get("excerpt_selection", {})
+    boundary_raw = raw.get("audio_boundary_processing", {})
     output_root = _as_path(raw["output_root"], repo_root)
     return SelectionConfig(
         dataset_root=_as_path(raw["dataset_root"]),
@@ -101,6 +119,20 @@ def load_config(path: str | Path) -> SelectionConfig:
             avoid_last_seconds=float(excerpt_raw.get("avoid_last_seconds", 3.0)),
             minimum_activity_quantile=float(excerpt_raw.get("minimum_activity_quantile", 0.50)),
             prefer_vocal_drums_bass_region=bool(excerpt_raw.get("prefer_vocal_drums_bass_region", True)),
+        ),
+        audio_boundary_processing=AudioBoundaryProcessingConfig(
+            methodology_version=str(boundary_raw.get("methodology_version", "1.0")),
+            supervisor_revision_date=str(boundary_raw.get("supervisor_revision_date", "")),
+            fade_required=bool(boundary_raw.get("fade_required", True)),
+            fade_in_ms=float(boundary_raw.get("fade_in_ms", raw.get("fade_seconds", 1.0) * 1000.0)),
+            fade_out_ms=float(boundary_raw.get("fade_out_ms", raw.get("fade_seconds", 1.0) * 1000.0)),
+            fade_shape=str(boundary_raw.get("fade_shape", "linear")),
+            apply_identically_to_all_versions=bool(boundary_raw.get("apply_identically_to_all_versions", True)),
+            candidate_review_loudness_policy=str(boundary_raw.get("candidate_review_loudness_policy", "preserve_raw_level")),
+            final_stimulus_loudness_policy=str(boundary_raw.get("final_stimulus_loudness_policy", "preserve_existing_target")),
+            exact_duration_seconds=float(boundary_raw.get("exact_duration_seconds", raw.get("target_excerpt_seconds", 28.0))),
+            target_sample_rate=int(boundary_raw.get("target_sample_rate", raw.get("target_sample_rate", 44100))),
+            deterministic=bool(boundary_raw.get("deterministic", True)),
         ),
         analysis_excerpt_root=_as_path(raw.get("analysis_excerpt_root", "outputs/stimulus_selection/02_excerpt_selection/diagnostics/analysis_excerpts"), repo_root),
         preview_excerpt_root=_as_path(raw.get("preview_excerpt_root", "outputs/stimulus_selection/02_excerpt_selection/diagnostics/excerpt_previews"), repo_root),

@@ -116,7 +116,7 @@ Current status: Phase 2B frontend architecture scaffold with participant-facing 
 - Review and Final Submission.
 - Completion.
 
-The participant-facing frontend flow is now implemented through Completion for development testing. The frontend includes the final experimental trial audio stimuli, but does not yet implement backend persistence, database storage, final randomisation balancing, or production data submission.
+The participant-facing frontend flow is now implemented through Completion for development testing. The frontend includes the technically integrated experimental trial audio stimuli, with perceptual approval still pending. It does not yet implement backend persistence, database storage, final randomisation balancing, or production data submission.
 
 The Listening Setup page currently uses a temporary playback-test audio file:
 
@@ -126,7 +126,7 @@ assets/audio/study-stimuli/listening-setup/setup_test_audio.wav
 
 The active file is stored at `frontend/assets/audio/study-stimuli/listening-setup/setup_test_audio.wav`. It is temporary test audio for interface development only, is not a final screening or experimental stimulus, and must be replaced before pilot or production use. If the configured file is missing or cannot load, the page shows a warning and progression remains disabled.
 
-The Pre-Study Listening Task page is driven by `config/screening.json`. It implements a development-only six-item matching flow using Version A, Version B, and Version C labels. The six presentations are generated as two internal segment identities repeated three times each, randomised once per attempt, and persisted under the existing localStorage namespace so refresh does not reshuffle the task. For every item, participants must play all three versions and answer whether Version A matches Version B or Version C before selecting `Submit listening task`.
+The Pre-Study Listening Task page is driven by `config/screening.json`. It implements a development-only six-item ABX-style matching flow using participant-facing labels `Reference`, `Version A`, and `Version B`. The six presentations are generated as two internal segment identities repeated three times each, randomised once per attempt, and persisted under the existing localStorage namespace so refresh does not reshuffle the task. For every item, participants must play the Reference, Version A, and Version B, then answer `Which of A or B matches the Reference?` before selecting `Submit listening task`.
 
 If older local development sessions contain an incompatible pre-study presentation order from the previous three-item structure, the page removes only the current attempt's pre-study listening task keys and regenerates the six-item order. This avoids mixing old and new task schemas without wiping unrelated study progress.
 
@@ -134,7 +134,7 @@ If older local development sessions contain an incompatible pre-study presentati
 assets/audio/study-stimuli/pre-study-listening-task/
 ```
 
-The previous duplicated MP3 screening files were audited and replaced because they were byte-for-byte identical. The current development files are WAV clips rebuilt from original Mix Evaluation Dataset files for `InTheMeantime`. Each temporary segment uses one common 6-second musical time region across all versions: Version A is a DU-H reference mix excerpt, the matching answer is an identical duplicate of that excerpt, and the non-matching option is a different mix of the same song and same aligned excerpt. Segment 1 uses DU-H and DU-M from 42-48 seconds; Segment 2 uses DU-H and DU-J from 54-60 seconds with a -0.00225 second comparison offset. For development testing only, the temporary pass threshold is 2 out of 6, retry is enabled, and the maximum attempt count is 2. Internal answers, correctness, attempt records, aggregate score, segment ID, repetition number, presentation order, and Version A/B/C mapping are stored, but no numerical score is shown to participants. `productionReady` is set to `false`. These files are not final validated pre-study stimuli. Final supervisor-approved segment/song selections, Brecht preference-based selection criteria/results, scientific pass criteria, attempts policy, and exclusion/failure procedure remain TBC.
+The previous duplicated MP3 screening files were audited and replaced because they were byte-for-byte identical. The current development files are WAV clips rebuilt from original Mix Evaluation Dataset files for `InTheMeantime`. Each temporary segment uses one common 6-second musical time region across all versions: the Reference is a DU-H reference mix excerpt, the matching answer is an identical duplicate of that excerpt, and the non-matching option is a different mix of the same song and same aligned excerpt. Segment 1 uses DU-H and DU-M from 42-48 seconds; Segment 2 uses DU-H and DU-J from 54-60 seconds with a -0.00225 second comparison offset. For development testing only, the temporary pass threshold is 2 out of 6, retry is enabled, and the maximum attempt count is 2. Internal answers, correctness, attempt records, aggregate score, segment ID, repetition number, presentation order, and Reference/Version A/Version B mapping are stored, but no numerical score is shown to participants. `productionReady` is set to `false`. These files are not final validated pre-study stimuli. Final supervisor-approved segment/song selections, Brecht preference-based selection criteria/results, scientific pass criteria, attempts policy, and exclusion/failure procedure remain TBC.
 
 Audio controls use a minimal shared custom interface with Play/Pause, Restart, progress, and time display. Native browser audio controls are hidden so participant-facing speaker/volume, download, and playback-speed controls are not shown. Shared audio behaviour enforces one comparative audio source at a time; when participants switch from one version to another, the previous version pauses and resets to 0:00, and the newly selected version starts from 0:00. The frontend also prevents participant seeking by restoring the last allowed playback position, fixes individual player volume at normal playback level, and keeps playback rate at 1. This is a convenience and consistency measure for the listening-test interface only; it is not a security mechanism.
 
@@ -162,13 +162,13 @@ Experimental trial randomisation uses the `scenario_pairs_v1` development algori
 
 If an older stored development trial order is found before any experimental trial has been submitted, the order is regenerated using the grouped scenario-pair structure. If submitted trials already exist, the current order is preserved and the trial page shows a development warning to start a fresh session when testing the updated randomisation.
 
-Practice and main study listening task pages share the same grouped interaction sequence:
+Practice and main study listening task pages share the same interaction sequence:
 
-1. Listen to the versions.
-2. Place Version A, Version B, and Version C on one shared preference scale.
+1. Use the Version A, Version B, and Version C markers to play the hidden audio from 0:00.
+2. Drag Version A, Version B, and Version C on one shared preference scale.
 3. Explain your ratings.
 
-Each experimental trial requires successful playback start for Version A, Version B, and Version C, deliberate positioning of all three draggable 0-100 preference markers, and one non-whitespace comment for each version. The shared scale shows Bad, Poor, Fair, Good, and Excellent anchors at 0, 25, 50, 75, and 100 while preserving continuous integer ratings. Selecting a marker plays the corresponding version from 0:00 using the same controlled audio logic as the compact Play/Pause buttons. Desktop uses a horizontal shared scale; narrow mobile layouts switch to a vertical shared scale to avoid horizontal overflow. The page stores submitted trial records under `experimental.submittedTrials` separately from practice responses, with the rating field still containing one 0-100 value per version. After ten submitted trial records, the participant is routed to `post-task.html`.
+Each experimental trial requires successful playback start for Version A, Version B, and Version C, deliberate positioning of all three draggable 0-100 preference markers, and one non-whitespace comment for each version. The shared scale shows Bad, Poor, Fair, Good, and Excellent anchors centred at 0, 25, 50, 75, and 100 while preserving continuous integer ratings. Clicking or tapping a marker plays the corresponding version from 0:00 without changing its rating; dragging a marker changes only that version's rating; clicking empty scale space does nothing. A single `Stop audio` button stops and resets whichever version is currently playing without changing ratings or played-state validation. Desktop uses a horizontal shared scale; narrow mobile layouts switch to a vertical shared scale to avoid horizontal overflow. The page stores submitted trial records under `experimental.submittedTrials` separately from practice responses, with the rating field still containing one 0-100 value per version. After ten submitted trial records, the participant is routed to `post-task.html`.
 
 The current experimental audio paths use revised rating-stratification WAV stimuli copied under:
 
@@ -176,7 +176,7 @@ The current experimental audio paths use revised rating-stratification WAV stimu
 assets/audio/study-stimuli/main-study/
 ```
 
-There are 12 experimental files in total: two groups, two songs per group, and three mix slots per song. The frontend filenames are neutral, for example `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav`, while the researcher-facing source mapping is preserved in `../docs/final-stimuli-manifest.md` and `config/stimuli.json`. The current stimulus configuration version is `rating_stratification_v2_2026-08-03`. Stored Main Study trial orders include this version so stale local mappings can be regenerated before any submitted trial exists, or preserved with a compatibility warning if submitted trial records already exist. These files are final Main Study stimuli for supervisor review and pilot preparation, not setup-test, pre-study listening-task, or practice stimuli.
+There are 12 experimental files in total: two groups, two songs per group, and three mix slots per song. The frontend filenames are neutral, for example `assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav`, while the researcher-facing source mapping is preserved in `../docs/final-stimuli-manifest.md` and `config/stimuli.json`. The current stimulus configuration version is `rating_stratification_v3_fade_update_2026-08-04`. Stored Main Study trial orders include this version so stale local mappings can be regenerated before any submitted trial exists, or preserved with a compatibility warning if submitted trial records already exist. Main Study audio requests append the current stimulus configuration version as a query string so browsers request refreshed audio bytes when the physical filenames remain unchanged. These files are technically integrated Main Study stimuli for supervisor review and pilot preparation; the active frontend copies were refreshed from corrected 5 ms boundary-fade source WAVs on 2026-08-04, and perceptual approval remains pending.
 
 The consolidated active frontend audio root is documented in `assets/audio/study-stimuli/README.md` and `../docs/study-audio-manifest.md`. Older folders such as `assets/audio/experimental/`, `assets/audio/pre-experiment-normalized/`, `assets/audio/practice/`, and `assets/audio/screening-development/` remain as obsolete audit copies and are no longer active configuration paths.
 
@@ -229,9 +229,9 @@ Current keys include:
 - `pis.acknowledged`
 - `consent.items`
 - `audio.played.setup-test-audio`
-- `audio.played.screening.attempt1.screening_item_01.version_a`
-- `audio.played.screening.attempt1.screening_item_01.version_b`
-- `audio.played.screening.attempt1.screening_item_01.version_c`
+- `audio.played.screening.attempt1.prestudy_segment_01_rep1_order1.reference`
+- `audio.played.screening.attempt1.prestudy_segment_01_rep1_order1.version_a`
+- `audio.played.screening.attempt1.prestudy_segment_01_rep1_order1.version_b`
 - `listeningSetup.testAudioPlayed`
 - `listeningSetup.headphones`
 - `listeningSetup.quietEnvironment`

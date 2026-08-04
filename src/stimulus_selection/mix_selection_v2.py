@@ -22,6 +22,7 @@ import soundfile as sf
 import yaml
 from sklearn.decomposition import PCA
 
+from stimulus_selection.audio_boundary import apply_inaudible_boundary_fades
 from stimulus_selection.audio_decode import decode_audio, ensure_sample_rate
 from stimulus_selection.config import SelectionConfig
 from stimulus_selection.feature_extraction import BARK_COLUMNS, EXPECTED_SAMPLE_RATE, EXPECTED_SECONDS, extract_exact_excerpt
@@ -274,13 +275,14 @@ def _write_preview(row: pd.Series, config: SelectionConfig, output: Path) -> tup
     start = float(row["actual_source_start_seconds"])
     excerpt = extract_exact_excerpt(decoded.samples, decoded.sample_rate, start, EXPECTED_SECONDS)
     excerpt = ensure_sample_rate(excerpt, decoded.sample_rate, EXPECTED_SAMPLE_RATE)
-    fade_len = int(round(float(config.fade_seconds) * EXPECTED_SAMPLE_RATE))
-    if fade_len > 0:
-        fade_in = np.linspace(0.0, 1.0, fade_len, endpoint=True, dtype=np.float32)
-        fade_out = np.linspace(1.0, 0.0, fade_len, endpoint=True, dtype=np.float32)
-        excerpt = excerpt.copy()
-        excerpt[:fade_len] *= fade_in[:, None]
-        excerpt[-fade_len:] *= fade_out[:, None]
+    boundary = config.audio_boundary_processing
+    excerpt = apply_inaudible_boundary_fades(
+        excerpt,
+        EXPECTED_SAMPLE_RATE,
+        fade_in_ms=boundary.fade_in_ms,
+        fade_out_ms=boundary.fade_out_ms,
+        shape=boundary.fade_shape,
+    )
     filename = f"{safe_original_mix_filename(str(row['original_mix_name']))}_28sec.wav"
     path = output / str(row["song"]) / filename
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -381,7 +383,11 @@ def _save_figures(
 
 
 def _old_stage4_selected(output_root: Path) -> dict[str, set[str]]:
-    path = first_existing(output_root, "04_mix_selection/tables/recommended_triplets.csv")
+    path = first_existing(
+        output_root,
+        "archive/medoid_contrast_legacy/04_mix_selection/tables/recommended_triplets.csv",
+        "04_mix_selection/tables/recommended_triplets.csv",
+    )
     if not path.exists():
         return {}
     selected: dict[str, set[str]] = {}
@@ -609,7 +615,7 @@ def run_mix_selection_v2(config: SelectionConfig, config_path: str | Path) -> Mi
                 "acoustic_pool_rank": pool_order[idx],
                 "stereo_imbalance_qc_flag": qc["qc_flag"],
                 "rating_status": status,
-                "preview_loudness_policy": "raw level with review fade; no loudness normalisation, limiting or compression",
+                "preview_loudness_policy": "raw level with fixed 5 ms anti-click fade; no loudness normalisation, limiting or compression",
                 "sha256_hash": sha,
             })
 
@@ -679,7 +685,7 @@ def run_mix_selection_v2(config: SelectionConfig, config_path: str | Path) -> Mi
             "- Brecht preference ratings have not been used for selection.",
             "- No final mixes or final stimuli have been selected.",
             "- Outputs are awaiting Phase 2 ratings integration and supervisor review.",
-            "- The superseded v1 method remains in `../04_mix_selection/`.",
+            "- The superseded v1 method remains archived in `../archive/medoid_contrast_legacy/04_mix_selection/`.",
             "",
         ]),
         encoding="utf-8",
@@ -747,7 +753,7 @@ def _write_reports(
         "",
         f"- Review previews generated: {len(preview_rows)}.",
         "- Location: `outputs/stimulus_selection/04_mix_selection_v2/candidate_pool_previews/`.",
-        "- Policy: raw level with review fade; no loudness normalisation, limiting, or compression.",
+        "- Policy: raw level with fixed 5 ms half-cosine anti-click boundary fade; no loudness normalisation, limiting, or compression.",
         "",
         "## Phase 2 Readiness",
         "",
@@ -764,7 +770,7 @@ def _write_reports(
             "",
             "Stage 4 v2 removes stereo imbalance from robust scaling, combined acoustic coordinates, medoid calculation, distance calculation, candidate ranking, and acoustic outlier scoring. Stereo imbalance remains available as QC-only metadata and is reported in `tables/stereo_imbalance_qc.csv`.",
             "",
-            "The v1 folder has been preserved unchanged at `outputs/stimulus_selection/04_mix_selection/`.",
+            "The v1 folder has been preserved unchanged at `outputs/stimulus_selection/archive/medoid_contrast_legacy/04_mix_selection/`.",
             "",
         ]),
         encoding="utf-8",

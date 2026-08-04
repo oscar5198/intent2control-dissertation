@@ -347,7 +347,7 @@ Provide a short neutral listening task before the study instructions without des
 - Page title.
 - Concise listening task instructions.
 - Six listening item panels on one scrollable page.
-- Matching audio players for Version A, Version B, and Version C in each item.
+- Matching audio players for Reference, Version A, and Version B in each item.
 - One answer fieldset per item.
 - Neutral feedback/result area after full attempt submission.
 - Retry button when attempts remain.
@@ -359,12 +359,12 @@ Provide a short neutral listening task before the study instructions without des
 - Instructions for completing the pre-study listening task.
 - Listening item labels: `Listening item 1 of 6` through `Listening item 6 of 6`.
 - Audio player labels that do not reveal stimuli identity.
-- Answer options `Version B` and `Version C` in the current development configuration.
+- Answer options `Version A` and `Version B` in the current development configuration.
 - Neutral completion/retry feedback after submission. Numerical score and correct/incorrect answers are not shown to participants.
 
 ### Participant Actions
 
-- Play Version A, Version B, and Version C for each listening item.
+- Play the Reference, Version A, and Version B for each listening item.
 - Select one answer for each listening item.
 - Submit all six answers together.
 - Repeat the task if permitted by final policy.
@@ -372,7 +372,7 @@ Provide a short neutral listening task before the study instructions without des
 
 ### Validation Rules
 
-- The `Submit listening task` button remains disabled until Version A, Version B, and Version C have each been played for all six items and one answer is selected for every item.
+- The `Submit listening task` button remains disabled until the Reference, Version A, and Version B have each been played for all six items and one answer is selected for every item.
 - Temporary development pass rule: configured internally as at least 2 correct responses; final scientific threshold remains TBC.
 - Temporary development retry rule: maximum 2 attempts, retry enabled.
 - Retry resets all six item responses and played states for the next attempt while keeping the same one-page layout.
@@ -398,8 +398,8 @@ Provide a short neutral listening task before the study instructions without des
 - Responses should be stored separately from experimental responses.
 - Record page entry/page completion, attempt start/completion, and item start/submission timestamps.
 - Generate two internal segment identities with three repetitions each, randomise presentation order once per attempt, and persist the order so refresh does not reshuffle it.
-- Randomise whether Version B or Version C is the matching answer per presentation where supported.
-- Store internal score, item correctness, segment ID, repetition number, presentation order, and Version A/B/C mapping, but do not display score to participants.
+- Randomise whether Version A or Version B is the matching answer per presentation where supported.
+- Store internal score, item correctness, segment ID, repetition number, presentation order, and Reference/Version A/Version B mapping, but do not display score to participants.
 - Comparative audio controls should reset the previous version to 0:00 when switching, start the newly selected version from 0:00, prevent seeking, and keep individual player volume fixed.
 - Development bypass must remain disabled by default and must not be available in production.
 - Previous duplicated development files were audited and replaced because they were byte-for-byte identical.
@@ -416,23 +416,23 @@ Provide a short neutral listening task before the study instructions without des
 | Follow the instructions and answer all items.         |
 |                                                      |
 | Listening item 1 of 6                                |
-| Which version matches Version A?                     |
-| +---- Version A ----+ +---- Version B ----+ +Version C|
+| Which of A or B matches the Reference?              |
+| +--- Reference ----+ +---- Version A ----+ +Version B|
 | | [Audio player]    | | [Audio player]    | | [Audio] |
 | +-------------------+ +-------------------+ +-------- |
 |                                                      |
 | Answer for listening item 1                          |
+| ( ) Version A                                        |
 | ( ) Version B                                        |
-| ( ) Version C                                        |
 |                                                      |
 | Listening item 2 of 6                                |
-| [Version A] [Version B] [Version C]                  |
-| Answer: ( ) Version B  ( ) Version C                 |
+| [Reference] [Version A] [Version B]                  |
+| Answer: ( ) Version A  ( ) Version B                 |
 |                                                      |
 | ...                                                  |
 | Listening item 6 of 6                                |
-| [Version A] [Version B] [Version C]                  |
-| Answer: ( ) Version B  ( ) Version C                 |
+| [Reference] [Version A] [Version B]                  |
+| Answer: ( ) Version A  ( ) Version B                 |
 |                                                      |
 | Neutral completion/retry feedback after submission   |
 |                                                      |
@@ -533,11 +533,11 @@ Let participants practise the exact trial interaction before data collection beg
 - Information banner: responses are not included in analysis.
 - Scenario title and description placeholder.
 - Excerpt title placeholder.
-- Three grouped task sections matching the experimental trial layout: Listen, shared preference scale, Explain.
-- Version A, Version B, and Version C audio controls grouped together.
-- One shared 0-100 preference scale with draggable Version A, Version B, and Version C markers.
+- Marker-based task structure matching the experimental trial layout.
+- Hidden Version A, Version B, and Version C audio elements controlled by the markers.
+- One shared 0-100 preference scale with draggable Version A, Version B, and Version C markers and one shared Stop audio button.
 - Version A, Version B, and Version C required comment boxes grouped together.
-- Primary `Submit practice trial` button.
+- Primary `Submit` button.
 - Secondary `Back` button if allowed.
 
 ### Information Displayed
@@ -545,7 +545,7 @@ Let participants practise the exact trial interaction before data collection beg
 - Practice scenario text from development configuration, final wording TBC.
 - Practice excerpt label from development configuration, final label TBC.
 - Version A, Version B, Version C.
-- Audio player for each version.
+- Audio is controlled from the Version A, Version B, and Version C markers rather than separate visible audio-player cards.
 - Shared 0-100 preference scale with Bad, Poor, Fair, Good, and Excellent anchors.
 - Draggable Version A, Version B, and Version C markers.
 - Required comment text area for each version.
@@ -554,7 +554,7 @@ Let participants practise the exact trial interaction before data collection beg
 
 - Read practice scenario.
 - Play each audio version.
-- Place each version marker on the shared preference scale.
+- Click or tap each marker to play the version, then drag each marker on the shared preference scale.
 - Enter one comment for each version.
 - Submit the practice trial.
 
@@ -582,7 +582,7 @@ Let participants practise the exact trial interaction before data collection beg
 ### Notes for Implementation
 
 - Practice responses must be stored separately from experimental responses or excluded from analysis.
-- Use the same Listen -> shared preference scale -> Explain component structure as the main study listening tasks to reduce learning burden.
+- Use the same marker playback -> shared preference scale -> Explain component structure as the main study listening tasks to reduce learning burden.
 - The development practice configuration is `frontend/config/practice.json` with `productionReady: false`.
 - Final practice wording and audio must be replaced before pilot if required by the protocol.
 
@@ -600,23 +600,19 @@ Let participants practise the exact trial interaction before data collection beg
 |                                                      |
 | Music Excerpt: [Practice excerpt TBC]                |
 |                                                      |
-| Listen to Version A, B, and C                       |
-| +-- Version A --+ +-- Version B --+ +-- Version C --+ |
-| | [Audio]      | | [Audio]      | | [Audio]      | |
-| +--------------+ +--------------+ +--------------+ |
-|                                                      |
 | Shared preference scale                              |
 | Bad   Poor   Fair   Good   Excellent                 |
 | 0 ---- A -------- B ---- C ----------------- 100      |
+| [Stop audio]  No version is playing.                 |
 | A: 30  B: 70  C: Not set                             |
 |                                                      |
 | Explain your ratings                                 |
 | +-- Version A --+ +-- Version B --+ +-- Version C --+ |
 | | [comment]    | | [comment]    | | [comment]    | |
-| | [Audio player] [Slider] [Required comment]      | |
+| | [Required comment boxes for A, B, and C]        | |
 | +--------------------------------------------------+ |
 |                                                      |
-| [Back]                         [Submit practice trial]|
+| [Back]                                      [Submit]|
 +------------------------------------------------------+
 ```
 
@@ -703,13 +699,13 @@ Collect preference ratings and required comments for one music excerpt presented
 - Scenario title.
 - Scenario description.
 - Music excerpt title.
-- Three grouped task sections: listen to the versions, place markers on the shared preference scale, and explain your ratings.
-- Listen section with Version A, Version B, and Version C audio cards.
+- Marker-based task structure: play versions from the markers, drag markers on the shared preference scale, and explain your ratings.
+- Hidden Version A, Version B, and Version C audio elements controlled by the markers.
 - Shared 0-100 preference scale with draggable Version A, Version B, and Version C markers.
 - Explain section with Version A, Version B, and Version C required comment boxes.
 - Played-state prompt for each audio version.
 - Validation summary area.
-- Primary `Submit listening task` or `Continue` button.
+- Primary `Submit` button.
 - Secondary `Back` button only if allowed by final navigation policy.
 
 ### Information Displayed
@@ -718,7 +714,7 @@ Collect preference ratings and required comments for one music excerpt presented
 - Scenario description.
 - Music excerpt label shown as `Music excerpt: Song A` or `Music excerpt: Song B`.
 - Version A, Version B, Version C.
-- One audio player per version.
+- Hidden audio for each version, controlled from the Version A, Version B, and Version C markers.
 - One shared 0-100 preference scale with one marker per version.
 - One required comment field per version.
 - Required playback-start status for each version.
@@ -729,10 +725,10 @@ Collect preference ratings and required comments for one music excerpt presented
 ### Participant Actions
 
 - Read the scenario.
-- Listen to Version A, Version B, and Version C.
+- Click or tap Version A, Version B, and Version C markers to play audio.
 - Replay any version as many times as they wish.
 - Successfully start playback of all three versions.
-- Position the Version A, Version B, and Version C markers on the shared preference scale.
+- Drag the Version A, Version B, and Version C markers on the shared preference scale.
 - Write a comment for each version.
 - Submit the listening task.
 
@@ -765,7 +761,7 @@ Collect preference ratings and required comments for one music excerpt presented
 - This is the core study page and should be the highest design priority.
 - Use 960 px maximum content width on desktop.
 - Keep Version A, Version B, and Version C visually identical.
-- Use the shared Listen -> shared preference scale -> Explain layout for practice and main study listening tasks.
+- Use the shared marker playback -> shared preference scale -> Explain layout for practice and main study listening tasks.
 - Use 24-32 px vertical spacing between task sections.
 - Avoid visual emphasis that could bias one version.
 - Ensure audio controls, shared rating markers, and text areas remain usable on mobile.
@@ -793,25 +789,20 @@ Collect preference ratings and required comments for one music excerpt presented
 |                                                              |
 | Music excerpt: Song A/B                                       |
 |                                                              |
-| 1. Listen to the versions                                    |
-| +-- Version A --+ +-- Version B --+ +-- Version C --+        |
-| | [Audio]      | | [Audio]      | | [Audio]      |        |
-| | Played state | | Played state | | Played state |        |
-| +--------------+ +--------------+ +--------------+        |
-|                                                              |
-| 2. Shared preference scale                                  |
+| 1. Shared preference scale                                  |
 | Bad        Poor        Fair        Good        Excellent     |
 | 0 ---------- A -------- B -------- C -------------- 100      |
+| [Stop audio]  No version is playing.                        |
 | A: 30              B: 55              C: Not set             |
 |                                                              |
-| 3. Explain your ratings                                      |
+| 2. Explain your ratings                                      |
 | +-- Version A --+ +-- Version B --+ +-- Version C --+        |
 | | [comment]    | | [comment]    | | [comment]    |        |
 | +--------------+ +--------------+ +--------------+        |
 |                                                              |
 | Validation summary area                                      |
 |                                                              |
-| [Back]                                 [Submit listening task]|
+| [Back]                                           [Submit]|
 +--------------------------------------------------------------+
 ```
 
@@ -1169,7 +1160,7 @@ Back navigation:
 - Consent Form document must be opened at least once.
 - All required consent statement checkboxes must be checked.
 - Listening setup test audio must be played before continuing.
-- Pre-Study Listening Task requires Version A, Version B, and Version C playback plus one answer for each of the six listening items before submission.
+- Pre-Study Listening Task requires Reference, Version A, and Version B playback plus one A/B answer for each of the six listening items before submission.
 - Development Pre-Study Listening Task stores internal score without showing it to participants; production pass rule remains TBC.
 - Instructions acknowledgement checkbox must be checked.
 - Practice trial requires all three deliberately positioned shared-scale markers and all three comments.
@@ -1205,7 +1196,7 @@ The following should become reusable UI components during implementation:
 - Select/input field.
 - Text area.
 - Audio player.
-- Shared 0-100 preference scale with Version A/B/C markers.
+- Shared 0-100 preference scale with Version A/B/C markers, marker-triggered playback, drag-only rating changes, and one Stop audio button.
 - Trial version card.
 - Scenario header.
 - Questionnaire section.

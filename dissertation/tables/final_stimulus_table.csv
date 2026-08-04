@@ -1,5 +1,5 @@
-participant_group,artist,song,excerpt_seconds,duration_seconds,selected_mixes
-Group 1,The DoneFors,Lead Me,9.573-37.573,28,"McG-A, PXL-L1, DU-D"
-Group 1,Broken Crank,Red To Blue,3.005-31.005,28,"McG-A, McG-B, McG-F"
-Group 2,Fredy V,In The Meantime,35.300-63.300,28,"UCP-A4, DU-J, QUT-B"
-Group 2,The DoneFors,Pouring Room,23.020-51.020,28,"McG-Q, McG-pro1, McG-X"
+participant_group,participant_excerpt,artist,song,excerpt_seconds,duration_seconds,active_category,selected_mixes,source,perceptual_approval_status
+group_01,Song A,The DoneFors,Lead Me,9.573-37.573,28,Wide Ratings,"PXL-L1, PXL-L4, McG-pro2",study-interface/frontend/config/stimuli.json,pending
+group_01,Song B,Broken Crank,Red To Blue,3.005-31.005,28,Wide Ratings,"McG-C, McG-H, McG-pro1",study-interface/frontend/config/stimuli.json,pending
+group_02,Song A,Fredy V,In The Meantime,35.300-63.300,28,Wide Ratings,"DU-K, QUT-pro, DU-N",study-interface/frontend/config/stimuli.json,pending
+group_02,Song B,The DoneFors,Pouring Room,23.020-51.020,28,Similar Ratings,"McG-R, McG-T, McG-X",study-interface/frontend/config/stimuli.json,pending

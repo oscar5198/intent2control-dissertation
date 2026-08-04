@@ -24,7 +24,12 @@ window.StudyApp.audio = (function () {
       applyControlledListeningAttributes(audioElement);
       enforceFixedVolume(audioElement);
       enforceSeekPrevention(audioElement);
-      createCustomAudioControls(audioElement);
+      if (audioElement.getAttribute("data-marker-controlled-audio") === "true") {
+        audioElement.controls = false;
+        audioElement.classList.add("audio-control--hidden-native");
+      } else {
+        createCustomAudioControls(audioElement);
+      }
       audioElement.addEventListener("play", function () {
         handleAudioPlay(audioElement);
       });
@@ -263,6 +268,17 @@ window.StudyApp.audio = (function () {
     return true;
   }
 
+  function stopActiveAudio() {
+    if (activeAudioElement) {
+      resetAudioElement(activeAudioElement);
+      activeAudioElement = null;
+      return true;
+    }
+
+    pauseOtherAudio(null);
+    return false;
+  }
+
   function resetAudioElement(audioElement) {
     if (!audioElement) {
       return false;
@@ -357,6 +373,7 @@ window.StudyApp.audio = (function () {
     markAudioPlayed: markAudioPlayed,
     hasAudioBeenPlayed: hasAudioBeenPlayed,
     playAudioFromBeginning: playAudioFromBeginning,
+    stopActiveAudio: stopActiveAudio,
     pauseOtherAudio: pauseOtherAudio,
     resetAudioElement: resetAudioElement,
     createCustomAudioControls: createCustomAudioControls,

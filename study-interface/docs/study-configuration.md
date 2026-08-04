@@ -155,6 +155,11 @@ rating_scale:
       label: Excellent
   midpoint_label: null
   marker_triggered_audio_playback: true
+  marker_click_or_tap_behaviour: play_audio_from_start_without_changing_rating
+  marker_drag_behaviour: set_or_update_rating
+  empty_scale_click_behaviour: no_action
+  stop_audio_button: one_shared_button_stops_active_version_without_changing_ratings
+  anchor_alignment: numeric and verbal anchors are positioned at 0, 25, 50, 75, and 100 percent
   desktop_layout: horizontal shared scale
   mobile_layout: vertical shared scale where needed
   stored_rating_semantics: one integer 0-100 rating per version remains unchanged
@@ -196,7 +201,10 @@ audio_playback:
     playback_rate_fixed: true
     download_discouraged_where_browser_supported: true
     native_controls_hidden: true
-    custom_controls:
+    practice_and_main_study_visible_controls:
+      - Version A/B/C rating markers for playback
+      - shared Stop audio button
+    setup_visible_controls:
       - Play/Pause
       - Restart
       - progress display
@@ -209,6 +217,7 @@ audio_playback:
   playback_event_recording: TBC
   experimental_audio_format: WAV, 44.1 kHz, stereo, 16-bit PCM frontend copies
   experimental_loudness_preparation: -20.8 LUFS integrated
+  main_study_fade_update: corrected 5 ms boundary-fade frontend copies integrated 2026-08-04
   experimental_normalisation_policy: revised rating-stratification candidate-review audio normalised during frontend integration where needed
 
 pre_study_listening_task:
@@ -216,7 +225,7 @@ pre_study_listening_task:
   mode: development
   production_ready: false
   participant_facing_label: Pre-Study Listening Task
-  current_development_structure: six-item Version A/B/C matching task shown on one scrollable page
+  current_development_structure: six-item Reference/Version A/Version B ABX-style matching task shown on one scrollable page
   participant_flow_step_count: one study step
   item_count: 6
   segment_count: 2
@@ -226,10 +235,10 @@ pre_study_listening_task:
     persisted_on_refresh: true
     storage_key_pattern: screening.presentationOrder.attemptN
   answer_position:
-    version_a_role: matching reference
+    reference_role: matching reference
     matching_answer_randomised_between:
+      - Version A
       - Version B
-      - Version C
   temporary_audio_directory: frontend/assets/audio/study-stimuli/pre-study-listening-task/
   source_audio_preserved_as: external Mix Evaluation Dataset source mixes, not copied into the participant-facing interface
   temporary_audio_source: WAV clips generated from original Mix Evaluation Dataset InTheMeantime mix files
@@ -242,9 +251,9 @@ pre_study_listening_task:
       excerpt_end_seconds: 48.0
       comparison_offset_seconds_relative_to_reference: 0.0
       files:
-        Version A source: screening-item-01-version-a.wav
-        matching duplicate source: screening-item-01-version-b.wav
-        non_matching source: screening-item-01-version-c.wav
+        Reference source: reference_mix.wav
+        matching duplicate source: matching_duplicate.wav
+        non_matching source: alternative_mix.wav
     prestudy_segment_02:
       song: InTheMeantime
       reference_mix: DU-H
@@ -253,28 +262,28 @@ pre_study_listening_task:
       excerpt_end_seconds: 60.0
       comparison_offset_seconds_relative_to_reference: -0.00225
       files:
-        Version A source: screening-item-02-version-a.wav
-        matching duplicate source: screening-item-02-version-b.wav
-        non_matching source: screening-item-02-version-c.wav
+        Reference source: reference_mix.wav
+        matching duplicate source: matching_duplicate.wav
+        non_matching source: alternative_mix.wav
   participant_facing_score_displayed: false
   internal_scoring_stored: true
   stored_per_presentation:
     - segment internal ID
     - repetition number
     - presentation order
-    - Version A/B/C mapping
+    - Reference/Version A/Version B mapping
     - participant answer
     - correct answer
     - correctness
     - playback state
     - timing fields
   required_audio_choices_per_item:
+    - Reference
     - Version A
     - Version B
-    - Version C
   answer_options:
+    - Version A
     - Version B
-    - Version C
   development_answer_position_policy: randomised per generated presentation and persisted with the presentation order
   current_alignment_audit:
     matching_pair_aligned: true
@@ -478,11 +487,11 @@ frontend_development_trial_system:
   experimental_stimuli_production_ready: true
   full_study_production_ready: false
   config_file: frontend/config/stimuli.json
-  stimulus_configuration_version: rating_stratification_v2_2026-08-03
+  stimulus_configuration_version: rating_stratification_v3_fade_update_2026-08-04
   approved_scenario_wording_inserted: true
   interaction_sequence:
-    - Listen to the versions
-    - Rate the versions
+    - Click or tap Version A/B/C markers to play audio
+    - Drag Version A/B/C markers to rate
     - Explain your ratings
   group_assignment:
     group_count: 2
@@ -524,6 +533,7 @@ frontend_development_trial_system:
     full_playback_required: false
     deliberate_rating_required_for_all_versions: true
     non_whitespace_comment_required_for_all_versions: true
+    simple_marker_playback_counts_as_rating: false
   response_storage:
     submitted_records_key: experimental.submittedTrials
     practice_response_separation: required

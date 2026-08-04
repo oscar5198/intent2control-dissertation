@@ -3,14 +3,14 @@
   "productionReady": false,
   "developmentOnly": true,
   "developmentLabel": "Pre-Study Listening Task",
-  "screeningInstructions": "Before beginning the main study, please complete this short listening task.\n\nFor each item, listen carefully to Version A, Version B, and Version C. Version A is identical to one of the other two versions. After listening to all three versions, select whether Version A matches Version B or Version C.\n\nYou may replay the versions as needed before submitting your answer.",
+  "screeningInstructions": "Before beginning the main study, please complete this short listening task.\n\nFor each item, listen to the Reference, Version A, and Version B. One of the two versions is identical to the Reference.\n\nWhich of A or B matches the Reference?\n\nYou may replay the audio as many times as needed before submitting your answer.",
   "itemCount": 6,
-  "preStudyStimulusVersion": "same-excerpt-mix-v1",
+  "preStudyStimulusVersion": "reference-ab-v4",
   "minimumScore": 2,
   "maximumAttempts": 2,
   "retryEnabled": true,
   "failureBehaviour": "Development-only final-fail message; production exclusion or continuation handling remains TBC.",
-  "stimulusNotes": "Development-only Version A/B/C pre-study listening task generated from temporary same-song, same-excerpt mix comparisons. These are not final scientifically validated pre-study stimuli. Final segment identities, selection criteria, scientific score threshold, attempts limit, and exclusion procedure require supervisor approval before pilot testing.",
+  "stimulusNotes": "Development-only Reference/Version A/Version B pre-study listening task generated from temporary same-song, same-excerpt mix comparisons. These are not final scientifically validated pre-study stimuli. Final segment identities, selection criteria, scientific score threshold, attempts limit, and exclusion procedure require supervisor approval before pilot testing.",
   "sourceAudio": "Consolidated frontend copies under assets/audio/study-stimuli/pre-study-listening-task/; source mixes remain external Mix Evaluation Dataset files for InTheMeantime.",
   "presentationStructure": {
     "segmentCount": 2,
@@ -30,7 +30,7 @@
     {
       "id": "prestudy_segment_01",
       "questionType": "abx",
-      "prompt": "Which version matches Version A?",
+      "prompt": "Which of A or B matches the Reference?",
       "sourceSong": "InTheMeantime",
       "referenceMixId": "DU-H",
       "comparisonMixId": "DU-M",
@@ -42,26 +42,26 @@
       "nonMatchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/alternative_mix.wav",
       "answerOptions": [
         {
-          "value": "version_b",
-          "label": "Version B"
+          "value": "version_a",
+          "label": "Version A"
         },
         {
-          "value": "version_c",
-          "label": "Version C"
+          "value": "version_b",
+          "label": "Version B"
         }
       ],
-      "correctAnswer": "version_b",
+      "correctAnswer": "version_a",
       "requiredAudioChoices": [
+        "reference",
         "version_a",
-        "version_b",
-        "version_c"
+        "version_b"
       ],
-      "developmentLogic": "Temporary segment definition. Version A uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of Version A, and the non-matching option uses the DU-M mix from the same song and same aligned excerpt. The matching answer position is randomised between Version B and Version C. Final pre-study stimulus selection remains TBC."
+      "developmentLogic": "Temporary segment definition. Reference uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of the Reference, and the non-matching option uses the DU-M mix from the same song and same aligned excerpt. The matching answer position is randomised between Version A and Version B. Final pre-study stimulus selection remains TBC."
     },
     {
       "id": "prestudy_segment_02",
       "questionType": "abx",
-      "prompt": "Which version matches Version A?",
+      "prompt": "Which of A or B matches the Reference?",
       "sourceSong": "InTheMeantime",
       "referenceMixId": "DU-H",
       "comparisonMixId": "DU-J",
@@ -73,21 +73,21 @@
       "nonMatchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/alternative_mix.wav",
       "answerOptions": [
         {
-          "value": "version_b",
-          "label": "Version B"
+          "value": "version_a",
+          "label": "Version A"
         },
         {
-          "value": "version_c",
-          "label": "Version C"
+          "value": "version_b",
+          "label": "Version B"
         }
       ],
-      "correctAnswer": "version_c",
+      "correctAnswer": "version_b",
       "requiredAudioChoices": [
+        "reference",
         "version_a",
-        "version_b",
-        "version_c"
+        "version_b"
       ],
-      "developmentLogic": "Temporary segment definition. Version A uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of Version A, and the non-matching option uses the DU-J mix from the same song and same aligned excerpt. The matching answer position is randomised between Version B and Version C. Final pre-study stimulus selection remains TBC."
+      "developmentLogic": "Temporary segment definition. Reference uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of the Reference, and the non-matching option uses the DU-J mix from the same song and same aligned excerpt. The matching answer position is randomised between Version A and Version B. Final pre-study stimulus selection remains TBC."
     }
   ],
   "unresolvedValues": {

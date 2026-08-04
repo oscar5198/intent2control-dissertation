@@ -1,5 +1,5 @@
 {
-  "authoritative_final_stimulus_source": "outputs\\stimulus_selection\\06_final_summaries\\final_selected_mixes.csv",
+  "authoritative_final_stimulus_source": "outputs\\stimulus_selection\\09_current_frontend_integration\\tables\\current_frontend_stimuli.csv",
   "authoritative_raw_feature_source": "outputs\\stimulus_selection\\03_feature_extraction\\tables\\raw_diffmst_features.csv",
   "recommended_scalar_predictors": [
     "z_RMS",
@@ -23,20 +23,20 @@
   "interaction_reason": "Only twelve stimulus-level feature combinations are available; episode-by-feature interactions would be high risk.",
   "strongest_pearson_correlation": {
     "method": "pearson",
-    "feature_a": "SW",
-    "feature_b": "SI",
-    "r": 0.5594302989547988,
-    "abs_r": 0.5594302989547988,
+    "feature_a": "RMS",
+    "feature_b": "CF",
+    "r": 0.4019408506747232,
+    "abs_r": 0.4019408506747232,
     "above_0_70": false,
     "above_0_90": false
   },
   "strongest_spearman_correlation": {
     "method": "spearman",
     "feature_a": "RMS",
-    "feature_b": "SI",
-    "r": -0.8111888111888111,
-    "abs_r": 0.8111888111888111,
-    "above_0_70": true,
+    "feature_b": "CF",
+    "r": 0.3986013986013986,
+    "abs_r": 0.3986013986013986,
+    "above_0_70": false,
     "above_0_90": false
   },
   "near_constant_scalar_features": []

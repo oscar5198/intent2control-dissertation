@@ -217,12 +217,22 @@ window.StudyApp.randomisation = (function () {
 
     return trials.every(function (trial) {
       var expectedMixIds = mixIdsByExcerpt[trial.excerptId] || [];
+      var expectedAudioPaths = {};
       var mappedMixIds = Array.isArray(trial.versionMappings) ? trial.versionMappings.map(function (mapping) {
         return mapping.actualMixId;
       }) : [];
 
+      (config.excerpts.find(function (excerpt) {
+        return excerpt.id === trial.excerptId;
+      }) || { mixes: [] }).mixes.forEach(function (mix) {
+        expectedAudioPaths[mix.actualMixId] = mix.audioPath;
+      });
+
       return expectedMixIds.length === mappedMixIds.length && expectedMixIds.every(function (mixId) {
-        return mappedMixIds.indexOf(mixId) !== -1;
+        var mapping = (trial.versionMappings || []).find(function (item) {
+          return item.actualMixId === mixId;
+        });
+        return mappedMixIds.indexOf(mixId) !== -1 && mapping && mapping.audioPath === expectedAudioPaths[mixId];
       });
     });
   }

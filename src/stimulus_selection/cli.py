@@ -13,6 +13,7 @@ from stimulus_selection.mix_selection_v2 import run_mix_selection_v2
 from stimulus_selection.ratings_integration import run_ratings_integration
 from stimulus_selection.rating_stratification import run_rating_stratification
 from stimulus_selection.alignment_verification import run_alignment_verification
+from stimulus_selection.fade_revision import run_fade_revision
 from stimulus_selection.output_layout import stage1_reports, stage1_tables
 from stimulus_selection.paths import ensure_output_root
 from stimulus_selection.reports import write_markdown_report
@@ -146,6 +147,8 @@ def main() -> None:
     stratify.add_argument("--config", required=True, help="Path to selection YAML config.")
     verify_alignment = subparsers.add_parser("verify-alignment", help="Run Phase 2C alignment QA for recommended triplets.")
     verify_alignment.add_argument("--config", required=True, help="Path to selection YAML config.")
+    revise_fades = subparsers.add_parser("revise-fades", help="Apply supervisor-requested 5 ms boundary fade revision to active review audio.")
+    revise_fades.add_argument("--config", required=True, help="Path to selection YAML config.")
     args = parser.parse_args()
 
     if args.command == "inventory":
@@ -208,6 +211,9 @@ def main() -> None:
             "maximum_ms_offset": round(result.maximum_ms_offset, 6),
             "report": result.report_path,
         }
+    elif args.command == "revise-fades":
+        config = load_config(args.config)
+        counts = run_fade_revision(config)
     else:
         raise ValueError(args.command)
     for key, value in counts.items():
