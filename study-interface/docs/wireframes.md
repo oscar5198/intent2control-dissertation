@@ -45,7 +45,7 @@ The approved Participant Information Sheet and consent form must be checked agai
   ...
     |
     v
-[Listening Task 10]
+[Listening Task 6]
     |
     v
 [Post-task Questionnaire]
@@ -462,7 +462,7 @@ Explain the listening task before the Practice Trial and main study listening ta
 - Listen to three versions of the excerpt.
 - Replay versions freely.
 - Rate each version on the 0-100 preference scale.
-- Write one required comment for each version.
+- Write one required comparative comment covering all versions.
 - Explain that practice responses are not included in analysis.
 - Avoid final scenario wording until approved.
 
@@ -505,13 +505,12 @@ Explain the listening task before the Practice Trial and main study listening ta
 | 2. Listen to Version A, Version B, and Version C.    |
 | 3. Replay audio as many times as needed.             |
 | 4. Rate each version from 0 to 100.                  |
-| 5. Write one comment for each version.               |
+| 5. Write one comparative comment for the trial.       |
 |                                                      |
 | +--------------------------------------------------+ |
 | | Example trial layout                             | |
-| | [Scenario] [Version A] [Slider] [Comment]        | |
-| |            [Version B] [Slider] [Comment]        | |
-| |            [Version C] [Slider] [Comment]        | |
+| | [Scenario] [Version A/B/C shared scale]          | |
+| | [One comparative comment box]                    | |
 | +--------------------------------------------------+ |
 |                                                      |
 | [ ] I understand how to complete the listening task. |
@@ -536,26 +535,27 @@ Let participants practise the exact trial interaction before data collection beg
 - Marker-based task structure matching the experimental trial layout.
 - Hidden Version A, Version B, and Version C audio elements controlled by the markers.
 - One shared 0-100 preference scale with draggable Version A, Version B, and Version C markers and one shared Stop audio button.
-- Version A, Version B, and Version C required comment boxes grouped together.
+- One required comparative comment box grouped below the shared scale.
 - Primary `Submit` button.
 - Secondary `Back` button if allowed.
 
 ### Information Displayed
 
-- Practice scenario text from development configuration, final wording TBC.
+- Practice scenario text from `frontend/config/practice.json`, currently using the EDR-2 relaxation-distraction vignette.
+- Personal-preference instruction: `Imagine yourself in the situation described above. Rate each version according to how much you would personally prefer to listen to it in that situation.`
 - Practice excerpt label from development configuration, final label TBC.
 - Version A, Version B, Version C.
 - Audio is controlled from the Version A, Version B, and Version C markers rather than separate visible audio-player cards.
 - Shared 0-100 preference scale with Bad, Poor, Fair, Good, and Excellent anchors.
 - Draggable Version A, Version B, and Version C markers.
-- Required comment text area for each version.
+- Required comparative comment text area.
 
 ### Participant Actions
 
 - Read practice scenario.
 - Play each audio version.
 - Click or tap each marker to play the version, then drag each marker on the shared preference scale.
-- Enter one comment for each version.
+- Enter one comparative comment covering the displayed versions.
 - Submit the practice trial.
 
 ### Validation Rules
@@ -563,7 +563,7 @@ Let participants practise the exact trial interaction before data collection beg
 - Same validation as experimental trial.
 - All three markers must have participant-provided values.
 - A marker counts only after deliberate participant interaction.
-- All three comments must be completed.
+- The comparative comment must be completed.
 - Empty or whitespace-only comments are invalid.
 - Minimum meaningful response threshold is TBC.
 - All three practice audio versions must be played before completion.
@@ -577,7 +577,7 @@ Let participants practise the exact trial interaction before data collection beg
 ### Progress Indicator
 
 - Show `Practice Trial` and study progress `Step 6 of 12`.
-- Do not count the practice trial as `Listening Task 1 of 10`.
+- Do not count the practice trial as `Listening Task 1 of 6`.
 
 ### Notes for Implementation
 
@@ -607,9 +607,8 @@ Let participants practise the exact trial interaction before data collection beg
 | A: 30  B: 70  C: Not set                             |
 |                                                      |
 | Explain your ratings                                 |
-| +-- Version A --+ +-- Version B --+ +-- Version C --+ |
-| | [comment]    | | [comment]    | | [comment]    | |
-| | [Required comment boxes for A, B, and C]        | |
+| +------------- Required comparative comment --------+ |
+| | [comment covering Versions A-C]                  | |
 | +--------------------------------------------------+ |
 |                                                      |
 | [Back]                                      [Submit]|
@@ -651,7 +650,7 @@ Clearly mark the end of the Practice Trial and prepare participants to begin the
 
 ### Navigation
 
-- Forward: to Listening Task 1 of 10.
+- Forward: to Listening Task 1 of 6.
 - Back: to Practice Trial.
 
 ### Progress Indicator
@@ -690,19 +689,19 @@ Clearly mark the end of the Practice Trial and prepare participants to begin the
 
 ### Purpose
 
-Collect preference ratings and required comments for one music excerpt presented as three neutral mix versions within a contextual listening scenario.
+Collect preference ratings and one required comparative comment for one music excerpt presented as three neutral mix versions within a contextual listening scenario.
 
 ### Components Shown
 
 - Persistent progress bar.
-- Listening task count: `Listening Task X of 10`.
+- Listening task count: `Listening Task X of 6`.
 - Scenario title.
 - Scenario description.
 - Music excerpt title.
 - Marker-based task structure: play versions from the markers, drag markers on the shared preference scale, and explain your ratings.
 - Hidden Version A, Version B, and Version C audio elements controlled by the markers.
 - Shared 0-100 preference scale with draggable Version A, Version B, and Version C markers.
-- Explain section with Version A, Version B, and Version C required comment boxes.
+- Explain section with one required comparative comment box.
 - Played-state prompt for each audio version.
 - Validation summary area.
 - Primary `Submit` button.
@@ -716,11 +715,11 @@ Collect preference ratings and required comments for one music excerpt presented
 - Version A, Version B, Version C.
 - Hidden audio for each version, controlled from the Version A, Version B, and Version C markers.
 - One shared 0-100 preference scale with one marker per version.
-- One required comment field per version.
+- One required comparative comment field per trial.
 - Required playback-start status for each version.
 - Scale anchors: Bad, Poor, Fair, Good, Excellent at 0, 25, 50, 75, and 100.
-- Comment prompt: `Please briefly explain what influenced your preference for this mix.`
-- Progress through ten trials.
+- Comment prompt: `Briefly explain what influenced your ratings. Please describe any differences between Versions A-C that mattered to you, and whether the listening situation affected your preference.`
+- Progress through six trials.
 
 ### Participant Actions
 
@@ -729,14 +728,14 @@ Collect preference ratings and required comments for one music excerpt presented
 - Replay any version as many times as they wish.
 - Successfully start playback of all three versions.
 - Drag the Version A, Version B, and Version C markers on the shared preference scale.
-- Write a comment for each version.
+- Write one comparative comment covering the displayed versions.
 - Submit the listening task.
 
 ### Validation Rules
 
 - Participant cannot continue until Version A, Version B, and Version C have each successfully started playback.
 - Participant cannot continue until all three markers have participant-provided values.
-- Participant cannot continue until all three comments are completed.
+- Participant cannot continue until the comparative comment is completed.
 - Full playback is not required.
 - Empty or whitespace-only comments are invalid.
 - Minimum meaningful response threshold is TBC.
@@ -746,14 +745,14 @@ Collect preference ratings and required comments for one music excerpt presented
 ### Navigation
 
 - Forward: to the next listening task after valid submission.
-- Forward from Listening Task 10: to Post-task Questionnaire.
+- Forward from Listening Task 6: to Post-task Questionnaire.
 - Back: available from Listening Task 1 to the Main Study transition page in the current development implementation.
 - Back: hidden/disabled after later listening tasks to avoid accidental editing of submitted trials or corruption of timing/randomisation state.
 
 ### Progress Indicator
 
 - Persistent progress bar near top.
-- Text must show `Listening Task X of 10`.
+- Text must show `Listening Task X of 6`.
 - Include wider study stage as `Main Study`.
 
 ### Notes for Implementation
@@ -765,7 +764,7 @@ Collect preference ratings and required comments for one music excerpt presented
 - Use 24-32 px vertical spacing between task sections.
 - Avoid visual emphasis that could bias one version.
 - Ensure audio controls, shared rating markers, and text areas remain usable on mobile.
-- Desktop may show three-column audio and comment grids with one horizontal shared rating scale.
+- Desktop may show one horizontal shared rating scale with one comparative comment field below it.
 - Tablet may wrap to two columns while preserving A, B, C order.
 - Mobile may use a vertical shared rating scale to avoid horizontal scrolling.
 - Record trial start and trial submission timestamps.
@@ -775,13 +774,13 @@ Collect preference ratings and required comments for one music excerpt presented
 - Trial order and Version A/B/C mappings are persisted so refresh does not regenerate them.
 - Internal scenario IDs and EDR/FM prefixes are not shown to participants.
 - Song A/Song B labels are stable for the participant's assigned excerpts throughout the session.
-- Trial order is generated as five scenario pairs: both song trials for a scenario remain consecutive, song order may vary inside the pair, and Version A/B/C mappings remain independently randomised per trial.
+- Trial order is generated as three episode pairs: both song trials for an episode remain consecutive, song order may vary inside the pair, and Version A/B/C mappings remain independently randomised per trial.
 
 ### ASCII Wireframe
 
 ```text
 +--------------------------------------------------------------+
-| Main Study                         Listening Task X of 10     |
+| Main Study                         Listening Task X of 6     |
 | [=========== progress bar =====================--------]       |
 +--------------------------------------------------------------+
 | Scenario descriptive title                                    |
@@ -796,9 +795,9 @@ Collect preference ratings and required comments for one music excerpt presented
 | A: 30              B: 55              C: Not set             |
 |                                                              |
 | 2. Explain your ratings                                      |
-| +-- Version A --+ +-- Version B --+ +-- Version C --+        |
-| | [comment]    | | [comment]    | | [comment]    |        |
-| +--------------+ +--------------+ +--------------+        |
+| +---------- Required comparative comment ----------+        |
+| | [comment covering Versions A-C]                  |        |
+| +--------------------------------------------------+        |
 |                                                              |
 | Validation summary area                                      |
 |                                                              |
@@ -810,7 +809,7 @@ Collect preference ratings and required comments for one music excerpt presented
 
 ### Purpose
 
-Collect participant feedback on the task experience and listening context after the ten main study listening tasks.
+Collect participant feedback on the task experience and listening context after the six main study listening tasks.
 
 ### Components Shown
 
@@ -849,7 +848,7 @@ Collect participant feedback on the task experience and listening context after 
 ### Navigation
 
 - Forward: to Demographic Questionnaire after required fields are valid.
-- Back: to the listening task flow after the ten-task completion rule is satisfied.
+- Back: to the listening task flow after the six-task completion rule is satisfied.
 
 ### Progress Indicator
 
@@ -999,9 +998,9 @@ Completion summary:
 
 Also display:
 
-- Ten trials completed.
-- Thirty ratings completed.
-- Thirty required comments completed.
+- Six trials completed.
+- Eighteen ratings completed.
+- Six required comparative comments completed.
 - Reminder that after final submission, withdrawal may no longer be possible because responses are anonymised, as stated in the approved PIS/consent materials.
 
 ### Participant Actions
@@ -1016,9 +1015,9 @@ Also display:
   - Consent completed.
   - Audio screening passed.
   - Practice trial completed.
-  - Ten main study listening tasks submitted.
-  - Thirty ratings submitted.
-  - Thirty required comments submitted.
+  - Six main study listening tasks submitted.
+  - Eighteen ratings submitted.
+  - Six required comparative comments submitted.
   - Required demographic questions completed.
   - Required post-task questions completed.
 - Final submission records final submission timestamp.
@@ -1050,7 +1049,7 @@ Also display:
 | +---------------- Completion summary --------------+ |
 | | [success] Screening completed                    | |
 | | [success] Experimental trials completed          | |
-| |           10 trials, 30 ratings, 30 comments     | |
+| |           6 trials, 18 ratings, 6 comments      | |
 | | [success] Questionnaires completed               | |
 | +--------------------------------------------------+ |
 |                                                      |
@@ -1135,11 +1134,11 @@ Confirm successful submission, thank the participant, and provide a simple closi
 - Pre-Study Listening Task -> Instructions only after the task is completed successfully.
 - Pre-Study Listening Task -> Pre-Study Listening Task retry state if the participant does not meet the internal criterion and retry is permitted. Retry behaviour is TBC.
 - Instructions -> Practice Trial only after the task acknowledgement checkbox is checked.
-- Practice Trial -> Main Study transition only after all practice playback, ratings, and required comments are complete.
+- Practice Trial -> Main Study transition only after all practice playback, ratings, and the required comparative comment are complete.
 - Main Study transition -> Listening Task 1 after the participant selects `Begin Main Study`.
-- Listening Task X -> Listening Task X+1 for tasks 1-9 only after Version A, Version B, and Version C have each started playback, all three ratings are deliberately set, and all three required comments are complete.
-- Listening Task 10 -> Post-task Questionnaire only after Version A, Version B, and Version C have each started playback, all three ratings are deliberately set, and all three required comments are complete.
-- Direct Post-task Questionnaire access is blocked until ten submitted experimental trial records exist.
+- Listening Task X -> Listening Task X+1 for tasks 1-5 only after Version A, Version B, and Version C have each started playback, all three ratings are deliberately set, and the required comparative comment is complete.
+- Listening Task 6 -> Post-task Questionnaire only after Version A, Version B, and Version C have each started playback, all three ratings are deliberately set, and the required comparative comment is complete.
+- Direct Post-task Questionnaire access is blocked until six submitted experimental trial records exist.
 - Post-task Questionnaire -> Demographic Questionnaire after required post-task fields are complete.
 - Demographic Questionnaire -> Review and Submit after required demographic fields are complete.
 - Review and Submit -> Completion Page only after final submission succeeds.
@@ -1163,10 +1162,10 @@ Back navigation:
 - Pre-Study Listening Task requires Reference, Version A, and Version B playback plus one A/B answer for each of the six listening items before submission.
 - Development Pre-Study Listening Task stores internal score without showing it to participants; production pass rule remains TBC.
 - Instructions acknowledgement checkbox must be checked.
-- Practice trial requires all three deliberately positioned shared-scale markers and all three comments.
+- Practice trial requires all three deliberately positioned shared-scale markers and one comparative comment.
 - Each experimental trial requires Version A, Version B, and Version C to have successfully started playback.
 - Each experimental trial requires all three shared-scale marker ratings.
-- Each experimental trial requires all three comments.
+- Each experimental trial requires one comparative comment.
 - Empty or whitespace-only comments are invalid.
 - Minimum meaningful comment threshold is TBC.
 - Default marker position must not be counted as a submitted rating unless actively set or explicitly confirmed.
@@ -1174,7 +1173,7 @@ Back navigation:
 - Gender is optional.
 - Required post-task questions must be completed, including conditional detail fields when `Other` is selected for listening device or completion location.
 - Additional comments in the post-task questionnaire follow final response-option rules, TBC.
-- Final submission requires consent, screening, practice, exactly ten trials, thirty ratings, thirty comments, post-task questionnaire, and demographics completion.
+- Final submission requires consent, screening, practice, exactly six trials, eighteen ratings, six comparative comments, post-task questionnaire, and demographics completion.
 - Completion page requires final submission.
 - Submitted sessions must not reopen editable study pages during normal navigation.
 - No form should request participant names, email addresses, IP addresses, signatures, postal addresses, phone numbers, student numbers, or other direct identifiers.

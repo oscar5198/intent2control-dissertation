@@ -17,7 +17,7 @@ The study interface will eventually provide:
 - Demographic and post-task questionnaires.
 - Final submission of anonymous study responses.
 
-This foundation has begun implementing a static framework-free participant interface. It does not implement the backend, database, final experimental trials, randomisation, final audio stimuli, or data export.
+This foundation has begun implementing a static framework-free participant interface. It does not implement the final backend, database, final server-side balancing, or secure production data storage.
 
 ## Study design
 
@@ -25,15 +25,15 @@ Participants are randomly assigned to one of two experimental groups.
 
 Each participant evaluates:
 
-- Five contextual listening scenarios.
-- Two assigned music excerpts per scenario.
+- Three contextual listening episodes.
+- Two assigned music excerpts per episode.
 - Three mix versions per excerpt.
 
 This produces:
 
-- Ten experimental trials per participant.
-- Thirty mix ratings per participant.
-- Thirty required mix comments per participant.
+- Six experimental listening tasks per participant.
+- Eighteen mix ratings per participant.
+- Six required comparative trial comments per participant.
 
 Each trial contains one music excerpt presented as three mix versions. Mix versions must be shown with neutral labels: Version A, Version B, and Version C.
 
@@ -57,7 +57,7 @@ The intended participant flow is:
 5. Instructions.
 6. Practice trial.
 7. Main Study transition.
-8. Ten experimental trials.
+8. Six experimental listening tasks.
 9. Post-task questionnaire.
 10. Demographic questionnaire.
 11. Review and final submission.
@@ -75,7 +75,7 @@ Final participant-facing wording for screens not governed directly by the approv
 - The interface must present only the excerpts assigned to the participant's group.
 - The interface must display neutral mix labels rather than internal mix identifiers.
 - The interface must collect one preference rating for each presented mix.
-- The interface must provide a required comment field for each mix rating.
+- The interface must provide one required comparative comment field for each trial.
 - The interface must include demographic and post-task questionnaire sections.
 - The interface must provide a final review or confirmation step before submission.
 - Responses must be stored anonymously.
@@ -102,9 +102,8 @@ Final participant-facing wording for screens not governed directly by the approv
 
 - Each mix must be rated using a continuous 0-100 preference scale.
 - The scale endpoints and any midpoint label are TBC.
-- Each mix must have an associated required comment field.
-- Comments are required for every mix version.
-- A participant cannot proceed from a trial until all three ratings and all three associated comments are completed.
+- Each trial must have one associated required comparative comment field covering all displayed mix versions.
+- A participant cannot proceed from a trial until all three ratings and the comparative comment are completed.
 - Empty or whitespace-only comments must not be accepted.
 - The minimum meaningful response threshold is TBC.
 

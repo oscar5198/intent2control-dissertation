@@ -34,21 +34,18 @@ groups:
       - group_02_song_b_pouring_room
 
 scenarios:
-  - id: edr_1_relaxation
-    title: EDR-1 — Unwinding After a Demanding Day
-    text: You have finished everything that required your attention for the day. You now have some uninterrupted time at home and do not need to complete any other tasks. You feel mentally tired and would like to settle into a calmer state. You decide to spend some time listening to music while you unwind.
-  - id: edr_2_distraction
-    title: EDR-2 — Taking Your Mind Off Everyday Concerns
-    text: You are travelling alone to a familiar destination and have some time before you arrive. A few everyday concerns have been going through your mind repeatedly. There is nothing you can do about them at that moment, and you would prefer not to keep thinking about them. You listen to music to occupy your attention during the journey.
-  - id: edr_3_enjoyment
-    title: EDR-3 — Enjoying Unstructured Free Time
-    text: You have some free time at home and nothing in particular that you need to do. You are not feeling tired or worried, but you would like to enjoy the time rather than let it pass uneventfully. You choose to listen to music for entertainment. You want the listening experience to feel pleasant and engaging.
-  - id: fm_1_focus
-    title: FM-1 — Sustaining Concentration During Focused Work
-    text: You are working on a task that requires sustained concentration for an extended period. You understand what you need to do, but your attention has started to drift. You want to remain mentally engaged and make steady progress without becoming distracted. You listen to music while continuing the task.
-  - id: fm_2_motivation
-    title: FM-2 — Maintaining Energy During Physical Activity
-    text: You are partway through an individual exercise session. The activity requires continued physical effort, but your energy and motivation have begun to decrease. You want to maintain your momentum and complete the session with consistent effort. You listen to music while you continue exercising.
+  - id: EDR-1
+    title: EDR-1 - Enjoying Free Time
+    dominant_function: Enjoyment
+    text: You have some free time and no immediate responsibilities that require your attention. You are not feeling tired or worried, but you would like to enjoy your time rather than let it pass uneventfully. You decide to listen to music for entertainment, making your free time more enjoyable.
+  - id: EDR-2
+    title: EDR-2 - Unwinding After a Demanding Period
+    dominant_function: Relaxation-Distraction
+    text: You have some time for yourself after a demanding period. Although a few everyday concerns are still on your mind, there is nothing that requires your attention right now. You would like to feel calmer and take your mind off these concerns for a while, so you decide to listen to music to help you unwind.
+  - id: FM-1
+    title: FM-1 - Maintaining Engagement During an Activity
+    dominant_function: Focus-Motivation
+    text: You are engaged in an activity that requires sustained mental or physical effort. As you continue, it becomes more difficult to stay engaged. You want to maintain your focus and motivation so that you can continue making steady progress toward completing the activity. You decide to listen to music while carrying on with the activity.
 
 excerpts:
   - id: group_01_song_a_lead_me
@@ -125,12 +122,12 @@ excerpts:
         audio_filename: mix_03.wav
 
 trial_count_calculations:
-  scenarios_per_participant: 5
-  excerpts_per_scenario: 2
-  trials_per_participant: 10
+  episodes_per_participant: 3
+  excerpts_per_episode: 2
+  trials_per_participant: 6
   mix_versions_per_trial: 3
-  ratings_per_participant: 30
-  comments_per_participant: 30
+  ratings_per_participant: 18
+  comparative_comments_per_participant: 6
 
 rating_scale:
   type: continuous
@@ -165,10 +162,12 @@ rating_scale:
   stored_rating_semantics: one integer 0-100 rating per version remains unchanged
 
 comments:
-  per_mix_comment_field: true
+  per_mix_comment_field: false
+  comparative_comment_field_per_trial: true
   comments_required: true
-  comments_per_participant: 30
+  comparative_comments_per_participant: 6
   required: true
+  submitted_field_name: comparative_comment
   behaviour: required
   empty_or_whitespace_only_allowed: false
   meaningful_response_threshold: TBC
@@ -323,12 +322,13 @@ practice_trial:
   mode: development
   production_ready: false
   responses_excluded_from_main_analysis: true
-  practice_scenario_id: practice_scenario_restaurant
-  practice_scenario_label: Practice scenario
-  practice_scenario_title: Dinner Date
+  practice_scenario_id: practice_scenario_edr_2_relaxation_distraction
+  practice_scenario_label: Practice Trial
+  practice_scenario_title: Unwinding After a Demanding Period
   practice_excerpt_id: practice_excerpt_practice_song
   participant_excerpt_label: Practice song
-  scenario_text: Imagine you are having dinner at a quiet restaurant with someone you recently started dating. The conversation is relaxed, and soft background music is playing while you enjoy the evening. Listen to the three versions of the same music clip and decide which versions feel most suitable for this situation.
+  scenario_text: You have some time for yourself after a demanding period. Although a few everyday concerns are still on your mind, there is nothing that requires your attention right now. You would like to feel calmer and take your mind off these concerns for a while, so you decide to listen to music to help you unwind.
+  scenario_instruction: Imagine yourself in the situation described above. Rate each version according to how much you would personally prefer to listen to it in that situation.
   audio_source: frontend/assets/audio/study-stimuli/practice-trial/coldstar/
   audio_source_type: practice-only real Mix Evaluation Dataset song excerpt using three existing dataset mixes, independent from the main experimental songs
   participant_facing_real_song_title_displayed: false
@@ -352,7 +352,7 @@ practice_trial:
     maximum: 100
     step: 1
     untouched_marker_counts_as_complete: false
-  comments_required: true
+  comparative_comments_required: true
   whitespace_only_comments_allowed: false
   meaningful_response_threshold: TBC
   audio_playback_required_for_completion: true
@@ -367,16 +367,16 @@ randomisation:
       - group_02
     method: random
     balancing_strategy: TBC
-  scenario_order:
+  episode_order:
     participant_facing: randomised once per participant
-    structure: five scenario pairs
+    structure: three episode pairs
     internal_prefixes_only: EDR/FM codes remain internal and are not displayed
-  excerpt_order_within_scenario:
+  excerpt_order_within_episode:
     participant_facing_labels:
       - Song A
       - Song B
     stable_mapping_per_participant: true
-    randomised_within_each_scenario_pair: true
+    randomised_within_each_episode_pair: true
     pair_adjacency_required: true
   mix_label_mapping:
     display_labels:
@@ -431,8 +431,8 @@ completion_requirements:
   eligibility_completed: true
   audio_screening_passed: true
   practice_trial_completed: true
-  experimental_ratings_completed: 30
-  experimental_comments_completed: 30
+  experimental_ratings_completed: 18
+  experimental_comparative_comments_completed: 6
   demographic_questionnaire_completed: true
   post_task_questionnaire_completed: true
   final_submission_confirmed: true
@@ -487,7 +487,7 @@ frontend_development_trial_system:
   experimental_stimuli_production_ready: true
   full_study_production_ready: false
   config_file: frontend/config/stimuli.json
-  stimulus_configuration_version: rating_stratification_v3_fade_update_2026-08-04
+  stimulus_configuration_version: three_episode_design_2026-08-05
   approved_scenario_wording_inserted: true
   interaction_sequence:
     - Click or tap Version A/B/C markers to play audio
@@ -500,15 +500,15 @@ frontend_development_trial_system:
     secure_randomness_used_where_available: true
     final_server_side_balancing: TBC
   trial_generation:
-    scenarios_per_participant: 5
+    episodes_per_participant: 3
     excerpts_per_group: 2
-    trials_per_participant: 10
-    rule: grouped_scenario_pairs
+    trials_per_participant: 6
+    rule: grouped_episode_pairs
     scenario_repetition: exactly_twice
-    excerpt_repetition_within_scenario: each_assigned_excerpt_once
-    scenario_order: randomised_and_persisted
-    scenario_pair_adjacency: required
-    excerpt_order_within_scenario: randomised_and_persisted
+    excerpt_repetition_within_episode: each_assigned_excerpt_once
+    episode_order: randomised_and_persisted
+    episode_pair_adjacency: required
+    excerpt_order_within_episode: randomised_and_persisted
     participant_excerpt_labels:
       - Song A
       - Song B
@@ -532,7 +532,7 @@ frontend_development_trial_system:
     playback_started_required_for_all_versions: true
     full_playback_required: false
     deliberate_rating_required_for_all_versions: true
-    non_whitespace_comment_required_for_all_versions: true
+    non_whitespace_comparative_comment_required_per_trial: true
     simple_marker_playback_counts_as_rating: false
   response_storage:
     submitted_records_key: experimental.submittedTrials
@@ -558,7 +558,7 @@ frontend_development_trial_system:
 - Comment validation meaningful response threshold: TBC.
 - Randomisation balancing strategy: TBC.
 - Final server-side randomisation balancing strategy: TBC.
-- Production scenario order, excerpt order, mix label mapping, and mix presentation order implementation: TBC.
+- Production episode order, excerpt order, mix label mapping, and mix presentation order implementation: TBC.
 - Final demographic response options: TBC.
 - Final post-task response options: TBC.
 - Final server-issued participant ID: TBC.

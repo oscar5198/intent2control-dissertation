@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
-  <link rel="stylesheet" href="../css/pages.css?v=scale-active-summary-20260804">
+  <link rel="stylesheet" href="../css/pages.css?v=preference-summary-removed-20260805">
 </head>
 <body data-page="practice">
   <main id="app" class="app-shell app-shell--wide" data-page-container>
@@ -30,12 +30,13 @@
 
       <form data-form="practice" novalidate>
         <div class="validation-summary is-hidden" data-validation-summary tabindex="-1">
-          Please complete all required practice ratings and comments before continuing.
+          Please complete all required practice ratings and the comparative comment before continuing.
         </div>
 
         <section class="section-panel practice-context" aria-labelledby="practice-scenario-heading">
           <h2 id="practice-scenario-heading" data-practice-scenario-title>Loading practice scenario...</h2>
           <p data-practice-scenario-text></p>
+          <p data-practice-scenario-instruction></p>
         </section>
 
         <section class="trial-evaluation-stack" data-practice-versions aria-label="Practice versions"></section>
@@ -53,7 +54,7 @@
   <script src="../js/validation.js" defer></script>
   <script src="../js/audio.js?v=scale-interaction-20260802" defer></script>
   <script src="../js/progress.js" defer></script>
-  <script src="../js/trial.js?v=scale-active-summary-20260804" defer></script>
-  <script src="../js/app.js?v=scale-active-summary-20260804" defer></script>
+  <script src="../js/trial.js?v=preference-summary-removed-20260805" defer></script>
+  <script src="../js/app.js?v=preference-summary-removed-20260805" defer></script>
 </body>
 </html>

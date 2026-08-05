@@ -163,7 +163,7 @@ Specifications:
 Behaviour:
 
 - The primary action should remain disabled until required fields for the current step are valid.
-- For experimental trials, `Submit trial` must remain disabled until all three ratings and all three required comments are complete.
+- For experimental trials, `Submit trial` must remain disabled until all three ratings and the required comparative comment are complete.
 - Empty or whitespace-only comments must trigger validation.
 
 ### Cards
@@ -209,7 +209,7 @@ States:
 
 ### Text Areas
 
-Text areas are required for each mix comment.
+Text areas are required for the trial-level comparative comment.
 
 Specifications:
 
@@ -310,7 +310,7 @@ Specifications:
 Trial validation should cover:
 
 - Missing rating for Version A, B, or C.
-- Missing required comment for Version A, B, or C.
+- Missing required comparative comment.
 - Empty or whitespace-only comments.
 
 ### Information Banners
@@ -455,7 +455,7 @@ Implementation should:
 - Treat `specification.md`, `study-configuration.md`, and `ui-flow.md` as the source of study behaviour.
 - Treat the approved PIS and consent files in `docs/participant-materials/` as the authoritative wording source.
 - Preserve neutral Version A, Version B, and Version C presentation.
-- Enforce required ratings and required comments before trial submission.
+- Enforce required ratings and the required comparative comment before trial submission.
 - Record response-time timestamps as required by the study documentation.
 - Keep detailed playback-event logging separate until that requirement is resolved.
 - Avoid collecting direct identifiers.

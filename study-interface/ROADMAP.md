@@ -40,8 +40,8 @@
 - [x] Remove separate Practice and Main Study playback buttons in favour of marker-triggered playback and one shared Stop audio button.
 - [x] Separate marker click/tap playback from marker drag rating behaviour.
 - [x] Add temporary frontend group assignment.
-- [x] Add persisted ten-trial generation.
-- [x] Refine ten-trial generation to preserve adjacent scenario pairs.
+- [x] Add persisted six-trial generation.
+- [x] Refine six-trial generation to preserve adjacent episode pairs.
 - [x] Add stable participant-facing Song A and Song B excerpt labels.
 - [x] Add persisted Version A, Version B, and Version C mix mapping.
 - [x] Integrate final experimental audio stimuli.

@@ -242,6 +242,38 @@ rating_stratification:
   top_n_per_condition: 10
   prefer_unique_mixes_across_conditions: true
   deterministic: true
+six_mix_proposals:
+  methodology_version: "1.0"
+  status: "proposal_for_pilot_and_supervisor_review"
+  source: "union_of_similar_and_wide_triplets"
+  songs:
+    - "Lead Me"
+    - "In The Meantime"
+    - "Red To Blue"
+    - "Pouring Room"
+  mixes_per_song: 6
+  require_no_overlap_between_conditions: true
+  diversity_features:
+    scalar:
+      - rms_mean
+      - crest_factor_mean
+      - stereo_width
+    spectral:
+      - bark_mid
+      - bark_side
+    qc_only:
+      - stereo_imbalance
+  loudness_target_lufs: -20.8
+  fade_in_ms: 5.0
+  fade_out_ms: 5.0
+  fade_shape: "half_cosine"
+  exact_duration_seconds: 28.0
+  sample_rate: 44100
+  bit_depth: 24
+  alignment_verification: true
+  technical_qc_required: true
+  frontend_implementation: false
+  deterministic_seed: 42
 stage4_review:
   status: "approved"
   reviewer: "Oscar"

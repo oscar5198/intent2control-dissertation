@@ -1,0 +1,29 @@
+{
+  "protected_unchanged": true,
+  "changed": [],
+  "alignment_figures_inspected": [
+    "Lead Me waveforms",
+    "Lead Me transient zoom",
+    "In The Meantime waveforms",
+    "In The Meantime transient zoom",
+    "Red To Blue waveforms",
+    "Red To Blue transient zoom",
+    "Pouring Room waveforms",
+    "Pouring Room transient zoom"
+  ],
+  "red_to_blue_selected_pair_rows": 15,
+  "unused_eligible_candidates": [
+    "McG-D",
+    "McG-A",
+    "McG-E"
+  ],
+  "alternative_audio_files": 21,
+  "alignment_offset_plots_inspected": [
+    "Lead Me alignment_offset_plot.png",
+    "In The Meantime alignment_offset_plot.png",
+    "Red To Blue alignment_offset_plot.png",
+    "Pouring Room alignment_offset_plot.png"
+  ],
+  "protected_unchanged_after_final_text_edits": true,
+  "protected_hash_count": 952
+}

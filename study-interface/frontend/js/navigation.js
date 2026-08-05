@@ -121,7 +121,16 @@ window.StudyApp.navigation = (function () {
 
   function hasCompletedExperimentalTrials() {
     var records = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.submittedTrials");
-    return Array.isArray(records) && records.length === 10;
+    var expectedTrialCount = getExpectedExperimentalTrialCount();
+    return Array.isArray(records) && records.length === expectedTrialCount;
+  }
+
+  function getExpectedExperimentalTrialCount() {
+    var trialOrder = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.trialOrder");
+    if (trialOrder && Array.isArray(trialOrder.trials) && trialOrder.trials.length > 0) {
+      return trialOrder.trials.length;
+    }
+    return 6;
   }
 
   function normaliseQuestionnaireOrderState() {

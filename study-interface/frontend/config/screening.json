@@ -5,13 +5,13 @@
   "developmentLabel": "Pre-Study Listening Task",
   "screeningInstructions": "Before beginning the main study, please complete this short listening task.\n\nFor each item, listen to the Reference, Version A, and Version B. One of the two versions is identical to the Reference.\n\nWhich of A or B matches the Reference?\n\nYou may replay the audio as many times as needed before submitting your answer.",
   "itemCount": 6,
-  "preStudyStimulusVersion": "reference-ab-v4",
+  "preStudyStimulusVersion": "reference-ab-v6-final-fixed-windows",
   "minimumScore": 2,
   "maximumAttempts": 2,
   "retryEnabled": true,
   "failureBehaviour": "Development-only final-fail message; production exclusion or continuation handling remains TBC.",
-  "stimulusNotes": "Development-only Reference/Version A/Version B pre-study listening task generated from temporary same-song, same-excerpt mix comparisons. These are not final scientifically validated pre-study stimuli. Final segment identities, selection criteria, scientific score threshold, attempts limit, and exclusion procedure require supervisor approval before pilot testing.",
-  "sourceAudio": "Consolidated frontend copies under assets/audio/study-stimuli/pre-study-listening-task/; source mixes remain external Mix Evaluation Dataset files for InTheMeantime.",
+  "stimulusNotes": "Reference/Version A/Version B pre-study listening task generated from approved same-song, same-excerpt mix comparisons. Scientific score threshold, attempts limit, and exclusion procedure require supervisor approval before pilot testing.",
+  "sourceAudio": "Active six-second frontend copies under assets/audio/pre-study-listening-task-audios/segment_1/ and assets/audio/pre-study-listening-task-audios/segment_2/. Source mixes remain external Mix Evaluation Dataset files for InTheMeantime.",
   "presentationStructure": {
     "segmentCount": 2,
     "repetitionsPerSegment": 3,
@@ -19,7 +19,7 @@
     "randomisePresentationOrder": true,
     "persistPresentationOrder": true,
     "randomiseAnswerPosition": true,
-    "finalSegmentSelection": "TBC"
+    "finalSegmentSelection": "approved-fixed-windows"
   },
   "developmentBypass": {
     "enabled": false,
@@ -33,13 +33,13 @@
       "prompt": "Which of A or B matches the Reference?",
       "sourceSong": "InTheMeantime",
       "referenceMixId": "DU-H",
-      "comparisonMixId": "DU-M",
+      "comparisonMixId": "UCP-A2",
       "excerptStartSeconds": 42,
       "excerptEndSeconds": 48,
-      "comparisonOffsetSecondsRelativeToReference": 0,
-      "matchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/reference_mix.wav",
-      "matchDuplicateAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/matching_duplicate.wav",
-      "nonMatchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_01/alternative_mix.wav",
+      "comparisonOffsetSecondsRelativeToReference": -0.00018140589569161,
+      "matchAudioPath": "assets/audio/pre-study-listening-task-audios/segment_1/Reference_DU-H_42-48sec.wav",
+      "matchDuplicateAudioPath": "assets/audio/pre-study-listening-task-audios/segment_1/Match_DU-H_42-48sec.wav",
+      "nonMatchAudioPath": "assets/audio/pre-study-listening-task-audios/segment_1/Nonmatch_UCP-A2_42-48sec.wav",
       "answerOptions": [
         {
           "value": "version_a",
@@ -56,7 +56,7 @@
         "version_a",
         "version_b"
       ],
-      "developmentLogic": "Temporary segment definition. Reference uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of the Reference, and the non-matching option uses the DU-M mix from the same song and same aligned excerpt. The matching answer position is randomised between Version A and Version B. Final pre-study stimulus selection remains TBC."
+      "developmentLogic": "Approved pre-study review segment. Reference uses the DU-H excerpt from 42-48 seconds. The matching answer is an identical duplicate of the Reference, and the non-matching option uses the UCP-A2 mix from the same song and aligned excerpt. The matching answer position is randomised between Version A and Version B. Final production pass/exclusion procedure remains TBC."
     },
     {
       "id": "prestudy_segment_02",
@@ -64,13 +64,13 @@
       "prompt": "Which of A or B matches the Reference?",
       "sourceSong": "InTheMeantime",
       "referenceMixId": "DU-H",
-      "comparisonMixId": "DU-J",
+      "comparisonMixId": "UCP-A1",
       "excerptStartSeconds": 54,
       "excerptEndSeconds": 60,
-      "comparisonOffsetSecondsRelativeToReference": -0.00225,
-      "matchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/reference_mix.wav",
-      "matchDuplicateAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/matching_duplicate.wav",
-      "nonMatchAudioPath": "assets/audio/study-stimuli/pre-study-listening-task/segment_02/alternative_mix.wav",
+      "comparisonOffsetSecondsRelativeToReference": -0.00018140589569161,
+      "matchAudioPath": "assets/audio/pre-study-listening-task-audios/segment_2/Reference_DU-H_54-60sec.wav",
+      "matchDuplicateAudioPath": "assets/audio/pre-study-listening-task-audios/segment_2/Match_DU-H_54-60sec.wav",
+      "nonMatchAudioPath": "assets/audio/pre-study-listening-task-audios/segment_2/Nonmatch_UCP-A1_54-60sec.wav",
       "answerOptions": [
         {
           "value": "version_a",
@@ -87,12 +87,10 @@
         "version_a",
         "version_b"
       ],
-      "developmentLogic": "Temporary segment definition. Reference uses the DU-H reference mix excerpt. The matching answer is an identical duplicate of the Reference, and the non-matching option uses the DU-J mix from the same song and same aligned excerpt. The matching answer position is randomised between Version A and Version B. Final pre-study stimulus selection remains TBC."
+      "developmentLogic": "Approved pre-study review segment. Reference uses the DU-H excerpt from 54-60 seconds. The matching answer is an identical duplicate of the Reference, and the non-matching option uses the UCP-A1 mix from the same song and aligned excerpt. The matching answer position is randomised between Version A and Version B. Final production pass/exclusion procedure remains TBC."
     }
   ],
   "unresolvedValues": {
-    "finalPreStudySegments": "TBC",
-    "validatedPreStudyListeningDesign": "TBC",
     "brechtPreferenceBasedSelectionCriteria": "TBC",
     "brechtPreferenceResults": "TBC",
     "productionMinimumScore": "TBC",

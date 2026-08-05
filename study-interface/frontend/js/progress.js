@@ -30,15 +30,17 @@ window.StudyApp.progress = (function () {
 
   function calculateProgress(pageId, trialIndex) {
     var resolvedTrialIndex;
+    var expectedTrialCount;
 
     if (pageId === "trial") {
-      resolvedTrialIndex = resolveTrialIndex(trialIndex);
+      expectedTrialCount = getExpectedTrialCount();
+      resolvedTrialIndex = resolveTrialIndex(trialIndex, expectedTrialCount);
       return {
         label: "Main Study",
-        detail: "Listening Task " + resolvedTrialIndex + " of 10",
+        detail: "Listening Task " + resolvedTrialIndex + " of " + expectedTrialCount,
         index: 8,
         total: 12,
-        value: Math.min(74, 67 + Math.round((resolvedTrialIndex - 1) * (7 / 9)))
+        value: Math.min(74, 67 + Math.round((resolvedTrialIndex - 1) * (7 / Math.max(1, expectedTrialCount - 1))))
       };
     }
 
@@ -90,19 +92,28 @@ window.StudyApp.progress = (function () {
     return true;
   }
 
-  function resolveTrialIndex(trialIndex) {
+  function resolveTrialIndex(trialIndex, expectedTrialCount) {
     var stored;
+    var maximum = expectedTrialCount || getExpectedTrialCount();
 
     if (typeof trialIndex === "number" && trialIndex >= 1) {
-      return Math.min(trialIndex, 10);
+      return Math.min(trialIndex, maximum);
     }
 
     stored = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.currentTrialIndex");
     if (typeof stored === "number" && stored >= 1) {
-      return Math.min(stored, 10);
+      return Math.min(stored, maximum);
     }
 
     return 1;
+  }
+
+  function getExpectedTrialCount() {
+    var trialOrder = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.trialOrder");
+    if (trialOrder && Array.isArray(trialOrder.trials) && trialOrder.trials.length > 0) {
+      return trialOrder.trials.length;
+    }
+    return 6;
   }
 
   return {

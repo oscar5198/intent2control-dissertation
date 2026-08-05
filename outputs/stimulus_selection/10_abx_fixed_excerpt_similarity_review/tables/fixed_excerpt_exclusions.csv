@@ -1,0 +1,44 @@
+segment_id,candidate_mix,reasons
+prestudy_segment_01_42_48s,DU-J,extreme stereo imbalance; low alignment confidence
+prestudy_segment_01_42_48s,McG-A,low alignment confidence
+prestudy_segment_01_42_48s,McG-D,low alignment confidence
+prestudy_segment_01_42_48s,McG-E,low alignment confidence
+prestudy_segment_01_42_48s,McG-F,low alignment confidence
+prestudy_segment_01_42_48s,McG-G,low alignment confidence
+prestudy_segment_01_42_48s,McG-H,low alignment confidence
+prestudy_segment_01_42_48s,McG-pro,professional/reference mix excluded from ABX recommendation; low alignment confidence
+prestudy_segment_01_42_48s,McG-pro2,professional/reference mix excluded from ABX recommendation; low alignment confidence
+prestudy_segment_01_42_48s,PXL-S1,low alignment confidence
+prestudy_segment_01_42_48s,PXL-S2,low alignment confidence
+prestudy_segment_01_42_48s,PXL-S3,low alignment confidence
+prestudy_segment_01_42_48s,PXL-S4,low alignment confidence
+prestudy_segment_01_42_48s,PXL-S5,low alignment confidence
+prestudy_segment_01_42_48s,PXL-S7,low alignment confidence
+prestudy_segment_01_42_48s,QUT-A,low alignment confidence
+prestudy_segment_01_42_48s,QUT-B,very large stereo-width/reverb cue; low alignment confidence
+prestudy_segment_01_42_48s,QUT-C,low alignment confidence
+prestudy_segment_01_42_48s,QUT-G,low alignment confidence
+prestudy_segment_01_42_48s,QUT-I,low alignment confidence
+prestudy_segment_01_42_48s,QUT-J,low alignment confidence
+prestudy_segment_01_42_48s,QUT-pro,professional/reference mix excluded from ABX recommendation; low alignment confidence
+prestudy_segment_02_54_60s,DU-J,extreme stereo imbalance
+prestudy_segment_02_54_60s,McG-A,low alignment confidence
+prestudy_segment_02_54_60s,McG-C,low alignment confidence
+prestudy_segment_02_54_60s,McG-E,low alignment confidence
+prestudy_segment_02_54_60s,McG-F,low alignment confidence
+prestudy_segment_02_54_60s,McG-G,low alignment confidence
+prestudy_segment_02_54_60s,McG-pro,professional/reference mix excluded from ABX recommendation; low alignment confidence
+prestudy_segment_02_54_60s,McG-pro2,professional/reference mix excluded from ABX recommendation; low alignment confidence
+prestudy_segment_02_54_60s,PXL-S1,low alignment confidence
+prestudy_segment_02_54_60s,PXL-S2,low alignment confidence
+prestudy_segment_02_54_60s,PXL-S3,low alignment confidence
+prestudy_segment_02_54_60s,PXL-S4,low alignment confidence
+prestudy_segment_02_54_60s,PXL-S5,low alignment confidence
+prestudy_segment_02_54_60s,PXL-S7,low alignment confidence
+prestudy_segment_02_54_60s,QUT-A,low alignment confidence
+prestudy_segment_02_54_60s,QUT-B,very large stereo-width/reverb cue; low alignment confidence
+prestudy_segment_02_54_60s,QUT-C,low alignment confidence
+prestudy_segment_02_54_60s,QUT-G,low alignment confidence
+prestudy_segment_02_54_60s,QUT-I,low alignment confidence
+prestudy_segment_02_54_60s,QUT-J,low alignment confidence
+prestudy_segment_02_54_60s,QUT-pro,professional/reference mix excluded from ABX recommendation; low alignment confidence

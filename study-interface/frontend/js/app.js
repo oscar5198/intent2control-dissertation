@@ -444,6 +444,7 @@ window.StudyApp.app = (function () {
   function renderPractice(config) {
     var title = document.querySelector("[data-practice-scenario-title]");
     var text = document.querySelector("[data-practice-scenario-text]");
+    var instruction = document.querySelector("[data-practice-scenario-instruction]");
     var notice = document.querySelector("[data-practice-development-notice]");
     var container = document.querySelector("[data-practice-versions]");
 
@@ -452,6 +453,10 @@ window.StudyApp.app = (function () {
     }
     if (text) {
       text.textContent = config.practiceScenario.text;
+    }
+    if (instruction) {
+      instruction.textContent = config.practiceScenario.instruction || "";
+      instruction.classList.toggle("is-hidden", !config.practiceScenario.instruction);
     }
     if (notice) {
       notice.textContent = config.developmentLabel || "Practice trial";
@@ -483,7 +488,8 @@ window.StudyApp.app = (function () {
     header.className = "shared-rating-section__header";
     heading.textContent = "Place the versions on the preference scale";
     intro.className = "trial-section-intro";
-    intro.textContent = "Drag each marker to set its preference rating. Click or tap a marker to play that version.";
+    intro.appendChild(document.createTextNode("Drag each marker to set its preference rating. "));
+    intro.appendChild(createStrongText("Click or tap a marker to play that version."));
     header.appendChild(heading);
     header.appendChild(createSharedStopAudioControl("practice"));
     section.appendChild(header);
@@ -494,9 +500,21 @@ window.StudyApp.app = (function () {
   }
 
   function createPracticeCommentSection(config) {
-    return createPracticeSection("Explain your ratings", "Please briefly explain what influenced your preference for each mix.", "trial-comment-grid", config.versions.map(function (version) {
-      return createPracticeCommentCard(config, version);
-    }));
+    var section = document.createElement("section");
+    var heading = document.createElement("h2");
+    var intro = document.createElement("p");
+    var field = createPracticeComparativeCommentField(config);
+
+    section.className = "trial-task-section";
+    section.classList.add("is-hidden");
+    section.setAttribute("data-practice-comparative-comment-section", "");
+    heading.textContent = "Explain your ratings";
+    intro.className = "trial-section-intro";
+    intro.textContent = getComparativeCommentPrompt(config.versions);
+    section.appendChild(heading);
+    section.appendChild(intro);
+    section.appendChild(field);
+    return section;
   }
 
   function createPracticePreferenceScale(config) {
@@ -504,22 +522,18 @@ window.StudyApp.app = (function () {
     var track = document.createElement("div");
     var markerLayer = document.createElement("div");
     var anchorRow = createRatingAnchorScale();
-    var valueList = document.createElement("div");
 
     scale.className = "shared-preference-scale";
     track.className = "shared-preference-scale__track";
     markerLayer.className = "shared-preference-scale__markers";
-    valueList.className = "shared-preference-scale__values";
 
     config.versions.forEach(function (version, index) {
       markerLayer.appendChild(createPracticePreferenceMarker(config, version, index, track));
-      valueList.appendChild(createPracticePreferenceValue(version));
     });
 
     track.appendChild(markerLayer);
     scale.appendChild(track);
     scale.appendChild(anchorRow);
-    scale.appendChild(valueList);
     return scale;
   }
 
@@ -533,11 +547,10 @@ window.StudyApp.app = (function () {
     marker.className = "preference-marker preference-marker--" + (index + 1) + " preference-marker--unset";
     marker.tabIndex = -1;
     marker.textContent = version.label.replace("Version ", "");
-    marker.setAttribute("aria-label", version.label + " audio marker");
+    marker.setAttribute("aria-label", version.label + " audio marker. Drag to set the rating. Click or tap to play.");
     marker.setAttribute("data-version-display-label", version.label);
     marker.setAttribute("data-practice-rating", version.id);
     marker.setAttribute("data-audio-id-target", "practice." + version.id);
-    marker.setAttribute("aria-describedby", version.id + "-rating-value " + version.id + "-rating-error");
     setPreferenceMarkerPosition(marker, initialValue);
 
     attachPreferenceMarkerPointerHandlers(marker, track, function () {
@@ -558,31 +571,6 @@ window.StudyApp.app = (function () {
     return Math.max(minimum, Math.min(maximum, midpoint + (offsets[index] || 0)));
   }
 
-  function createPracticePreferenceValue(version) {
-    var item = document.createElement("div");
-    var rating = document.createElement("p");
-    var ratingError = document.createElement("p");
-    var playedStatus = document.createElement("p");
-
-    item.className = "rating-value shared-preference-scale__value";
-    item.setAttribute("data-rating-summary-version", version.id);
-    rating.id = version.id + "-rating-value";
-    rating.className = "shared-preference-scale__rating-text";
-    rating.textContent = version.label + ": Not set";
-    rating.setAttribute("aria-live", "polite");
-    ratingError.id = version.id + "-rating-error";
-    ratingError.className = "validation-message is-hidden";
-    ratingError.textContent = "Set a rating for " + version.label + ".";
-    playedStatus.id = version.id + "-played-status";
-    playedStatus.className = "field-help field-help--flush trial-played-status";
-    playedStatus.textContent = "Required: play this version before completing practice.";
-    playedStatus.setAttribute("aria-live", "polite");
-    item.appendChild(rating);
-    item.appendChild(ratingError);
-    item.appendChild(playedStatus);
-    return item;
-  }
-
   function setPracticeMarkerFromPointer(config, marker, track, event, touched) {
     var rect = track.getBoundingClientRect();
     var value = getPreferenceValueFromPointer(rect, event);
@@ -596,7 +584,6 @@ window.StudyApp.app = (function () {
     marker.classList.toggle("preference-marker--unset", touched !== true);
     marker.setAttribute("aria-invalid", "false");
     storePracticeRating(versionId, boundedValue, touched);
-    updatePracticeRatingValue(versionId, boundedValue, touched);
     updatePracticeCompletionState(config);
   }
 
@@ -695,7 +682,6 @@ window.StudyApp.app = (function () {
     Array.prototype.slice.call(document.querySelectorAll(".preference-marker, .version-card--audio")).forEach(function (element) {
       element.classList.toggle("is-playing", element.getAttribute("data-audio-id-target") === audioId || element.getAttribute("data-audio-card-id") === audioId);
     });
-    updateSharedPlaybackStatus(audioId);
     updateSharedStopAudioControls();
   }
 
@@ -726,14 +712,6 @@ window.StudyApp.app = (function () {
     });
     Array.prototype.slice.call(document.querySelectorAll("[data-stop-shared-audio]")).forEach(function (button) {
       setDisabled(button, !hasPlayingAudio);
-    });
-  }
-
-  function updateSharedPlaybackStatus(audioId) {
-    var marker = audioId ? document.querySelector("[data-audio-id-target='" + audioId + "']") : null;
-    var versionId = marker ? marker.getAttribute("data-practice-rating") || marker.getAttribute("data-trial-rating") : null;
-    Array.prototype.slice.call(document.querySelectorAll("[data-rating-summary-version]")).forEach(function (summary) {
-      summary.classList.toggle("is-playing", Boolean(versionId && summary.getAttribute("data-rating-summary-version") === versionId));
     });
   }
 
@@ -793,7 +771,6 @@ window.StudyApp.app = (function () {
         window.StudyApp.audio.markAudioPlayed("practice." + version.id);
       }
       setActivePreferenceMarker("practice." + version.id);
-      updatePracticePlayedStatus(version.id);
       updatePracticeCompletionState(config);
     });
     audio.addEventListener("error", function () {
@@ -827,56 +804,53 @@ window.StudyApp.app = (function () {
     return scale;
   }
 
-  function createPracticeCommentCard(config, version) {
-    var card = document.createElement("article");
-    var heading = document.createElement("h3");
+  function createPracticeComparativeCommentField(config) {
+    var wrapper = document.createElement("div");
     var commentLabel = document.createElement("label");
     var comment = document.createElement("textarea");
     var commentError = document.createElement("p");
 
-    card.className = "version-card version-card--comment";
-    heading.textContent = version.label;
+    wrapper.className = "question-panel trial-comparative-comment";
     commentLabel.className = "field__label";
-    commentLabel.setAttribute("for", version.id + "-comment");
+    commentLabel.setAttribute("for", "practice-comparative-comment");
     commentLabel.textContent = "Required comment";
-    comment.id = version.id + "-comment";
-    comment.name = version.id + "Comment";
+    comment.id = "practice-comparative-comment";
+    comment.name = "comparative_comment";
     comment.className = "textarea";
-    comment.setAttribute("data-practice-comment", version.id);
-    comment.setAttribute("aria-describedby", version.id + "-comment-error");
+    comment.maxLength = config.commentMaxLength || 1000;
+    comment.setAttribute("data-practice-comparative-comment", "");
+    comment.setAttribute("aria-describedby", "practice-comparative-comment-error");
     comment.addEventListener("input", function () {
-      storePracticeComment(version.id, comment.value);
+      storePracticeComparativeComment(comment.value);
       updatePracticeCompletionState(config);
     });
-    commentError.id = version.id + "-comment-error";
+    commentError.id = "practice-comparative-comment-error";
     commentError.className = "validation-message is-hidden";
-    commentError.textContent = "Provide a comment for " + version.label + ".";
+    commentError.textContent = "Provide a comment explaining your ratings.";
 
-    card.appendChild(heading);
-    card.appendChild(commentLabel);
-    card.appendChild(comment);
-    card.appendChild(commentError);
-    return card;
+    wrapper.appendChild(commentLabel);
+    wrapper.appendChild(comment);
+    wrapper.appendChild(commentError);
+    return wrapper;
   }
 
   function restorePracticeResponses(config) {
     var ratings = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.ratings") || {};
     var touched = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.ratingTouched") || {};
-    var comments = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.comments") || {};
+    var comparativeComment = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.comparativeComment");
+    var comparativeCommentInput = document.querySelector("[data-practice-comparative-comment]");
 
     config.versions.forEach(function (version) {
       var ratingControl = document.querySelector("[data-practice-rating='" + version.id + "']");
-      var comment = document.querySelector("[data-practice-comment='" + version.id + "']");
       if (ratingControl && touched[version.id] === true && typeof ratings[version.id] !== "undefined") {
         setPreferenceMarkerPosition(ratingControl, ratings[version.id]);
         ratingControl.classList.remove("preference-marker--unset");
-        updatePracticeRatingValue(version.id, ratings[version.id], true);
       }
-      if (comment && typeof comments[version.id] === "string") {
-        comment.value = comments[version.id];
-      }
-      updatePracticePlayedStatus(version.id);
     });
+
+    if (comparativeCommentInput && typeof comparativeComment === "string") {
+      comparativeCommentInput.value = comparativeComment;
+    }
   }
 
   function storePracticeRating(versionId, value, touched) {
@@ -892,83 +866,63 @@ window.StudyApp.app = (function () {
     window.StudyApp.storage.setItem("practice.currentResponses", {
       ratings: ratings,
       ratingTouched: touchedState,
-      comments: window.StudyApp.storage.getItem("practice.comments") || {}
+      comparative_comment: window.StudyApp.storage.getItem("practice.comparativeComment") || ""
     });
     return true;
   }
 
-  function storePracticeComment(versionId, value) {
-    var comments = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.comments") || {};
+  function storePracticeComparativeComment(value) {
     if (!window.StudyApp.storage) {
       return false;
     }
-    comments[versionId] = value;
-    window.StudyApp.storage.setItem("practice.comments", comments);
+    window.StudyApp.storage.setItem("practice.comparativeComment", value);
     window.StudyApp.storage.setItem("practice.currentResponses", {
       ratings: window.StudyApp.storage.getItem("practice.ratings") || {},
       ratingTouched: window.StudyApp.storage.getItem("practice.ratingTouched") || {},
-      comments: comments
+      comparative_comment: value
     });
     return true;
-  }
-
-  function updatePracticeRatingValue(versionId, value, touched) {
-    var valueElement = document.getElementById(versionId + "-rating-value");
-    var label = getPracticeVersionLabel(versionId);
-    if (valueElement) {
-      valueElement.textContent = label + ": " + (touched ? value : "Not set");
-    }
-  }
-
-  function getPracticeVersionLabel(versionId) {
-    var marker = document.querySelector("[data-practice-rating='" + versionId + "']");
-    return marker ? marker.getAttribute("data-version-display-label") || marker.textContent.trim() : versionId;
   }
 
   function updatePracticeCompletionState(config) {
     var completeButton = document.querySelector("[data-practice-complete]");
+    var commentSection = document.querySelector("[data-practice-comparative-comment-section]");
+    var ratingsReady = arePracticeRatingsComplete(config);
+
+    if (commentSection) {
+      commentSection.classList.toggle("is-hidden", !ratingsReady);
+    }
     setDisabled(completeButton, !isPracticeComplete(config, false).valid);
   }
 
-  function updatePracticePlayedStatus(versionId) {
-    var status = document.getElementById(versionId + "-played-status");
-    var played = hasPracticeAudioPlayed(versionId);
-    if (status) {
-      status.textContent = played ? "Played." : "Required: play this version before completing practice.";
-      status.classList.toggle("validation-message", !played);
-    }
+  function arePracticeRatingsComplete(config) {
+    var ratings = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.ratings") || {};
+    var touched = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.ratingTouched") || {};
+
+    return (config.versions || []).every(function (version) {
+      return touched[version.id] === true && typeof ratings[version.id] === "number";
+    });
   }
 
   function isPracticeComplete(config, showErrors) {
     var ratings = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.ratings") || {};
     var touched = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.ratingTouched") || {};
-    var comments = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.comments") || {};
+    var comparativeComment = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.comparativeComment");
+    var commentInput = document.querySelector("[data-practice-comparative-comment]");
+    var commentError = document.getElementById("practice-comparative-comment-error");
+    var commentValid = !window.StudyApp.validation || (window.StudyApp.validation.validateRequiredComment(comparativeComment) && String(comparativeComment || "").length <= (config.commentMaxLength || 1000));
     var firstInvalid = null;
 
     config.versions.forEach(function (version) {
       var ratingControl = document.querySelector("[data-practice-rating='" + version.id + "']");
-      var comment = document.querySelector("[data-practice-comment='" + version.id + "']");
-      var ratingError = document.getElementById(version.id + "-rating-error");
-      var commentError = document.getElementById(version.id + "-comment-error");
       var audioRequired = config.audioPlaybackRequired === true;
       var audioPlayed = !audioRequired || hasPracticeAudioPlayed(version.id);
       var audioElement = document.querySelector("[data-audio-id='practice." + version.id + "']");
-      var playedStatus = document.getElementById(version.id + "-played-status");
       var ratingValid = touched[version.id] === true && typeof ratings[version.id] === "number";
-      var commentValid = !window.StudyApp.validation || window.StudyApp.validation.validateRequiredComment(comments[version.id]);
 
       if (showErrors) {
-        if (playedStatus) {
-          playedStatus.textContent = audioPlayed ? "Played." : "Play " + version.label + " before completing practice.";
-          playedStatus.classList.toggle("validation-message", !audioPlayed);
-        }
-        setError(ratingError, !ratingValid);
-        setError(commentError, !commentValid);
         if (ratingControl) {
           ratingControl.setAttribute("aria-invalid", String(!ratingValid));
-        }
-        if (comment) {
-          comment.setAttribute("aria-invalid", String(!commentValid));
         }
       }
       if (!audioPlayed && !firstInvalid) {
@@ -977,15 +931,48 @@ window.StudyApp.app = (function () {
       if (!ratingValid && !firstInvalid) {
         firstInvalid = ratingControl;
       }
-      if (!commentValid && !firstInvalid) {
-        firstInvalid = comment;
-      }
     });
+
+    if (showErrors) {
+      if (commentError) {
+        commentError.textContent = String(comparativeComment || "").length > (config.commentMaxLength || 1000) ? "Keep this comment under " + (config.commentMaxLength || 1000) + " characters." : "Provide a comment explaining your ratings.";
+      }
+      setError(commentError, !commentValid);
+      if (commentInput) {
+        commentInput.setAttribute("aria-invalid", String(!commentValid));
+      }
+    }
+    if (!commentValid && !firstInvalid) {
+      firstInvalid = commentInput;
+    }
 
     return {
       valid: !firstInvalid,
       firstInvalid: firstInvalid
     };
+  }
+
+  function getComparativeCommentPrompt(versions) {
+    return "Briefly explain what influenced your ratings. Please describe any differences between " + getVersionRangeLabel(versions) + " that mattered to you, and whether the listening situation affected your preference.";
+  }
+
+  function createStrongText(text) {
+    var strong = document.createElement("strong");
+    strong.textContent = text;
+    return strong;
+  }
+
+  function getVersionRangeLabel(versions) {
+    var labels = (versions || []).map(function (version) {
+      return (version.label || "").replace(/^Version\s+/i, "").trim();
+    }).filter(Boolean);
+    if (labels.length === 0) {
+      return "the versions";
+    }
+    if (labels.length === 1) {
+      return "Version " + labels[0];
+    }
+    return "Versions " + labels[0] + "–" + labels[labels.length - 1];
   }
 
   function hasPracticeAudioPlayed(versionId) {
@@ -2608,6 +2595,7 @@ window.StudyApp.app = (function () {
   function getCompletionChecks() {
     var submittedTrials = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.submittedTrials");
     var trialCount = Array.isArray(submittedTrials) ? submittedTrials.length : 0;
+    var expectedTrialCount = getExpectedExperimentalTrialCount();
 
     return [
       { id: "consent", label: "Consent completed", complete: Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("consent.items")) },
@@ -2615,10 +2603,18 @@ window.StudyApp.app = (function () {
       { id: "screening", label: "Pre-study listening task completed", complete: window.StudyApp.storage && window.StudyApp.storage.getItem("screening.passed") === true },
       { id: "instructions", label: "Instructions acknowledged", complete: window.StudyApp.storage && window.StudyApp.storage.getItem("instructions.acknowledged") === true },
       { id: "practice", label: "Practice completed", complete: window.StudyApp.storage && window.StudyApp.storage.getItem("practice.completed") === true },
-      { id: "trials", label: trialCount + " of 10 trials completed", complete: trialCount === 10 },
+      { id: "trials", label: trialCount + " of " + expectedTrialCount + " listening tasks completed", complete: trialCount === expectedTrialCount },
       { id: "demographics", label: "Demographics completed", complete: window.StudyApp.storage && window.StudyApp.storage.getItem("demographics.completed") === true },
       { id: "postTask", label: "Post-task questionnaire completed", complete: window.StudyApp.storage && window.StudyApp.storage.getItem("postTask.completed") === true }
     ];
+  }
+
+  function getExpectedExperimentalTrialCount() {
+    var trialOrder = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.trialOrder");
+    if (trialOrder && Array.isArray(trialOrder.trials) && trialOrder.trials.length > 0) {
+      return trialOrder.trials.length;
+    }
+    return 6;
   }
 
   function areRequiredStagesComplete() {

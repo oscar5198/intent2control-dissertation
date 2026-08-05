@@ -4,9 +4,9 @@
   Experimental trial controller.
   Development-only responsibilities:
   - Assign a temporary frontend group.
-  - Generate and persist the ten-trial order.
+  - Generate and persist the configured trial order.
   - Render the current unsubmitted trial.
-  - Require playback, deliberate ratings, and non-whitespace comments.
+  - Require playback, deliberate ratings, and one non-whitespace comparative comment.
   - Store submitted experimental responses separately from practice data.
 */
 
@@ -152,7 +152,8 @@ window.StudyApp.trial = (function () {
     header.className = "shared-rating-section__header";
     heading.textContent = "Place the versions on the preference scale";
     intro.className = "trial-section-intro";
-    intro.textContent = "Drag each marker to set its preference rating. Click or tap a marker to play that version.";
+    intro.appendChild(document.createTextNode("Drag each marker to set its preference rating. "));
+    intro.appendChild(createStrongText("Click or tap a marker to play that version."));
     header.appendChild(heading);
     header.appendChild(createSharedStopAudioControl("trial"));
     section.appendChild(header);
@@ -163,7 +164,21 @@ window.StudyApp.trial = (function () {
   }
 
   function createTrialCommentSection() {
-    return createTrialSection("Explain your ratings", "Please briefly explain what influenced your preference for each mix.", "trial-comment-grid", currentTrial.versionMappings.map(createCommentCard));
+    var section = document.createElement("section");
+    var heading = document.createElement("h2");
+    var intro = document.createElement("p");
+    var field = createComparativeCommentField();
+
+    section.className = "trial-task-section";
+    section.classList.add("is-hidden");
+    section.setAttribute("data-trial-comparative-comment-section", "");
+    heading.textContent = "Explain your ratings";
+    intro.className = "trial-section-intro";
+    intro.textContent = getComparativeCommentPrompt(currentTrial.versionMappings);
+    section.appendChild(heading);
+    section.appendChild(intro);
+    section.appendChild(field);
+    return section;
   }
 
   function createTrialPreferenceScale() {
@@ -171,22 +186,18 @@ window.StudyApp.trial = (function () {
     var track = document.createElement("div");
     var markerLayer = document.createElement("div");
     var anchorRow = createRatingAnchorScale();
-    var valueList = document.createElement("div");
 
     scale.className = "shared-preference-scale";
     track.className = "shared-preference-scale__track";
     markerLayer.className = "shared-preference-scale__markers";
-    valueList.className = "shared-preference-scale__values";
 
     currentTrial.versionMappings.forEach(function (mapping, index) {
       markerLayer.appendChild(createTrialPreferenceMarker(mapping, index, track));
-      valueList.appendChild(createTrialPreferenceValue(mapping));
     });
 
     track.appendChild(markerLayer);
     scale.appendChild(track);
     scale.appendChild(anchorRow);
-    scale.appendChild(valueList);
     return scale;
   }
 
@@ -202,11 +213,10 @@ window.StudyApp.trial = (function () {
     marker.className = "preference-marker preference-marker--" + (index + 1) + " preference-marker--unset";
     marker.tabIndex = -1;
     marker.textContent = mapping.neutralLabel.replace("Version ", "");
-    marker.setAttribute("aria-label", mapping.neutralLabel + " audio marker");
+    marker.setAttribute("aria-label", mapping.neutralLabel + " audio marker. Drag to set the rating. Click or tap to play.");
     marker.setAttribute("data-version-display-label", mapping.neutralLabel);
     marker.setAttribute("data-trial-rating", versionId);
     marker.setAttribute("data-audio-id-target", audioId);
-    marker.setAttribute("aria-describedby", versionId + "-rating-value " + versionId + "-rating-error");
     setPreferenceMarkerPosition(marker, initialValue);
 
     attachPreferenceMarkerPointerHandlers(marker, track, function () {
@@ -227,32 +237,6 @@ window.StudyApp.trial = (function () {
     return Math.max(minimum, Math.min(maximum, midpoint + (offsets[index] || 0)));
   }
 
-  function createTrialPreferenceValue(mapping) {
-    var versionId = getVersionId(mapping.neutralLabel);
-    var item = document.createElement("div");
-    var rating = document.createElement("p");
-    var ratingError = document.createElement("p");
-    var playedStatus = document.createElement("p");
-
-    item.className = "rating-value shared-preference-scale__value";
-    item.setAttribute("data-rating-summary-version", versionId);
-    rating.id = versionId + "-rating-value";
-    rating.className = "shared-preference-scale__rating-text";
-    rating.textContent = mapping.neutralLabel + ": Not set";
-    rating.setAttribute("aria-live", "polite");
-    ratingError.id = versionId + "-rating-error";
-    ratingError.className = "validation-message is-hidden";
-    ratingError.textContent = "Set a rating for " + mapping.neutralLabel + ".";
-    playedStatus.id = versionId + "-played-status";
-    playedStatus.className = "field-help field-help--flush trial-played-status";
-    playedStatus.textContent = "Required: play this version before submitting.";
-    playedStatus.setAttribute("aria-live", "polite");
-    item.appendChild(rating);
-    item.appendChild(ratingError);
-    item.appendChild(playedStatus);
-    return item;
-  }
-
   function setTrialMarkerFromPointer(marker, track, event, touched) {
     var rect = track.getBoundingClientRect();
     var value = getPreferenceValueFromPointer(rect, event);
@@ -266,7 +250,6 @@ window.StudyApp.trial = (function () {
     marker.classList.toggle("preference-marker--unset", touched !== true);
     marker.setAttribute("aria-invalid", "false");
     storeUnsavedRating(versionId, boundedValue, touched);
-    updateRatingValue(versionId, boundedValue, touched);
     updateCompletionState(false);
   }
 
@@ -365,7 +348,6 @@ window.StudyApp.trial = (function () {
     Array.prototype.slice.call(document.querySelectorAll(".preference-marker, .version-card--audio")).forEach(function (element) {
       element.classList.toggle("is-playing", element.getAttribute("data-audio-id-target") === audioId || element.getAttribute("data-audio-card-id") === audioId);
     });
-    updateSharedPlaybackStatus(audioId);
     updateSharedStopAudioControls();
   }
 
@@ -397,14 +379,6 @@ window.StudyApp.trial = (function () {
     Array.prototype.slice.call(document.querySelectorAll("[data-stop-shared-audio]")).forEach(function (button) {
       button.disabled = !hasPlayingAudio;
       button.setAttribute("aria-disabled", String(!hasPlayingAudio));
-    });
-  }
-
-  function updateSharedPlaybackStatus(audioId) {
-    var marker = audioId ? document.querySelector("[data-audio-id-target='" + audioId + "']") : null;
-    var versionId = marker ? marker.getAttribute("data-practice-rating") || marker.getAttribute("data-trial-rating") : null;
-    Array.prototype.slice.call(document.querySelectorAll("[data-rating-summary-version]")).forEach(function (summary) {
-      summary.classList.toggle("is-playing", Boolean(versionId && summary.getAttribute("data-rating-summary-version") === versionId));
     });
   }
 
@@ -476,57 +450,52 @@ window.StudyApp.trial = (function () {
     return scale;
   }
 
-  function createCommentCard(mapping) {
-    var card = document.createElement("article");
-    var heading = document.createElement("h3");
+  function createComparativeCommentField() {
+    var wrapper = document.createElement("div");
     var commentLabel = document.createElement("label");
     var comment = document.createElement("textarea");
     var commentError = document.createElement("p");
-    var versionId = getVersionId(mapping.neutralLabel);
 
-    card.className = "version-card version-card--comment";
-    heading.textContent = mapping.neutralLabel;
+    wrapper.className = "question-panel trial-comparative-comment";
     commentLabel.className = "field__label";
-    commentLabel.setAttribute("for", versionId + "-comment");
+    commentLabel.setAttribute("for", "trial-comparative-comment");
     commentLabel.textContent = "Required comment";
-    comment.id = versionId + "-comment";
-    comment.name = versionId + "Comment";
+    comment.id = "trial-comparative-comment";
+    comment.name = "comparative_comment";
     comment.className = "textarea";
     comment.maxLength = maxTrialCommentLength;
-    comment.setAttribute("data-trial-comment", versionId);
-    comment.setAttribute("aria-describedby", versionId + "-comment-error");
+    comment.setAttribute("data-trial-comparative-comment", "");
+    comment.setAttribute("aria-describedby", "trial-comparative-comment-error");
     comment.addEventListener("input", function () {
-      storeUnsavedComment(versionId, comment.value);
+      storeUnsavedComparativeComment(comment.value);
       updateCompletionState(false);
     });
-    commentError.id = versionId + "-comment-error";
+    commentError.id = "trial-comparative-comment-error";
     commentError.className = "validation-message is-hidden";
-    commentError.textContent = "Provide a comment for " + mapping.neutralLabel + ".";
+    commentError.textContent = "Provide a comment explaining your ratings.";
 
-    card.appendChild(heading);
-    card.appendChild(commentLabel);
-    card.appendChild(comment);
-    card.appendChild(commentError);
-    return card;
+    wrapper.appendChild(commentLabel);
+    wrapper.appendChild(comment);
+    wrapper.appendChild(commentError);
+    return wrapper;
   }
 
   function restoreUnsavedResponses() {
     var state = getUnsavedState();
+    var comment = document.querySelector("[data-trial-comparative-comment]");
     currentTrial.versionMappings.forEach(function (mapping) {
       var versionId = getVersionId(mapping.neutralLabel);
       var ratingControl = document.querySelector("[data-trial-rating='" + versionId + "']");
-      var comment = document.querySelector("[data-trial-comment='" + versionId + "']");
 
       if (ratingControl && state.ratingTouched[versionId] === true && typeof state.ratings[versionId] !== "undefined") {
         setPreferenceMarkerPosition(ratingControl, state.ratings[versionId]);
         ratingControl.classList.remove("preference-marker--unset");
-        updateRatingValue(versionId, state.ratings[versionId], true);
       }
-      if (comment && typeof state.comments[versionId] === "string") {
-        comment.value = state.comments[versionId];
-      }
-      updatePlayedStatus(versionId);
     });
+
+    if (comment && typeof state.comparativeComment === "string") {
+      comment.value = state.comparativeComment;
+    }
   }
 
   function handleSubmit(currentPage, groupAssignment) {
@@ -567,36 +536,22 @@ window.StudyApp.trial = (function () {
   function validateCurrentTrial(showErrors) {
     var state = getUnsavedState();
     var firstInvalid = null;
+    var commentText = typeof state.comparativeComment === "string" ? state.comparativeComment : "";
+    var commentValid = window.StudyApp.validation.validateRequiredComment(commentText) && commentText.length <= maxTrialCommentLength;
+    var commentInput = document.querySelector("[data-trial-comparative-comment]");
+    var commentError = document.getElementById("trial-comparative-comment-error");
 
     currentTrial.versionMappings.forEach(function (mapping) {
       var versionId = getVersionId(mapping.neutralLabel);
       var audioPlayed = hasAudioPlayed(versionId);
       var ratingSet = state.ratingTouched[versionId] === true && typeof state.ratings[versionId] === "number";
-      var commentText = typeof state.comments[versionId] === "string" ? state.comments[versionId] : "";
-      var commentValid = window.StudyApp.validation.validateRequiredComment(commentText) && commentText.length <= maxTrialCommentLength;
-      var audioError = document.getElementById(versionId + "-audio-required-error") || document.getElementById(versionId + "-played-status");
       var ratingInput = document.querySelector("[data-trial-rating='" + versionId + "']");
-      var ratingError = document.getElementById(versionId + "-rating-error");
-      var commentInput = document.querySelector("[data-trial-comment='" + versionId + "']");
-      var commentError = document.getElementById(versionId + "-comment-error");
       var audioElement = document.querySelector("[data-audio-id='" + getAudioId(currentTrial.trialIndex, versionId) + "']");
 
       if (showErrors) {
-        if (audioError) {
-          audioError.textContent = audioPlayed ? "Played." : "Play " + mapping.neutralLabel + " before continuing.";
-          audioError.classList.toggle("validation-message", !audioPlayed);
-        }
         if (ratingInput) {
           ratingInput.setAttribute("aria-invalid", String(!ratingSet));
         }
-        if (commentInput) {
-          commentInput.setAttribute("aria-invalid", String(!commentValid));
-        }
-        setError(ratingError, !ratingSet);
-        if (commentError) {
-          commentError.textContent = commentText.length > maxTrialCommentLength ? "Keep this comment under " + maxTrialCommentLength + " characters." : "Provide a comment for " + mapping.neutralLabel + ".";
-        }
-        setError(commentError, !commentValid);
       }
 
       if (!audioPlayed && !firstInvalid) {
@@ -605,10 +560,20 @@ window.StudyApp.trial = (function () {
       if (!ratingSet && !firstInvalid) {
         firstInvalid = ratingInput;
       }
-      if (!commentValid && !firstInvalid) {
-        firstInvalid = commentInput;
-      }
     });
+
+    if (showErrors) {
+      if (commentError) {
+        commentError.textContent = commentText.length > maxTrialCommentLength ? "Keep this comment under " + maxTrialCommentLength + " characters." : "Provide a comment explaining your ratings.";
+      }
+      if (commentInput) {
+        commentInput.setAttribute("aria-invalid", String(!commentValid));
+      }
+      setError(commentError, !commentValid);
+    }
+    if (!commentValid && !firstInvalid) {
+      firstInvalid = commentInput;
+    }
 
     return {
       valid: firstInvalid === null,
@@ -619,6 +584,11 @@ window.StudyApp.trial = (function () {
   function updateCompletionState(showErrors) {
     var button = document.querySelector("[data-submit-trial]");
     var validation = currentTrial ? validateCurrentTrial(showErrors) : { valid: false };
+    var commentSection = document.querySelector("[data-trial-comparative-comment-section]");
+
+    if (commentSection) {
+      commentSection.classList.toggle("is-hidden", !areCurrentTrialRatingsComplete());
+    }
 
     if (button) {
       button.disabled = false;
@@ -626,11 +596,15 @@ window.StudyApp.trial = (function () {
       button.setAttribute("data-ready-to-submit", String(validation.valid));
     }
 
-    currentTrial.versionMappings.forEach(function (mapping) {
-      updatePlayedStatus(getVersionId(mapping.neutralLabel));
-    });
-
     return validation.valid;
+  }
+
+  function areCurrentTrialRatingsComplete() {
+    var state = getUnsavedState();
+    return currentTrial.versionMappings.every(function (mapping) {
+      var versionId = getVersionId(mapping.neutralLabel);
+      return state.ratingTouched[versionId] === true && typeof state.ratings[versionId] === "number";
+    });
   }
 
   function buildResponseRecord(groupAssignment, submissionTimestamp) {
@@ -650,6 +624,7 @@ window.StudyApp.trial = (function () {
       trialStartTimestamp: currentTrialStartTimestamp,
       trialSubmissionTimestamp: submissionTimestamp,
       derivedTrialDurationMs: duration,
+      comparative_comment: state.comparativeComment,
       versionResponses: currentTrial.versionMappings.map(function (mapping) {
         var versionId = getVersionId(mapping.neutralLabel);
         return {
@@ -663,7 +638,6 @@ window.StudyApp.trial = (function () {
           stimulusId: mapping.stimulusId || null,
           audioPath: mapping.audioPath,
           rating: state.ratings[versionId],
-          comment: state.comments[versionId],
           audioPlayed: hasAudioPlayed(versionId),
           firstPlayTimestamp: getFirstPlayTimestamp(versionId),
           trialStartTimestamp: currentTrialStartTimestamp,
@@ -776,6 +750,7 @@ window.StudyApp.trial = (function () {
         trialStartTimestamp: startTimestamp,
         trialSubmissionTimestamp: submissionTimestamp,
         derivedTrialDurationMs: duration,
+        comparative_comment: "Sample comparative comment for the displayed versions.",
         developmentHelperGenerated: true,
         versionResponses: trial.versionMappings.map(function (mapping, mappingIndex) {
           var versionId = getVersionId(mapping.neutralLabel);
@@ -793,7 +768,6 @@ window.StudyApp.trial = (function () {
             stimulusId: mapping.stimulusId || null,
             audioPath: mapping.audioPath,
             rating: 50 + mappingIndex,
-            comment: "Sample comment for " + mapping.neutralLabel + ".",
             audioPlayed: true,
             firstPlayTimestamp: firstPlayTimestamp,
             trialStartTimestamp: startTimestamp,
@@ -824,7 +798,7 @@ window.StudyApp.trial = (function () {
 
   function hasCompletedAllTrials() {
     var trialOrder = window.StudyApp.storage && window.StudyApp.storage.getItem("experimental.trialOrder");
-    var expectedCount = trialOrder && Array.isArray(trialOrder.trials) ? trialOrder.trials.length : 10;
+    var expectedCount = trialOrder && Array.isArray(trialOrder.trials) ? trialOrder.trials.length : 6;
     return countCompletedTrials() >= expectedCount;
   }
 
@@ -836,7 +810,7 @@ window.StudyApp.trial = (function () {
       state = {
         ratings: {},
         ratingTouched: {},
-        comments: {}
+        comparativeComment: ""
       };
     }
 
@@ -851,9 +825,9 @@ window.StudyApp.trial = (function () {
     window.StudyApp.storage.setItem("experimental.currentResponses", state);
   }
 
-  function storeUnsavedComment(versionId, value) {
+  function storeUnsavedComparativeComment(value) {
     var state = getUnsavedState();
-    state.comments[versionId] = value;
+    state.comparativeComment = value;
     window.StudyApp.storage.setItem(getUnsavedStateKey(currentTrial.trialIndex), state);
     window.StudyApp.storage.setItem("experimental.currentResponses", state);
   }
@@ -868,7 +842,6 @@ window.StudyApp.trial = (function () {
     if (!window.StudyApp.storage.getItem(key)) {
       window.StudyApp.storage.setItem(key, window.StudyApp.timing.nowIsoString());
     }
-    updatePlayedStatus(versionId);
   }
 
   function getFirstPlayTimestamp(versionId) {
@@ -879,25 +852,27 @@ window.StudyApp.trial = (function () {
     return Boolean(window.StudyApp.audio && window.StudyApp.audio.hasAudioBeenPlayed(getAudioId(currentTrial.trialIndex, versionId)));
   }
 
-  function updatePlayedStatus(versionId) {
-    var status = document.getElementById(versionId + "-played-status");
-    if (status) {
-      status.textContent = hasAudioPlayed(versionId) ? "Played." : "Required: play this version before submitting.";
-      status.classList.toggle("validation-message", !hasAudioPlayed(versionId));
-    }
+  function getComparativeCommentPrompt(versionMappings) {
+    return "Briefly explain what influenced your ratings. Please describe any differences between " + getVersionRangeLabel(versionMappings) + " that mattered to you, and whether the listening situation affected your preference.";
   }
 
-  function updateRatingValue(versionId, value, touched) {
-    var valueLabel = document.getElementById(versionId + "-rating-value");
-    var label = getTrialVersionLabel(versionId);
-    if (valueLabel) {
-      valueLabel.textContent = label + ": " + (touched ? value : "Not set");
-    }
+  function createStrongText(text) {
+    var strong = document.createElement("strong");
+    strong.textContent = text;
+    return strong;
   }
 
-  function getTrialVersionLabel(versionId) {
-    var marker = document.querySelector("[data-trial-rating='" + versionId + "']");
-    return marker ? marker.getAttribute("data-version-display-label") || marker.textContent.trim() : versionId;
+  function getVersionRangeLabel(versionMappings) {
+    var labels = (versionMappings || []).map(function (mapping) {
+      return (mapping.neutralLabel || "").replace(/^Version\s+/i, "").trim();
+    }).filter(Boolean);
+    if (labels.length === 0) {
+      return "the versions";
+    }
+    if (labels.length === 1) {
+      return "Version " + labels[0];
+    }
+    return "Versions " + labels[0] + "–" + labels[labels.length - 1];
   }
 
   function updateProgress() {

@@ -14,6 +14,7 @@ from stimulus_selection.ratings_integration import run_ratings_integration
 from stimulus_selection.rating_stratification import run_rating_stratification
 from stimulus_selection.alignment_verification import run_alignment_verification
 from stimulus_selection.fade_revision import run_fade_revision
+from stimulus_selection.six_mix_proposals import run_six_mix_proposals
 from stimulus_selection.output_layout import stage1_reports, stage1_tables
 from stimulus_selection.paths import ensure_output_root
 from stimulus_selection.reports import write_markdown_report
@@ -149,6 +150,8 @@ def main() -> None:
     verify_alignment.add_argument("--config", required=True, help="Path to selection YAML config.")
     revise_fades = subparsers.add_parser("revise-fades", help="Apply supervisor-requested 5 ms boundary fade revision to active review audio.")
     revise_fades.add_argument("--config", required=True, help="Path to selection YAML config.")
+    six_mix = subparsers.add_parser("six-mix-proposals", help="Create the six-mix proposal layer for supervisor/pilot review.")
+    six_mix.add_argument("--config", required=True, help="Path to selection YAML config.")
     args = parser.parse_args()
 
     if args.command == "inventory":
@@ -214,6 +217,9 @@ def main() -> None:
     elif args.command == "revise-fades":
         config = load_config(args.config)
         counts = run_fade_revision(config)
+    elif args.command == "six-mix-proposals":
+        config = load_config(args.config)
+        counts = run_six_mix_proposals(config, args.config)
     else:
         raise ValueError(args.command)
     for key, value in counts.items():

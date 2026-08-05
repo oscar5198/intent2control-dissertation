@@ -1,0 +1,5 @@
+artist,song,six_mix_count,similar_triplet_minimum_distance,wide_triplet_minimum_distance,full_six_mix_minimum_distance,full_six_mix_mean_distance,full_six_mix_maximum_distance,acoustic_coverage_score,near_duplicate_count,outlier_count,notes
+The DoneFors,Lead Me,6,3.16805889374,2.92257247514,1.62365090559,2.96606380999,3.49499417947,0.848660586451,0,0,Six-mix union remains evaluated in corrected v2 acoustic space; stereo imbalance remains QC-only.
+Fredy V,In The Meantime,6,3.41830268237,2.5855827592,1.83334921312,3.39725083956,5.56099797932,0.61090668477,0,1,Six-mix union remains evaluated in corrected v2 acoustic space; stereo imbalance remains QC-only.
+Broken Crank,Red To Blue,6,2.59969815564,1.94841652108,1.58101498685,2.36862228953,3.21748310589,0.73617240917,0,0,Six-mix union remains evaluated in corrected v2 acoustic space; stereo imbalance remains QC-only.
+The DoneFors,Pouring Room,6,1.88514897969,1.69525800496,1.50639550314,2.26644216568,3.07136962966,0.737925563826,0,0,Six-mix union remains evaluated in corrected v2 acoustic space; stereo imbalance remains QC-only.

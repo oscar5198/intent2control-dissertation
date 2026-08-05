@@ -6,6 +6,11 @@ The format is based on Keep a Changelog.
 
 ## Unreleased
 
+### Changed
+
+- Updated the active Main Study design from five episodes and ten listening tasks to three episodes and six listening tasks while preserving grouped episode-pair randomisation, two-song group allocation, three-mix ratings, and comparative comments.
+- Updated the active Practice Trial vignette to the EDR-2 relaxation-distraction scenario and clarified that practice ratings should reflect personal listening preference in the described situation.
+
 ### Added
 
 - Initial `study-interface/` directory structure.
@@ -56,6 +61,7 @@ The format is based on Keep a Changelog.
 
 ### Changed
 
+- Replaced per-version Practice Trial and Main Study comment fields with one required trial-level comparative comment, submitted as `comparative_comment` and repeated on long-format rating rows for analysis.
 - Updated the Pre-Study Listening Task to use participant-facing Reference, Version A, and Version B ABX terminology, with A/B answer mapping and incompatible old B/C local state invalidated.
 - Hardened Pre-Study Listening Task rendering so stale saved audio-card labels cannot display old Version A/B/C headings.
 - Updated Pre-Study Listening Task cache-busting and schema versioning to force the Reference/Version A/Version B interface after stale browser state.

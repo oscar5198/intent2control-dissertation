@@ -69,7 +69,7 @@ window.StudyApp.storage = (function () {
     "practice.currentResponses",
     "practice.ratings",
     "practice.ratingTouched",
-    "practice.comments",
+    "practice.comparativeComment",
     "practice.completed",
     "audio.played.practice.practice_version_a",
     "audio.played.practice.practice_version_b",

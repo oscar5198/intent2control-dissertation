@@ -29,7 +29,7 @@ RESPONSE_FIELDS = [
     "display_position",
     "stimulus_id",
     "rating",
-    "comment",
+    "comparative_comment",
     "response_time_ms",
 ]
 
@@ -175,7 +175,7 @@ def validate_response(
     response_index: int,
     issues: list[dict[str, str]],
 ) -> None:
-    required = ["episode_id", "song_id", "display_label", "stimulus_id", "rating", "comment"]
+    required = ["episode_id", "song_id", "display_label", "stimulus_id", "rating", "comparative_comment"]
     for field in required:
         value = response.get(field)
         if value is None or value == "":

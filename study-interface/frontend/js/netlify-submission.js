@@ -3,7 +3,7 @@
 window.StudyApp = window.StudyApp || {};
 
 window.StudyApp.netlifySubmission = (function () {
-  var STUDY_VERSION = "2026-08-04-v1";
+  var STUDY_VERSION = "2026-08-05-three-episode-v1";
   var FORM_NAME = "listening-study";
   var SUBMISSION_TIMEOUT_MS = 15000;
   var JSON_FIELDS = [
@@ -185,7 +185,7 @@ window.StudyApp.netlifySubmission = (function () {
           stimulus_id: mapping.stimulusId || (response && response.stimulusId) || (mix && mix.stimulusId) || "",
           actual_mix_id: mapping.actualMixId || (response && response.actualMixId) || (mix && mix.actualMixId) || "",
           rating: response ? response.rating : null,
-          comment: response ? response.comment : "",
+          comparative_comment: responseRecord ? responseRecord.comparative_comment || responseRecord.comparativeComment || "" : "",
           response_time_ms: response ? response.derivedTrialDurationMs : null,
           audio_path: mapping.audioPath || (response && response.audioPath) || "",
           expected_stimulus_id: mix ? mix.stimulusId : ""
@@ -217,7 +217,7 @@ window.StudyApp.netlifySubmission = (function () {
           display_position: mapping.display_position,
           stimulus_id: mapping.stimulus_id,
           rating: mapping.rating,
-          comment: mapping.comment,
+          comparative_comment: mapping.comparative_comment,
           response_time_ms: mapping.response_time_ms
         });
       });
@@ -306,6 +306,7 @@ window.StudyApp.netlifySubmission = (function () {
     var expectedResponseCount = expectedTrialCount * expectedMixesPerTrial;
     var responses = buildResponses(trialRows);
     var episodeIds = unique(trialRows.map(function (trial) { return trial.episode_id; }));
+    var expectedEpisodeIds = Array.isArray(config.scenarios) ? config.scenarios.map(function (scenario) { return scenario.id; }) : [];
     var songIds = unique(trialRows.map(function (trial) { return trial.song_id; }));
 
     return {
@@ -313,8 +314,8 @@ window.StudyApp.netlifySubmission = (function () {
       actual_response_count: responses.length,
       all_stimulus_ids_present: responses.every(function (response) { return Boolean(response.stimulus_id); }),
       all_ratings_numeric: responses.every(function (response) { return typeof response.rating === "number" && Number.isFinite(response.rating); }),
-      all_required_comments_present: responses.every(function (response) { return typeof response.comment === "string" && response.comment.trim().length > 0 && response.comment.length <= 1000; }),
-      all_five_episodes_present: episodeIds.length === 5,
+      all_required_comparative_comments_present: responses.every(function (response) { return typeof response.comparative_comment === "string" && response.comparative_comment.trim().length > 0 && response.comparative_comment.length <= 1000; }),
+      all_expected_episodes_present: expectedEpisodeIds.length > 0 && episodeIds.length === expectedEpisodeIds.length && expectedEpisodeIds.every(function (episodeId) { return episodeIds.indexOf(episodeId) !== -1; }),
       two_songs_present: songIds.length === 2 && assignedSongIds.length === 2,
       three_mixes_per_trial: trialRows.every(function (trial) { return trial.mappings.length === expectedMixesPerTrial; }),
       display_labels_match_expected_stimuli: trialRows.every(function (trial) {

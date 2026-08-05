@@ -7,7 +7,7 @@
   - Whitespace-only comment detection.
   - PIS acknowledgement and consent validation.
   - Page-level validation hooks.
-  - Trial validation for three ratings and three required comments.
+  - Trial validation for three ratings and one required comparative comment.
 */
 
 window.StudyApp = window.StudyApp || {};

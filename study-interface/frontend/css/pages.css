@@ -366,13 +366,6 @@
   text-align: right;
 }
 
-.rating-value {
-  margin-top: var(--space-2);
-  color: var(--colour-text-secondary);
-  font-size: var(--font-size-help);
-  font-weight: 600;
-}
-
 .shared-rating-section {
   padding: var(--space-5);
   border: 1px solid var(--colour-border);
@@ -483,32 +476,6 @@
   box-shadow: 0 0 0 0.1875rem rgb(34 103 128 / 14%);
 }
 
-.shared-preference-scale__values {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-
-.shared-preference-scale__value {
-  margin-top: 0;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--colour-border);
-  border-radius: var(--radius-control);
-  background: #f9faf8;
-  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-}
-
-.shared-preference-scale__value.is-playing {
-  border-color: var(--colour-primary);
-  background: #eef6f8;
-  box-shadow: 0 0.25rem 0.75rem rgb(34 103 128 / 14%);
-}
-
-.shared-preference-scale__rating-text {
-  margin: 0;
-  font-weight: 700;
-}
-
 .marker-audio-bank {
   display: none;
 }
@@ -531,6 +498,8 @@
 /* Experimental trial page */
 .trial-context {
   max-width: 78ch;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .trial-kicker {
@@ -558,7 +527,7 @@
   gap: var(--space-4);
 }
 
-.trial-comment-grid .textarea {
+.trial-comparative-comment .textarea {
   min-height: 10rem;
 }
 
@@ -683,10 +652,6 @@
     bottom: 100%;
   }
 
-  .shared-preference-scale__values {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Demographic questionnaire page */

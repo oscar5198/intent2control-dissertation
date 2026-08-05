@@ -7,7 +7,7 @@ The deployed static frontend submits the final listening-study response to Netli
 - Form name: `listening-study`
 - Static declaration: `study-interface/frontend/index.html`
 - Submission code: `study-interface/frontend/js/netlify-submission.js`
-- Study version constant: `STUDY_VERSION = "2026-08-04-v1"` in `netlify-submission.js`
+- Study version constant: `STUDY_VERSION = "2026-08-05-three-episode-v1"` in `netlify-submission.js`
 
 Netlify detects the hidden form at deploy time. The review page sends a URL-encoded `POST` to the current deployed HTML path, normally `/pages/review.html`, with `form-name=listening-study`. No API keys or secrets are used in the frontend.
 
@@ -39,13 +39,13 @@ Netlify should export these columns:
 
 `assigned_song_ids_json` is an array of configured `sourceSongId` values for the assigned group.
 
-`episode_order_json` is an array of scenario IDs in first-presented order.
+`episode_order_json` is an array of episode IDs in first-presented order.
 
 `song_order_json` is an object keyed by episode ID, where each value is the two-song order shown in that episode:
 
 ```json
 {
-  "edr_1_relaxation": ["lead_me", "red_to_blue"]
+  "EDR-1": ["lead_me", "red_to_blue"]
 }
 ```
 
@@ -53,7 +53,7 @@ Netlify should export these columns:
 
 ```json
 {
-  "edr_1_relaxation": {
+  "EDR-1": {
     "lead_me": {
       "A": "lead_me_pxl_l1",
       "B": "lead_me_pxl_l4",
@@ -69,7 +69,7 @@ Netlify should export these columns:
 
 ```json
 {
-  "episode_id": "edr_1_relaxation",
+  "episode_id": "EDR-1",
   "episode_position": 1,
   "song_id": "lead_me",
   "song_position": 1,
@@ -77,14 +77,16 @@ Netlify should export these columns:
   "display_position": 2,
   "stimulus_id": "lead_me_pxl_l4",
   "rating": 78,
-  "comment": "Clear vocals; useful for concentrating.",
+  "comparative_comment": "Version B felt clearer than the others, and the clearer vocal balance suited the scenario.",
   "response_time_ms": 12450
 }
 ```
 
+`comparative_comment` is collected once per trial and repeated on each corresponding long-format mix-rating object so every rating remains linked to the trial-level explanation.
+
 `derived_preferences_json` stores the highest-rated mix per episode and song. Ties are explicit with `tie: true` and `tied_stimulus_ids`.
 
-`client_validation_json` records compact checks for response count, required comments, stimulus IDs, ratings, episodes, songs, mixes per trial, and mapping consistency.
+`client_validation_json` records compact checks for response count, required comparative comments, stimulus IDs, ratings, episodes, songs, mixes per trial, and mapping consistency.
 
 ## Study ID
 

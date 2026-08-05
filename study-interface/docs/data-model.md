@@ -132,19 +132,19 @@ Suggested fields:
 
 The participant-facing Practice Trial and Main Study interface may collect these values through one shared multi-marker preference scale, but the stored semantics remain unchanged: each Version A/B/C presentation has exactly one integer 0-100 rating.
 
-## Participant comment
+## Participant comparative comment
 
-Represents the participant's required comment associated with one mix rating.
+Represents the participant's required trial-level comment covering all displayed mix versions in one trial.
 
 Suggested fields:
 
 - Anonymous participant ID.
 - Trial index.
-- Display label.
-- Comment text.
+- Displayed version range.
+- Comparative comment text.
 - Submitted timestamp.
 
-Comments are required for every mix version. Empty or whitespace-only comments must not be accepted. The minimum meaningful response threshold is TBC.
+One comparative comment is required for each trial. Empty or whitespace-only comments must not be accepted. The minimum meaningful response threshold is TBC.
 
 ## Experimental response record
 
@@ -163,7 +163,7 @@ Suggested fields:
 - Final experimental stimulus manifest reference, where needed for researcher-side analysis.
 - Stimulus configuration version.
 - Rating value from 0 to 100.
-- Required comment text.
+- Trial-level comparative comment text.
 - Audio played state.
 - First-play timestamp.
 - Trial start timestamp.

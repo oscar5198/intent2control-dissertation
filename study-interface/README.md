@@ -19,7 +19,7 @@ The intended participant flow is:
 5. Instructions.
 6. Practice trial.
 7. Main Study transition.
-8. Ten experimental listening tasks.
+8. Six experimental listening tasks.
 9. Post-task questionnaire.
 10. Demographic questionnaire.
 11. Review and final submission.
@@ -29,9 +29,9 @@ The intended participant flow is:
 
 Participants are randomly assigned to one of two experimental groups.
 
-Each group evaluates two music excerpts across five contextual listening scenarios. Each scenario contains both assigned excerpts, producing ten experimental trials per participant.
+Each group evaluates two music excerpts across three contextual listening episodes. Each episode contains both assigned excerpts, producing six experimental listening tasks per participant.
 
-Each trial contains one music excerpt presented as three mix versions. These mixes are shown to participants using neutral labels: Version A, Version B, and Version C. Each mix is rated using a continuous 0-100 preference scale, with a required comment field. Participants may replay audio as many times as they wish.
+Each trial contains one music excerpt presented as three mix versions. These mixes are shown to participants using neutral labels: Version A, Version B, and Version C. Each mix is rated using a continuous 0-100 preference scale, with one required comparative comment field for the trial. Participants may replay audio as many times as they wish.
 
 The estimated study duration is 15-20 minutes. The main-study target sample is approximately 40-50 participants, with a pilot-study target sample of 6-8 participants.
 
@@ -39,11 +39,11 @@ The estimated study duration is 15-20 minutes. The main-study target sample is a
 
 - Two experimental groups.
 - Two music excerpts per group.
-- Five contextual listening scenarios.
-- Ten experimental trials per participant.
+- Three contextual listening episodes.
+- Six experimental listening tasks per participant.
 - Three mix versions per trial.
-- Thirty mix preference ratings per participant.
-- Thirty required mix comments per participant.
+- Eighteen mix preference ratings per participant.
+- Six required comparative trial comments per participant.
 
 ## Participant Materials
 
