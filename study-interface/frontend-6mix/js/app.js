@@ -2686,8 +2686,11 @@ window.StudyApp.app = (function () {
         window.StudyApp.timing.recordPageCompletion(currentPage);
       }
       window.StudyApp.navigation.navigateTo("completion.html");
-    }).catch(function () {
+    }).catch(function (error) {
       if (window.StudyApp.storage) {
+        if (error && error.payload) {
+          window.StudyApp.storage.setItem("final.payload", error.payload);
+        }
         window.StudyApp.storage.setItem("final.submissionInProgress", false);
       }
       setDisabled(button, false);

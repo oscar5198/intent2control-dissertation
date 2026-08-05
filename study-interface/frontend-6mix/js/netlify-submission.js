@@ -4,17 +4,31 @@ window.StudyApp = window.StudyApp || {};
 
 window.StudyApp.netlifySubmission = (function () {
   var STUDY_VERSION = "six_mix_frontend_prototype_v1_2026-08-05";
-  var FORM_NAME = "six-mix-local-only";
+  var SCHEMA_VERSION = "six_mix_netlify_forms_v1";
+  var FORM_NAME = "listening-study-6mix";
+  var SOURCE_VERSION = "frontend-6mix-netlify-forms-2026-08-05";
+  var SUBMISSION_TIMEOUT_MS = 15000;
+  var EXPECTED_VERSION_LABELS = ["A", "B", "C", "D", "E", "F"];
   var JSON_FIELDS = [
+    "consent_json",
+    "listening_setup_json",
+    "pre_study_json",
+    "practice_json",
     "demographics_json",
+    "post_task_json",
     "assigned_song_ids_json",
+    "scenario_order_json",
     "episode_order_json",
     "song_order_json",
+    "trial_order_json",
     "mix_mapping_json",
     "presentation_order_json",
     "trial_records_json",
     "responses_json",
     "derived_preferences_json",
+    "timing_json",
+    "device_browser_json",
+    "final_payload_json",
     "client_validation_json"
   ];
 
@@ -28,13 +42,25 @@ window.StudyApp.netlifySubmission = (function () {
 
   function buildAndSubmit() {
     return buildSubmissionPayload().then(function (payload) {
-      validatePayload(payload);
-      return submitPayload(payload);
+      return Promise.resolve().then(function () {
+        validatePayload(payload);
+        return submitPayload(payload);
+      }).then(function () {
+        return payload;
+      }).catch(function (error) {
+        error.payload = payload;
+        throw error;
+      });
     });
   }
 
   function buildSubmissionPayload() {
-    return fetchJson("../config/stimuli.json").then(function (config) {
+    return Promise.all([
+      fetchJson("../config/stimuli.json"),
+      fetchJson("../config/study-config.json")
+    ]).then(function (configs) {
+      var config = configs[0];
+      var studyConfig = configs[1];
       var storage = window.StudyApp.storage;
       var trialOrder = storage.getItem("experimental.trialOrder");
       var submittedTrials = storage.getItem("experimental.submittedTrials");
@@ -48,37 +74,90 @@ window.StudyApp.netlifySubmission = (function () {
       });
       var trialRows = normaliseTrials(config, trialOrder, submittedTrials);
       var clientValidation = buildClientValidation(config, trialOrder, trialRows, assignedSongIds);
-
-      return {
+      var responses = buildResponses(trialRows);
+      var trialRecords = buildTrialRecords(trialRows);
+      var comments = trialRecords.filter(function (trial) {
+        return typeof trial.comparative_comment === "string" && trial.comparative_comment.trim().length > 0;
+      });
+      var payload = {
         study_id: storage.getOrCreateStudyId(),
         study_version: STUDY_VERSION,
-        submission_status: "local_only_completed",
-        backend_submission: "disabled_for_six_mix_prototype_pending_approval",
+        schema_version: SCHEMA_VERSION,
+        stimulus_configuration_version: config.stimulusConfigurationVersion || "",
+        source_version: SOURCE_VERSION,
+        submission_status: "completed",
         study_group: groupAssignment.groupId || "",
+        group_id: groupAssignment.groupId || "",
         started_at: startedAt || "",
         completed_at: completedAt,
         duration_seconds: deriveDurationSeconds(startedAt, completedAt),
+        trial_count: trialRows.length,
+        version_count: getExpectedMixesPerTrial(config),
+        rating_count: responses.length,
+        comment_count: comments.length,
         consent_confirmed: isConsentConfirmed(storage),
+        consent_json: buildConsentData(storage),
+        listening_setup_json: buildListeningSetupData(storage),
+        pre_study_json: buildPreStudyData(storage),
+        practice_json: buildPracticeData(storage),
         demographics_json: storage.getItem("demographics.responses") || {},
+        post_task_json: storage.getItem("postTask.responses") || {},
         assigned_song_ids_json: assignedSongIds,
+        scenario_order_json: buildEpisodeOrder(trialOrder),
         episode_order_json: buildEpisodeOrder(trialOrder),
         song_order_json: buildSongOrder(trialRows),
+        trial_order_json: buildTrialOrderData(trialOrder),
         mix_mapping_json: buildMixMapping(trialRows),
         presentation_order_json: buildPresentationOrder(trialRows),
-        trial_records_json: buildTrialRecords(trialRows),
-        responses_json: buildResponses(trialRows),
+        trial_records_json: trialRecords,
+        responses_json: responses,
         derived_preferences_json: buildDerivedPreferences(trialRows),
+        timing_json: buildTimingData(storage),
+        device_browser_json: buildDeviceBrowserData(),
         client_validation_json: clientValidation
       };
+
+      payload.final_payload_json = buildFinalPayloadSnapshot(payload, studyConfig);
+      return payload;
     });
   }
 
   function submitPayload(payload) {
-    payload.local_only = true;
-    payload.network_submission_attempted = false;
-    payload.network_submission_disabled_reason = "Six-mix prototype payload is stored locally only until backend approval.";
-    logSubmissionDiagnostic("Six-mix prototype network submission disabled; storing local payload only.", null, getSubmissionUrl());
-    return Promise.resolve(payload);
+    var controller = window.AbortController ? new AbortController() : null;
+    var timeoutId = null;
+    var body = toUrlEncodedBody(payload);
+    var submissionUrl = getSubmissionUrl();
+
+    if (controller) {
+      timeoutId = window.setTimeout(function () {
+        controller.abort();
+      }, SUBMISSION_TIMEOUT_MS);
+    }
+
+    logSubmissionDiagnostic("Submitting Netlify form.", null, submissionUrl);
+
+    return fetch(submissionUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body,
+      signal: controller ? controller.signal : undefined
+    }).then(function (response) {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+      if (!response.ok) {
+        logSubmissionDiagnostic("Netlify form submission failed.", response, submissionUrl);
+        throw new Error("Submission request failed.");
+      }
+      logSubmissionDiagnostic("Netlify form submission succeeded.", response, submissionUrl);
+      return response;
+    }).catch(function (error) {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+      logSubmissionDiagnostic("Netlify form submission error.", null, submissionUrl, error);
+      throw error;
+    });
   }
 
   function getSubmissionUrl() {
@@ -122,6 +201,12 @@ window.StudyApp.netlifySubmission = (function () {
       return validation[key] === false;
     });
     if (failed.length > 0 || validation.actual_response_count !== validation.expected_response_count) {
+      if (window.console && window.console.error) {
+        window.console.error("[listening-study-6mix submission] Validation failed.", {
+          failedChecks: failed,
+          validation: validation
+        });
+      }
       throw new Error("Submission validation failed: " + failed.join(", "));
     }
     return true;
@@ -145,6 +230,7 @@ window.StudyApp.netlifySubmission = (function () {
 
         return {
           episode_id: trial.scenarioId,
+          scenario_id: trial.scenarioId,
           episode_position: episodePosition,
           song_id: getSongIdForExcerpt(config, trial.excerptId),
           excerpt_id: trial.excerptId,
@@ -167,6 +253,7 @@ window.StudyApp.netlifySubmission = (function () {
 
       return {
         episode_id: trial.scenarioId,
+        scenario_id: trial.scenarioId,
         episode_position: episodePosition,
         song_id: getSongIdForExcerpt(config, trial.excerptId),
         excerpt_id: trial.excerptId,
@@ -183,12 +270,17 @@ window.StudyApp.netlifySubmission = (function () {
       trial.mappings.forEach(function (mapping) {
         responses.push({
           episode_id: mapping.episode_id,
+          scenario_id: mapping.scenario_id,
           episode_position: mapping.episode_position,
           song_id: mapping.song_id,
+          excerpt_id: mapping.excerpt_id,
+          trial_index: mapping.trial_index,
           song_position: mapping.song_position,
           display_label: mapping.display_label,
           display_position: mapping.display_position,
           stimulus_id: mapping.stimulus_id,
+          actual_mix_id: mapping.actual_mix_id,
+          audio_path: mapping.audio_path,
           rating: mapping.rating,
           rating_set: mapping.rating_set,
           audio_played: mapping.audio_played,
@@ -205,6 +297,7 @@ window.StudyApp.netlifySubmission = (function () {
     return trialRows.map(function (trial) {
       return {
         episode_id: trial.episode_id,
+        scenario_id: trial.scenario_id,
         episode_position: trial.episode_position,
         song_id: trial.song_id,
         excerpt_id: trial.excerpt_id,
@@ -306,9 +399,10 @@ window.StudyApp.netlifySubmission = (function () {
 
   function buildClientValidation(config, trialOrder, trialRows, assignedSongIds) {
     var expectedTrialCount = config.trialGeneration ? config.trialGeneration.trialsPerParticipant : trialRows.length;
-    var expectedMixesPerTrial = config.trialGeneration ? config.trialGeneration.versionsPerTrial : 6;
+    var expectedMixesPerTrial = getExpectedMixesPerTrial(config);
     var expectedResponseCount = expectedTrialCount * expectedMixesPerTrial;
     var responses = buildResponses(trialRows);
+    var trialRecords = buildTrialRecords(trialRows);
     var episodeIds = unique(trialRows.map(function (trial) { return trial.episode_id; }));
     var expectedEpisodeIds = Array.isArray(config.scenarios) ? config.scenarios.map(function (scenario) { return scenario.id; }) : [];
     var songIds = unique(trialRows.map(function (trial) { return trial.song_id; }));
@@ -323,14 +417,33 @@ window.StudyApp.netlifySubmission = (function () {
         return typeof comment === "string" && comment.trim().length > 0;
       }).length,
       actual_response_count: responses.length,
+      study_id_present: Boolean(window.StudyApp.storage && window.StudyApp.storage.getOrCreateStudyId()),
+      group_id_present: Boolean(trialOrder && trialOrder.groupId),
+      schema_version_present: Boolean(SCHEMA_VERSION),
+      stimulus_configuration_version_present: Boolean(config.stimulusConfigurationVersion),
+      trial_count_matches_expected: trialRows.length === expectedTrialCount,
+      version_count_matches_expected: responses.length === expectedResponseCount,
+      comment_count_matches_expected: trialRecords.length === expectedTrialCount && trialRecords.every(function (trial) {
+        return typeof trial.comparative_comment === "string" && trial.comparative_comment.trim().length > 0;
+      }),
       all_stimulus_ids_present: responses.every(function (response) { return Boolean(response.stimulus_id); }),
+      all_actual_mix_ids_present: responses.every(function (response) { return Boolean(response.actual_mix_id); }),
       all_ratings_numeric: responses.every(function (response) { return typeof response.rating === "number" && Number.isFinite(response.rating); }),
+      all_ratings_integer_in_range: responses.every(function (response) { return Number.isInteger(response.rating) && response.rating >= 0 && response.rating <= 100; }),
       all_ratings_deliberately_set: responses.every(function (response) { return response.rating_set === true; }),
       all_required_audio_played: responses.every(function (response) { return response.audio_played === true; }),
       all_required_comparative_comments_present: responses.every(function (response) { return typeof response.comparative_comment === "string" && response.comparative_comment.trim().length > 0 && response.comparative_comment.length <= 1000; }),
+      questionnaire_completion_present: Boolean(window.StudyApp.storage && window.StudyApp.storage.getItem("postTask.completed") === true && window.StudyApp.storage.getItem("demographics.completed") === true),
       all_expected_episodes_present: expectedEpisodeIds.length > 0 && episodeIds.length === expectedEpisodeIds.length && expectedEpisodeIds.every(function (episodeId) { return episodeIds.indexOf(episodeId) !== -1; }),
       two_songs_present: songIds.length === 2 && assignedSongIds.length === 2,
       expected_mixes_per_trial: trialRows.every(function (trial) { return trial.mappings.length === expectedMixesPerTrial; }),
+      all_display_labels_present_once_per_trial: trialRows.every(function (trial) {
+        var labels = trial.mappings.map(function (mapping) { return mapping.display_label; }).sort();
+        return labels.join("|") === EXPECTED_VERSION_LABELS.join("|");
+      }),
+      unique_physical_mixes_per_trial: trialRows.every(function (trial) {
+        return unique(trial.mappings.map(function (mapping) { return mapping.actual_mix_id; })).length === expectedMixesPerTrial;
+      }),
       display_labels_match_expected_stimuli: trialRows.every(function (trial) {
         return trial.mappings.every(function (mapping) {
           return mapping.stimulus_id && mapping.stimulus_id === mapping.expected_stimulus_id;
@@ -351,6 +464,128 @@ window.StudyApp.netlifySubmission = (function () {
         });
       })
     };
+  }
+
+  function buildConsentData(storage) {
+    return {
+      pis_document_opened: storage.getItem("pis.documentOpened"),
+      consent_document_opened: storage.getItem("consent.documentOpened"),
+      pis_acknowledged: storage.getItem("pis.acknowledged"),
+      consent_items: storage.getItem("consent.items"),
+      consent_completion_timestamp: storage.getItem("timing.consentCompletion"),
+      study_information_consent_completion_timestamp: storage.getItem("timing.studyInformationConsentCompletion")
+    };
+  }
+
+  function buildListeningSetupData(storage) {
+    return {
+      test_audio_played: storage.getItem("listeningSetup.testAudioPlayed"),
+      headphones: storage.getItem("listeningSetup.headphones"),
+      quiet_environment: storage.getItem("listeningSetup.quietEnvironment"),
+      comfortable_volume: storage.getItem("listeningSetup.comfortableVolume"),
+      completed: storage.getItem("listeningSetup.completed"),
+      completion_timestamp: storage.getItem("timing.listeningSetupCompletion")
+    };
+  }
+
+  function buildPreStudyData(storage) {
+    return {
+      passed: storage.getItem("screening.passed"),
+      failed: storage.getItem("screening.failed"),
+      total_score: storage.getItem("screening.totalScore"),
+      development_bypass_used: storage.getItem("screening.developmentBypassUsed"),
+      attempt_records: storage.getItem("screening.attemptRecords") || []
+    };
+  }
+
+  function buildPracticeData(storage) {
+    return {
+      completed: storage.getItem("practice.completed"),
+      ratings: storage.getItem("practice.ratings") || {},
+      rating_touched: storage.getItem("practice.ratingTouched") || {},
+      comparative_comment: storage.getItem("practice.comparativeComment") || "",
+      current_responses: storage.getItem("practice.currentResponses") || {},
+      started_at: storage.getItem("timing.practiceStart"),
+      submitted_at: storage.getItem("timing.practiceSubmission"),
+      completed_at: storage.getItem("timing.practiceCompletion")
+    };
+  }
+
+  function buildTimingData(storage) {
+    var result = {};
+    storage.getDocumentedDevelopmentKeys().forEach(function (key) {
+      var value = storage.getItem(key);
+      if (key.indexOf("timing.") === 0 && value !== null) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }
+
+  function buildDeviceBrowserData() {
+    var nav = window.navigator || {};
+    var screenInfo = window.screen || {};
+    return {
+      user_agent: nav.userAgent || "",
+      language: nav.language || "",
+      languages: nav.languages || [],
+      platform: nav.platform || "",
+      vendor: nav.vendor || "",
+      cookie_enabled: typeof nav.cookieEnabled === "boolean" ? nav.cookieEnabled : null,
+      screen_width: screenInfo.width || null,
+      screen_height: screenInfo.height || null,
+      viewport_width: window.innerWidth || null,
+      viewport_height: window.innerHeight || null,
+      timezone: (window.Intl && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone || "" : ""
+    };
+  }
+
+  function buildTrialOrderData(trialOrder) {
+    if (!trialOrder || !Array.isArray(trialOrder.trials)) {
+      return {};
+    }
+    return {
+      group_id: trialOrder.groupId || "",
+      generated_at: trialOrder.generatedAt || "",
+      method: trialOrder.method || "",
+      algorithm: trialOrder.algorithm || "",
+      stimulus_configuration_version: trialOrder.stimulusConfigurationVersion || "",
+      trials: trialOrder.trials.map(function (trial) {
+        return {
+          trial_index: trial.trialIndex,
+          scenario_id: trial.scenarioId,
+          excerpt_id: trial.excerptId,
+          version_mappings: (trial.versionMappings || []).map(function (mapping) {
+            return {
+              display_label: normaliseDisplayLabel(mapping.neutralLabel),
+              actual_mix_id: mapping.actualMixId || "",
+              stimulus_id: mapping.stimulusId || "",
+              audio_path: mapping.audioPath || ""
+            };
+          })
+        };
+      })
+    };
+  }
+
+  function buildFinalPayloadSnapshot(payload, studyConfig) {
+    var snapshot = {};
+    Object.keys(payload).forEach(function (key) {
+      if (key !== "final_payload_json") {
+        snapshot[key] = payload[key];
+      }
+    });
+    snapshot.study_config_summary = {
+      trials_per_participant: studyConfig.trialsPerParticipant,
+      mixes_per_trial: studyConfig.mixesPerTrial,
+      ratings_per_participant: studyConfig.ratingsPerParticipant,
+      required_comments_per_participant: studyConfig.requiredCommentsPerParticipant
+    };
+    return snapshot;
+  }
+
+  function getExpectedMixesPerTrial(config) {
+    return config.trialGeneration ? config.trialGeneration.versionsPerTrial : 6;
   }
 
   function findConfiguredMix(config, excerptId, mapping) {

@@ -228,7 +228,7 @@ Results:
 
 ## Backend and Payload
 
-`study-interface/frontend-6mix/js/netlify-submission.js` is local-only for this prototype. Final submission builds and stores the payload locally; it does not send a production POST request.
+`study-interface/frontend-6mix/js/netlify-submission.js` now submits the six-mix final payload to the separate Netlify Forms endpoint `listening-study-6mix`. Netlify detects the form from `study-interface/frontend-6mix/index.html` when that folder is used as the publish directory. The request is a URL-encoded POST to the current page path with `form-name=listening-study-6mix`, matching the working three-mix pattern while keeping the datasets separate.
 
 Payload expectations were verified:
 
@@ -238,6 +238,11 @@ Payload expectations were verified:
 - Six total shared comments
 - Physical mix mapping retained in records
 - `trial_records_json` present in final payload
+- Practice ratings retained in `practice_json` only, not in Main Study rows
+- Duplicate-click guard via `final.submissionInProgress`
+- Completion shown only after successful Netlify response; failed submissions remain retryable on Review
+
+CSV exports for this form can be converted with `study-interface/scripts/netlify_forms_6mix_to_long_csv.py`. One valid participant submission is expected to produce 36 long-format Main Study rows.
 
 ## Practice-Trial Caveat
 

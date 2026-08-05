@@ -12,8 +12,8 @@ Do not treat this folder as the approved production frontend. The approved three
 - Main Study versions per task: 6, labelled Version A-F
 - Practice trial versions: 6, labelled Version A-F
 - Total Main Study responses per participant: 36 ratings and 6 shared comments
-- Final payload: local-only, stored under the six-mix namespace
-- Backend integration: pending approval; production Netlify submission is disabled in this prototype
+- Final payload: submitted through Netlify Forms and retained locally under the six-mix namespace for audit/retry support
+- Backend integration: separate Netlify form `listening-study-6mix`; responses are not posted to the three-mix form
 
 ## Participant Flow
 
@@ -128,18 +128,25 @@ Each version response contains:
 
 The final local payload additionally includes `trial_records_json`, `responses_json`, `mix_mapping_json`, `presentation_order_json`, derived preferences, and client validation totals.
 
-## Local-Only Submission
+## Netlify Forms Submission
 
-`js/netlify-submission.js` is retained as the payload builder, but network submission is disabled for the six-mix prototype. Final Submit builds and validates the six-mix payload, stores it in localStorage as `final.payload`, records `final.submitted`, and routes to Completion.
+`js/netlify-submission.js` mirrors the approved three-mix Netlify Forms approach using a separate form name, `listening-study-6mix`. The static hidden form is declared in `index.html` so Netlify can detect it when `study-interface/frontend-6mix/` is used as the publish directory.
 
-The payload fields include:
+Final Submit:
 
-- `submission_status: "local_only_completed"`
-- `backend_submission: "disabled_for_six_mix_prototype_pending_approval"`
-- `local_only: true`
-- `network_submission_attempted: false`
+- blocks duplicate clicks with `final.submissionInProgress`;
+- builds and validates the six-mix payload before any network request;
+- submits a URL-encoded POST to the current page path with `form-name=listening-study-6mix`;
+- stores `final.payload` and marks `final.submitted` only after Netlify returns success;
+- leaves all responses in localStorage and re-enables Final Submit if submission fails.
 
-The active three-mix Netlify backend must not receive six-mix prototype data.
+The Netlify fields use a compact scalar-plus-JSON structure. Key scalar fields include `study_id`, `study_version`, `schema_version`, `stimulus_configuration_version`, `source_version`, `submission_status`, `group_id`, `trial_count`, `version_count`, `rating_count`, `comment_count`, timestamps, duration, and consent confirmation. JSON fields include consent, listening setup, pre-study, practice, demographics, post-task, scenario/song/trial order, A-F mix mapping, nested trial records, flattened response records, timing, device/browser metadata, client validation, and `final_payload_json`.
+
+The six-mix schema version is `six_mix_netlify_forms_v1`. The active stimulus configuration version is `six_mix_frontend_prototype_v1_2026-08-05`.
+
+Validation requires 6 Main Study trials, 6 versions per trial, 36 rating records, 6 comments, labels A-F exactly once per trial, unique physical mixes per trial, integer 0-100 ratings, played-state completion, questionnaire completion, `study_id`, `group_id`, and schema/config versions. Practice ratings are retained only in `practice_json`; they are not included in Main Study `trial_records_json` or `responses_json`.
+
+Netlify CSV exports can be converted with `study-interface/scripts/netlify_forms_6mix_to_long_csv.py`. One participant submission should produce 36 long-format Main Study rows.
 
 ## Old Prototype State
 
@@ -173,7 +180,7 @@ Phase 4 verification checks include:
 - active audio/config verification for 24 WAV files;
 - randomisation simulation over at least 100 generated sessions;
 - browser checks for Group 01 and Group 02 Main Study tasks;
-- local-only final payload check;
+- Netlify Forms final payload construction and local retry-payload check;
 - isolation check against `study-interface/frontend/`.
 
 Later UI refinement checks added six-version Practice support, same-height marker alignment, removal of rating summary boxes, rated/unrated marker states, and refreshed comparative comment wording.

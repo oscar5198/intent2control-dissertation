@@ -8,7 +8,7 @@ This manifest describes the separate six-mix frontend prototype in `study-interf
 - Six-mix prototype frontend: `study-interface/frontend-6mix/`
 - localStorage namespace: `intent2control.study.6mix.dev.`
 - stimulus/schema version: `six_mix_frontend_prototype_v1_2026-08-05`
-- backend behaviour: local-only payload; production Netlify submission disabled
+- backend behaviour: production Netlify Forms submission through separate form `listening-study-6mix`
 
 ## Study Design
 
@@ -80,11 +80,17 @@ Click/tap plays the marker audio from 0:00. Stop audio stops and resets the curr
 
 Practice and Main Study markers share one horizontal centreline on desktop and tablet layouts. Rating summary boxes are not rendered. Marker state is shown directly: yellow/amber outline means unrated, blue/green outline means rated, and a separate neutral outer ring marks the currently playing version.
 
-## Local Payload
+## Backend and Payload
 
-Final Submit stores the complete six-mix payload locally under the six-mix namespace. It includes nested `trial_records_json` with six version records per trial, flattened `responses_json` with 36 rows, mix mapping, presentation order, derived preferences, and client validation totals.
+Final Submit builds and validates the complete six-mix payload, submits it to Netlify Forms, and stores it locally under the six-mix namespace after a successful response. The hidden Netlify form is in `study-interface/frontend-6mix/index.html` and uses the distinct form name `listening-study-6mix`, so six-mix CSV exports remain separate from the approved three-mix form.
 
-Six-mix payloads must not be posted to the active three-mix production backend until backend schema approval is complete.
+The submitted schema uses top-level scalar fields plus JSON fields. Scalar fields include `study_id`, `study_version`, `schema_version`, `stimulus_configuration_version`, `source_version`, `submission_status`, `group_id`, `trial_count`, `version_count`, `rating_count`, `comment_count`, `started_at`, `completed_at`, `duration_seconds`, and `consent_confirmed`.
+
+Structured JSON fields include `consent_json`, `listening_setup_json`, `pre_study_json`, `practice_json`, `demographics_json`, `post_task_json`, `scenario_order_json`, `song_order_json`, `trial_order_json`, `mix_mapping_json`, `presentation_order_json`, `trial_records_json`, `responses_json`, `derived_preferences_json`, `timing_json`, `device_browser_json`, `client_validation_json`, and `final_payload_json`.
+
+`trial_records_json` contains six Main Study trial records with one shared comparative comment per trial and six nested version records. `responses_json` is the flattened analysis view with 36 Main Study rating records. Practice responses remain separate in `practice_json` and are not emitted as Main Study rows.
+
+Duplicate protection mirrors the three-mix implementation: `final.submissionInProgress` blocks repeat clicks while the request is in flight, and `final.submissionCompleted`/`final.submitted` are set only after Netlify returns success. Failed submissions keep the participant on Review, preserve responses, and show a retry-safe error.
 
 ## Old State Invalidation
 
