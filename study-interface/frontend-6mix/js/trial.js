@@ -344,9 +344,21 @@ window.StudyApp.trial = (function () {
   }
 
   function playTrialMarkerAudio(audioId) {
-    setActivePreferenceMarker(audioId);
+    var playback;
+    clearTrialAudioError(audioId);
+    setActivePreferenceMarker(null);
     if (window.StudyApp.audio) {
-      window.StudyApp.audio.playAudioFromBeginning(audioId);
+      playback = window.StudyApp.audio.playAudioFromBeginning(audioId);
+      if (playback && typeof playback.then === "function") {
+        playback.then(function (played) {
+          if (!played) {
+            handleTrialPlaybackFailure(audioId);
+          }
+          updateSharedStopAudioControls();
+        });
+      } else if (!playback) {
+        handleTrialPlaybackFailure(audioId);
+      }
     }
     updateSharedStopAudioControls();
   }
@@ -381,12 +393,37 @@ window.StudyApp.trial = (function () {
 
   function updateSharedStopAudioControls() {
     var hasPlayingAudio = Array.prototype.slice.call(document.querySelectorAll("audio[data-audio-id]")).some(function (audioElement) {
-      return !audioElement.paused && !audioElement.ended;
+      var audioId = audioElement.getAttribute("data-audio-id");
+      var activeMarker = audioId ? document.querySelector("[data-audio-id-target='" + audioId + "'].is-playing, [data-audio-card-id='" + audioId + "'].is-playing") : null;
+      return Boolean(activeMarker) && !audioElement.paused && !audioElement.ended;
     });
     Array.prototype.slice.call(document.querySelectorAll("[data-stop-shared-audio]")).forEach(function (button) {
       button.disabled = !hasPlayingAudio;
       button.setAttribute("aria-disabled", String(!hasPlayingAudio));
     });
+  }
+
+  function clearTrialAudioError(audioId) {
+    var audioElement = audioId ? document.querySelector("audio[data-audio-id='" + audioId + "']") : null;
+    var errorElement = audioElement && audioElement.parentElement ? audioElement.parentElement.querySelector(".validation-message") : null;
+    if (errorElement) {
+      setError(errorElement, false);
+    }
+  }
+
+  function handleTrialPlaybackFailure(audioId) {
+    var audioElement = audioId ? document.querySelector("audio[data-audio-id='" + audioId + "']") : null;
+    var label = audioElement ? audioElement.getAttribute("aria-label") || "The selected version" : "The selected version";
+    var errorElement = audioElement && audioElement.parentElement ? audioElement.parentElement.querySelector(".validation-message") : null;
+
+    setActivePreferenceMarker(null);
+    updateSharedStopAudioControls();
+    if (errorElement) {
+      errorElement.textContent = label.replace(/\s+audio$/i, "") + " audio could not start. Please try again.";
+      setError(errorElement, true);
+    }
+    console.error("Marker-controlled audio playback failed for " + label + ".");
+    updateCompletionState(false);
   }
 
   function createTrialAudioBank() {
@@ -419,11 +456,13 @@ window.StudyApp.trial = (function () {
       if (window.StudyApp.audio) {
         window.StudyApp.audio.markAudioPlayed(audioId);
       }
+      setError(audioError, false);
       setActivePreferenceMarker(audioId);
       storeFirstPlayTimestamp(versionId);
       updateCompletionState(false);
     });
     audio.addEventListener("error", function () {
+      setActivePreferenceMarker(null);
       setError(audioError, true);
       updateCompletionState(false);
     });

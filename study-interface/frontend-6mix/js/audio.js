@@ -288,8 +288,9 @@ window.StudyApp.audio = (function () {
 
   function playAudioFromBeginning(audioId) {
     var audioElement = audioId ? document.querySelector("audio[data-audio-id='" + audioId + "']") : null;
+    var playAttempt;
     if (!audioElement) {
-      return false;
+      return Promise.resolve(false);
     }
 
     if (activeAudioElement && activeAudioElement !== audioElement) {
@@ -297,13 +298,80 @@ window.StudyApp.audio = (function () {
     }
     pauseOtherAudio(audioElement);
     setAudioCurrentTime(audioElement, 0);
-    var playAttempt = audioElement.play();
-    if (playAttempt && typeof playAttempt.catch === "function") {
-      playAttempt.catch(function (error) {
-        console.error("Audio playback could not start.", error);
-      });
+    try {
+      playAttempt = audioElement.play();
+    } catch (error) {
+      console.error("Audio playback could not start.", error);
+      if (activeAudioElement === audioElement) {
+        activeAudioElement = null;
+      }
+      resetAudioElement(audioElement);
+      return Promise.resolve(false);
     }
-    return true;
+    return waitForConfirmedPlayback(audioElement, playAttempt).then(function (confirmed) {
+      if (!confirmed) {
+        if (activeAudioElement === audioElement) {
+          activeAudioElement = null;
+        }
+        resetAudioElement(audioElement);
+      }
+      return confirmed;
+    }).catch(function (error) {
+      console.error("Audio playback could not start.", error);
+      if (activeAudioElement === audioElement) {
+        activeAudioElement = null;
+      }
+      resetAudioElement(audioElement);
+      return false;
+    });
+  }
+
+  function waitForConfirmedPlayback(audioElement, playAttempt) {
+    return new Promise(function (resolve) {
+      var settled = false;
+      var timeoutId = window.setTimeout(function () {
+        if (audioElement.readyState < 2) {
+          finish(false);
+        }
+      }, 3000);
+
+      function cleanup() {
+        window.clearTimeout(timeoutId);
+        audioElement.removeEventListener("playing", handlePlaying);
+        audioElement.removeEventListener("error", handleFailure);
+        audioElement.removeEventListener("abort", handleFailure);
+        audioElement.removeEventListener("emptied", handleFailure);
+      }
+
+      function finish(result) {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        cleanup();
+        resolve(result);
+      }
+
+      function handlePlaying() {
+        finish(true);
+      }
+
+      function handleFailure() {
+        finish(false);
+      }
+
+      audioElement.addEventListener("playing", handlePlaying);
+      audioElement.addEventListener("error", handleFailure);
+      audioElement.addEventListener("abort", handleFailure);
+      audioElement.addEventListener("emptied", handleFailure);
+
+      if (playAttempt && typeof playAttempt.catch === "function") {
+        playAttempt.catch(function (error) {
+          console.error("Audio playback request was rejected.", error);
+          finish(false);
+        });
+      }
+    });
   }
 
   function stopActiveAudio() {
