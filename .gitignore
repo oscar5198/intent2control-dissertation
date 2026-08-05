@@ -86,6 +86,20 @@ outputs/stimulus_selection/**
 !study-interface/frontend/assets/audio/study-stimuli/**/
 !study-interface/frontend/assets/audio/study-stimuli/**/*.md
 !study-interface/frontend/assets/audio/study-stimuli/**/*.wav
+!study-interface/frontend-6mix/assets/audio/
+!study-interface/frontend-6mix/assets/audio/pre-study-listening-task-audios/
+!study-interface/frontend-6mix/assets/audio/pre-study-listening-task-audios/**/
+!study-interface/frontend-6mix/assets/audio/pre-study-listening-task-audios/**/*.wav
+!study-interface/frontend-6mix/assets/audio/study-stimuli/
+!study-interface/frontend-6mix/assets/audio/study-stimuli/README.md
+!study-interface/frontend-6mix/assets/audio/study-stimuli/listening-setup/
+!study-interface/frontend-6mix/assets/audio/study-stimuli/listening-setup/**/*.wav
+!study-interface/frontend-6mix/assets/audio/study-stimuli/main-study/
+!study-interface/frontend-6mix/assets/audio/study-stimuli/main-study/**/
+!study-interface/frontend-6mix/assets/audio/study-stimuli/main-study/**/*.wav
+!study-interface/frontend-6mix/assets/audio/study-stimuli/practice-trial/
+!study-interface/frontend-6mix/assets/audio/study-stimuli/practice-trial/**/
+!study-interface/frontend-6mix/assets/audio/study-stimuli/practice-trial/**/*.wav
 
 # Curated supervisor review package audio is intentionally versioned.
 !outputs/stimulus_selection/07_supervisor_review_package/Main_Study_Candidates/**/*.wav

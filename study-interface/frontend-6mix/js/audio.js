@@ -110,11 +110,13 @@ window.StudyApp.audio = (function () {
     timeDisplay.setAttribute("aria-live", "off");
 
     playButton.addEventListener("click", function () {
+      var playAttempt;
       if (audioElement.paused) {
         if (!isSetupControl || audioElement.ended || (Number.isFinite(audioElement.duration) && audioElement.currentTime >= audioElement.duration)) {
           setAudioCurrentTime(audioElement, 0);
         }
-        audioElement.play();
+        playAttempt = audioElement.play();
+        handlePlayAttempt(playAttempt, audioElement, playButton, progress, timeDisplay);
       } else {
         audioElement.pause();
       }
@@ -127,8 +129,10 @@ window.StudyApp.audio = (function () {
       restartButton.textContent = "Restart";
       restartButton.setAttribute("aria-label", audioLabel + ": restart from the beginning");
       restartButton.addEventListener("click", function () {
+        var playAttempt;
         setAudioCurrentTime(audioElement, 0);
-        audioElement.play();
+        playAttempt = audioElement.play();
+        handlePlayAttempt(playAttempt, audioElement, playButton, progress, timeDisplay);
       });
     }
 
@@ -147,6 +151,15 @@ window.StudyApp.audio = (function () {
     audioElement.addEventListener("ended", function () {
       updateCustomAudioControl(audioElement, playButton, progress, timeDisplay);
     });
+    audioElement.addEventListener("error", function () {
+      resetCustomAudioControlAfterLoadFailure(audioElement, playButton, progress, timeDisplay);
+    });
+    audioElement.addEventListener("emptied", function () {
+      resetCustomAudioControlAfterLoadFailure(audioElement, playButton, progress, timeDisplay);
+    });
+    audioElement.addEventListener("abort", function () {
+      resetCustomAudioControlAfterLoadFailure(audioElement, playButton, progress, timeDisplay);
+    });
 
     controls.appendChild(playButton);
     if (restartButton) {
@@ -157,6 +170,31 @@ window.StudyApp.audio = (function () {
     audioElement.insertAdjacentElement("afterend", controls);
     audioElement.classList.add("audio-control--hidden-native");
     audioElement.setAttribute("data-custom-audio-attached", "true");
+    updateCustomAudioControl(audioElement, playButton, progress, timeDisplay);
+    return true;
+  }
+
+  function handlePlayAttempt(playAttempt, audioElement, playButton, progress, timeDisplay) {
+    if (playAttempt && typeof playAttempt.catch === "function") {
+      playAttempt.catch(function (error) {
+        console.error("Audio playback could not start.", error);
+        resetCustomAudioControlAfterLoadFailure(audioElement, playButton, progress, timeDisplay);
+      });
+    }
+  }
+
+  function resetCustomAudioControlAfterLoadFailure(audioElement, playButton, progress, timeDisplay) {
+    if (!audioElement) {
+      return false;
+    }
+
+    if (!audioElement.paused) {
+      audioElement.pause();
+    }
+    setAudioCurrentTime(audioElement, 0);
+    if (activeAudioElement === audioElement) {
+      activeAudioElement = null;
+    }
     updateCustomAudioControl(audioElement, playButton, progress, timeDisplay);
     return true;
   }
