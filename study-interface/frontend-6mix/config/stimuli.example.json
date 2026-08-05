@@ -1,0 +1,51 @@
+{
+  "groups": [
+    {
+      "groupId": "group_01",
+      "excerpts": [
+        {
+          "excerptId": "excerpt_group_01_a",
+          "excerptTitle": "TBC",
+          "versions": [
+            {
+              "versionId": "version_slot_01",
+              "actualMixId": "TBC",
+              "neutralDisplayLabel": "Version A",
+              "audioPath": "assets/audio/TBC",
+              "duration": "TBC",
+              "loudnessMetadata": {
+                "integratedLufs": "TBC",
+                "truePeakDbtp": "TBC",
+                "normalisationNotes": "TBC"
+              }
+            },
+            {
+              "versionId": "version_slot_02",
+              "actualMixId": "TBC",
+              "neutralDisplayLabel": "Version B",
+              "audioPath": "assets/audio/TBC",
+              "duration": "TBC",
+              "loudnessMetadata": {
+                "integratedLufs": "TBC",
+                "truePeakDbtp": "TBC",
+                "normalisationNotes": "TBC"
+              }
+            },
+            {
+              "versionId": "version_slot_03",
+              "actualMixId": "TBC",
+              "neutralDisplayLabel": "Version C",
+              "audioPath": "assets/audio/TBC",
+              "duration": "TBC",
+              "loudnessMetadata": {
+                "integratedLufs": "TBC",
+                "truePeakDbtp": "TBC",
+                "normalisationNotes": "TBC"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

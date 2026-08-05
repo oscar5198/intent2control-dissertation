@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Instructions | Intent2Control Listening Study</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=comparative-comment-20260804">
+</head>
+<body data-page="instructions">
+  <main id="app" class="app-shell app-shell--wide" data-page-container>
+    <header class="study-brand" aria-label="Study branding">
+      <a class="brand-mark" href="index.html" aria-label="Study home">
+        <img class="brand-logo" src="../assets/images/qmul-logo.png" alt="Queen Mary University of London">
+      </a>
+      <div class="progress" data-progress aria-label="Study progress"></div>
+    </header>
+
+    <section class="main-card" aria-labelledby="page-title">
+      <div class="page-header">
+        <h1 id="page-title" class="page-title">Instructions</h1>
+        <p class="page-intro">Please read these instructions before completing the practice trial.</p>
+      </div>
+
+      <form data-form="instructions" novalidate>
+        <div class="validation-summary is-hidden" data-validation-summary tabindex="-1">
+          Please confirm that you understand how to complete the listening task before continuing.
+        </div>
+
+        <section class="section-panel" aria-labelledby="task-overview-heading">
+          <h2 id="task-overview-heading">How the study works</h2>
+          <ol class="instruction-steps">
+            <li>
+              <h3>Read the scenario</h3>
+              <p>Imagine yourself in the situation described.</p>
+            </li>
+            <li>
+              <h3>Listen to the six versions</h3>
+              <p>Click or tap a marker to play that version. You may replay the versions and compare them in any order.</p>
+            </li>
+            <li>
+              <h3>Rate each version</h3>
+              <p>Drag the Version A, Version B, Version C, Version D, Version E, and Version F markers on the shared 0-100 preference scale to show how much you would prefer to listen to each version in that situation.</p>
+            </li>
+            <li>
+              <h3>Briefly explain your ratings</h3>
+              <p>Write one short comment comparing the versions and explaining why you preferred some mixes over others.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="section-panel section-panel--secondary" aria-labelledby="additional-information-heading">
+          <h2 id="additional-information-heading">Additional information</h2>
+          <ul class="overview-list">
+            <li>You may listen to the versions in any order.</li>
+            <li>You may replay the versions as many times as you wish.</li>
+            <li>The preference scale uses Bad, Poor, Fair, Good, and Excellent anchors, while still allowing any value from 0 to 100.</li>
+            <li>You can continue only after completing all required ratings and the required comment.</li>
+          </ul>
+        </section>
+
+        <section class="section-panel" aria-labelledby="instructions-acknowledgement-heading">
+          <h2 id="instructions-acknowledgement-heading">Before continuing</h2>
+          <div class="checkbox">
+            <input id="instructions-acknowledgement" name="instructionsAcknowledgement" type="checkbox" aria-describedby="instructions-acknowledgement-error">
+            <label for="instructions-acknowledgement">I understand how to complete the listening task.</label>
+          </div>
+          <p class="field-help">Required.</p>
+          <p id="instructions-acknowledgement-error" class="validation-message is-hidden">Please confirm that you understand how to complete the listening task.</p>
+        </section>
+
+        <nav class="navigation-area" aria-label="Page navigation">
+          <button class="button button--secondary" type="button" data-action="back" data-target="screening.html">Back</button>
+          <button class="button button--primary" type="submit" data-instructions-continue disabled>Continue to practice</button>
+        </nav>
+      </form>
+    </section>
+  </main>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/timing.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/validation.js" defer></script>
+  <script src="../js/progress.js" defer></script>
+  <script src="../js/app.js?v=comparative-comment-20260804" defer></script>
+</body>
+</html>

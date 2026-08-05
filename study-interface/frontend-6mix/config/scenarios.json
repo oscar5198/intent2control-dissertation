@@ -1,0 +1,22 @@
+{
+  "scenarios": [
+    {
+      "id": "EDR-1",
+      "title": "EDR-1 - Enjoying Free Time",
+      "dominantFunction": "Enjoyment",
+      "approvedText": "You have some free time and no immediate responsibilities that require your attention. You are not feeling tired or worried, but you would like to enjoy your time rather than let it pass uneventfully. You decide to listen to music for entertainment, making your free time more enjoyable."
+    },
+    {
+      "id": "EDR-2",
+      "title": "EDR-2 - Unwinding After a Demanding Period",
+      "dominantFunction": "Relaxation-Distraction",
+      "approvedText": "You have some time for yourself after a demanding period. Although a few everyday concerns are still on your mind, there is nothing that requires your attention right now. You would like to feel calmer and take your mind off these concerns for a while, so you decide to listen to music to help you unwind."
+    },
+    {
+      "id": "FM-1",
+      "title": "FM-1 - Maintaining Engagement During an Activity",
+      "dominantFunction": "Focus-Motivation",
+      "approvedText": "You are engaged in an activity that requires sustained mental or physical effort. As you continue, it becomes more difficult to stay engaged. You want to maintain your focus and motivation so that you can continue making steady progress toward completing the activity. You decide to listen to music while carrying on with the activity."
+    }
+  ]
+}

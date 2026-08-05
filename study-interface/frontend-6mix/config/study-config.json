@@ -1,0 +1,63 @@
+{
+  "studyTitle": "Music Mix Preferences in Everyday Listening Situations - An Online Listening Study",
+  "estimatedDuration": "15-20 minutes",
+  "minimumAge": 18,
+  "groupCount": 2,
+  "excerptsPerGroup": 2,
+  "scenarioCount": 3,
+  "trialsPerParticipant": 6,
+  "mixesPerTrial": 6,
+  "ratingsPerParticipant": 36,
+  "requiredCommentsPerParticipant": 6,
+  "ratingMinimum": 0,
+  "ratingMaximum": 100,
+  "comparativeCommentsRequired": true,
+  "responseTimeRecordingEnabled": true,
+  "playbackEventRecording": null,
+  "retentionYears": 5,
+  "appEnvironment": "development",
+  "frontendDevelopmentMode": false,
+  "setupTestAudio": {
+    "id": "setup-test-audio",
+    "label": "Test audio",
+    "audioPath": "assets/audio/study-stimuli/listening-setup/setup_test_audio.wav",
+    "finalAudioRequired": true,
+    "status": "temporary-development",
+    "developmentNotice": "Playback test",
+    "replacementRequiredBeforePilot": true,
+    "notes": "Temporary development audio only. This is not a final screening or experimental stimulus and must be replaced before pilot or production use."
+  },
+  "pageSequence": [
+    "index.html",
+    "study-information-consent.html",
+    "listening-setup.html",
+    "screening.html",
+    "instructions.html",
+    "practice.html",
+    "main-study.html",
+    "trial.html",
+    "post-task.html",
+    "demographics.html",
+    "review.html",
+    "completion.html"
+  ],
+  "unresolvedValues": {
+    "screeningStimuli": "TBC",
+    "screeningPassRule": "TBC",
+    "excerptNames": "TBC",
+    "audioFilenames": "TBC",
+    "realMixIdentities": "TBC",
+    "commentMeaningfulResponseThreshold": "TBC",
+    "randomisationBalancingStrategy": "TBC",
+    "technicalTimingFields": "TBC",
+    "detailedPlaybackEventRecording": "TBC",
+    "retentionStartPoint": "TBC",
+    "deletionOrArchivalProcedure": "TBC",
+    "responsibleDataCustodian": "TBC",
+    "qmulHostingEnvironment": "TBC"
+  },
+  "deprecatedPages": {
+    "participant-information.html": "study-information-consent.html",
+    "consent.html": "study-information-consent.html"
+  }
+}

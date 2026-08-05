@@ -1,0 +1,71 @@
+{
+  "productionReady": false,
+  "developmentOnly": false,
+  "developmentLabel": "Practice trial",
+  "practiceScenario": {
+    "id": "practice_scenario_edr_2_relaxation_distraction",
+    "title": "Unwinding After a Demanding Period",
+    "text": "You have some time for yourself after a demanding period. Although a few everyday concerns are still on your mind, there is nothing that requires your attention right now. You would like to feel calmer and take your mind off these concerns for a while, so you decide to listen to music to help you unwind.",
+    "instruction": "Imagine yourself in the situation described above. Rate each version according to how much you would personally prefer to listen to it in that situation."
+  },
+  "practiceExcerpt": {
+    "id": "practice_excerpt_practice_song",
+    "title": "Practice song"
+  },
+  "ratingScale": {
+    "minimum": 0,
+    "maximum": 100,
+    "step": 1,
+    "leftEndpointLabel": "0 - Least preferred",
+    "rightEndpointLabel": "100 - Most preferred",
+    "midpointLabel": null
+  },
+  "comparativeCommentRequired": true,
+  "commentPrompt": "Write one short comment comparing the versions. Briefly explain which differences influenced your ratings and why you preferred some mixes over others.",
+  "commentMeaningfulResponseThreshold": null,
+  "audioPlaybackRequired": true,
+  "practiceAudioNotes": "Practice-only real Mix Evaluation Dataset ColdStar excerpt using six existing dataset mixes. Source MP3s are ColdStar CNS-A, CNS-B, CNS-C, CNS-D, CNS-5, and CNS-pro. Frontend WAVs use the same 12-40 s excerpt, 28.000 s duration, 44.1 kHz stereo, approximately -20.8 LUFS, safe peaks, and 5 ms boundary fades. Participant-facing labels remain Version A-F only.",
+  "versions": [
+    {
+      "id": "practice_version_a",
+      "label": "Version A",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_a.wav",
+      "practiceMixDescription": "existing dataset mix"
+    },
+    {
+      "id": "practice_version_b",
+      "label": "Version B",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_b.wav",
+      "practiceMixDescription": "existing dataset mix"
+    },
+    {
+      "id": "practice_version_c",
+      "label": "Version C",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_c.wav",
+      "practiceMixDescription": "existing dataset mix"
+    },
+    {
+      "id": "practice_version_d",
+      "label": "Version D",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_d.wav",
+      "practiceMixDescription": "existing dataset mix"
+    },
+    {
+      "id": "practice_version_e",
+      "label": "Version E",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_5.wav",
+      "practiceMixDescription": "existing dataset mix"
+    },
+    {
+      "id": "practice_version_f",
+      "label": "Version F",
+      "audioPath": "assets/audio/study-stimuli/practice-trial/coldstar/cns_pro.wav",
+      "practiceMixDescription": "existing dataset mix"
+    }
+  ],
+  "unresolvedValues": {
+    "supervisorApprovalForPracticeScenarioAndAudio": "TBC",
+    "commentMeaningfulResponseThreshold": "TBC",
+    "practiceAudioPlaybackRequirement": "confirmed_for_six_version_practice_interface"
+  }
+}

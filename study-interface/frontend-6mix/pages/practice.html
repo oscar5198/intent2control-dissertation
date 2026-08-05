@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Practice Trial | Intent2Control Listening Study</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=six-practice-marker-states-20260805">
+</head>
+<body data-page="practice">
+  <main id="app" class="app-shell app-shell--wide" data-page-container>
+    <header class="study-brand" aria-label="Study branding">
+      <a class="brand-mark" href="index.html" aria-label="Study home">
+        <img class="brand-logo" src="../assets/images/qmul-logo.png" alt="Queen Mary University of London">
+      </a>
+      <div class="progress" data-progress aria-label="Study progress"></div>
+    </header>
+
+    <section class="main-card" aria-labelledby="page-title">
+      <div class="page-header">
+        <h1 id="page-title" class="page-title">Practice Trial</h1>
+        <p class="page-intro">Your responses on this page will not be included in the main analysis.</p>
+      </div>
+
+      <form data-form="practice" novalidate>
+        <div class="validation-summary is-hidden" data-validation-summary tabindex="-1">
+          Please complete all required practice ratings and the comparative comment before continuing.
+        </div>
+
+        <section class="section-panel practice-context" aria-labelledby="practice-scenario-heading">
+          <h2 id="practice-scenario-heading" data-practice-scenario-title>Loading practice scenario...</h2>
+          <p data-practice-scenario-text></p>
+          <p data-practice-scenario-instruction></p>
+        </section>
+
+        <section class="trial-evaluation-stack" data-practice-versions aria-label="Practice versions"></section>
+
+        <nav class="navigation-area navigation-area--primary-right" aria-label="Page navigation">
+          <button class="button button--secondary" type="button" data-action="back" data-target="instructions.html">Back</button>
+          <button class="button button--primary primary-action" type="submit" data-practice-complete disabled>Submit</button>
+        </nav>
+      </form>
+    </section>
+  </main>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/timing.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/validation.js" defer></script>
+  <script src="../js/audio.js?v=scale-interaction-20260802" defer></script>
+  <script src="../js/progress.js" defer></script>
+  <script src="../js/trial.js?v=six-practice-marker-states-20260805" defer></script>
+  <script src="../js/app.js?v=six-practice-marker-states-20260805" defer></script>
+</body>
+</html>
