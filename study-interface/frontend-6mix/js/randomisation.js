@@ -199,7 +199,7 @@ window.StudyApp.randomisation = (function () {
       return false;
     }
 
-    return isGroupedScenarioPairOrder(stored.trials, config.trialGeneration.trialsPerParticipant, group.excerptIds) && usesConfiguredMixes(stored.trials, config);
+    return isGroupedScenarioPairOrder(stored.trials, config.trialGeneration.trialsPerParticipant, group.excerptIds, config.scenarios) && usesConfiguredMixes(stored.trials, config);
   }
 
   function getStimulusConfigurationVersion(config) {
@@ -208,7 +208,9 @@ window.StudyApp.randomisation = (function () {
 
   function usesConfiguredMixes(trials, config) {
     var mixIdsByExcerpt = {};
+    var stimulusIdsByExcerpt = {};
     var audioPathsByExcerpt = {};
+    var expectedLabels = Array.isArray(config && config.versionLabels) ? config.versionLabels : [];
     var expectedVersionsPerTrial = config && config.trialGeneration ? config.trialGeneration.versionsPerTrial : 0;
 
     if (!Array.isArray(config.excerpts)) {
@@ -219,6 +221,9 @@ window.StudyApp.randomisation = (function () {
       mixIdsByExcerpt[excerpt.id] = Array.isArray(excerpt.mixes) ? excerpt.mixes.map(function (mix) {
         return mix.actualMixId;
       }) : [];
+      stimulusIdsByExcerpt[excerpt.id] = Array.isArray(excerpt.mixes) ? excerpt.mixes.map(function (mix) {
+        return mix.stimulusId;
+      }) : [];
       audioPathsByExcerpt[excerpt.id] = Array.isArray(excerpt.mixes) ? excerpt.mixes.map(function (mix) {
         return mix.audioPath;
       }) : [];
@@ -226,10 +231,14 @@ window.StudyApp.randomisation = (function () {
 
     return trials.every(function (trial) {
       var expectedMixIds = mixIdsByExcerpt[trial.excerptId] || [];
+      var expectedStimulusIds = stimulusIdsByExcerpt[trial.excerptId] || [];
       var expectedAudioPathList = audioPathsByExcerpt[trial.excerptId] || [];
-      var expectedAudioPaths = {};
+      var expectedByMix = {};
       var mappedMixIds = Array.isArray(trial.versionMappings) ? trial.versionMappings.map(function (mapping) {
         return mapping.actualMixId;
+      }) : [];
+      var mappedStimulusIds = Array.isArray(trial.versionMappings) ? trial.versionMappings.map(function (mapping) {
+        return mapping.stimulusId;
       }) : [];
       var mappedAudioPaths = Array.isArray(trial.versionMappings) ? trial.versionMappings.map(function (mapping) {
         return mapping.audioPath;
@@ -241,20 +250,36 @@ window.StudyApp.randomisation = (function () {
       (config.excerpts.find(function (excerpt) {
         return excerpt.id === trial.excerptId;
       }) || { mixes: [] }).mixes.forEach(function (mix) {
-        expectedAudioPaths[mix.actualMixId] = mix.audioPath;
+        expectedByMix[mix.actualMixId] = mix;
       });
 
       return expectedMixIds.length === expectedVersionsPerTrial &&
+        expectedStimulusIds.length === expectedVersionsPerTrial &&
         expectedAudioPathList.length === expectedVersionsPerTrial &&
         mappedMixIds.length === expectedVersionsPerTrial &&
+        mappedStimulusIds.length === expectedVersionsPerTrial &&
+        mappedAudioPaths.length === expectedVersionsPerTrial &&
+        mappedLabels.length === expectedVersionsPerTrial &&
+        expectedLabels.length === expectedVersionsPerTrial &&
+        uniqueCount(expectedMixIds) === expectedVersionsPerTrial &&
+        uniqueCount(expectedStimulusIds) === expectedVersionsPerTrial &&
+        uniqueCount(expectedAudioPathList) === expectedVersionsPerTrial &&
         uniqueCount(mappedMixIds) === expectedVersionsPerTrial &&
+        uniqueCount(mappedStimulusIds) === expectedVersionsPerTrial &&
         uniqueCount(mappedAudioPaths) === expectedVersionsPerTrial &&
-        uniqueCount(mappedLabels) === expectedVersionsPerTrial &&
-        mappedMixIds.every(function (mixId) {
+        mappedLabels.every(function (label, index) {
+          return label === expectedLabels[index];
+        }) &&
+        expectedMixIds.every(function (mixId) {
         var mapping = (trial.versionMappings || []).find(function (item) {
           return item.actualMixId === mixId;
         });
-        return mappedMixIds.indexOf(mixId) !== -1 && mapping && mapping.audioPath === expectedAudioPaths[mixId];
+        var expected = expectedByMix[mixId];
+        return mappedMixIds.indexOf(mixId) !== -1 &&
+          mapping &&
+          expected &&
+          mapping.stimulusId === expected.stimulusId &&
+          mapping.audioPath === expected.audioPath;
       });
     });
   }
@@ -291,8 +316,11 @@ window.StudyApp.randomisation = (function () {
     });
   }
 
-  function isGroupedScenarioPairOrder(trials, expectedTrialCount, excerptIds) {
+  function isGroupedScenarioPairOrder(trials, expectedTrialCount, excerptIds, scenarios) {
     var scenarioCounts = {};
+    var expectedScenarioIds = Array.isArray(scenarios) ? scenarios.map(function (scenario) {
+      return scenario.id;
+    }) : [];
     var index;
     var first;
     var second;
@@ -305,7 +333,7 @@ window.StudyApp.randomisation = (function () {
       first = trials[index];
       second = trials[index + 1];
 
-      if (!first || !second || first.scenarioId !== second.scenarioId) {
+      if (!first || !second || first.scenarioId !== second.scenarioId || expectedScenarioIds.indexOf(first.scenarioId) === -1) {
         return false;
       }
 
@@ -316,7 +344,7 @@ window.StudyApp.randomisation = (function () {
       scenarioCounts[first.scenarioId] = (scenarioCounts[first.scenarioId] || 0) + 2;
     }
 
-    return Object.keys(scenarioCounts).every(function (scenarioId) {
+    return Object.keys(scenarioCounts).length === expectedScenarioIds.length && expectedScenarioIds.every(function (scenarioId) {
       return scenarioCounts[scenarioId] === 2;
     });
   }

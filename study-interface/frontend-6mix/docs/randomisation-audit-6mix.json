@@ -1,0 +1,341 @@
+{
+  "frontend": "6mix",
+  "label": "Separate six-mix prototype",
+  "auditedAt": "2026-08-06T11:34:14.532Z",
+  "sourceDirectory": "study-interface/frontend-6mix",
+  "localStorageNamespace": "intent2control.study.6mix.dev",
+  "filesAudited": [
+    "study-interface\\frontend-6mix\\js\\app.js",
+    "study-interface\\frontend-6mix\\js\\randomisation.js",
+    "study-interface\\frontend-6mix\\config\\screening.json",
+    "study-interface\\frontend-6mix\\config\\stimuli.json"
+  ],
+  "designVerified": {
+    "preStudy": {
+      "segments": 2,
+      "repetitionsPerSegment": 3,
+      "presentations": 6,
+      "correctAnswerRandomisedIndependently": true
+    },
+    "mainStudy": {
+      "scenarios": 3,
+      "songsPerParticipant": 2,
+      "listeningTrials": 6,
+      "versionsPerTrial": 6,
+      "versionLabels": [
+        "Version A",
+        "Version B",
+        "Version C",
+        "Version D",
+        "Version E",
+        "Version F"
+      ],
+      "commentsPerTrial": 1
+    }
+  },
+  "randomisationMechanism": {
+    "rng": "window.crypto.getRandomValues when available, Math.random fallback",
+    "shuffle": "Fisher-Yates",
+    "persistence": "localStorage per frontend namespace"
+  },
+  "correctionsApplied": [
+    "Added pre-study presentation randomisationVersion and independent_per_presentation metadata to persisted presentation orders and response records.",
+    "Reject stale pre-study presentation orders that do not carry the current randomisation metadata.",
+    "Strengthened main-study compatibility validation for exact configured scenario set, exact label order, unique mix IDs, unique stimulus IDs, unique audio paths, and mapping-to-config agreement."
+  ],
+  "simulations": {
+    "preStudy": {
+      "simulations": 1000,
+      "validOrders": 1000,
+      "answerPositions": {
+        "version_a": 3055,
+        "version_b": 2945
+      },
+      "orderPatterns": {
+        "S1S1S2S2S1S2": 60,
+        "S1S1S2S2S2S1": 50,
+        "S1S2S2S2S1S1": 73,
+        "S2S2S1S1S2S1": 64,
+        "S1S2S1S2S1S2": 64,
+        "S2S1S2S1S1S2": 57,
+        "S2S1S1S2S1S2": 51,
+        "S1S2S1S2S2S1": 49,
+        "S1S2S2S1S2S1": 55,
+        "S1S2S2S1S1S2": 69,
+        "S2S2S1S2S1S1": 57,
+        "S2S2S1S1S1S2": 53,
+        "S2S1S1S2S2S1": 50,
+        "S2S1S1S1S2S2": 47,
+        "S1S2S1S1S2S2": 57,
+        "S2S1S2S1S2S1": 46,
+        "S2S1S2S2S1S1": 48,
+        "S1S1S2S1S2S2": 50
+      },
+      "segmentPresentationCountsValid": 1000,
+      "randomisationVersion": "reference_ab_independent_answer_v1",
+      "staleStatePolicy": "stored presentations without randomisationVersion or independent_per_presentation marker are rejected and rebuilt",
+      "answerPositionShare": {
+        "version_a": 0.5091666666666667,
+        "version_b": 0.49083333333333334
+      }
+    },
+    "mainStudy": {
+      "simulationsPerGroup": 1000,
+      "groups": {
+        "group_01": {
+          "validOrders": 1000,
+          "scenarioFirstPairCounts": {
+            "EDR-1": 328,
+            "EDR-2": 345,
+            "FM-1": 327
+          },
+          "songPairOrders": {
+            "EDR-1:group_01_song_a_lead_me>group_01_song_b_red_to_blue": 511,
+            "EDR-2:group_01_song_a_lead_me>group_01_song_b_red_to_blue": 482,
+            "FM-1:group_01_song_b_red_to_blue>group_01_song_a_lead_me": 498,
+            "EDR-2:group_01_song_b_red_to_blue>group_01_song_a_lead_me": 518,
+            "EDR-1:group_01_song_b_red_to_blue>group_01_song_a_lead_me": 489,
+            "FM-1:group_01_song_a_lead_me>group_01_song_b_red_to_blue": 502
+          },
+          "mixDisplayCountsByExcerpt": {
+            "group_01_song_a_lead_me": {
+              "Version A:mix_271852ba8676": 497,
+              "Version B:mix_c7d9a071ba25": 520,
+              "Version C:mix_4e2cf7c970a8": 519,
+              "Version D:mix_d3e3580b6e30": 513,
+              "Version E:mix_d5b28dfc8a93": 509,
+              "Version F:mix_f1f7973e5bac": 473,
+              "Version A:mix_f1f7973e5bac": 531,
+              "Version B:mix_4e2cf7c970a8": 459,
+              "Version C:mix_c7d9a071ba25": 466,
+              "Version E:mix_271852ba8676": 488,
+              "Version F:mix_d5b28dfc8a93": 512,
+              "Version A:mix_d3e3580b6e30": 499,
+              "Version B:mix_271852ba8676": 524,
+              "Version D:mix_f1f7973e5bac": 474,
+              "Version E:mix_c7d9a071ba25": 513,
+              "Version A:mix_4e2cf7c970a8": 500,
+              "Version B:mix_f1f7973e5bac": 504,
+              "Version C:mix_d5b28dfc8a93": 504,
+              "Version F:mix_c7d9a071ba25": 519,
+              "Version A:mix_d5b28dfc8a93": 471,
+              "Version E:mix_d3e3580b6e30": 499,
+              "Version F:mix_271852ba8676": 492,
+              "Version A:mix_c7d9a071ba25": 502,
+              "Version B:mix_d5b28dfc8a93": 494,
+              "Version D:mix_271852ba8676": 484,
+              "Version E:mix_f1f7973e5bac": 526,
+              "Version F:mix_d3e3580b6e30": 486,
+              "Version C:mix_271852ba8676": 515,
+              "Version D:mix_c7d9a071ba25": 480,
+              "Version F:mix_4e2cf7c970a8": 518,
+              "Version D:mix_d5b28dfc8a93": 510,
+              "Version E:mix_4e2cf7c970a8": 465,
+              "Version C:mix_d3e3580b6e30": 504,
+              "Version D:mix_4e2cf7c970a8": 539,
+              "Version C:mix_f1f7973e5bac": 492,
+              "Version B:mix_d3e3580b6e30": 499
+            },
+            "group_01_song_b_red_to_blue": {
+              "Version A:mix_808780e357c9": 506,
+              "Version B:mix_dcc6aef84d67": 528,
+              "Version C:mix_5b76bf1a027d": 501,
+              "Version D:mix_7ac13e0b6376": 492,
+              "Version E:mix_5143d2ee3859": 507,
+              "Version F:mix_b4b312ffa4d6": 544,
+              "Version A:mix_5b76bf1a027d": 507,
+              "Version B:mix_808780e357c9": 454,
+              "Version C:mix_7ac13e0b6376": 510,
+              "Version D:mix_dcc6aef84d67": 462,
+              "Version A:mix_b4b312ffa4d6": 474,
+              "Version B:mix_5143d2ee3859": 501,
+              "Version C:mix_808780e357c9": 525,
+              "Version E:mix_5b76bf1a027d": 499,
+              "Version F:mix_dcc6aef84d67": 521,
+              "Version A:mix_5143d2ee3859": 517,
+              "Version B:mix_5b76bf1a027d": 514,
+              "Version C:mix_dcc6aef84d67": 490,
+              "Version D:mix_b4b312ffa4d6": 497,
+              "Version E:mix_808780e357c9": 503,
+              "Version F:mix_7ac13e0b6376": 513,
+              "Version A:mix_dcc6aef84d67": 495,
+              "Version C:mix_b4b312ffa4d6": 479,
+              "Version D:mix_808780e357c9": 533,
+              "Version A:mix_7ac13e0b6376": 501,
+              "Version D:mix_5143d2ee3859": 518,
+              "Version E:mix_b4b312ffa4d6": 502,
+              "Version F:mix_808780e357c9": 479,
+              "Version E:mix_dcc6aef84d67": 504,
+              "Version F:mix_5143d2ee3859": 462,
+              "Version E:mix_7ac13e0b6376": 485,
+              "Version C:mix_5143d2ee3859": 495,
+              "Version B:mix_7ac13e0b6376": 499,
+              "Version D:mix_5b76bf1a027d": 498,
+              "Version B:mix_b4b312ffa4d6": 504,
+              "Version F:mix_5b76bf1a027d": 481
+            }
+          },
+          "distinctFullOrders": 1000,
+          "invalidExamples": []
+        },
+        "group_02": {
+          "validOrders": 1000,
+          "scenarioFirstPairCounts": {
+            "FM-1": 312,
+            "EDR-2": 357,
+            "EDR-1": 331
+          },
+          "songPairOrders": {
+            "FM-1:group_02_song_a_in_the_meantime>group_02_song_b_pouring_room": 462,
+            "EDR-1:group_02_song_a_in_the_meantime>group_02_song_b_pouring_room": 504,
+            "EDR-2:group_02_song_a_in_the_meantime>group_02_song_b_pouring_room": 494,
+            "FM-1:group_02_song_b_pouring_room>group_02_song_a_in_the_meantime": 538,
+            "EDR-1:group_02_song_b_pouring_room>group_02_song_a_in_the_meantime": 496,
+            "EDR-2:group_02_song_b_pouring_room>group_02_song_a_in_the_meantime": 506
+          },
+          "mixDisplayCountsByExcerpt": {
+            "group_02_song_a_in_the_meantime": {
+              "Version A:mix_9baa86357fd4": 460,
+              "Version B:mix_29131e66c9d7": 470,
+              "Version C:mix_302f0efe8a80": 512,
+              "Version D:mix_c7bdcba64775": 482,
+              "Version E:mix_cdaef40f2b94": 473,
+              "Version F:mix_56e65a3ce054": 520,
+              "Version A:mix_cdaef40f2b94": 498,
+              "Version C:mix_56e65a3ce054": 505,
+              "Version D:mix_302f0efe8a80": 494,
+              "Version E:mix_c7bdcba64775": 522,
+              "Version F:mix_9baa86357fd4": 502,
+              "Version A:mix_302f0efe8a80": 523,
+              "Version B:mix_cdaef40f2b94": 534,
+              "Version D:mix_29131e66c9d7": 492,
+              "Version C:mix_9baa86357fd4": 500,
+              "Version D:mix_56e65a3ce054": 494,
+              "Version F:mix_302f0efe8a80": 500,
+              "Version A:mix_56e65a3ce054": 520,
+              "Version B:mix_302f0efe8a80": 507,
+              "Version C:mix_cdaef40f2b94": 509,
+              "Version B:mix_c7bdcba64775": 514,
+              "Version C:mix_29131e66c9d7": 491,
+              "Version D:mix_9baa86357fd4": 519,
+              "Version E:mix_56e65a3ce054": 496,
+              "Version B:mix_9baa86357fd4": 510,
+              "Version D:mix_cdaef40f2b94": 519,
+              "Version F:mix_29131e66c9d7": 495,
+              "Version A:mix_c7bdcba64775": 483,
+              "Version B:mix_56e65a3ce054": 465,
+              "Version E:mix_9baa86357fd4": 509,
+              "Version A:mix_29131e66c9d7": 516,
+              "Version E:mix_302f0efe8a80": 464,
+              "Version F:mix_c7bdcba64775": 516,
+              "Version F:mix_cdaef40f2b94": 467,
+              "Version C:mix_c7bdcba64775": 483,
+              "Version E:mix_29131e66c9d7": 536
+            },
+            "group_02_song_b_pouring_room": {
+              "Version A:mix_0ba76f420c1d": 507,
+              "Version B:mix_be2ccd4c43ff": 507,
+              "Version C:mix_cbf8555ee2b2": 484,
+              "Version D:mix_37681ed84b6b": 540,
+              "Version E:mix_e08faaf8bbb3": 526,
+              "Version F:mix_132e75f34470": 507,
+              "Version B:mix_cbf8555ee2b2": 540,
+              "Version C:mix_132e75f34470": 469,
+              "Version D:mix_e08faaf8bbb3": 482,
+              "Version E:mix_be2ccd4c43ff": 524,
+              "Version F:mix_37681ed84b6b": 507,
+              "Version A:mix_be2ccd4c43ff": 497,
+              "Version B:mix_e08faaf8bbb3": 465,
+              "Version E:mix_cbf8555ee2b2": 484,
+              "Version F:mix_0ba76f420c1d": 494,
+              "Version B:mix_0ba76f420c1d": 482,
+              "Version F:mix_cbf8555ee2b2": 513,
+              "Version A:mix_cbf8555ee2b2": 489,
+              "Version B:mix_132e75f34470": 538,
+              "Version C:mix_e08faaf8bbb3": 527,
+              "Version D:mix_0ba76f420c1d": 513,
+              "Version A:mix_e08faaf8bbb3": 501,
+              "Version C:mix_0ba76f420c1d": 519,
+              "Version A:mix_37681ed84b6b": 484,
+              "Version F:mix_be2ccd4c43ff": 480,
+              "Version B:mix_37681ed84b6b": 468,
+              "Version C:mix_be2ccd4c43ff": 504,
+              "Version E:mix_132e75f34470": 477,
+              "Version C:mix_37681ed84b6b": 497,
+              "Version D:mix_be2ccd4c43ff": 488,
+              "Version A:mix_132e75f34470": 522,
+              "Version E:mix_0ba76f420c1d": 485,
+              "Version D:mix_cbf8555ee2b2": 490,
+              "Version D:mix_132e75f34470": 487,
+              "Version F:mix_e08faaf8bbb3": 499,
+              "Version E:mix_37681ed84b6b": 504
+            }
+          },
+          "distinctFullOrders": 1000,
+          "invalidExamples": []
+        }
+      },
+      "staleStatePolicy": "stored trial orders must match group, algorithm, stimulusConfigurationVersion, exact configured scenarios, exact paired excerpts, labels, mix IDs, stimulus IDs, and audio paths; unsubmitted incompatible state is cleared"
+    }
+  },
+  "verdict": "PASS",
+  "browserQa": {
+    "testedWith": "headless Chromium via Playwright against a local static HTTP server",
+    "routeGuardSeeds": [
+      "listeningSetup.completed for screening",
+      "practice.completed and experimental.groupAssignment for trial",
+      "postTask.completed and demographics.completed for payload review"
+    ],
+    "persistenceAndStaleState": [
+      {
+        "group": "group_01",
+        "screeningItemsRendered": 6,
+        "screeningRefreshStable": true,
+        "screeningStaleRebuilt": true,
+        "screeningOrderChangedAfterStaleStrip": true,
+        "mainTrialsGenerated": 6,
+        "mainRefreshStable": true,
+        "mainStaleScenarioRejected": true,
+        "mainVersionCounts": [
+          6
+        ],
+        "localStorageNamespacesPresent": [
+          "intent2control.study.6mix.dev."
+        ],
+        "appConsoleErrors": []
+      },
+      {
+        "group": "group_02",
+        "screeningItemsRendered": 6,
+        "screeningRefreshStable": true,
+        "screeningStaleRebuilt": true,
+        "screeningOrderChangedAfterStaleStrip": true,
+        "mainTrialsGenerated": 6,
+        "mainRefreshStable": true,
+        "mainStaleScenarioRejected": true,
+        "mainVersionCounts": [
+          6
+        ],
+        "localStorageNamespacesPresent": [
+          "intent2control.study.6mix.dev."
+        ],
+        "appConsoleErrors": []
+      }
+    ],
+    "payloadExport": {
+      "responseCount": 36,
+      "expectedResponseCount": 36,
+      "mappingsPerPresentedSong": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "mixMappingEpisodeCount": 3,
+      "validationPass": true
+    },
+    "note": "One earlier static-server pass produced a non-app 404 resource message consistent with a missing browser ancillary request; rerun payload and app checks reported no app console or page errors."
+  }
+}

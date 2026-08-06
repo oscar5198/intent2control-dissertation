@@ -23,6 +23,7 @@ window.StudyApp.app = (function () {
     selectedAnswers: {},
     presentationOrder: []
   };
+  var screeningPresentationRandomisationVersion = "reference_ab_independent_answer_v1";
 
   function getCurrentPage() {
     return document.body ? document.body.getAttribute("data-page") : null;
@@ -1382,6 +1383,8 @@ window.StudyApp.app = (function () {
       id: segment.id + "_rep" + repetitionNumber,
       segmentId: segment.id,
       stimulusVersion: screeningState.config ? screeningState.config.preStudyStimulusVersion : null,
+      randomisationVersion: screeningPresentationRandomisationVersion,
+      answerPositionRandomisation: "independent_per_presentation",
       repetitionNumber: repetitionNumber,
       sourceSong: segment.sourceSong || null,
       referenceMixId: segment.referenceMixId || null,
@@ -1477,6 +1480,12 @@ window.StudyApp.app = (function () {
       return false;
     }
     if (stimulusVersion && item.stimulusVersion !== stimulusVersion) {
+      return false;
+    }
+    if (item.randomisationVersion !== screeningPresentationRandomisationVersion) {
+      return false;
+    }
+    if (item.answerPositionRandomisation !== "independent_per_presentation") {
       return false;
     }
     if (!item.id || !item.segmentId || typeof item.repetitionNumber !== "number" || typeof item.presentationOrder !== "number") {
@@ -1754,6 +1763,8 @@ window.StudyApp.app = (function () {
         comparisonMixId: item.comparisonMixId || null,
         excerptStartSeconds: item.excerptStartSeconds,
         excerptEndSeconds: item.excerptEndSeconds,
+        randomisationVersion: item.randomisationVersion || null,
+        answerPositionRandomisation: item.answerPositionRandomisation || null,
         versionMapping: item.versionMapping || null,
         answer: answer,
         correctAnswer: item.correctAnswer,
@@ -1903,6 +1914,8 @@ window.StudyApp.app = (function () {
           comparisonMixId: item.comparisonMixId || null,
           excerptStartSeconds: item.excerptStartSeconds,
           excerptEndSeconds: item.excerptEndSeconds,
+          randomisationVersion: item.randomisationVersion || null,
+          answerPositionRandomisation: item.answerPositionRandomisation || null,
           correctAnswer: item.correctAnswer,
           versionMapping: item.versionMapping || null
         };

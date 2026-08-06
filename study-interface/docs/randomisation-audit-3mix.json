@@ -1,0 +1,230 @@
+{
+  "frontend": "3mix",
+  "label": "Current approved three-mix frontend",
+  "auditedAt": "2026-08-06T11:34:11.781Z",
+  "sourceDirectory": "study-interface/frontend",
+  "localStorageNamespace": "intent2control.study.dev",
+  "filesAudited": [
+    "study-interface\\frontend\\js\\app.js",
+    "study-interface\\frontend\\js\\randomisation.js",
+    "study-interface\\frontend\\config\\screening.json",
+    "study-interface\\frontend\\config\\stimuli.json"
+  ],
+  "designVerified": {
+    "preStudy": {
+      "segments": 2,
+      "repetitionsPerSegment": 3,
+      "presentations": 6,
+      "correctAnswerRandomisedIndependently": true
+    },
+    "mainStudy": {
+      "scenarios": 3,
+      "songsPerParticipant": 2,
+      "listeningTrials": 6,
+      "versionsPerTrial": 3,
+      "versionLabels": [
+        "Version A",
+        "Version B",
+        "Version C"
+      ],
+      "commentsPerTrial": 1
+    }
+  },
+  "randomisationMechanism": {
+    "rng": "window.crypto.getRandomValues when available, Math.random fallback",
+    "shuffle": "Fisher-Yates",
+    "persistence": "localStorage per frontend namespace"
+  },
+  "correctionsApplied": [
+    "Added pre-study presentation randomisationVersion and independent_per_presentation metadata to persisted presentation orders and response records.",
+    "Reject stale pre-study presentation orders that do not carry the current randomisation metadata.",
+    "Strengthened main-study compatibility validation for exact configured scenario set, exact label order, unique mix IDs, unique stimulus IDs, unique audio paths, and mapping-to-config agreement."
+  ],
+  "simulations": {
+    "preStudy": {
+      "simulations": 1000,
+      "validOrders": 1000,
+      "answerPositions": {
+        "version_a": 2985,
+        "version_b": 3015
+      },
+      "orderPatterns": {
+        "S2S1S2S1S2S1": 60,
+        "S1S2S2S1S2S1": 67,
+        "S2S1S2S1S1S2": 75,
+        "S1S2S2S1S1S2": 51,
+        "S1S1S2S2S2S1": 60,
+        "S1S2S1S2S1S2": 57,
+        "S1S2S1S2S2S1": 49,
+        "S1S2S2S2S1S1": 58,
+        "S1S1S2S2S1S2": 54,
+        "S2S1S1S2S1S2": 57,
+        "S2S1S1S1S2S2": 54,
+        "S1S2S1S1S2S2": 51,
+        "S2S1S2S2S1S1": 44,
+        "S2S2S1S2S1S1": 55,
+        "S2S1S1S2S2S1": 54,
+        "S1S1S2S1S2S2": 59,
+        "S2S2S1S1S1S2": 47,
+        "S2S2S1S1S2S1": 48
+      },
+      "segmentPresentationCountsValid": 1000,
+      "randomisationVersion": "reference_ab_independent_answer_v1",
+      "staleStatePolicy": "stored presentations without randomisationVersion or independent_per_presentation marker are rejected and rebuilt",
+      "answerPositionShare": {
+        "version_a": 0.4975,
+        "version_b": 0.5025
+      }
+    },
+    "mainStudy": {
+      "simulationsPerGroup": 1000,
+      "groups": {
+        "group_01": {
+          "validOrders": 1000,
+          "scenarioFirstPairCounts": {
+            "FM-1": 336,
+            "EDR-2": 325,
+            "EDR-1": 339
+          },
+          "songPairOrders": {
+            "FM-1:group_01_song_b_red_to_blue>group_01_song_a_lead_me": 476,
+            "EDR-1:group_01_song_a_lead_me>group_01_song_b_red_to_blue": 480,
+            "EDR-2:group_01_song_b_red_to_blue>group_01_song_a_lead_me": 495,
+            "EDR-1:group_01_song_b_red_to_blue>group_01_song_a_lead_me": 520,
+            "FM-1:group_01_song_a_lead_me>group_01_song_b_red_to_blue": 524,
+            "EDR-2:group_01_song_a_lead_me>group_01_song_b_red_to_blue": 505
+          },
+          "mixDisplayCountsByExcerpt": {
+            "group_01_song_b_red_to_blue": {
+              "Version A:mix_5b76bf1a027d": 976,
+              "Version B:mix_808780e357c9": 979,
+              "Version C:mix_5143d2ee3859": 996,
+              "Version B:mix_5143d2ee3859": 1006,
+              "Version C:mix_808780e357c9": 995,
+              "Version A:mix_808780e357c9": 1026,
+              "Version B:mix_5b76bf1a027d": 1015,
+              "Version C:mix_5b76bf1a027d": 1009,
+              "Version A:mix_5143d2ee3859": 998
+            },
+            "group_01_song_a_lead_me": {
+              "Version A:mix_d3e3580b6e30": 1043,
+              "Version B:mix_c7d9a071ba25": 1005,
+              "Version C:mix_d5b28dfc8a93": 982,
+              "Version A:mix_c7d9a071ba25": 1003,
+              "Version B:mix_d3e3580b6e30": 931,
+              "Version B:mix_d5b28dfc8a93": 1064,
+              "Version C:mix_d3e3580b6e30": 1026,
+              "Version A:mix_d5b28dfc8a93": 954,
+              "Version C:mix_c7d9a071ba25": 992
+            }
+          },
+          "distinctFullOrders": 999,
+          "invalidExamples": []
+        },
+        "group_02": {
+          "validOrders": 1000,
+          "scenarioFirstPairCounts": {
+            "EDR-1": 342,
+            "EDR-2": 296,
+            "FM-1": 362
+          },
+          "songPairOrders": {
+            "EDR-1:group_02_song_b_pouring_room>group_02_song_a_in_the_meantime": 512,
+            "FM-1:group_02_song_b_pouring_room>group_02_song_a_in_the_meantime": 506,
+            "EDR-2:group_02_song_a_in_the_meantime>group_02_song_b_pouring_room": 509,
+            "EDR-1:group_02_song_a_in_the_meantime>group_02_song_b_pouring_room": 488,
+            "FM-1:group_02_song_a_in_the_meantime>group_02_song_b_pouring_room": 494,
+            "EDR-2:group_02_song_b_pouring_room>group_02_song_a_in_the_meantime": 491
+          },
+          "mixDisplayCountsByExcerpt": {
+            "group_02_song_b_pouring_room": {
+              "Version A:mix_cbf8555ee2b2": 1060,
+              "Version B:mix_be2ccd4c43ff": 1046,
+              "Version C:mix_0ba76f420c1d": 1035,
+              "Version A:mix_be2ccd4c43ff": 978,
+              "Version B:mix_cbf8555ee2b2": 951,
+              "Version A:mix_0ba76f420c1d": 962,
+              "Version C:mix_cbf8555ee2b2": 989,
+              "Version C:mix_be2ccd4c43ff": 976,
+              "Version B:mix_0ba76f420c1d": 1003
+            },
+            "group_02_song_a_in_the_meantime": {
+              "Version A:mix_cdaef40f2b94": 1011,
+              "Version B:mix_29131e66c9d7": 971,
+              "Version C:mix_56e65a3ce054": 984,
+              "Version B:mix_56e65a3ce054": 1047,
+              "Version C:mix_29131e66c9d7": 1009,
+              "Version A:mix_29131e66c9d7": 1020,
+              "Version B:mix_cdaef40f2b94": 982,
+              "Version A:mix_56e65a3ce054": 969,
+              "Version C:mix_cdaef40f2b94": 1007
+            }
+          },
+          "distinctFullOrders": 1000,
+          "invalidExamples": []
+        }
+      },
+      "staleStatePolicy": "stored trial orders must match group, algorithm, stimulusConfigurationVersion, exact configured scenarios, exact paired excerpts, labels, mix IDs, stimulus IDs, and audio paths; unsubmitted incompatible state is cleared"
+    }
+  },
+  "verdict": "PASS",
+  "browserQa": {
+    "testedWith": "headless Chromium via Playwright against a local static HTTP server",
+    "routeGuardSeeds": [
+      "listeningSetup.completed for screening",
+      "practice.completed and experimental.groupAssignment for trial",
+      "postTask.completed and demographics.completed for payload review"
+    ],
+    "persistenceAndStaleState": [
+      {
+        "group": "group_01",
+        "screeningItemsRendered": 6,
+        "screeningRefreshStable": true,
+        "screeningStaleRebuilt": true,
+        "screeningOrderChangedAfterStaleStrip": true,
+        "mainTrialsGenerated": 6,
+        "mainRefreshStable": true,
+        "mainStaleScenarioRejected": true,
+        "mainVersionCounts": [
+          3
+        ],
+        "localStorageNamespacesPresent": [
+          "intent2control.study.dev."
+        ],
+        "appConsoleErrors": []
+      },
+      {
+        "group": "group_02",
+        "screeningItemsRendered": 6,
+        "screeningRefreshStable": true,
+        "screeningStaleRebuilt": true,
+        "screeningOrderChangedAfterStaleStrip": true,
+        "mainTrialsGenerated": 6,
+        "mainRefreshStable": true,
+        "mainStaleScenarioRejected": true,
+        "mainVersionCounts": [
+          3
+        ],
+        "localStorageNamespacesPresent": [
+          "intent2control.study.dev."
+        ],
+        "appConsoleErrors": []
+      }
+    ],
+    "payloadExport": {
+      "responseCount": 18,
+      "expectedResponseCount": 18,
+      "mappingsPerPresentedSong": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "mixMappingEpisodeCount": 3,
+      "validationPass": true
+    },
+    "note": "One earlier static-server pass produced a non-app 404 resource message consistent with a missing browser ancillary request; rerun payload and app checks reported no app console or page errors."
+  }
+}
