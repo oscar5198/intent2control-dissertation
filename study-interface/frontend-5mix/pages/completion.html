@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Completion | Intent2Control Listening Study</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css?v=audio-control-polish-20260731">
+  <link rel="stylesheet" href="../css/pages.css?v=instructions-scale-20260802">
+</head>
+<body data-page="completion">
+  <main id="app" class="app-shell" data-page-container>
+    <header class="study-brand" aria-label="Study branding">
+      <a class="brand-mark" href="index.html" aria-label="Study home">
+        <img class="brand-logo" src="../assets/images/qmul-logo.png" alt="Queen Mary University of London">
+      </a>
+      <div class="progress" data-progress aria-label="Study progress"></div>
+    </header>
+
+    <section class="main-card" aria-labelledby="page-title">
+      <div class="page-header">
+        <h1 id="page-title" class="page-title">Thank you</h1>
+        <p class="page-intro">Your responses have been recorded in this study session.</p>
+      </div>
+
+      <section class="section-panel" aria-labelledby="completion-confirmation-heading">
+        <h2 id="completion-confirmation-heading">Study completed</h2>
+        <p>You have completed the listening study flow.</p>
+        <p><strong>Study ID:</strong> <span data-session-id>Loading...</span></p>
+        <p>Your responses have been recorded for this study session.</p>
+      </section>
+
+      <section class="section-panel" aria-labelledby="close-heading">
+        <h2 id="close-heading">You may now close this window</h2>
+        <p>Thank you for taking part in this research.</p>
+        <p>You may now close this browser window.</p>
+      </section>
+
+      <nav class="navigation-area" aria-label="Page navigation">
+        <span aria-hidden="true"></span>
+        <button class="button button--secondary" type="button" data-action="start-study">Start a new study session</button>
+      </nav>
+    </section>
+  </main>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/timing.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/progress.js" defer></script>
+  <script src="../js/app.js?v=instructions-scale-20260802" defer></script>
+</body>
+</html>

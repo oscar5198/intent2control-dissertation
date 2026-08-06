@@ -1,0 +1,6 @@
+song,recommended_five,min_pairwise_distance,median_pairwise_distance,max_pairwise_distance,rating_range,similar_subset,alignment_evidence,replacement_rank_score,notes
+New Skin,DU-Q|DU-R|DU-O|DU-T|DU-S,1.5188586309,2.373060719195,3.38852224907,0.393212924146,DU-Q|DU-O|DU-S,Similar Ratings:PASS 0.0 ms; Wide Ratings:REVIEW 11.6 ms,2.0968181736291998,Backup reviewed union candidate.
+I'd Like To Know,PXL-S3|PXL-S5|PXL-S1|PXL-S2|PXL-S7,1.36762958502,2.190067924005,3.48430981082,0.246210387232,PXL-S3|PXL-S5|PXL-S2,Similar Ratings:PASS 0.0 ms; Wide Ratings:PASS 0.0 ms,1.9621364042364,Backup reviewed union candidate.
+Red To Blue,McG-B|McG-G|McG-F|McG-C|McG-pro1,1.70609122427,2.3723237670749997,3.21748310589,0.269667453641,McG-B|McG-G|McG-C,REVIEW 11.6 ms; previous Oscar review found no obvious timing issue,1.8976976262787,Existing concern: perceived similarity despite acceptable metrics.
+Vermont,DU-P2|DU-O2|PXL-L3|PXL-L4|PXL-L5,1.19093495482,1.9284809108099998,3.44842795802,0.3142311998849999,DU-P2|PXL-L4,Similar Ratings:REVIEW 11.6 ms; Wide Ratings:PASS 0.0 ms,1.7983508562109998,Backup reviewed union candidate.
+No Prize,McG-L|McG-pro2|McG-N|McG-K|McG-P,1.06714306959,2.08759067071,4.19652132421,0.268802580837,McG-L|McG-K|McG-P,Similar Ratings:REVIEW 11.6 ms; Wide Ratings:REVIEW 0.0 ms,1.6010813055029,Backup reviewed union candidate.

@@ -1,0 +1,30 @@
+relative_path,folder,file,size_bytes,sha256,active_in_stimuli_json,active_song,active_mix
+assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/du_d.wav,song_a_lead_me,du_d.wav,7408844,c9f29238b0df89952af408ccb06cf67aa3355a6e8a289d72c6e6987116e00b50,True,Lead Me,DU-D
+assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/du_e.wav,song_a_lead_me,du_e.wav,7408844,0d4f376765530c1ec5d64907a3900bd83fd07dae3ded520172cabfc69d39760e,True,Lead Me,DU-E
+assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/mcg_pro2.wav,song_a_lead_me,mcg_pro2.wav,4939244,82ead88ddd05eb0eea4ae9756a832acdfcc1bf19cfbadde2dbedf65627b768c3,True,Lead Me,McG-pro2
+assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav,song_a_lead_me,pxl_l1.wav,4939244,36d9394d0373c164eb934a5d8cfa6d1f1cf79d7927c863acf286bbf1327bb5e8,True,Lead Me,PXL-L1
+assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l4.wav,song_a_lead_me,pxl_l4.wav,4939244,f257def94cc627653c2509fa9434464eac3ccf4cf032d463d363da9ea06d628d,True,Lead Me,PXL-L4
+assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/qut_f.wav,song_a_lead_me,qut_f.wav,7408844,18dc5f3c4bd202abaed2c99e06ab70695752eb0bc46a8b1aa1fdbb28b3eedfd2,False,,
+assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s1.wav,song_b_id_like_to_know,pxl_s1.wav,4939244,ff5f11e13ed2be2f22b5b7f348fd38f16ebc4580301b84ace675a059bda8730a,True,I'd Like To Know,PXL-S1
+assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s2.wav,song_b_id_like_to_know,pxl_s2.wav,4939244,550135e350cd698848864b350c20942065c4a744aca58d28bd5463a20af23f7b,True,I'd Like To Know,PXL-S2
+assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s3.wav,song_b_id_like_to_know,pxl_s3.wav,4939244,90851081461aba233c967b4221d63041492551ae558e1aca109d556392d4a97a,True,I'd Like To Know,PXL-S3
+assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s5.wav,song_b_id_like_to_know,pxl_s5.wav,4939244,9983613f47e374e319bdc76922fed3ae2cb69613f5f4713e5423355a6baf3d9a,True,I'd Like To Know,PXL-S5
+assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s7.wav,song_b_id_like_to_know,pxl_s7.wav,4939244,4bd87ed0194f89d7c1a45a5fad216040d3350bc9aeec443c70d51f42385eef74,True,I'd Like To Know,PXL-S7
+assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_b.wav,song_b_red_to_blue,mcg_b.wav,7408844,3f31d4d7195eeba2db3cd8415e2c595339b3ab21715367e4647e45046b2727bf,False,,
+assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_c.wav,song_b_red_to_blue,mcg_c.wav,4939244,728b38e0e7b07b7fc2b9151d7672d8000b2b0fe301ac5b58199d2e1a5f20498d,False,,
+assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_f.wav,song_b_red_to_blue,mcg_f.wav,7408844,f6c05d2bf58131abd8fad4dda66de5d7ce54e221f9f13a33678f4663e4b0d07e,False,,
+assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_g.wav,song_b_red_to_blue,mcg_g.wav,7408844,b8e447bfef777519ea6d3f42dc1787b71d4aa2023f491f8544b41da9d8fcc57c,False,,
+assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_h.wav,song_b_red_to_blue,mcg_h.wav,4939244,76d98aac014dd2e504095a7340cb6b2d7fa396316b8345fe838b20453b1ef73b,False,,
+assets/audio/study-stimuli/main-study/group_01/song_b_red_to_blue/mcg_pro1.wav,song_b_red_to_blue,mcg_pro1.wav,4939244,6714bfad9f0e3bbafc20aebf198df81201a5983a47ca3e4b634d9bf1e8193483,False,,
+assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_h.wav,song_a_in_the_meantime,du_h.wav,7408844,1f313be3c726d3e8c3fe459a661feca3cc452bb83ad9c7b595b6d88e463ba05f,True,In The Meantime,DU-H
+assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_i.wav,song_a_in_the_meantime,du_i.wav,7408844,37cbf18b0bc2e144769577718e2382ee137abac9fafb38d921995d700fe8e002,True,In The Meantime,DU-I
+assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_k.wav,song_a_in_the_meantime,du_k.wav,4939244,4dfaf9d47d7f23cc2b2d6ee362d2372d537b6448f186c1827cdace0802ae02e0,True,In The Meantime,DU-K
+assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_n.wav,song_a_in_the_meantime,du_n.wav,4939244,053a3ac1987540874b2a01593c6a76bb8af9102b219608a0e4cbe101c01af2e2,False,,
+assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_b.wav,song_a_in_the_meantime,qut_b.wav,7408844,612d1059890671ba799b1fc1d6f32201a46bc9156091f7186a4e9202e62dd46b,True,In The Meantime,QUT-B
+assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_pro.wav,song_a_in_the_meantime,qut_pro.wav,4939244,f5e793e07d60ba6ea7fe4e52870cef19d8bb8a332db3bc7ea2d9de51b2d583dc,True,In The Meantime,QUT-pro
+assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_pro1.wav,song_b_pouring_room,mcg_pro1.wav,7408844,0f8af83464802c168c947018f265bde49711503b02904de76a3b3aa614286631,True,Pouring Room,McG-pro1
+assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_r.wav,song_b_pouring_room,mcg_r.wav,4939244,efbb12284dc86f54e9db0048811b13e15142dfb0bb8aa2140cd5ef144304a071,True,Pouring Room,McG-R
+assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_t.wav,song_b_pouring_room,mcg_t.wav,4939244,66f3f66bd62f491dc0743486c795456edae751d37a0162bb6696baa81c789ec3,True,Pouring Room,McG-T
+assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_u.wav,song_b_pouring_room,mcg_u.wav,7408844,3fb25fb85ff3098555f9907a69bd01b7c7af9011a866be8d110583851467a294,False,,
+assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_v.wav,song_b_pouring_room,mcg_v.wav,7408844,dee45df61628a4c1e69ffcc96626f7e543ea44caf4e28d95b385bdd4f8f59b53,True,Pouring Room,McG-V
+assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_x.wav,song_b_pouring_room,mcg_x.wav,4939244,c9e7246801f233b8750d9344ad0d49d157b3df186ffc9c60706e60fc1064c008,True,Pouring Room,McG-X
