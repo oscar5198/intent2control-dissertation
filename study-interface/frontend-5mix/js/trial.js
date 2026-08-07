@@ -488,7 +488,11 @@ window.StudyApp.trial = (function () {
 
     numbers.forEach(function (number, index) {
       var anchor = document.createElement("span");
-      anchor.innerHTML = "<span class=\"rating-anchor-scale__number\">" + number + "</span><br>" + labels[index];
+
+      anchor.innerHTML =
+        "<span class=\"rating-anchor-scale__number\">" + number + "</span>" +
+        "<span class=\"rating-anchor-scale__label\">" + labels[index] + "</span>";
+
       scale.appendChild(anchor);
     });
 

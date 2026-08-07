@@ -314,7 +314,7 @@
 
 .rating-anchor-scale {
   position: relative;
-  display: block;
+  display: block; 
   height: 2.75rem;
   margin-top: var(--space-2);
   margin-right: 2.25rem;
@@ -323,9 +323,9 @@
   font-size: var(--font-size-help);
 }
 
-.rating-anchor-scale span {
+.rating-anchor-scale > span {
   position: absolute;
-  top: 0;
+  top: -0.8rem;
   min-width: 4.5rem;
   text-align: center;
   transform: translateX(-50%);
@@ -351,8 +351,24 @@
   left: 100%;
 }
 
+.rating-anchor-scale__number,
+.rating-anchor-scale__label {
+  position: static;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  transform: none;
+}
+
 .rating-anchor-scale__number {
   font-weight: 700;
+  line-height: 1;
+}
+
+.rating-anchor-scale__label {
+  line-height: 1;
+  margin-top: 0.5rem;
 }
 
 .rating-endpoint {

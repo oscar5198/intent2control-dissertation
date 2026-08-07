@@ -113,3 +113,26 @@ python study-interface/scripts/netlify_forms_to_long_csv.py netlify-export.csv l
 ```
 
 The script parses `responses_json`, preserves participant-level fields, writes a long-format CSV, and creates a validation report beside the output. Do not run it on or commit real participant data.
+
+## Six-Mix Metadata Export
+
+The separate six-mix form `listening-study-6mix` stores enough researcher-facing data to reconstruct the exact physical mixes shown in each trial when the raw Netlify participant-level CSV is available. The raw Netlify CSV is one row per completed submission and contains structured JSON columns such as `assigned_song_ids_json`, `episode_order_json` or `scenario_order_json`, `song_order_json`, `mix_mapping_json`, `presentation_order_json`, `responses_json`, and `client_validation_json`.
+
+The analysis-ready six-mix processing utility is:
+
+```cmd
+python "study-interface\scripts\netlify_forms_6mix_to_long_csv.py" ^
+  --input "outputs\study_data_checks\listening-study-6mix.csv" ^
+  --output-dir "outputs\study_data_checks"
+```
+
+It writes:
+
+- `responses_long.csv`: one row per individual displayed-mix rating. It preserves `study_id`, study/config versions, group, episode/scenario, song/excerpt, displayed label, displayed position, `stimulus_id`, `actual_mix_id`, rating, audio played state, comment, and response time.
+- `experiment_metadata.csv`: one row per `study_id` x episode/scenario x song trial. It records trial order, episode/song positions, display order, `label_A_stimulus_id`, `label_B_stimulus_id`, `label_C_stimulus_id`, additional label-specific columns when more labels exist, all `stimulus_ids_shown`, all `actual_mix_ids_shown`, the trial-level comment, and per-row metadata validation status.
+- `export_validation_report.json`: machine-readable validation summary covering duplicate study IDs, malformed JSON, missing stimulus IDs, missing mappings, mapping-response disagreements, invalid episode IDs, unassigned song IDs, duplicate responses, inconsistent comments, and whether every trial is fully reconstructable.
+- `export_validation_issues.csv`: row-wise validation issues for quick inspection.
+
+`study_id` is the anonymous study identifier and should be used in analysis outputs instead of `participant_id`. IP address, user-agent, and other Netlify/platform metadata should not be included in analysis-ready outputs. Keep raw Netlify exports and generated participant/test data out of Git unless a separate approved anonymisation and retention policy says otherwise.
+
+The exact mix reconstruction works as follows: `presentation_order_json` gives the displayed label order for each episode/song trial, `mix_mapping_json` maps each displayed label to a stable physical `stimulus_id`, and `responses_json` repeats the displayed label, position, physical `stimulus_id`, rating, comment, and response time for each displayed mix. The utility validates that these fields agree before reporting the metadata row as `valid`.
