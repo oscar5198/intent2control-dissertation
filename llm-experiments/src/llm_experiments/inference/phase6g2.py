@@ -210,6 +210,8 @@ def build_gate_semantics(
     runpod_verified: bool,
     qmul_execution_architectures_verified: bool = False,
     qmul_production_config_verified: bool = False,
+    runpod_execution_architecture_verified: bool = False,
+    runpod_production_config_verified: bool = False,
 ) -> dict[str, bool]:
     exact_verified = qmul_verified and runpod_verified
     return {
@@ -218,6 +220,8 @@ def build_gate_semantics(
         "QMUL_BACKENDS_VERIFIED": qmul_verified,
         "QMUL_EXECUTION_ARCHITECTURES_VERIFIED": qmul_execution_architectures_verified,
         "QMUL_PRODUCTION_CONFIG_VERIFIED": qmul_production_config_verified,
+        "RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED": runpod_execution_architecture_verified,
+        "RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED": runpod_production_config_verified,
         "RUNPOD_CENTAUR_VERIFIED": runpod_verified,
         "PRIMARY_INFERENCE_CONFIG_FROZEN": False,
         "PRODUCTION_INFERENCE_READY": False,
@@ -237,6 +241,8 @@ def build_readiness(repo_root: Path) -> dict[str, Any]:
     runpod_verified = bool(runpod_validation["backend_verified"])
     qmul_execution_architectures_verified = bool(qmul_validation.get("execution_architectures_verified"))
     qmul_production_config_verified = bool(qmul_validation.get("production_config_verified"))
+    runpod_execution_architecture_verified = bool(runpod_validation.get("execution_architectures_verified"))
+    runpod_production_config_verified = bool(runpod_validation.get("production_config_verified"))
     phase6g1 = load_json(repo_root / PHASE6G1_READINESS) if (repo_root / PHASE6G1_READINESS).exists() else {}
     gates = build_gate_semantics(
         qmul_artifact_present=qmul_present,
@@ -245,6 +251,8 @@ def build_readiness(repo_root: Path) -> dict[str, Any]:
         runpod_verified=runpod_verified,
         qmul_execution_architectures_verified=qmul_execution_architectures_verified,
         qmul_production_config_verified=qmul_production_config_verified,
+        runpod_execution_architecture_verified=runpod_execution_architecture_verified,
+        runpod_production_config_verified=runpod_production_config_verified,
     )
     return {
         "schema_version": READINESS_SCHEMA_VERSION,
@@ -306,6 +314,8 @@ def validate_remote_artifact(path: Path, artifact_type: str) -> dict[str, Any]:
         production_config_verified = bool(artifact.get("QMUL_PRODUCTION_CONFIG_VERIFIED") is True and not errors)
     elif artifact_type == "runpod":
         backend_verified = bool(artifact.get("overall_runpod_centaur_verified") is True and not errors)
+        execution_architectures_verified = bool(artifact.get("RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED") is True and not errors)
+        production_config_verified = bool(artifact.get("RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED") is True and not errors)
     return {
         "valid": not errors,
         "backend_verified": backend_verified,
@@ -350,14 +360,21 @@ def validate_runpod_artifact(artifact: dict[str, Any], errors: list[str], warnin
     record = artifact.get("model_record", {})
     if record.get("model_key") != "centaur":
         errors.append("RunPod artifact must describe centaur")
-    require(record, "deployed_model_source", errors, "centaur missing deployed_model_source")
-    require(record, "exact_served_id", errors, "centaur missing exact_served_id")
-    require(record, "response_extraction_contract", errors, "centaur missing response_extraction_contract")
+    if "deployed_model_source" not in record:
+        errors.append("centaur missing deployed_model_source")
+    if "exact_served_id" not in record:
+        errors.append("centaur missing exact_served_id")
+    if "response_extraction_contract" not in record:
+        errors.append("centaur missing response_extraction_contract")
     convention = record.get("centaur_choice_convention_audit", {})
     if "recommendation_exists" not in convention or "technically_required" not in convention:
         errors.append("centaur choice convention audit incomplete")
     if artifact.get("overall_runpod_centaur_verified") is not True:
-        errors.append("overall_runpod_centaur_verified must be true for import acceptance")
+        warnings.append("overall_runpod_centaur_verified is false; artifact is evidence-only and cannot unlock production")
+    if artifact.get("RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED") is not True:
+        warnings.append("RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED is false")
+    if artifact.get("RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED") is not True:
+        warnings.append("RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED is false")
     if record.get("deployment_form") == "adapter" and not record.get("base_model"):
         warnings.append("adapter deployment should record base_model")
 

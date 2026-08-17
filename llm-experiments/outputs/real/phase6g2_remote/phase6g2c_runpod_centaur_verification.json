@@ -1,0 +1,131 @@
+{
+  "schema_version": "phase6g_runpod_centaur_verification_v1",
+  "environment": "RunPod",
+  "verification_timestamp_utc": "2026-08-17T23:37:37.055820+00:00",
+  "verification_script_version": "phase6g2c_runpod_centaur_verify_script_v2",
+  "host_metadata": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python_version": "3.10.14",
+    "evidence_environment": "local_or_unverified"
+  },
+  "model_record": {
+    "model_key": "centaur",
+    "intended_scientific_model": "Centaur",
+    "scientific_model_identity_known": true,
+    "expected_source_family": "Llama-3.1-based Centaur 70B",
+    "source_candidates": [
+      "marcelbinz/Llama-3.1-Centaur-70B",
+      "marcelbinz/Llama-3.1-Centaur-70B-adapter"
+    ],
+    "deployed_model_source": "UNVERIFIED",
+    "deployment_form": "UNVERIFIED",
+    "base_model": "not_applicable_if_full_merged_checkpoint",
+    "exact_served_id_verified": false,
+    "exact_served_id": "UNVERIFIED",
+    "revision": "UNVERIFIED",
+    "revision_verified": false,
+    "commit": "UNVERIFIED",
+    "runtime_versions": {
+      "python": "UNVERIFIED",
+      "torch": "UNVERIFIED",
+      "transformers": "UNVERIFIED",
+      "peft": "UNVERIFIED",
+      "bitsandbytes": "UNVERIFIED",
+      "accelerate": "UNVERIFIED",
+      "requests": "UNVERIFIED",
+      "cuda": "UNVERIFIED"
+    },
+    "python_executable": "UNVERIFIED",
+    "gpu": {
+      "gpu_count": "UNVERIFIED",
+      "gpu_names": "UNVERIFIED"
+    },
+    "quantisation": "UNVERIFIED",
+    "precision": "UNVERIFIED",
+    "serving_framework": "UNVERIFIED",
+    "serving_framework_verified": false,
+    "endpoint_type": "UNVERIFIED",
+    "endpoint_url_sanitized": "UNVERIFIED",
+    "tokenizer": {},
+    "tokenizer_chat_template": "UNVERIFIED",
+    "model_config": {},
+    "context_limit": "UNVERIFIED",
+    "context_compatibility": {
+      "status": "UNVERIFIED"
+    },
+    "max_output_limit": 256,
+    "generation_mode": {
+      "primary_mode": "greedy",
+      "do_sample": false,
+      "temperature_parameter_policy": "omit_not_active_under_greedy_decoding",
+      "top_p_parameter_policy": "omit_not_active_under_greedy_decoding",
+      "primary_generations_per_request": 1,
+      "max_new_tokens": 256,
+      "project_seed": 20260814
+    },
+    "temperature_or_greedy_controls": "greedy_do_sample_false_temperature_omitted_top_p_omitted",
+    "top_p_support": "not_active_under_greedy_decoding",
+    "seed_support": "project_seed_recorded_greedy_primary_bitwise_gpu_determinism_not_claimed",
+    "system_role_behavior": "use_verified_tokenizer_chat_template_if_available; preserve frozen system/user content",
+    "message_serialization": "tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True) if official chat template is verified",
+    "structured_output_mechanism": "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair",
+    "health_check": {
+      "status": "not_run",
+      "healthy": false
+    },
+    "trivial_generation_probe": {
+      "status": "not_run",
+      "prompt": "Reply exactly with: Centaur connectivity verified."
+    },
+    "request_contract": "UNVERIFIED",
+    "response_extraction_contract": "decoded_text",
+    "endpoint_server_version": "UNVERIFIED",
+    "backend_contract_verified": false,
+    "adapter_readiness": {
+      "status": "prepared_not_verified_without_live_runpod_contract"
+    },
+    "centaur_choice_convention_audit": {
+      "recommendation_exists": "UNVERIFIED",
+      "technically_required": "UNVERIFIED",
+      "evidence_source_note": "UNVERIFIED",
+      "would_alter_frozen_phase6d_semantic_prompt": "UNVERIFIED",
+      "decision_for_primary_experiment": "retain_common_phase6d_prompt_until_technical_requirement_is_verified",
+      "methodological_blocker": false
+    },
+    "execution_architecture_verified": false,
+    "production_configuration_verified": false
+  },
+  "checks": {
+    "model_key_is_centaur": true,
+    "source_candidate_recorded": false,
+    "exact_served_id_verified": false,
+    "revision_verified": false,
+    "runtime_versions_recorded": false,
+    "tokenizer_template_recorded": false,
+    "context_limit_recorded": false,
+    "health_check_succeeded": false,
+    "trivial_generation_succeeded": false,
+    "backend_contract_verified": false,
+    "choice_convention_not_methodological_blocker": true
+  },
+  "unresolved_items": [
+    "deployed_model_source",
+    "deployment_form",
+    "exact_served_id",
+    "revision",
+    "quantisation",
+    "precision",
+    "serving_framework",
+    "tokenizer_chat_template",
+    "context_limit",
+    "request_contract",
+    "model_load_health_check",
+    "trivial_generation_probe",
+    "centaur_choice_convention_technical_requirement"
+  ],
+  "RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED": false,
+  "RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED": false,
+  "overall_runpod_centaur_verified": false,
+  "credential_policy": "No credentials, HF_TOKEN values, RunPod tokens, or authenticated URLs are emitted.",
+  "scope": "no participant data, no study prompts, no production inference"
+}

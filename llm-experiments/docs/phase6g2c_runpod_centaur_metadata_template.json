@@ -1,0 +1,68 @@
+{
+  "deployed_model_source": "UNVERIFIED",
+  "deployment_form": "unknown",
+  "base_model": "UNVERIFIED",
+  "exact_served_id": "UNVERIFIED",
+  "revision": "UNVERIFIED",
+  "commit": "UNVERIFIED",
+  "python_executable": "UNVERIFIED",
+  "runtime_versions": {
+    "python": "UNVERIFIED",
+    "torch": "UNVERIFIED",
+    "transformers": "UNVERIFIED",
+    "peft": "UNVERIFIED",
+    "bitsandbytes": "UNVERIFIED",
+    "accelerate": "UNVERIFIED",
+    "requests": "UNVERIFIED",
+    "cuda": "UNVERIFIED"
+  },
+  "gpu": {
+    "gpu_count": "UNVERIFIED",
+    "gpu_names": "UNVERIFIED",
+    "vram": "UNVERIFIED"
+  },
+  "quantisation": "UNVERIFIED",
+  "precision": "UNVERIFIED",
+  "serving_framework": "UNVERIFIED",
+  "endpoint_type": "UNVERIFIED",
+  "tokenizer": {
+    "tokenizer_class": "UNVERIFIED",
+    "chat_template_status": "UNVERIFIED",
+    "model_max_length": "UNVERIFIED",
+    "tokenizer_source": "UNVERIFIED"
+  },
+  "model_config": {
+    "model_architecture": "UNVERIFIED",
+    "context_limit": "UNVERIFIED",
+    "max_position_embeddings": "UNVERIFIED"
+  },
+  "context_compatibility": {
+    "status": "UNVERIFIED",
+    "maximum_real_prompt_tokens": "UNVERIFIED",
+    "template_overhead_tokens": "UNVERIFIED",
+    "max_new_tokens": 256
+  },
+  "generation_mode": {
+    "primary_mode": "greedy",
+    "do_sample": false,
+    "temperature_parameter_policy": "omit_not_active_under_greedy_decoding",
+    "top_p_parameter_policy": "omit_not_active_under_greedy_decoding",
+    "primary_generations_per_request": 1,
+    "max_new_tokens": 256,
+    "project_seed": 20260814
+  },
+  "message_serialization": "tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True) if official chat template is verified",
+  "request_contract": "UNVERIFIED",
+  "response_extraction_contract": "decoded_text",
+  "adapter_readiness": {
+    "status": "UNVERIFIED",
+    "notes": "No secrets, endpoint URLs with credentials, HF_TOKEN values, or RunPod API token values may be stored here."
+  },
+  "centaur_choice_convention_audit": {
+    "recommendation_exists": "UNVERIFIED",
+    "technically_required": "unknown",
+    "evidence_source_note": "UNVERIFIED",
+    "would_alter_frozen_phase6d_semantic_prompt": "UNVERIFIED",
+    "decision_for_primary_experiment": "retain_common_phase6d_prompt_until_technical_requirement_is_verified"
+  }
+}

@@ -27,7 +27,7 @@ def main() -> int:
     scaffold["PRODUCTION_INFERENCE_READY"] = False
     if args.output:
         write_json(resolve(args.output), scaffold)
-    print(json.dumps({"qmul_valid": qmul["valid"], "qmul_execution_architectures_verified": qmul.get("execution_architectures_verified", False), "qmul_production_config_verified": qmul.get("production_config_verified", False), "qmul_backend_verified": qmul.get("backend_verified", False), "runpod_valid": runpod["valid"], "runpod_backend_verified": runpod.get("backend_verified", False), "can_freeze_final_production_registry": scaffold["can_freeze_final_production_registry"], "PRODUCTION_INFERENCE_READY": False}, indent=2))
+    print(json.dumps({"qmul_valid": qmul["valid"], "qmul_execution_architectures_verified": qmul.get("execution_architectures_verified", False), "qmul_production_config_verified": qmul.get("production_config_verified", False), "qmul_backend_verified": qmul.get("backend_verified", False), "runpod_valid": runpod["valid"], "runpod_execution_architecture_verified": runpod.get("execution_architectures_verified", False), "runpod_production_config_verified": runpod.get("production_config_verified", False), "runpod_backend_verified": runpod.get("backend_verified", False), "can_freeze_final_production_registry": scaffold["can_freeze_final_production_registry"], "PRODUCTION_INFERENCE_READY": False}, indent=2))
     return 0 if qmul.get("backend_verified") and runpod.get("backend_verified") else 1
 
 
