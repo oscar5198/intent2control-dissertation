@@ -50,6 +50,6 @@ python llm-experiments/scripts/import_phase6g2_remote_verification.py --qmul llm
 
 - `SCIENTIFIC_MODEL_IDENTITIES_SELECTED`: `true`
 - `EXACT_DEPLOYMENT_IDENTITIES_VERIFIED`: `false`
-- `QMUL_BACKENDS_VERIFIED`: `false`
+- `QMUL_BACKENDS_VERIFIED`: `true`
 - `RUNPOD_CENTAUR_VERIFIED`: `false`
 - `PRODUCTION_INFERENCE_READY`: `false`

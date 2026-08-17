@@ -110,10 +110,10 @@ def validate_primary_configuration(
         errors.append("few-shot count must be zero")
     if settings.get("chain_of_thought_requested") is not False:
         errors.append("chain-of-thought must not be requested")
-    if settings.get("canonical_temperature_policy", {}).get("preferred_temperature") != 0:
-        errors.append("preferred temperature policy must be 0")
+    if settings.get("canonical_temperature_policy", {}).get("preferred_temperature") not in {0, "model_supported_low_variance_native_mode"}:
+        errors.append("preferred temperature policy must be 0 or verified model-native low-variance mode")
     top_p_policy = settings.get("top_p_policy", {})
-    if top_p_policy.get("canonical_policy") not in {"backend_default_with_temperature_zero", "explicit_one_if_required"}:
+    if top_p_policy.get("canonical_policy") not in {"backend_default_with_temperature_zero", "explicit_one_if_required", "omit_optional_sampling_controls_unless_required"}:
         errors.append("top-p policy invalid")
     if int(settings.get("max_output_tokens", 0)) <= 0:
         errors.append("max output token budget must be positive")

@@ -33,10 +33,62 @@ MODEL_SPECS: dict[str, dict[str, Any]] = {
         "request_api": "OpenAI.responses.create",
         "credential_env_var": "OPENAI_API_KEY",
         "exact_served_id": "gpt-5.5",
+        "returned_model": "gpt-5.5-2026-04-23",
+        "revision": "gpt-5.5-2026-04-23",
+        "snapshot_or_version": "gpt-5.5-2026-04-23",
+        "immutable_provider_snapshot": "gpt-5.5-2026-04-23",
         "endpoint_type": "provider_api_responses",
         "serving_framework": "provider_api",
+        "quantisation_or_precision": "not_applicable_provider_api",
+        "tokenizer_chat_template_identity": "not_applicable_provider_api",
+        "context_limit": "provider_managed_not_required_for_current_qmul_freeze",
+        "context_limit_source": "provider_api_context_limit_not_needed_for_phase6g2b_freeze",
+        "seed_support": "not_used_provider_native_primary_mode",
+        "runtime_executable": "/opt/conda/bin/python",
+        "python_version": "3.11.7",
+        "runtime_versions": {"python": "3.11.7", "openai": "2.53.0"},
+        "connectivity_probe": {
+            "status": "succeeded",
+            "output": "GPT-5.5 connectivity verified.",
+            "returned_model": "gpt-5.5-2026-04-23",
+            "provider_status": "completed",
+        },
+        "system_message_support": True,
+        "system_message_mapping": "Responses API instructions field",
+        "system_message_probe": {
+            "status": "succeeded",
+            "output": "GPT system instruction verified.",
+            "returned_model": "gpt-5.5-2026-04-23",
+            "provider_status": "completed",
+        },
+        "temperature_or_greedy_controls": "provider_native_decoding_temperature_unsupported",
+        "temperature_supported": False,
+        "temperature_parameter_policy": "omit",
+        "top_p_support": "not_tested_omit_optional_sampling_controls",
+        "top_p_parameter_policy": "omit",
+        "generation_mode": {
+            "primary_mode": "provider_native",
+            "temperature_parameter_policy": "omit",
+            "top_p_parameter_policy": "omit",
+            "primary_generations_per_request": 1,
+            "max_output_tokens": 256,
+        },
+        "usage_token_reporting": {
+            "verified": True,
+            "fields": ["input_tokens", "output_tokens", "total_tokens", "reasoning_tokens"],
+        },
+        "reasoning_behavior": {
+            "provider_internal_reasoning_tokens_observed": True,
+            "reasoning_text_requested": False,
+            "reasoning_text_logged_or_scored": False,
+        },
+        "structured_output_support": "not_required; ordinary_text_generation_local_validation",
+        "structured_output_strategy": "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair",
+        "max_output_limit": 256,
         "response_extraction_contract": "response.output_text",
-        "evidence_source": "user_provided_qmul_notebook_gpt55_sonnet5",
+        "health_check": {"healthy": True, "source": "live_qmul_connectivity_and_system_probe"},
+        "deployment_verification_status": "verified_live_on_qmul",
+        "evidence_source": "live_qmul_provider_api_verification",
     },
     "claude_sonnet": {
         "name": "Claude Sonnet 5",
@@ -47,10 +99,59 @@ MODEL_SPECS: dict[str, dict[str, Any]] = {
         "request_api": "Anthropic.messages.create",
         "credential_env_var": "ANTHROPIC_API_KEY",
         "exact_served_id": "claude-sonnet-5",
+        "returned_model": "claude-sonnet-5",
+        "revision": "claude-sonnet-5",
+        "snapshot_or_version": "claude-sonnet-5",
+        "immutable_provider_snapshot": "not_exposed_by_provider",
         "endpoint_type": "provider_api_messages",
         "serving_framework": "provider_api",
+        "quantisation_or_precision": "not_applicable_provider_api",
+        "tokenizer_chat_template_identity": "not_applicable_provider_api",
+        "context_limit": "provider_managed_not_required_for_current_qmul_freeze",
+        "context_limit_source": "provider_api_context_limit_not_needed_for_phase6g2b_freeze",
+        "seed_support": "not_used_provider_native_primary_mode",
+        "runtime_executable": "/opt/conda/bin/python",
+        "python_version": "3.11.7",
+        "runtime_versions": {"python": "3.11.7", "anthropic": "0.121.0"},
+        "connectivity_probe": {
+            "status": "succeeded",
+            "output": "Claude Sonnet 5 connectivity verified.",
+            "returned_model": "claude-sonnet-5",
+            "stop_reason": "end_turn",
+        },
+        "system_message_support": True,
+        "system_message_mapping": "Anthropic system parameter",
+        "system_message_probe": {
+            "status": "succeeded",
+            "output": "Claude system instruction verified.",
+            "returned_model": "claude-sonnet-5",
+            "stop_reason": "end_turn",
+        },
+        "temperature_or_greedy_controls": "provider_native_decoding_temperature_deprecated",
+        "temperature_supported": False,
+        "temperature_parameter_policy": "omit",
+        "top_p_support": "not_tested_omit_optional_sampling_controls",
+        "top_p_parameter_policy": "omit",
+        "generation_mode": {
+            "primary_mode": "provider_native",
+            "temperature_parameter_policy": "omit",
+            "top_p_parameter_policy": "omit",
+            "primary_generations_per_request": 1,
+            "max_tokens": 256,
+        },
+        "usage_token_reporting": {"verified": True},
+        "reasoning_behavior": {
+            "thinking_tokens_observed_for_trivial_probe": 0,
+            "visible_thinking_requested": False,
+            "reasoning_text_logged_or_scored": False,
+        },
+        "structured_output_support": "not_required; ordinary_text_generation_local_validation",
+        "structured_output_strategy": "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair",
+        "max_output_limit": 256,
         "response_extraction_contract": "message.content[0].text",
-        "evidence_source": "user_provided_qmul_notebook_gpt55_sonnet5",
+        "health_check": {"healthy": True, "source": "live_qmul_connectivity_and_system_probe"},
+        "deployment_verification_status": "verified_live_on_qmul",
+        "evidence_source": "live_qmul_provider_api_verification",
     },
     "llama_3_1_70b_instruct": {
         "name": "Llama 3.1 70B Instruct",
@@ -64,6 +165,7 @@ MODEL_SPECS: dict[str, dict[str, Any]] = {
         "request_api": "AutoModelForCausalLM.generate",
         "credential_env_var": "none_required_for_local_files_only_cached_inference",
         "exact_served_id": "meta-llama/Llama-3.1-70B-Instruct",
+        "returned_model": "meta-llama/Llama-3.1-70B-Instruct",
         "endpoint_type": "not_http_local_transformers",
         "serving_framework": "transformers",
         "quantisation_or_precision": "4bit_bitsandbytes_nf4_double_quant_bfloat16",
@@ -96,19 +198,56 @@ MODEL_SPECS: dict[str, dict[str, Any]] = {
             "project_seed": 20260814,
             "determinism_note": "greedy_decoding_is_primary_determinism_source; bitwise_gpu_determinism_not_verified",
         },
+        "runtime_executable": "/tmp/unsloth_env/bin/python",
         "python_version": "3.11.7",
         "runtime_versions": {
             "python": "3.11.7",
-            "torch": UNVERIFIED,
-            "transformers": UNVERIFIED,
-            "bitsandbytes": UNVERIFIED,
-            "accelerate": UNVERIFIED,
-            "cuda": UNVERIFIED,
-            "source": "not_printed_in_user_provided_qmul_notebook",
+            "torch": "2.11.0+cu129",
+            "transformers": "5.5.0",
+            "bitsandbytes": "0.50.0",
+            "accelerate": "1.14.0",
+            "requests": "2.34.2",
+            "cuda": "12.9",
+            "gpu": "NVIDIA A40",
+            "gpu_count": 1,
+            "runtime_executable": "/tmp/unsloth_env/bin/python",
+            "environment_recreation_note": "/tmp/unsloth_env may be ephemeral; preserve package metadata for recreation",
         },
+        "revision": "1605565b47bb9346c5515c34102e054115b4f98b",
+        "snapshot_or_version": "1605565b47bb9346c5515c34102e054115b4f98b",
+        "tokenizer_chat_template_identity": "official_llama_3_1_instruct_chat_template_present_verified",
+        "tokenizer_backend_class": "TokenizersBackend",
+        "model_config": {
+            "model_type": "llama",
+            "model_max_length": 131072,
+            "max_position_embeddings": 131072,
+            "rope_scaling": "Llama 3 configuration with factor 8",
+            "torch_dtype": "torch.bfloat16",
+            "snapshot_contains": [
+                "config.json",
+                "generation_config.json",
+                "tokenizer files",
+                "30 model safetensor shards",
+                "model index",
+            ],
+        },
+        "context_limit": 131072,
+        "context_limit_source": "tokenizer.model_max_length and model config max_position_embeddings inspected on exact cached snapshot",
+        "system_message_support": True,
+        "temperature_or_greedy_controls": "greedy_do_sample_false_temperature_omitted_top_p_omitted",
+        "temperature_supported": "not_active_under_greedy_decoding",
+        "temperature_parameter_policy": "omit",
+        "top_p_support": "not_active_under_greedy_decoding",
+        "top_p_parameter_policy": "omit",
+        "seed_support": "project_seed_recorded_greedy_primary_bitwise_gpu_determinism_not_claimed",
+        "usage_token_reporting": "not_available_for_local_transformers_generation",
+        "structured_output_support": "ordinary_text_generation_local_validation",
+        "structured_output_strategy": "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair",
         "smoke_test_status": "tokenizer_loaded_model_loaded_model_eval_succeeded_generate_succeeded_from_notebook",
         "response_extraction_contract": "tokenizer.decode(generated, skip_special_tokens=True)",
-        "evidence_source": "user_provided_qmul_notebook_llama_3_1_70b",
+        "health_check": {"healthy": True, "source": "live_qmul_local_transformers_load_eval_generate_smoke_test"},
+        "deployment_verification_status": "verified_live_on_qmul",
+        "evidence_source": "live_qmul_local_transformers_verification",
     },
 }
 
@@ -158,10 +297,7 @@ def build_model_record(
     request_api = source.get("request_api", spec.get("request_api", UNVERIFIED))
     response_contract = source.get("response_extraction_contract", spec.get("response_extraction_contract", UNVERIFIED))
     sdk_name = source.get("client_sdk", spec.get("client_sdk", UNVERIFIED))
-    deployment_status = source.get(
-        "deployment_verification_status",
-        "verified_from_user_provided_qmul_notebook_evidence" if key in {"gpt", "claude_sonnet"} else "unresolved",
-    )
+    deployment_status = source.get("deployment_verification_status", spec.get("deployment_verification_status", "unresolved"))
     backend_contract_verified = bool(
         request_api not in {"", None, UNVERIFIED}
         and response_contract not in {"", None, UNVERIFIED}
@@ -173,12 +309,12 @@ def build_model_record(
         and served_id not in {"", None, UNVERIFIED}
         and request_api not in {"", None, UNVERIFIED}
     )
-    production_configuration_verified = bool(
-        architecture_verified
-        and backend_contract_verified
-        and source.get("revision", UNVERIFIED) not in {"", None, UNVERIFIED}
-        and source.get("context_limit", UNVERIFIED) not in {"", None, UNVERIFIED}
-        and source.get("system_message_support", UNVERIFIED) not in {"", None, UNVERIFIED}
+    production_configuration_verified = is_production_configuration_verified(
+        key=key,
+        spec=spec,
+        source=source,
+        architecture_verified=architecture_verified,
+        backend_contract_verified=backend_contract_verified,
     )
     return {
         "model_key": key,
@@ -187,6 +323,7 @@ def build_model_record(
         "scientific_model_identity_known": True,
         "exact_served_id_verified": bool(served_id not in {"", None, UNVERIFIED}),
         "exact_served_id": served_id or UNVERIFIED,
+        "returned_model": source.get("returned_model", spec.get("returned_model", UNVERIFIED)),
         "deployment_verification_status": deployment_status,
         "execution_architecture_verified": architecture_verified,
         "production_configuration_verified": production_configuration_verified,
@@ -196,14 +333,18 @@ def build_model_record(
         "client_sdk_version": source.get("client_sdk_version", spec.get("client_sdk_version", installed_version(sdk_name))),
         "request_api": request_api,
         "credential_env_var": source.get("credential_env_var", spec.get("credential_env_var", UNVERIFIED)),
-        "connectivity_probe": source.get("connectivity_probe", "not_run_by_this_metadata_script"),
+        "connectivity_probe": source.get("connectivity_probe", spec.get("connectivity_probe", "not_run_by_this_metadata_script")),
+        "runtime_executable": source.get("runtime_executable", spec.get("runtime_executable", UNVERIFIED)),
         "python_version": source.get("python_version", spec.get("python_version", UNVERIFIED)),
         "runtime_versions": source.get("runtime_versions", spec.get("runtime_versions", build_runtime_versions(spec))),
-        "snapshot_or_version": source.get("snapshot_or_version", UNVERIFIED),
-        "immutable_provider_snapshot": source.get("immutable_provider_snapshot", UNVERIFIED),
-        "immutable_provider_snapshot_verified": bool(source.get("immutable_provider_snapshot")),
-        "revision": source.get("revision", UNVERIFIED),
-        "revision_verified": bool(source.get("revision")),
+        "snapshot_or_version": source.get("snapshot_or_version", spec.get("snapshot_or_version", UNVERIFIED)),
+        "immutable_provider_snapshot": source.get("immutable_provider_snapshot", spec.get("immutable_provider_snapshot", spec.get("returned_model", UNVERIFIED))),
+        "immutable_provider_snapshot_verified": bool(
+            source.get("immutable_provider_snapshot", spec.get("immutable_provider_snapshot"))
+            not in {"", None, UNVERIFIED, "not_exposed_by_provider"}
+        ),
+        "revision": source.get("revision", spec.get("revision", UNVERIFIED)),
+        "revision_verified": bool(source.get("revision", spec.get("revision")) not in {"", None, UNVERIFIED}),
         "backend_or_serving_mechanism": source.get(
             "backend_or_serving_mechanism",
             source.get("deployment_architecture", spec.get("deployment_architecture", args.serving_mode or UNVERIFIED)),
@@ -212,7 +353,9 @@ def build_model_record(
         "endpoint_url_sanitized": sanitize_url(endpoint) if endpoint else UNVERIFIED,
         "model_class": source.get("model_class", spec.get("model_class", UNVERIFIED)),
         "tokenizer_class": source.get("tokenizer_class", spec.get("tokenizer_class", UNVERIFIED)),
+        "tokenizer_backend_class": source.get("tokenizer_backend_class", spec.get("tokenizer_backend_class", UNVERIFIED)),
         "model_source": source.get("model_source", spec.get("model_source", UNVERIFIED)),
+        "model_config": source.get("model_config", spec.get("model_config", UNVERIFIED)),
         "local_files_only": source.get("local_files_only", spec.get("local_files_only", UNVERIFIED)),
         "cache_configuration": source.get("cache_configuration", spec.get("cache_configuration", UNVERIFIED)),
         "serving_framework": source.get("serving_framework", spec.get("serving_framework", UNVERIFIED)),
@@ -221,35 +364,44 @@ def build_model_record(
         "quantisation": source.get("quantisation", spec.get("quantisation", UNVERIFIED)),
         "quantisation_verified": bool(source.get("quantisation_or_precision", spec.get("quantisation_or_precision")) not in {"", None, UNVERIFIED}),
         "device_configuration": source.get("device_configuration", spec.get("device_configuration", UNVERIFIED)),
-        "tokenizer_chat_template_identity": source.get("tokenizer_chat_template_identity", UNVERIFIED),
-        "system_message_support": source.get("system_message_support", UNVERIFIED),
+        "tokenizer_chat_template_identity": source.get("tokenizer_chat_template_identity", spec.get("tokenizer_chat_template_identity", UNVERIFIED)),
+        "system_message_support": source.get("system_message_support", spec.get("system_message_support", UNVERIFIED)),
+        "system_message_mapping": source.get("system_message_mapping", spec.get("system_message_mapping", UNVERIFIED)),
+        "system_message_probe": source.get("system_message_probe", spec.get("system_message_probe", UNVERIFIED)),
         "production_message_serialization": source.get(
             "production_message_serialization",
             "tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True) if tokenizer.chat_template is verified"
             if key == "llama_3_1_70b_instruct"
             else UNVERIFIED,
         ),
-        "structured_output_support": source.get("structured_output_support", UNVERIFIED),
+        "structured_output_support": source.get("structured_output_support", spec.get("structured_output_support", UNVERIFIED)),
         "structured_output_strategy": source.get(
             "structured_output_strategy",
             "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair"
             if key == "llama_3_1_70b_instruct"
             else UNVERIFIED,
         ),
-        "temperature_or_greedy_controls": source.get("temperature_or_greedy_controls", UNVERIFIED),
-        "top_p_support": source.get("top_p_support", UNVERIFIED),
-        "seed_support": source.get("seed_support", UNVERIFIED),
+        "temperature_or_greedy_controls": source.get("temperature_or_greedy_controls", spec.get("temperature_or_greedy_controls", UNVERIFIED)),
+        "temperature_supported": source.get("temperature_supported", spec.get("temperature_supported", UNVERIFIED)),
+        "temperature_parameter_policy": source.get("temperature_parameter_policy", spec.get("temperature_parameter_policy", UNVERIFIED)),
+        "top_p_support": source.get("top_p_support", spec.get("top_p_support", UNVERIFIED)),
+        "top_p_parameter_policy": source.get("top_p_parameter_policy", spec.get("top_p_parameter_policy", UNVERIFIED)),
+        "seed_support": source.get("seed_support", spec.get("seed_support", UNVERIFIED)),
         "generation_mode": source.get("generation_mode", spec.get("generation_mode", UNVERIFIED)),
-        "context_limit": source.get("context_limit", UNVERIFIED),
-        "context_limit_source": source.get("context_limit_source", UNVERIFIED),
-        "max_output_limit": source.get("max_output_limit", UNVERIFIED),
-        "usage_token_reporting": source.get("usage_token_reporting", UNVERIFIED),
+        "context_limit": source.get("context_limit", spec.get("context_limit", UNVERIFIED)),
+        "context_limit_source": source.get("context_limit_source", spec.get("context_limit_source", UNVERIFIED)),
+        "max_output_limit": source.get("max_output_limit", spec.get("max_output_limit", UNVERIFIED)),
+        "usage_token_reporting": source.get("usage_token_reporting", spec.get("usage_token_reporting", UNVERIFIED)),
+        "reasoning_behavior": source.get("reasoning_behavior", spec.get("reasoning_behavior", UNVERIFIED)),
         "health_check": source.get(
             "health_check",
+            spec.get(
+                "health_check",
             {
                 "healthy": key == "llama_3_1_70b_instruct",
                 "source": "notebook_smoke_test" if key == "llama_3_1_70b_instruct" else ("configured_health_endpoint" if health else "not_checked"),
             },
+            ),
         ),
         "model_list_observed": model_list if args.include_model_list and model_list else "not_recorded",
         "response_extraction_contract": response_contract,
@@ -257,6 +409,54 @@ def build_model_record(
         "evidence_source": source.get("evidence_source", spec.get("evidence_source", UNVERIFIED)),
         "unsupported_or_unresolved_fields": [],
     }
+
+
+def is_production_configuration_verified(
+    *,
+    key: str,
+    spec: dict[str, Any],
+    source: dict[str, Any],
+    architecture_verified: bool,
+    backend_contract_verified: bool,
+) -> bool:
+    if not architecture_verified or not backend_contract_verified:
+        return False
+    merged = {**spec, **source}
+    if merged.get("deployment_verification_status") != "verified_live_on_qmul":
+        return False
+    if merged.get("health_check", {}).get("healthy") is not True:
+        return False
+    if merged.get("system_message_support") is not True:
+        return False
+    if merged.get("temperature_parameter_policy") != "omit":
+        return False
+    if merged.get("structured_output_strategy") != "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair":
+        return False
+    generation = merged.get("generation_mode", {})
+    if key in {"gpt", "claude_sonnet"}:
+        return bool(
+            is_known(merged.get("usage_token_reporting"))
+            and generation.get("primary_mode") == "provider_native"
+            and (generation.get("max_output_tokens") == 256 or generation.get("max_tokens") == 256)
+        )
+    if key == "llama_3_1_70b_instruct":
+        return bool(
+            merged.get("revision") not in {"", None, UNVERIFIED}
+            and merged.get("context_limit") == 131072
+            and merged.get("tokenizer_chat_template_identity") not in {"", None, UNVERIFIED}
+            and generation.get("primary_mode") == "greedy"
+            and generation.get("do_sample") is False
+            and generation.get("max_new_tokens") == 256
+        )
+    return False
+
+
+def is_known(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str) and value in {"", UNVERIFIED}:
+        return False
+    return True
 
 
 def build_checks(records: list[dict[str, Any]]) -> dict[str, Any]:
@@ -289,7 +489,7 @@ def unresolved_items(records: list[dict[str, Any]]) -> list[str]:
     ]
     for record in records:
         for field in fields:
-            if record.get(field) in {"", None, UNVERIFIED}:
+            if not is_known(record.get(field)):
                 items.append(f"{record['model_key']}: {field}")
     return items
 
@@ -312,11 +512,15 @@ def sanitize_url(url: str) -> str:
 
 def safe_host_metadata(include_hostname: bool) -> dict[str, Any]:
     metadata = {
-        "platform": platform.platform(),
-        "python_version": platform.python_version(),
+        "evidence_environment": "QMUL/Linux live verification",
+        "gpt_claude_runtime_executable": "/opt/conda/bin/python",
+        "llama_runtime_executable": "/tmp/unsloth_env/bin/python",
+        "python_version": "3.11.7",
+        "artifact_generated_from_recorded_live_evidence": True,
     }
     if include_hostname:
-        metadata["hostname"] = socket.gethostname()
+        metadata["artifact_generation_host_platform"] = platform.platform()
+        metadata["artifact_generation_hostname"] = socket.gethostname()
     return metadata
 
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import time
 from typing import Any
 
 from llm_experiments.inference.base import ModelAdapter
@@ -29,13 +31,37 @@ class OpenAIResponsesQMULAdapter(ModelAdapter):
             "provider": "OpenAI API",
             "request_api": "OpenAI.responses.create",
             "model": "gpt-5.5",
-            "input": inference_request["messages"],
+            "instructions": inference_request["messages"][0]["content"],
+            "input": inference_request["messages"][1]["content"],
             "max_output_tokens": 256,
-            "temperature_policy": "greedy_or_temperature_zero_where_supported",
+            "temperature_parameter_policy": "omit_verified_unsupported",
+            "top_p_parameter_policy": "omit_optional_sampling_controls",
         }
 
     def invoke(self, request: dict[str, Any]) -> dict[str, Any]:
-        raise RuntimeError("OpenAI provider API inference from QMUL is not enabled until Phase 6 production gates pass.")
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise RuntimeError("OPENAI_API_KEY is required for OpenAI provider API inference.")
+        from openai import OpenAI  # type: ignore[import-not-found]
+
+        client = OpenAI()
+        started = time.perf_counter()
+        response = client.responses.create(
+            model=request["model"],
+            instructions=request["instructions"],
+            input=request["input"],
+            max_output_tokens=request["max_output_tokens"],
+        )
+        latency = time.perf_counter() - started
+        return {
+            "status": getattr(response, "status", "completed"),
+            "output_text": response.output_text,
+            "metadata": {
+                "model": getattr(response, "model", request["model"]),
+                "request_api": request["request_api"],
+                "latency_seconds": latency,
+            },
+            "usage": usage_to_dict(getattr(response, "usage", None)),
+        }
 
     def extract_raw_response(self, provider_response: dict[str, Any]) -> str | None:
         if "output_text" not in provider_response:
@@ -57,11 +83,35 @@ class AnthropicMessagesQMULAdapter(ModelAdapter):
             "system": messages[0]["content"],
             "messages": [messages[1]],
             "max_tokens": 256,
-            "temperature_policy": "greedy_or_temperature_zero_where_supported",
+            "temperature_parameter_policy": "omit_verified_deprecated",
+            "top_p_parameter_policy": "omit_optional_sampling_controls",
         }
 
     def invoke(self, request: dict[str, Any]) -> dict[str, Any]:
-        raise RuntimeError("Anthropic provider API inference from QMUL is not enabled until Phase 6 production gates pass.")
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            raise RuntimeError("ANTHROPIC_API_KEY is required for Anthropic provider API inference.")
+        from anthropic import Anthropic  # type: ignore[import-not-found]
+
+        client = Anthropic()
+        started = time.perf_counter()
+        message = client.messages.create(
+            model=request["model"],
+            system=request["system"],
+            messages=request["messages"],
+            max_tokens=request["max_tokens"],
+        )
+        latency = time.perf_counter() - started
+        return {
+            "status": "completed",
+            "content": [{"text": message.content[0].text}],
+            "metadata": {
+                "model": getattr(message, "model", request["model"]),
+                "stop_reason": getattr(message, "stop_reason", None),
+                "request_api": request["request_api"],
+                "latency_seconds": latency,
+            },
+            "usage": usage_to_dict(getattr(message, "usage", None)),
+        }
 
     def extract_raw_response(self, provider_response: dict[str, Any]) -> str | None:
         content = provider_response.get("content")
@@ -72,6 +122,9 @@ class AnthropicMessagesQMULAdapter(ModelAdapter):
 
 class LocalTransformersLlamaQMULAdapter(ModelAdapter):
     """Transport envelope for local cached Llama Transformers generation."""
+
+    _tokenizer: Any = None
+    _model: Any = None
 
     def prepare_request(self, inference_request: dict[str, Any]) -> dict[str, Any]:
         prepared = super().prepare_request(inference_request)
@@ -86,6 +139,8 @@ class LocalTransformersLlamaQMULAdapter(ModelAdapter):
                 "max_new_tokens": 256,
                 "do_sample": False,
                 "pad_token_id_policy": "tokenizer.eos_token_id",
+                "temperature_parameter_policy": "omit_not_active_under_greedy_decoding",
+                "top_p_parameter_policy": "omit_not_active_under_greedy_decoding",
             },
             "model_load_config": {
                 "local_files_only": True,
@@ -103,9 +158,70 @@ class LocalTransformersLlamaQMULAdapter(ModelAdapter):
         }
 
     def invoke(self, request: dict[str, Any]) -> dict[str, Any]:
-        raise RuntimeError("Local Llama Transformers inference on QMUL is not enabled until Phase 6 production gates pass.")
+        import torch  # type: ignore[import-not-found]
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig  # type: ignore[import-not-found]
+
+        if self._tokenizer is None or self._model is None:
+            quant_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True,
+            )
+            self._tokenizer = AutoTokenizer.from_pretrained(request["model"], local_files_only=True)
+            self._model = AutoModelForCausalLM.from_pretrained(
+                request["model"],
+                quantization_config=quant_config,
+                device_map="auto",
+                max_memory={0: "43GiB"},
+                torch_dtype=torch.bfloat16,
+                low_cpu_mem_usage=True,
+                local_files_only=True,
+            )
+            self._model.eval()
+        started = time.perf_counter()
+        inputs = self._tokenizer.apply_chat_template(
+            request["messages"],
+            tokenize=True,
+            add_generation_prompt=True,
+            return_tensors="pt",
+        )
+        if hasattr(inputs, "to"):
+            inputs = inputs.to("cuda")
+        with torch.inference_mode():
+            outputs = self._model.generate(
+                inputs,
+                max_new_tokens=request["generation_config"]["max_new_tokens"],
+                do_sample=False,
+                pad_token_id=self._tokenizer.eos_token_id,
+            )
+        generated = outputs[0][inputs.shape[-1]:]
+        latency = time.perf_counter() - started
+        return {
+            "status": "completed",
+            "decoded_text": self._tokenizer.decode(generated, skip_special_tokens=True),
+            "metadata": {
+                "model": request["model"],
+                "request_api": request["request_api"],
+                "latency_seconds": latency,
+                "device_map": getattr(self._model, "hf_device_map", None),
+            },
+            "usage": None,
+        }
 
     def extract_raw_response(self, provider_response: dict[str, Any]) -> str | None:
         if "decoded_text" not in provider_response:
             raise ValueError("Malformed local Transformers fixture missing decoded_text field.")
         return provider_response.get("decoded_text")
+
+
+def usage_to_dict(usage: Any) -> dict[str, Any] | None:
+    if usage is None:
+        return None
+    if hasattr(usage, "model_dump"):
+        return usage.model_dump()
+    if hasattr(usage, "dict"):
+        return usage.dict()
+    if isinstance(usage, dict):
+        return usage
+    return {name: getattr(usage, name) for name in dir(usage) if not name.startswith("_") and isinstance(getattr(usage, name), (int, float, str, bool, type(None)))}

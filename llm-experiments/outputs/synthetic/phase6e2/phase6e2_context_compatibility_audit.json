@@ -22,7 +22,7 @@
     {
       "model_key": "llama_3_1_70b_instruct",
       "maximum_synthetic_prompt_tokens": "UNVERIFIED",
-      "context_limit_tokens": "UNVERIFIED",
+      "context_limit_tokens": 131072,
       "max_output_tokens": 256,
       "remaining_token_margin": null,
       "compatibility_status": "UNVERIFIED"

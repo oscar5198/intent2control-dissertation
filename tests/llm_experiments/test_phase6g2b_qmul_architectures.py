@@ -37,11 +37,11 @@ def test_qmul_artifact_distinguishes_architecture_from_production_freeze() -> No
 
     assert validation["valid"] is True
     assert validation["execution_architectures_verified"] is True
-    assert validation["production_config_verified"] is False
-    assert validation["backend_verified"] is False
+    assert validation["production_config_verified"] is True
+    assert validation["backend_verified"] is True
     assert artifact["QMUL_EXECUTION_ARCHITECTURES_VERIFIED"] is True
-    assert artifact["QMUL_PRODUCTION_CONFIG_VERIFIED"] is False
-    assert artifact["overall_qmul_backend_verified"] is False
+    assert artifact["QMUL_PRODUCTION_CONFIG_VERIFIED"] is True
+    assert artifact["overall_qmul_backend_verified"] is True
 
 
 def test_llama_local_transformers_quantized_deployment_recorded() -> None:
@@ -49,6 +49,8 @@ def test_llama_local_transformers_quantized_deployment_recorded() -> None:
     llama = records["llama_3_1_70b_instruct"]
 
     assert llama["exact_served_id"] == "meta-llama/Llama-3.1-70B-Instruct"
+    assert llama["revision"] == "1605565b47bb9346c5515c34102e054115b4f98b"
+    assert llama["revision_verified"] is True
     assert llama["deployment_architecture"] == "local_huggingface_transformers_inference_from_qmul_runtime"
     assert llama["backend_provider"] == "local Hugging Face Transformers"
     assert llama["model_class"] == "AutoModelForCausalLM"
@@ -61,15 +63,18 @@ def test_llama_local_transformers_quantized_deployment_recorded() -> None:
     assert llama["generation_mode"]["do_sample"] is False
     assert llama["generation_mode"]["primary_mode"] == "greedy"
     assert llama["generation_mode"]["max_new_tokens"] == 256
+    assert llama["context_limit"] == 131072
+    assert llama["tokenizer_chat_template_identity"] == "official_llama_3_1_instruct_chat_template_present_verified"
+    assert llama["runtime_versions"]["torch"] == "2.11.0+cu129"
+    assert llama["runtime_versions"]["transformers"] == "5.5.0"
+    assert llama["runtime_versions"]["bitsandbytes"] == "0.50.0"
 
 
-def test_llama_unresolved_fields_remain_explicit() -> None:
+def test_llama_production_fields_are_verified() -> None:
     llama = {row["model_key"]: row for row in load_json(ARTIFACT)["model_records"]}["llama_3_1_70b_instruct"]
 
-    assert llama["revision_verified"] is False
-    assert llama["revision"] == "UNVERIFIED"
-    assert llama["tokenizer_chat_template_identity"] == "UNVERIFIED"
-    assert llama["context_limit"] == "UNVERIFIED"
+    assert llama["production_configuration_verified"] is True
+    assert llama["system_message_support"] is True
     assert "apply_chat_template" in llama["production_message_serialization"]
     assert llama["structured_output_strategy"] == "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair"
 
@@ -81,10 +86,20 @@ def test_gpt_and_claude_provider_architectures_remain_intact() -> None:
     assert records["gpt"]["backend_provider"] == "OpenAI API"
     assert records["gpt"]["request_api"] == "OpenAI.responses.create"
     assert records["gpt"]["credential_env_var"] == "OPENAI_API_KEY"
+    assert records["gpt"]["returned_model"] == "gpt-5.5-2026-04-23"
+    assert records["gpt"]["temperature_supported"] is False
+    assert records["gpt"]["temperature_parameter_policy"] == "omit"
+    assert records["gpt"]["usage_token_reporting"]["verified"] is True
+    assert records["gpt"]["system_message_mapping"] == "Responses API instructions field"
     assert records["claude_sonnet"]["deployment_architecture"] == "provider_api_invoked_from_qmul_runtime"
     assert records["claude_sonnet"]["backend_provider"] == "Anthropic API"
     assert records["claude_sonnet"]["request_api"] == "Anthropic.messages.create"
     assert records["claude_sonnet"]["credential_env_var"] == "ANTHROPIC_API_KEY"
+    assert records["claude_sonnet"]["returned_model"] == "claude-sonnet-5"
+    assert records["claude_sonnet"]["temperature_supported"] is False
+    assert records["claude_sonnet"]["temperature_parameter_policy"] == "omit"
+    assert records["claude_sonnet"]["usage_token_reporting"]["verified"] is True
+    assert records["claude_sonnet"]["system_message_mapping"] == "Anthropic system parameter"
 
 
 def test_concrete_qmul_adapter_scaffolds_prepare_requests_but_do_not_invoke() -> None:
@@ -105,15 +120,21 @@ def test_concrete_qmul_adapter_scaffolds_prepare_requests_but_do_not_invoke() ->
 
     prepared = [adapter.prepare_request(sample) for adapter in adapters]
     assert prepared[0]["request_api"] == "OpenAI.responses.create"
+    assert prepared[0]["instructions"] == "system"
+    assert prepared[0]["input"] == "user"
+    assert "temperature" not in prepared[0]
     assert prepared[1]["request_api"] == "Anthropic.messages.create"
+    assert prepared[1]["system"] == "system"
+    assert prepared[1]["messages"] == [{"role": "user", "content": "user"}]
+    assert "temperature" not in prepared[1]
     assert prepared[2]["request_api"] == "AutoModelForCausalLM.generate"
     assert prepared[2]["generation_config"]["do_sample"] is False
     assert prepared[2]["generation_config"]["max_new_tokens"] == 256
-    for adapter, request in zip(adapters, prepared, strict=True):
+    for adapter, request in zip(adapters[:2], prepared[:2], strict=True):
         try:
             adapter.invoke(request)
         except RuntimeError as exc:
-            assert "not enabled" in str(exc)
+            assert "required" in str(exc)
         else:
             raise AssertionError("QMUL production adapter scaffold must not invoke real models in tests")
 

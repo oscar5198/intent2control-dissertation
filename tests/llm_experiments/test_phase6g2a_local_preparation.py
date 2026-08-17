@@ -107,7 +107,9 @@ def test_local_readiness_gates_keep_production_blocked() -> None:
     assert readiness["local_preparation_ready"] is True
     assert readiness["SCIENTIFIC_MODEL_IDENTITIES_SELECTED"] is True
     assert readiness["EXACT_DEPLOYMENT_IDENTITIES_VERIFIED"] is False
-    assert readiness["QMUL_BACKENDS_VERIFIED"] is False
+    assert readiness["QMUL_EXECUTION_ARCHITECTURES_VERIFIED"] is True
+    assert readiness["QMUL_PRODUCTION_CONFIG_VERIFIED"] is True
+    assert readiness["QMUL_BACKENDS_VERIFIED"] is True
     assert readiness["RUNPOD_CENTAUR_VERIFIED"] is False
     assert readiness["PRIMARY_INFERENCE_CONFIG_FROZEN"] is False
     assert readiness["PRODUCTION_INFERENCE_READY"] is False

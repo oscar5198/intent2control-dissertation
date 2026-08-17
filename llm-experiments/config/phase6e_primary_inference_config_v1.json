@@ -15,13 +15,13 @@
     "chain_of_thought_requested": false,
     "reasoning_output_scored": false,
     "canonical_temperature_policy": {
-      "preferred_temperature": 0,
-      "policy": "Use temperature 0 where technically supported; otherwise use the closest verified low-variance backend setting and document the exception.",
+      "preferred_temperature": "model_supported_low_variance_native_mode",
+      "policy": "Use each model's verified low-variance/native primary inference mode without tuning sampling controls for predictive performance. GPT-5.5 and Claude Sonnet 5 omit temperature because live QMUL probes showed the parameter is unsupported/deprecated. Llama uses greedy decoding with do_sample=false.",
       "chosen_for_quality": false
     },
     "top_p_policy": {
-      "canonical_policy": "backend_default_with_temperature_zero",
-      "explicit_value_if_required": 1,
+      "canonical_policy": "omit_optional_sampling_controls_unless_required",
+      "explicit_value_if_required": null,
       "chosen_for_quality": false
     },
     "seed_policy": {
@@ -44,7 +44,7 @@
   "freeze_gates": {
     "SCIENTIFIC_MODEL_IDENTITIES_SELECTED": true,
     "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": false,
-    "QMUL_BACKENDS_VERIFIED": false,
+    "QMUL_BACKENDS_VERIFIED": true,
     "RUNPOD_CENTAUR_VERIFIED": false,
     "MODEL_IDENTITIES_FROZEN": false,
     "INFERENCE_BACKENDS_VERIFIED": false,
@@ -58,9 +58,8 @@
     "Exact Centaur checkpoint/source/revision and RunPod deployment contract",
     "QMUL request/response contract and authentication requirements",
     "RunPod request/response contract and authentication requirements",
-    "Structured-output mechanism per backend",
-    "Tokenizer/context limits per model",
-    "Seed, temperature and top-p support per backend",
-    "Usage metadata and healthcheck availability"
+    "RunPod/Centaur structured-output and transport contract",
+    "RunPod/Centaur tokenizer/context limits",
+    "RunPod/Centaur usage metadata and healthcheck availability"
   ]
 }

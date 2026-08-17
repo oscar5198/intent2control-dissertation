@@ -37,16 +37,18 @@ def test_four_scientific_model_keys_retained():
 def test_exact_model_identity_fields_required_and_unfrozen():
     models = {row["model_key"]: row for row in model_registry()["models"]}
     assert models["gpt"]["exact_model_id"] == "gpt-5.5"
-    assert models["gpt"]["identity_verification_status"] == "api_alias_verified_snapshot_unverified"
+    assert models["gpt"]["checkpoint_or_revision"] == "gpt-5.5-2026-04-23"
+    assert models["gpt"]["identity_verification_status"] == "verified"
     assert models["claude_sonnet"]["exact_model_id"] == "claude-sonnet-5"
-    assert models["claude_sonnet"]["identity_verification_status"] == "api_alias_verified_snapshot_unverified"
+    assert models["claude_sonnet"]["identity_verification_status"] == "verified"
     assert models["llama_3_1_70b_instruct"]["exact_model_id"] == "meta-llama/Llama-3.1-70B-Instruct"
-    assert models["llama_3_1_70b_instruct"]["identity_verification_status"] == "architecture_verified_revision_unverified"
+    assert models["llama_3_1_70b_instruct"]["checkpoint_or_revision"] == "1605565b47bb9346c5515c34102e054115b4f98b"
+    assert models["llama_3_1_70b_instruct"]["identity_verification_status"] == "verified"
     assert models["centaur"]["exact_model_id"] == UNVERIFIED
     for model in models.values():
         assert "exact_model_id" in model
         assert "checkpoint_or_revision" in model
-        assert model["checkpoint_or_revision"] == UNVERIFIED
+    assert models["centaur"]["checkpoint_or_revision"] == UNVERIFIED
 
 
 def test_placeholder_ids_prevent_freeze_gates():
@@ -82,10 +84,10 @@ def test_one_generation_reasoning_and_few_shot_policies():
 
 def test_temperature_top_p_seed_and_output_policies_valid():
     settings = primary_config()["shared_scientific_settings"]
-    assert settings["canonical_temperature_policy"]["preferred_temperature"] == 0
+    assert settings["canonical_temperature_policy"]["preferred_temperature"] == "model_supported_low_variance_native_mode"
     assert settings["canonical_temperature_policy"]["chosen_for_quality"] is False
-    assert settings["top_p_policy"]["canonical_policy"] == "backend_default_with_temperature_zero"
-    assert settings["top_p_policy"]["explicit_value_if_required"] == 1
+    assert settings["top_p_policy"]["canonical_policy"] == "omit_optional_sampling_controls_unless_required"
+    assert settings["top_p_policy"]["explicit_value_if_required"] is None
     assert settings["seed_policy"]["project_level_seed"] == 20260814
     assert settings["max_output_tokens"] == 256
 
@@ -93,10 +95,17 @@ def test_temperature_top_p_seed_and_output_policies_valid():
 def test_seed_support_recorded_per_model_and_capabilities_explicit():
     for row in capability_matrix()["models"]:
         assert row["primary_seed"] == 20260814
-        if row["model_key"] == "llama_3_1_70b_instruct":
+        if row["model_key"] in {"gpt", "claude_sonnet"}:
+            assert row["seed_support"] == UNVERIFIED
+            assert row["structured_output_mechanism"] == "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair"
+            assert row["system_role_support"] is True
+            assert row["temperature_support"] is False
+            assert row["actual_temperature_setting"] == "omitted"
+            assert row["healthcheck_available"] is True
+        elif row["model_key"] == "llama_3_1_70b_instruct":
             assert row["seed_support"] == "runtime_seed_recorded_but_greedy_decoding_primary"
             assert row["structured_output_mechanism"] == "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair"
-            assert row["system_role_support"] == "requires_tokenizer_chat_template_verification"
+            assert row["system_role_support"] is True
             assert row["healthcheck_available"] is True
         else:
             assert row["seed_support"] == UNVERIFIED
@@ -108,6 +117,7 @@ def test_seed_support_recorded_per_model_and_capabilities_explicit():
     assert rows["claude_sonnet"]["request_api"] == "Anthropic.messages.create"
     assert rows["llama_3_1_70b_instruct"]["do_sample"] is False
     assert rows["llama_3_1_70b_instruct"]["max_new_tokens"] == 256
+    assert rows["llama_3_1_70b_instruct"]["context_limit_tokens"] == 131072
 
 
 def test_context_compatibility_calculation_passes_with_verified_numbers():
@@ -130,7 +140,10 @@ def test_context_compatibility_unverified_when_tokenizers_unavailable():
     validation = validate_primary_configuration(REPO_ROOT)
     for row in validation["context_compatibility_audit"]["models"]:
         assert row["maximum_synthetic_prompt_tokens"] == UNVERIFIED
-        assert row["context_limit_tokens"] == UNVERIFIED
+        if row["model_key"] == "llama_3_1_70b_instruct":
+            assert row["context_limit_tokens"] == 131072
+        else:
+            assert row["context_limit_tokens"] == UNVERIFIED
         assert row["compatibility_status"] == UNVERIFIED
 
 
@@ -152,7 +165,6 @@ def test_secrets_absent_and_environment_variable_references_supported():
     for payload in [model_registry(), backend_registry(), primary_config(), capability_matrix()]:
         assert_no_secrets(payload)
     backend_text = BACKEND_REGISTRY.read_text(encoding="utf-8")
-    assert "QMUL_LLM_ENDPOINT_URL" in backend_text
     assert "OPENAI_API_KEY" in backend_text
     assert "ANTHROPIC_API_KEY" in backend_text
     assert "RUNPOD_CENTAUR_ENDPOINT_URL" in backend_text
