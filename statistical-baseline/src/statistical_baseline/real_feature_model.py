@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import itertools
 import hashlib
+import inspect
 import json
 import time
 from datetime import datetime, timezone
@@ -38,6 +39,13 @@ SEED = 20260817
 SAMPLING = {"draws": 1000, "tune": 1000, "chains": 4, "target_accept": 0.95}
 PRIMARY_FEATURES = ["z_RMS", "z_CF", "z_SW"]
 SI_FEATURES = PRIMARY_FEATURES + ["z_SI"]
+
+
+def bambi_nutpie_fit_kwargs() -> dict[str, str]:
+    inference_method = inspect.signature(bmb.Model.fit).parameters.get("inference_method")
+    if inference_method is not None and inference_method.default == "pymc":
+        return {"inference_method": "nutpie"}
+    return {"nuts_sampler": "nutpie"}
 
 
 def file_sha256(path: Path) -> str:
@@ -213,7 +221,7 @@ def fit_bambi_model(formula: str, data: pd.DataFrame, model_name: str) -> tuple[
         chains=SAMPLING["chains"],
         target_accept=SAMPLING["target_accept"],
         random_seed=SEED,
-        nuts_sampler="nutpie",
+        **bambi_nutpie_fit_kwargs(),
         idata_kwargs={"log_likelihood": True},
     )
     runtime = time.perf_counter() - start
