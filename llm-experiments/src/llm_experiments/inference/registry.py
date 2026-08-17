@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +48,12 @@ def resolve_backend(backend_key: str, registry: dict[str, Any]) -> dict[str, Any
 
 def assert_no_secrets(registry: dict[str, Any]) -> None:
     text = json.dumps(registry, sort_keys=True)
-    forbidden = ["api_key", "secret", "bearer ", "sk-", "token_value", "password"]
-    if any(token in text.lower() for token in forbidden):
+    forbidden_patterns = [
+        r"bearer\s+[a-z0-9._\-]+",
+        r"sk-[a-z0-9]{8,}",
+        r"api[_-]?key['\"]?\s*[:=]\s*['\"][^'\"]+",
+        r"token[_-]?value['\"]?\s*[:=]\s*['\"][^'\"]+",
+        r"password['\"]?\s*[:=]\s*['\"][^'\"]+",
+    ]
+    if any(re.search(pattern, text, re.IGNORECASE) for pattern in forbidden_patterns):
         raise ValueError("Registry appears to contain credentials or secret values.")

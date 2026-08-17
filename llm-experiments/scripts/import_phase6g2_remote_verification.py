@@ -22,13 +22,13 @@ def main() -> int:
     scaffold = build_final_registry_scaffold(REPO_ROOT)
     scaffold["qmul_validation"] = qmul
     scaffold["runpod_validation"] = runpod
-    scaffold["can_freeze_final_production_registry"] = bool(qmul["valid"] and runpod["valid"])
+    scaffold["can_freeze_final_production_registry"] = bool(qmul.get("backend_verified") and runpod.get("backend_verified"))
     scaffold["status"] = "ready_for_manual_final_registry_freeze" if scaffold["can_freeze_final_production_registry"] else "blocked_pending_remote_verification"
     scaffold["PRODUCTION_INFERENCE_READY"] = False
     if args.output:
         write_json(resolve(args.output), scaffold)
-    print(json.dumps({"qmul_valid": qmul["valid"], "runpod_valid": runpod["valid"], "can_freeze_final_production_registry": scaffold["can_freeze_final_production_registry"], "PRODUCTION_INFERENCE_READY": False}, indent=2))
-    return 0 if qmul["valid"] and runpod["valid"] else 1
+    print(json.dumps({"qmul_valid": qmul["valid"], "qmul_execution_architectures_verified": qmul.get("execution_architectures_verified", False), "qmul_production_config_verified": qmul.get("production_config_verified", False), "qmul_backend_verified": qmul.get("backend_verified", False), "runpod_valid": runpod["valid"], "runpod_backend_verified": runpod.get("backend_verified", False), "can_freeze_final_production_registry": scaffold["can_freeze_final_production_registry"], "PRODUCTION_INFERENCE_READY": False}, indent=2))
+    return 0 if qmul.get("backend_verified") and runpod.get("backend_verified") else 1
 
 
 def resolve(path: str) -> Path:

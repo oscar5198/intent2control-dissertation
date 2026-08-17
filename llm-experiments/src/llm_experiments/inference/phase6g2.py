@@ -208,12 +208,16 @@ def build_gate_semantics(
     runpod_artifact_present: bool,
     qmul_verified: bool,
     runpod_verified: bool,
+    qmul_execution_architectures_verified: bool = False,
+    qmul_production_config_verified: bool = False,
 ) -> dict[str, bool]:
     exact_verified = qmul_verified and runpod_verified
     return {
         "SCIENTIFIC_MODEL_IDENTITIES_SELECTED": True,
         "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": exact_verified,
         "QMUL_BACKENDS_VERIFIED": qmul_verified,
+        "QMUL_EXECUTION_ARCHITECTURES_VERIFIED": qmul_execution_architectures_verified,
+        "QMUL_PRODUCTION_CONFIG_VERIFIED": qmul_production_config_verified,
         "RUNPOD_CENTAUR_VERIFIED": runpod_verified,
         "PRIMARY_INFERENCE_CONFIG_FROZEN": False,
         "PRODUCTION_INFERENCE_READY": False,
@@ -227,14 +231,20 @@ def build_readiness(repo_root: Path) -> dict[str, Any]:
     runpod_path = repo_root / REMOTE_RESULT_DIR / "phase6g2c_runpod_centaur_verification.json"
     qmul_present = qmul_path.exists()
     runpod_present = runpod_path.exists()
-    qmul_verified = validate_remote_artifact(qmul_path, "qmul")["valid"] if qmul_present else False
-    runpod_verified = validate_remote_artifact(runpod_path, "runpod")["valid"] if runpod_present else False
+    qmul_validation = validate_remote_artifact(qmul_path, "qmul") if qmul_present else {"backend_verified": False}
+    runpod_validation = validate_remote_artifact(runpod_path, "runpod") if runpod_present else {"backend_verified": False}
+    qmul_verified = bool(qmul_validation["backend_verified"])
+    runpod_verified = bool(runpod_validation["backend_verified"])
+    qmul_execution_architectures_verified = bool(qmul_validation.get("execution_architectures_verified"))
+    qmul_production_config_verified = bool(qmul_validation.get("production_config_verified"))
     phase6g1 = load_json(repo_root / PHASE6G1_READINESS) if (repo_root / PHASE6G1_READINESS).exists() else {}
     gates = build_gate_semantics(
         qmul_artifact_present=qmul_present,
         runpod_artifact_present=runpod_present,
         qmul_verified=qmul_verified,
         runpod_verified=runpod_verified,
+        qmul_execution_architectures_verified=qmul_execution_architectures_verified,
+        qmul_production_config_verified=qmul_production_config_verified,
     )
     return {
         "schema_version": READINESS_SCHEMA_VERSION,
@@ -287,7 +297,23 @@ def validate_remote_artifact(path: Path, artifact_type: str) -> dict[str, Any]:
         validate_runpod_artifact(artifact, errors, warnings)
     else:
         errors.append(f"unknown artifact type: {artifact_type}")
-    return {"valid": not errors, "errors": errors, "warnings": warnings}
+    backend_verified = False
+    execution_architectures_verified = False
+    production_config_verified = False
+    if artifact_type == "qmul":
+        backend_verified = bool(artifact.get("overall_qmul_backend_verified") is True and not errors)
+        execution_architectures_verified = bool(artifact.get("QMUL_EXECUTION_ARCHITECTURES_VERIFIED") is True and not errors)
+        production_config_verified = bool(artifact.get("QMUL_PRODUCTION_CONFIG_VERIFIED") is True and not errors)
+    elif artifact_type == "runpod":
+        backend_verified = bool(artifact.get("overall_runpod_centaur_verified") is True and not errors)
+    return {
+        "valid": not errors,
+        "backend_verified": backend_verified,
+        "execution_architectures_verified": execution_architectures_verified,
+        "production_config_verified": production_config_verified,
+        "errors": errors,
+        "warnings": warnings,
+    }
 
 
 def validate_qmul_artifact(artifact: dict[str, Any], errors: list[str], warnings: list[str]) -> None:
@@ -300,13 +326,20 @@ def validate_qmul_artifact(artifact: dict[str, Any], errors: list[str], warnings
         errors.append("QMUL artifact must contain exactly the three QMUL model keys")
     for key in QMUL_MODEL_KEYS:
         record = records.get(key, {})
-        require(record, "scientific_model_name", errors, f"{key} missing scientific_model_name")
-        require(record, "exact_served_id", errors, f"{key} missing exact_served_id")
-        require(record, "response_extraction_contract", errors, f"{key} missing response_extraction_contract")
+        if not record.get("scientific_model_name") and not record.get("intended_scientific_model"):
+            errors.append(f"{key} missing scientific_model_name")
+        if "exact_served_id" not in record:
+            errors.append(f"{key} missing exact_served_id")
+        if "response_extraction_contract" not in record:
+            errors.append(f"{key} missing response_extraction_contract")
         if not record.get("health_check", {}).get("healthy"):
             warnings.append(f"{key} health check is not reported healthy")
     if artifact.get("overall_qmul_backend_verified") is not True:
-        errors.append("overall_qmul_backend_verified must be true for import acceptance")
+        warnings.append("overall_qmul_backend_verified is false; artifact is evidence-only and cannot unlock production")
+    if artifact.get("QMUL_EXECUTION_ARCHITECTURES_VERIFIED") is not True:
+        warnings.append("QMUL_EXECUTION_ARCHITECTURES_VERIFIED is false")
+    if artifact.get("QMUL_PRODUCTION_CONFIG_VERIFIED") is not True:
+        warnings.append("QMUL_PRODUCTION_CONFIG_VERIFIED is false")
 
 
 def validate_runpod_artifact(artifact: dict[str, Any], errors: list[str], warnings: list[str]) -> None:

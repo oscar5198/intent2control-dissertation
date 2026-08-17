@@ -10,7 +10,14 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from llm_experiments.inference.adapters import MockAdapter, QMULAdapter, RunPodAdapter
+from llm_experiments.inference.adapters import (
+    AnthropicMessagesQMULAdapter,
+    LocalTransformersLlamaQMULAdapter,
+    MockAdapter,
+    OpenAIResponsesQMULAdapter,
+    QMULAdapter,
+    RunPodAdapter,
+)
 from llm_experiments.inference.base import ModelAdapter
 from llm_experiments.inference.configuration import production_preflight
 from llm_experiments.inference.registry import (
@@ -50,6 +57,9 @@ ADAPTER_CLASSES = {
     "qmul_local": QMULAdapter,
     "qmul_http": QMULAdapter,
     "openai_compatible": QMULAdapter,
+    "openai_responses_api": OpenAIResponsesQMULAdapter,
+    "anthropic_messages_api": AnthropicMessagesQMULAdapter,
+    "qmul_local_transformers": LocalTransformersLlamaQMULAdapter,
     "runpod_http": RunPodAdapter,
 }
 

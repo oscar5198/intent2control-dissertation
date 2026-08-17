@@ -34,13 +34,19 @@ def test_four_scientific_model_keys_retained():
     assert [row["model_key"] for row in model_registry()["models"]] == PLANNED_MODEL_KEYS
 
 
-def test_exact_model_identity_fields_required_and_unverified():
-    for model in model_registry()["models"]:
+def test_exact_model_identity_fields_required_and_unfrozen():
+    models = {row["model_key"]: row for row in model_registry()["models"]}
+    assert models["gpt"]["exact_model_id"] == "gpt-5.5"
+    assert models["gpt"]["identity_verification_status"] == "api_alias_verified_snapshot_unverified"
+    assert models["claude_sonnet"]["exact_model_id"] == "claude-sonnet-5"
+    assert models["claude_sonnet"]["identity_verification_status"] == "api_alias_verified_snapshot_unverified"
+    assert models["llama_3_1_70b_instruct"]["exact_model_id"] == "meta-llama/Llama-3.1-70B-Instruct"
+    assert models["llama_3_1_70b_instruct"]["identity_verification_status"] == "architecture_verified_revision_unverified"
+    assert models["centaur"]["exact_model_id"] == UNVERIFIED
+    for model in models.values():
         assert "exact_model_id" in model
         assert "checkpoint_or_revision" in model
-        assert model["exact_model_id"] == UNVERIFIED
         assert model["checkpoint_or_revision"] == UNVERIFIED
-        assert model["identity_verification_status"] == "unverified"
 
 
 def test_placeholder_ids_prevent_freeze_gates():
@@ -86,11 +92,22 @@ def test_temperature_top_p_seed_and_output_policies_valid():
 
 def test_seed_support_recorded_per_model_and_capabilities_explicit():
     for row in capability_matrix()["models"]:
-        assert row["seed_support"] == UNVERIFIED
         assert row["primary_seed"] == 20260814
-        assert row["structured_output_mechanism"] == UNVERIFIED
-        assert row["system_role_support"] == UNVERIFIED
-        assert row["healthcheck_available"] == UNVERIFIED
+        if row["model_key"] == "llama_3_1_70b_instruct":
+            assert row["seed_support"] == "runtime_seed_recorded_but_greedy_decoding_primary"
+            assert row["structured_output_mechanism"] == "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair"
+            assert row["system_role_support"] == "requires_tokenizer_chat_template_verification"
+            assert row["healthcheck_available"] is True
+        else:
+            assert row["seed_support"] == UNVERIFIED
+            assert row["structured_output_mechanism"] == UNVERIFIED
+            assert row["system_role_support"] == UNVERIFIED
+            assert row["healthcheck_available"] == UNVERIFIED
+    rows = {row["model_key"]: row for row in capability_matrix()["models"]}
+    assert rows["gpt"]["request_api"] == "OpenAI.responses.create"
+    assert rows["claude_sonnet"]["request_api"] == "Anthropic.messages.create"
+    assert rows["llama_3_1_70b_instruct"]["do_sample"] is False
+    assert rows["llama_3_1_70b_instruct"]["max_new_tokens"] == 256
 
 
 def test_context_compatibility_calculation_passes_with_verified_numbers():
@@ -136,6 +153,8 @@ def test_secrets_absent_and_environment_variable_references_supported():
         assert_no_secrets(payload)
     backend_text = BACKEND_REGISTRY.read_text(encoding="utf-8")
     assert "QMUL_LLM_ENDPOINT_URL" in backend_text
+    assert "OPENAI_API_KEY" in backend_text
+    assert "ANTHROPIC_API_KEY" in backend_text
     assert "RUNPOD_CENTAUR_ENDPOINT_URL" in backend_text
     assert "RUNPOD_API_TOKEN" in backend_text
     assert "C:\\Users\\oscar" not in backend_text
@@ -149,7 +168,12 @@ def test_synthetic_88_request_matrix_resolves_phase6e2_config(tmp_path):
     assert matrix["expected_request_count"] == 88
     assert matrix["requests_created"] == 88
     assert matrix["model_condition_coverage"]["complete"] is True
-    assert {row["exact_model_id"] for row in matrix["requests"]} == {UNVERIFIED}
+    assert {row["exact_model_id"] for row in matrix["requests"]} == {
+        "gpt-5.5",
+        "claude-sonnet-5",
+        "meta-llama/Llama-3.1-70B-Instruct",
+        UNVERIFIED,
+    }
 
 
 def test_messages_identical_across_models_for_same_rendered_prompt():

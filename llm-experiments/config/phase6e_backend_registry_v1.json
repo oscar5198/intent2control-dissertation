@@ -4,6 +4,100 @@
   "inference_interface_version": "phase6e_inference_interface_v1",
   "backends": [
     {
+      "backend_key": "qmul_openai_provider_api_unverified",
+      "backend_type": "openai_responses_api",
+      "execution_environment": "QMUL",
+      "serving_mode": "provider_api_invoked_from_qmul_runtime",
+      "transport": "openai_python_sdk",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": null,
+        "request_shape": "OpenAI.responses.create(model='gpt-5.5', input=...)",
+        "response_shape": "response.output_text",
+        "model_list_contract": "provider_managed",
+        "healthcheck_contract": "not_run_locally"
+      },
+      "authentication": {
+        "required": true,
+        "credential_env_var_names": [
+          "OPENAI_API_KEY"
+        ],
+        "must_never_log": [
+          "authorization headers",
+          "runtime auth tokens",
+          "API keys",
+          "authenticated URLs"
+        ]
+      },
+      "timeout_seconds": 300,
+      "timeout_status": "operational_default_unverified_latency",
+      "backend_verification_status": "evidence_from_user_provided_qmul_notebook_not_frozen",
+      "request_contract_status": "verified_from_notebook_evidence",
+      "response_contract_status": "verified_from_notebook_evidence",
+      "connectivity_probe_status": "not_re_run_locally",
+      "capabilities": {
+        "system_message_support": "UNVERIFIED",
+        "native_json_schema_enforcement": "UNVERIFIED",
+        "native_json_mode": "UNVERIFIED",
+        "seed_support": "UNVERIFIED",
+        "temperature_support": "UNVERIFIED",
+        "top_p_support": "UNVERIFIED",
+        "usage_reporting": "UNVERIFIED",
+        "logprob_support": "UNVERIFIED",
+        "streaming_support": "UNVERIFIED"
+      },
+      "context_window": {
+        "maximum_context_length": "UNVERIFIED",
+        "maximum_generation_length": "UNVERIFIED"
+      }
+    },
+    {
+      "backend_key": "qmul_anthropic_provider_api_unverified",
+      "backend_type": "anthropic_messages_api",
+      "execution_environment": "QMUL",
+      "serving_mode": "provider_api_invoked_from_qmul_runtime",
+      "transport": "anthropic_python_sdk",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": null,
+        "request_shape": "Anthropic.messages.create(model='claude-sonnet-5', messages=...)",
+        "response_shape": "message.content[0].text",
+        "model_list_contract": "provider_managed",
+        "healthcheck_contract": "not_run_locally"
+      },
+      "authentication": {
+        "required": true,
+        "credential_env_var_names": [
+          "ANTHROPIC_API_KEY"
+        ],
+        "must_never_log": [
+          "authorization headers",
+          "runtime auth tokens",
+          "API keys",
+          "authenticated URLs"
+        ]
+      },
+      "timeout_seconds": 300,
+      "timeout_status": "operational_default_unverified_latency",
+      "backend_verification_status": "evidence_from_user_provided_qmul_notebook_not_frozen",
+      "request_contract_status": "verified_from_notebook_evidence",
+      "response_contract_status": "verified_from_notebook_evidence",
+      "connectivity_probe_status": "not_re_run_locally",
+      "capabilities": {
+        "system_message_support": "UNVERIFIED",
+        "native_json_schema_enforcement": "UNVERIFIED",
+        "native_json_mode": "UNVERIFIED",
+        "seed_support": "UNVERIFIED",
+        "temperature_support": "UNVERIFIED",
+        "top_p_support": "UNVERIFIED",
+        "usage_reporting": "UNVERIFIED",
+        "logprob_support": "UNVERIFIED",
+        "streaming_support": "UNVERIFIED"
+      },
+      "context_window": {
+        "maximum_context_length": "UNVERIFIED",
+        "maximum_generation_length": "UNVERIFIED"
+      }
+    },
+    {
       "backend_key": "qmul_primary_unverified",
       "backend_type": "qmul_http",
       "execution_environment": "QMUL",
@@ -48,6 +142,81 @@
       "context_window": {
         "maximum_context_length": "UNVERIFIED",
         "maximum_generation_length": "UNVERIFIED"
+      }
+    },
+    {
+      "backend_key": "qmul_llama_transformers_local_unverified",
+      "backend_type": "qmul_local_transformers",
+      "execution_environment": "QMUL",
+      "serving_mode": "local_huggingface_transformers_inference_from_qmul_runtime",
+      "transport": "in_process_transformers_generate",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": null,
+        "request_shape": "tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True) then AutoModelForCausalLM.generate",
+        "response_shape": "tokenizer.decode(generated, skip_special_tokens=True)",
+        "model_list_contract": "local_huggingface_cache",
+        "healthcheck_contract": "tokenizer_load_model_load_eval_generate_smoke_test"
+      },
+      "authentication": {
+        "required": false,
+        "credential_env_var_names": [],
+        "must_never_log": [
+          "Hugging Face tokens",
+          "runtime auth tokens",
+          "authenticated URLs"
+        ]
+      },
+      "timeout_seconds": 300,
+      "timeout_status": "operational_default_unverified_full_run_latency",
+      "backend_verification_status": "architecture_verified_from_user_provided_qmul_notebook_not_frozen",
+      "request_contract_status": "serialization_method_identified_chat_template_presence_pending",
+      "response_contract_status": "verified_from_notebook_smoke_test",
+      "connectivity_probe_status": "notebook_model_load_and_non_study_generation_succeeded",
+      "capabilities": {
+        "system_message_support": "requires_tokenizer_chat_template_verification",
+        "native_json_schema_enforcement": false,
+        "native_json_mode": false,
+        "seed_support": "runtime_seed_recorded_but_greedy_decoding_primary",
+        "temperature_support": "not_active_under_greedy_decoding",
+        "top_p_support": "not_active_under_greedy_decoding",
+        "usage_reporting": false,
+        "logprob_support": "UNVERIFIED",
+        "streaming_support": false
+      },
+      "context_window": {
+        "maximum_context_length": "UNVERIFIED",
+        "maximum_generation_length": 256
+      },
+      "local_transformers_settings": {
+        "model_id": "meta-llama/Llama-3.1-70B-Instruct",
+        "model_class": "AutoModelForCausalLM",
+        "tokenizer_class": "AutoTokenizer",
+        "local_files_only": true,
+        "quantisation": {
+          "load_in_4bit": true,
+          "library": "bitsandbytes",
+          "bnb_4bit_quant_type": "nf4",
+          "bnb_4bit_compute_dtype": "torch.bfloat16",
+          "bnb_4bit_use_double_quant": true,
+          "torch_dtype": "torch.bfloat16"
+        },
+        "device_configuration": {
+          "device_map": "auto",
+          "max_memory": {
+            "0": "43GiB"
+          },
+          "low_cpu_mem_usage": true,
+          "observed_hf_device_map": {
+            "": 0
+          }
+        },
+        "generation_mode": {
+          "primary_mode": "greedy",
+          "do_sample": false,
+          "max_new_tokens": 256,
+          "pad_token_id_policy": "tokenizer.eos_token_id",
+          "project_seed": 20260814
+        }
       }
     },
     {
