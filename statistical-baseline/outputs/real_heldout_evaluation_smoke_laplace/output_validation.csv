@@ -1,0 +1,6 @@
+check,passed,value
+every_fold_model_has_five_candidates,True,{5: 2}
+posterior_probabilities_between_0_and_1,True,
+posterior_probabilities_sum_to_one,True,min=1.000000000000; max=1.000000000000
+one_final_winner_unless_exact_tie,True,exact_predicted_ties=0
+all_fold_model_pairs_completed,True,2/2

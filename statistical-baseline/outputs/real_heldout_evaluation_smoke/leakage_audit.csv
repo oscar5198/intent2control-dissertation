@@ -1,0 +1,2 @@
+prediction_example_id,participant_id,trial_id,target_candidate_count,training_row_count,target_rows_in_training,participant_history_rows_retained,same_stimulus_other_participant_rows_retained,leakage_passed
+real_loto__P001__trial_01,P001,P001__trial_01,5,895,0,25,235,True

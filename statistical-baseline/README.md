@@ -113,10 +113,12 @@ configuration:
 draws=1000
 tune=1000
 chains=4
-cores=1
 target_accept=0.95
 inference_method=nutpie
 ```
+
+`cores` is an optional execution setting and should be chosen for the execution
+environment. It is not part of the scientific model specification.
 
 The smoke-test mode is intentionally non-analytical and synthetic-only:
 
@@ -135,6 +137,13 @@ candidate stimulus level exists in the target-specific training fit. Reference
 categorical levels and unavailable random-effect levels contribute zero to the
 posterior expected mean; no held-out target ratings are used to create those
 terms.
+
+Full-data empirical inference uses Bambi/PyMC. The official repeated held-out
+evaluation uses an equivalent explicit PyMC implementation so that checkpointed
+fold refits can be controlled directly. The held-out stimulus and acoustic
+models use the same fixed-effect treatment coding and participant/stimulus
+random-intercept structure as the Bambi formulas; for the canonical real data,
+`EDR-1` and `group_01` are the reference levels.
 
 Run the synthetic Phase 6C dry-run from the repository root:
 

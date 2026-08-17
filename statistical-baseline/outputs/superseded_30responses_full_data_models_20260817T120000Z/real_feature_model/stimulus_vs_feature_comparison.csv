@@ -1,0 +1,11 @@
+aspect,stimulus_model,feature_model
+formula,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)
+runtime_seconds,20.077195799996844,30.696776600001613
+participant_ICC_mean,0.124,0.136
+stimulus_ICC_mean,0.177,0.117
+ppc_outside_0_100,0.123635,0.12463416666666667
+episode_EDR_2_mean,2.147,2.163
+episode_FM_1_mean,-6.292,-6.303
+group_group_02_mean,6.868,17.669
+interpretability,direct stimulus-level baseline; does not explain acoustic drivers,native rating-point acoustic associations for RMS/CF/SW
+main_limitation,additive; no Episode x Stimulus interaction,features vary across only 20 stimuli; additive; no Episode x Feature interaction

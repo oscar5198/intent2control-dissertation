@@ -1,0 +1,8 @@
+model_name,term,mean,sd,hdi_3,hdi_97,mcse,mcse_sd,ess_bulk,ess_tail,r_hat
+primary_feature,Intercept,45.893,5.353,35.927,56.151,0.183,0.12,864.0,1112.0,1.0
+primary_feature,episode[EDR-2],2.163,2.258,-2.159,6.254,0.035,0.034,4271.0,3008.0,1.0
+primary_feature,episode[FM-1],-6.303,2.256,-10.509,-2.051,0.034,0.033,4446.0,3345.0,1.0
+primary_feature,group[group_02],17.669,7.744,2.167,31.249,0.254,0.154,930.0,1372.0,1.0
+primary_feature,z_RMS,5.508,2.753,-0.026,10.459,0.085,0.079,1108.0,1206.0,1.0
+primary_feature,z_CF,-6.195,3.003,-11.657,-0.259,0.084,0.071,1265.0,1343.0,1.0
+primary_feature,z_SW,-3.165,2.895,-8.677,2.177,0.084,0.057,1177.0,1911.0,1.0

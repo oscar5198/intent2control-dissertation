@@ -1,0 +1,2 @@
+fold_id,participant_id,group,trial_id,trial_index,song_id,episode,prediction_example_id,heldout_unit,phase6_split_source,phase6_split_rule,candidate_count
+1,P001,group_01,P001__trial_01,1,lead_me,FM-1,real_loto__P001__trial_01,participant_id_x_trial_id,llm-experiments/llm_evaluation_protocol.md,leave-one-trial-out participant-trial; all five candidate rows excluded together,5

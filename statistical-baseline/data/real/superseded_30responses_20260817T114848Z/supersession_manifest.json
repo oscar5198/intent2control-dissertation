@@ -1,0 +1,102 @@
+{
+  "created_at_utc": "2026-08-17T11:48:48.342816+00:00",
+  "reason": "canonical real-data outputs superseded by a new immutable participant-response workbook",
+  "previous_raw_sha256": "09c1a0641888d366d75232fe74fef96074bf46934e0da3d8308d1cf75a2f9f47",
+  "new_raw_sha256": "5bab388fbf564e0caf5c1ca8a5a722bf8d517e23c018e48375d076e75dba0bdd",
+  "previous_manifest_parse_error": "",
+  "archived_files": [
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_ratings_clean.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_participants_clean.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_trial_preferences.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_trial_ties_long.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_submission_audit.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_exclusion_log.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_data_validation.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_data_summary.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_schema_audit.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_participant_metadata_audit.csv",
+    "statistical-baseline\\data\\real\\superseded_30responses_20260817T114848Z\\real_cleaning_manifest.json"
+  ],
+  "previous_manifest": {
+    "created_at_utc": "2026-08-17T02:39:38.810918+00:00",
+    "notebook_path": "statistical-baseline\\notebooks\\_06_real_data_cleaning.ipynb",
+    "raw_provenance": {
+      "original_filename": "listening_preference_responses.xlsx",
+      "stored_path": "statistical-baseline\\data\\real\\raw\\listening_preference_responses_immutable.xlsx",
+      "copied_this_run": false,
+      "sha256": "09c1a0641888d366d75232fe74fef96074bf46934e0da3d8308d1cf75a2f9f47",
+      "bytes": 267604
+    },
+    "raw_shape": {
+      "rows": 30,
+      "columns": 40
+    },
+    "sheet_audit": [
+      {
+        "sheet_name": "listening-study-5mix",
+        "row_count": 30,
+        "column_count": 40
+      },
+      {
+        "sheet_name": "Hoja1",
+        "row_count": 0,
+        "column_count": 0
+      }
+    ],
+    "design": {
+      "stimulus_configuration_version": "five_mix_frontend_v1_2026-08-06",
+      "study_version_expected": "five_mix_frontend_v1_2026-08-06",
+      "schema_version_expected": "five_mix_netlify_forms_v1",
+      "group_count": 2,
+      "songs_total": 4,
+      "stimuli_total": 20,
+      "episodes": [
+        "EDR-1",
+        "EDR-2",
+        "FM-1"
+      ],
+      "ratings_per_participant": 30,
+      "comments_per_participant": 6,
+      "comment_unit": "one comparative comment per participant x song x episode trial, repeated on each of that trial's five rating rows"
+    },
+    "configuration_inputs": {
+      "stimuli_config": {
+        "path": "study-interface\\frontend-5mix\\config\\stimuli.json",
+        "sha256": "e689f5453104315b07b9fba836e33d52ad78141fe9a724563054b85e86356fb9"
+      },
+      "study_config": {
+        "path": "study-interface\\frontend-5mix\\config\\study-config.json",
+        "sha256": "c6e977630717afdab13e18e36c34aabd6ae40f1824352c1370f8c514b8b0cee9"
+      },
+      "feature_table": {
+        "path": "statistical-baseline\\outputs\\feature_exploration\\final_20_stimulus_feature_table.csv",
+        "sha256": "6b3d3a7b475590c50510acbaf3ad4e394baaddf68b2410a83ba0d4d77a76b922"
+      }
+    },
+    "outputs": {
+      "ratings": "statistical-baseline/data/real/real_ratings_clean.csv",
+      "participants": "statistical-baseline/data/real/real_participants_clean.csv",
+      "trial_preferences": "statistical-baseline/data/real/real_trial_preferences.csv",
+      "ties": "statistical-baseline/data/real/real_trial_ties_long.csv",
+      "submission_audit": "statistical-baseline/data/real/real_submission_audit.csv",
+      "exclusion_log": "statistical-baseline/data/real/real_exclusion_log.csv",
+      "validation": "statistical-baseline/data/real/real_data_validation.csv",
+      "summary": "statistical-baseline/data/real/real_data_summary.csv",
+      "schema_audit": "statistical-baseline/data/real/real_schema_audit.csv",
+      "metadata_audit": "statistical-baseline/data/real/real_participant_metadata_audit.csv",
+      "manifest": "statistical-baseline/data/real/real_cleaning_manifest.json"
+    },
+    "privacy_note": "Raw IP/user-agent/referrer fields remain only in the immutable raw workbook. Clean analysis outputs use source_study_id and deterministic participant_id only.",
+    "transformations": [
+      "Copied immutable raw workbook into statistical-baseline/data/real/raw if absent.",
+      "Parsed structured Netlify JSON payloads from the participant-level wide export.",
+      "Created deterministic participant_id values P001... by created_at, completed_at, source_study_id, source row.",
+      "Expanded responses_json to one rating row per participant x song x episode x presented mix.",
+      "Reconstructed A-E presentation labels using the submitted trial_order_json and checked agreement with response stimulus/mix IDs.",
+      "Repeated each trial's comparative comment on its five rating rows because the frontend collected one mandatory comparative comment per trial.",
+      "Attached frozen Phase 3 RMS/CF/SW/SI acoustic features by stimulus_id and mix_id.",
+      "Derived preferred mix per participant x song x episode without breaking rating ties.",
+      "Generated participant, submission, exclusion, schema, validation, preference, and tie audit tables."
+    ]
+  }
+}

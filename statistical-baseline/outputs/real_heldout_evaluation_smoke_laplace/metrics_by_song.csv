@@ -1,0 +1,3 @@
+baseline_model,song_id,n_trials,n_unique_winner_trials,n_tied_human_trials,strict_unique_winner_accuracy,tie_compatible_accuracy,top2_hit_rate,mean_spearman,mean_ndcg,mae,rmse,mean_predicted_winner_probability,mean_observed_winner_probability_mass,mean_entropy,mean_top2_margin,mean_expected_draws_outside_0_100_prop,predicted_exact_tie_count
+categorical_design,lead_me,1,1,0,0.0,0.0,0.0,-0.0999999999999999,0.8988619329647426,15.697929298684102,16.00621282730337,0.875,0.006,0.4148465225695135,0.759,0.0,0
+primary_acoustic,lead_me,1,1,0,0.0,0.0,0.0,-0.0999999999999999,0.8988619329647426,16.01932161972149,16.249972514467817,0.894,0.006,0.3709306518908111,0.796,0.0,0
