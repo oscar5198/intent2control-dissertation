@@ -804,6 +804,116 @@ models, inspect real participant outcomes, resolve the baseline comparator,
 emit p-values, make scientific claims, rank models, or create final
 dissertation figures.
 
+## Phase 6G.0 Final-Input Reconciliation
+
+Phase 6G.0 reconciles the final real Phase 3/Phase 6 inputs without running
+LLMs, refitting statistical models, changing frozen prompts, or calculating new
+scientific comparisons. The final locked dataset is
+`statistical-baseline/data/real/raw/listening_preference_responses_33_immutable.xlsx`
+and the authoritative empirical held-out baseline source is
+`statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split/`.
+
+Run the reconciliation check from the repository root:
+
+```powershell
+python llm-experiments\scripts\reconcile_phase6g0_final_inputs.py
+```
+
+Outputs are written to:
+
+```text
+llm-experiments/outputs/phase6g0_final_execution_readiness.json
+llm-experiments/outputs/phase6g0_reconciliation_report.md
+```
+
+At this checkpoint the repository is ready for Phase 6G.1 final real Phase 6B
+dataset generation, but not yet ready for real LLM inference. Real Phase 6B
+outputs/prompts, exact four-model identities, live QMUL/RunPod backend
+contracts, and the compact Phase 6F baseline adapter/export still need to be
+completed before production inference begins.
+
+## Phase 6G.1 Real Phase 6B Dataset Freeze
+
+Phase 6G.1 runs the frozen Phase 6B.1-6B.4 data pipeline on the locked final
+N=33 workbook, using the existing Phase 3 participant pseudonym map so the
+resulting held-out examples align with the authoritative Phase 3 baseline
+targets. It does not call LLMs, render final natural-language prompts, refit
+statistical models, calculate performance, or change the frozen prompt
+specification.
+
+Run the real-data freeze from the repository root:
+
+```powershell
+python llm-experiments\scripts\run_phase6g1_real_phase6b.py
+```
+
+Canonical outputs are written to:
+
+```text
+llm-experiments/outputs/real/phase6b/
+```
+
+Key frozen artifacts:
+
+- `final_analysis_ready_long.csv`
+- `final_candidate_ground_truth_enriched.csv`
+- `final_trial_ground_truth_targets.csv`
+- `final_prediction_examples.jsonl`
+- `final_prompt_data_objects.jsonl`
+- `phase3_target_alignment_report.csv`
+- `ae_mapping_alignment_report.csv`
+- `leakage_audit.json`
+- `deterministic_rebuild_audit.json`
+- `phase6g1_real_phase6b_manifest.json`
+- `hash_manifest.json`
+- `production_readiness_gate.json`
+
+The current Phase 6G.1 gate is `REAL_PHASE6B_READY=true`: 33 participants,
+990 candidate rows, 198 target-eligible trials, 198 prediction examples, and
+396 condition-specific prompt-data objects. `PRODUCTION_INFERENCE_READY`
+remains false until Phase 6E.2 model identities and live QMUL/RunPod backend
+contracts are verified.
+
+## Phase 6G.2A Local Deployment Preparation
+
+Phase 6G.2A separates selected scientific model identities from exact served
+deployment identities. The intended scientific models are now selected locally:
+`GPT-5.5`, `Claude Sonnet 5`, `Llama 3.1 70B Instruct`, and `Centaur`. Exact
+served IDs, revisions, quantisation, serving frameworks, tokenizer/chat
+templates, request/response contracts, and health checks remain unresolved
+until QMUL and RunPod verification artifacts are produced remotely.
+
+Run the local preparation from the repository root:
+
+```powershell
+python llm-experiments\scripts\prepare_phase6g2a_local_config.py
+```
+
+Outputs are written to:
+
+```text
+llm-experiments/outputs/real/phase6g2a/
+llm-experiments/outputs/real/phase6g2a_local_preparation_readiness.json
+llm-experiments/outputs/real/phase6g2a_local_preparation_report.md
+```
+
+Remote verification command templates:
+
+```bash
+python llm-experiments/scripts/remote/verify_qmul_models.py --output llm-experiments/outputs/real/phase6g2_remote/phase6g2b_qmul_model_verification.json
+python llm-experiments/scripts/remote/verify_runpod_centaur.py --output llm-experiments/outputs/real/phase6g2_remote/phase6g2c_runpod_centaur_verification.json
+```
+
+After copying both remote JSON files back locally:
+
+```bash
+python llm-experiments/scripts/import_phase6g2_remote_verification.py --qmul llm-experiments/outputs/real/phase6g2_remote/phase6g2b_qmul_model_verification.json --runpod llm-experiments/outputs/real/phase6g2_remote/phase6g2c_runpod_centaur_verification.json --output llm-experiments/outputs/real/phase6g2a/phase6g2d_production_registry_scaffold.json
+```
+
+The Phase 6G.2A planning manifest records 396 prompt-data source objects x 4
+intended models = 1584 expected primary requests, with status
+`awaiting_remote_verification`. It is not an executable production manifest.
+
 ## Future Real-Data Pathway
 
 When final data collection is complete, the expected real input is the final

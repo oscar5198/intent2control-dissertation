@@ -1,0 +1,57 @@
+{
+  "schema_version": "phase6g_qmul_verification_v1",
+  "artifact_type": "json_schema",
+  "required_top_level_fields": [
+    "schema_version",
+    "environment",
+    "verification_timestamp_utc",
+    "verification_script_version",
+    "host_metadata",
+    "model_records",
+    "checks",
+    "unresolved_items",
+    "overall_qmul_backend_verified"
+  ],
+  "environment": "QMUL",
+  "required_model_keys": [
+    "gpt",
+    "claude_sonnet",
+    "llama_3_1_70b_instruct"
+  ],
+  "required_model_record_fields": [
+    "model_key",
+    "intended_scientific_model",
+    "scientific_model_identity_known",
+    "exact_served_id_verified",
+    "exact_served_id",
+    "snapshot_or_version",
+    "revision",
+    "revision_verified",
+    "backend_or_serving_mechanism",
+    "endpoint_type",
+    "serving_framework",
+    "quantisation_or_precision",
+    "tokenizer_chat_template_identity",
+    "system_message_support",
+    "structured_output_support",
+    "temperature_or_greedy_controls",
+    "top_p_support",
+    "seed_support",
+    "context_limit",
+    "max_output_limit",
+    "usage_token_reporting",
+    "health_check",
+    "response_extraction_contract",
+    "backend_contract_verified"
+  ],
+  "credential_policy": {
+    "forbidden": [
+      "bearer tokens",
+      "api keys",
+      "passwords",
+      "authenticated endpoint URLs",
+      "Hugging Face tokens"
+    ],
+    "endpoint_urls": "sanitize scheme/host/path only; omit query strings and credentials"
+  }
+}

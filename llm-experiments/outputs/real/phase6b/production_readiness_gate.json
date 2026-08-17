@@ -1,0 +1,19 @@
+{
+  "schema_version": "phase6g1_real_phase6b_readiness_gate_v1",
+  "REAL_PHASE6B_READY": true,
+  "failed_checks": [],
+  "checks": {
+    "locked_dataset_hash_matches": true,
+    "canonical_transformation_passes": true,
+    "participant_count_expected": true,
+    "candidate_row_count_expected": true,
+    "target_count_matches_phase3": true,
+    "phase3_target_alignment_passes": true,
+    "ae_mapping_alignment_passes": true,
+    "leakage_audit_passes": true,
+    "prompt_data_construction_passes": true,
+    "deterministic_rebuild_passes": true
+  },
+  "PRODUCTION_INFERENCE_READY": false,
+  "production_inference_blocker": "Phase 6E.2 live model identities and backend contracts remain unresolved."
+}

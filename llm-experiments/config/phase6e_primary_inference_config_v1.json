@@ -42,14 +42,18 @@
     "status": "operational_defaults_subject_to_pre_experiment_infrastructure_adjustment"
   },
   "freeze_gates": {
+    "SCIENTIFIC_MODEL_IDENTITIES_SELECTED": true,
+    "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": false,
+    "QMUL_BACKENDS_VERIFIED": false,
+    "RUNPOD_CENTAUR_VERIFIED": false,
     "MODEL_IDENTITIES_FROZEN": false,
     "INFERENCE_BACKENDS_VERIFIED": false,
     "PRIMARY_INFERENCE_CONFIG_FROZEN": false
   },
   "production_inference_allowed": false,
   "unresolved_items": [
-    "Exact GPT-family model ID/checkpoint on QMUL",
-    "Exact Claude Sonnet-family model ID/checkpoint on QMUL",
+    "Exact GPT-5.5 served ID/checkpoint on QMUL",
+    "Exact Claude Sonnet 5 served ID/checkpoint on QMUL",
     "Exact Llama 3.1 70B Instruct checkpoint, revision, quantisation and serving framework on QMUL",
     "Exact Centaur checkpoint/source/revision and RunPod deployment contract",
     "QMUL request/response contract and authentication requirements",

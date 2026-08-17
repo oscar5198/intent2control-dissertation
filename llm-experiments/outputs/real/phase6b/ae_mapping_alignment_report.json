@@ -1,0 +1,8 @@
+{
+  "schema_version": "phase6g1_ae_mapping_alignment_v1",
+  "passed": true,
+  "candidate_alignment_count": 990,
+  "candidate_row_count": 990,
+  "failure_count": 0,
+  "failures": []
+}

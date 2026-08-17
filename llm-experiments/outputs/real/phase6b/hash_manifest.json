@@ -1,0 +1,70 @@
+{
+  "schema_version": "phase6g1_hash_manifest_v1",
+  "files": [
+    {
+      "path": "llm-experiments/outputs/real/phase6b/ae_mapping_alignment_report.csv",
+      "sha256": "75bc5ea71d1735399d40fdb272399666735d47dea8760dcbcadfc23b54e61675",
+      "bytes": 118319
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/ae_mapping_alignment_report.json",
+      "sha256": "fa7ec5434b3e7725c58b18e10d31229f361425a97c1982a851b56329f8463f70",
+      "bytes": 191
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/deterministic_rebuild_audit.json",
+      "sha256": "d582133d5b39440f56003d823f934c793d61d327fc4b1e241655526bcfb7b671",
+      "bytes": 370
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/final_analysis_ready_long.csv",
+      "sha256": "215707a2887cf9386b5feb39d5a60e5b3e28f937610876f7ac11160dc6ca107a",
+      "bytes": 1469672
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/final_candidate_ground_truth_enriched.csv",
+      "sha256": "1a48a5bb65ffa1c1ebe5c31d3be960c9a9886bc004af5044b82fc84d0a3e82ca",
+      "bytes": 1517951
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/final_prediction_examples.jsonl",
+      "sha256": "62eae63ec4ee3ca9bc9d41b224b5424b515fda4520b03f393f4305213937d7a8",
+      "bytes": 4133618
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/final_prompt_data_objects.jsonl",
+      "sha256": "c79bc5544659c219fb67a1b83281d6621e4e6e3ce0b99e0f5154c8f63adea0f4",
+      "bytes": 2182128
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/final_trial_ground_truth_targets.csv",
+      "sha256": "e6fbc445ef4d12eea45cbb7b49c28e0ea15fd7d826829af106a7eb75781fe90b",
+      "bytes": 29084
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/leakage_audit.json",
+      "sha256": "3bdcfbeb4974fc0314b9a30dfa45ee4e4e0c34b29b64e2345337ebc40a75b83e",
+      "bytes": 883
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/phase3_target_alignment_report.csv",
+      "sha256": "93c2b58a9c26a93cf22c3fb55a87d43b24c894d452bbab92d64244b6b307b4f8",
+      "bytes": 18339
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/phase3_target_alignment_report.json",
+      "sha256": "b4d6ccae70e22dce35d79a7879284b20888f96b911cd1bf46a120ff7e70a5571",
+      "bytes": 245
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/phase6g1_locked_real_export_phase3_ids.csv",
+      "sha256": "011db1c970a4116928bb409b0f88bcf0c58ea40386084bfe564663f7eb4a2b21",
+      "bytes": 3104871
+    },
+    {
+      "path": "llm-experiments/outputs/real/phase6b/production_readiness_gate.json",
+      "sha256": "7c8fc8600187d2b27022f403d81d3a5756eeb6977f739b5680f640a14e479f1d",
+      "bytes": 721
+    }
+  ]
+}

@@ -3,6 +3,10 @@
   "config_version": "phase6e_primary_inference_config_v1",
   "phase6d_prompt_package_frozen": true,
   "freeze_gates": {
+    "SCIENTIFIC_MODEL_IDENTITIES_SELECTED": true,
+    "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": false,
+    "QMUL_BACKENDS_VERIFIED": false,
+    "RUNPOD_CENTAUR_VERIFIED": false,
     "MODEL_IDENTITIES_FROZEN": false,
     "INFERENCE_BACKENDS_VERIFIED": false,
     "PRIMARY_INFERENCE_CONFIG_FROZEN": false

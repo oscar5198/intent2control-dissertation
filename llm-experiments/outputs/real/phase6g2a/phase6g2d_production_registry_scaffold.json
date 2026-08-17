@@ -1,0 +1,16 @@
+{
+  "schema_version": "phase6g2d_production_registry_scaffold_v1",
+  "status": "blocked_pending_remote_verification",
+  "deployment_plan_schema_version": "phase6g2a_model_deployment_plan_v1",
+  "can_freeze_final_production_registry": false,
+  "PRODUCTION_INFERENCE_READY": false,
+  "real_prompt_context_audit_hook": {
+    "status": "interface_prepared_token_counts_pending_remote_tokenizers",
+    "prompt_data_source": "llm-experiments/outputs/real/phase6b/final_prompt_data_objects.jsonl",
+    "requires_verified_fields": [
+      "tokenizer_chat_template",
+      "context",
+      "max_output"
+    ]
+  }
+}

@@ -319,6 +319,15 @@ After final survey lock, the intended production sequence is:
 9. Freeze the consolidated baseline outputs.
 10. Only then pass baseline predictions to Phase 6F evaluation.
 
+Phase 6G.0 reconciliation note: the current final real held-out baseline source
+for Phase 6 is now
+`outputs/real_heldout_evaluation/mcmc_phase6_split/`. It contains the final
+N=33 MCMC leave-one-trial-out prediction artifacts and supersedes the older
+pre-final/30-response held-out outputs. Do not rerun the Phase 6C production
+fit path unless a mismatch or reproducibility defect is identified; the next
+baseline task is to adapt/export these frozen predictions into the compact
+Phase 6F evaluation schema.
+
 Do not overwrite an already frozen final production output silently. Use a
 versioned production output directory and retain the protocol/configuration
 snapshot hash, input manifest identity, output row counts, and completion status

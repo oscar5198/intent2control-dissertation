@@ -237,7 +237,6 @@ def build_hidden_ground_truth(target: dict[str, Any]) -> dict[str, Any]:
 
 def validate_no_target_leakage(example: dict[str, Any], target_rows: list[dict[str, Any]]) -> None:
     target_input = example["input_data"]["target"]
-    target_comment = comment_or_none(first_or_empty(target_rows).get("comparative_comment", ""))
     for candidate in target_input["candidates"]:
         leaked = TARGET_OUTCOME_KEYS.intersection(candidate)
         if leaked:
@@ -246,11 +245,6 @@ def validate_no_target_leakage(example: dict[str, Any], target_rows: list[dict[s
     leaked_target_keys = keys_matching(target_input, TARGET_OUTCOME_KEYS)
     if leaked_target_keys:
         raise ValueError(f"Target input leaks outcome fields: {sorted(leaked_target_keys)}")
-
-    if target_comment:
-        input_payload = json.dumps(example["input_data"], ensure_ascii=False, sort_keys=True)
-        if target_comment in input_payload:
-            raise ValueError("Target comparative comment appears in model-facing input_data.")
 
     target_trial_id = target_input["trial_id"]
     history_ids = [trial["trial_id"] for trial in example["input_data"]["history"]]

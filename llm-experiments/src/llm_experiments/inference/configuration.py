@@ -94,6 +94,10 @@ def validate_primary_configuration(
     for key, model in models.items():
         if not model.get("exact_model_id"):
             errors.append(f"{key} missing exact_model_id field")
+        if model.get("scientific_model_identity_known") is not True:
+            warnings.append(f"{key} scientific model identity is not selected")
+        if not model.get("scientific_model_name"):
+            errors.append(f"{key} missing scientific_model_name field")
         if model.get("exact_model_id") == UNVERIFIED or model.get("checkpoint_or_revision") == UNVERIFIED:
             warnings.append(f"{key} identity remains unverified")
         if model.get("identity_verification_status") != "verified":
@@ -168,6 +172,32 @@ def compute_freeze_gates(
         and row.get("checkpoint_or_revision") not in {"", UNVERIFIED, None}
         for row in models
     )
+    scientific_model_identities_selected = all(
+        row.get("scientific_model_identity_known") is True
+        and row.get("scientific_model_name") not in {"", UNVERIFIED, None}
+        for row in models
+    )
+    exact_deployment_identities_verified = all(
+        row.get("exact_served_id_verified") is True
+        and row.get("exact_served_id") not in {"", UNVERIFIED, None}
+        and row.get("revision_verified") is True
+        and row.get("revision") not in {"", UNVERIFIED, None}
+        for row in models
+    )
+    qmul_backends_verified = all(
+        row.get("backend_verification_status") == "verified"
+        and row.get("request_contract_status") == "verified"
+        and row.get("response_contract_status") == "verified"
+        for row in backends
+        if row.get("execution_environment") == "QMUL"
+    )
+    runpod_centaur_verified = all(
+        row.get("backend_verification_status") == "verified"
+        and row.get("request_contract_status") == "verified"
+        and row.get("response_contract_status") == "verified"
+        for row in backends
+        if row.get("execution_environment") == "RunPod"
+    )
     inference_backends_verified = all(
         row.get("backend_verification_status") == "verified"
         and row.get("request_contract_status") == "verified"
@@ -178,6 +208,10 @@ def compute_freeze_gates(
     structured_output_established = all(row.get("structured_output_mechanism") != UNVERIFIED for row in capability_rows)
     context_compatible = all(row["compatibility_status"] in {"PASS", "UNVERIFIED"} for row in context_audit["models"])
     return {
+        "SCIENTIFIC_MODEL_IDENTITIES_SELECTED": scientific_model_identities_selected,
+        "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": exact_deployment_identities_verified,
+        "QMUL_BACKENDS_VERIFIED": qmul_backends_verified,
+        "RUNPOD_CENTAUR_VERIFIED": runpod_centaur_verified,
         "MODEL_IDENTITIES_FROZEN": model_identities_frozen,
         "INFERENCE_BACKENDS_VERIFIED": inference_backends_verified,
         "PRIMARY_INFERENCE_CONFIG_FROZEN": (

@@ -1,0 +1,36 @@
+{
+  "schema_version": "phase6g1_real_leakage_audit_v1",
+  "passed": true,
+  "failure_count": 0,
+  "base_audits": {
+    "leakage": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "provenance_leakage": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "condition_equivalence": {
+      "passed": true,
+      "paired_condition_count": 198,
+      "failures": []
+    },
+    "identifier_integrity": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "hidden_ground_truth_separation": {
+      "passed": true,
+      "checks": {
+        "prompt_data_has_no_ground_truth_key": true,
+        "prediction_examples_retain_ground_truth": true,
+        "authoritative_scoring_source": "phase6b3_prediction_examples_jsonl"
+      }
+    }
+  },
+  "extra_failures": []
+}

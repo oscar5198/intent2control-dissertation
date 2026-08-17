@@ -1,0 +1,9 @@
+{
+  "schema_version": "phase6g1_phase3_target_alignment_v1",
+  "passed": true,
+  "phase3_target_count": 198,
+  "phase6b_target_count": 198,
+  "aligned_target_count": 198,
+  "missing_phase6b_targets": [],
+  "extra_phase6b_targets": []
+}

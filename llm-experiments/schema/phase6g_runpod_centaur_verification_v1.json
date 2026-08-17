@@ -1,0 +1,70 @@
+{
+  "schema_version": "phase6g_runpod_centaur_verification_v1",
+  "artifact_type": "json_schema",
+  "required_top_level_fields": [
+    "schema_version",
+    "environment",
+    "verification_timestamp_utc",
+    "verification_script_version",
+    "host_metadata",
+    "model_record",
+    "checks",
+    "unresolved_items",
+    "overall_runpod_centaur_verified"
+  ],
+  "environment": "RunPod",
+  "required_model_key": "centaur",
+  "required_model_record_fields": [
+    "model_key",
+    "intended_scientific_model",
+    "scientific_model_identity_known",
+    "expected_source_family",
+    "source_candidates",
+    "deployed_model_source",
+    "deployment_form",
+    "base_model",
+    "exact_served_id_verified",
+    "exact_served_id",
+    "revision",
+    "revision_verified",
+    "commit",
+    "quantisation",
+    "precision",
+    "serving_framework",
+    "endpoint_type",
+    "tokenizer_chat_template",
+    "context_limit",
+    "max_output_limit",
+    "temperature_or_greedy_controls",
+    "top_p_support",
+    "seed_support",
+    "system_role_behavior",
+    "structured_output_mechanism",
+    "health_check",
+    "request_contract",
+    "response_extraction_contract",
+    "endpoint_server_version",
+    "backend_contract_verified",
+    "centaur_choice_convention_audit"
+  ],
+  "centaur_choice_convention_audit_fields": [
+    "recommendation_exists",
+    "technically_required",
+    "evidence_source_note",
+    "likely_implication_for_frozen_phase6d_package"
+  ],
+  "source_candidates_to_check": [
+    "marcelbinz/Llama-3.1-Centaur-70B",
+    "marcelbinz/Llama-3.1-Centaur-70B-adapter"
+  ],
+  "credential_policy": {
+    "forbidden": [
+      "bearer tokens",
+      "api keys",
+      "passwords",
+      "authenticated endpoint URLs",
+      "Hugging Face tokens"
+    ],
+    "endpoint_urls": "sanitize scheme/host/path only; omit query strings and credentials"
+  }
+}
