@@ -20,9 +20,10 @@ from statistical_baseline.heldout import diagnostic_status, extract_arviz_diagno
 REPO_ROOT = Path(__file__).resolve().parents[3]
 REAL_DATA_PATH = REPO_ROOT / "statistical-baseline/data/real/real_ratings_clean.csv"
 REAL_TRIAL_PREFS_PATH = REPO_ROOT / "statistical-baseline/data/real/real_trial_preferences.csv"
+REAL_CLEANING_MANIFEST_PATH = REPO_ROOT / "statistical-baseline/data/real/real_cleaning_manifest.json"
 PROTOCOL_SOURCE = REPO_ROOT / "llm-experiments/llm_evaluation_protocol.md"
 OUTPUT_ROOT = REPO_ROOT / "statistical-baseline/outputs/real_heldout_evaluation"
-OUTPUT_DIR = OUTPUT_ROOT / "frozen_phase6_split"
+OUTPUT_DIR = OUTPUT_ROOT / "mcmc_phase6_split"
 NOTEBOOK_PATH = REPO_ROOT / "statistical-baseline/notebooks/_09_real_heldout_evaluation.ipynb"
 PHASE6_EXAMPLES_SOURCE = REPO_ROOT / "llm-experiments/src/llm_experiments/data/examples.py"
 PHASE6_TARGETS_SOURCE = REPO_ROOT / "llm-experiments/src/llm_experiments/data/targets.py"
@@ -30,6 +31,16 @@ PHASE6_PROMPT_DATA_SOURCE = REPO_ROOT / "llm-experiments/src/llm_experiments/dat
 
 INTERVAL_LEVEL = 0.94
 BASE_SEED = 20260817
+CHECKPOINT_COMPATIBILITY_VERSION = "real_heldout_mcmc_checkpoint_v2_strict_n33"
+EXPECTED_N33_COUNTS = {
+    "participants": 33,
+    "rating_rows": 990,
+    "target_trials": 198,
+    "fold_model_pairs": 396,
+    "target_candidate_rows": 5,
+    "participant_history_rows": 25,
+}
+REQUIRED_N33_PARTICIPANTS = {"P031", "P032", "P033"}
 MODEL_DEFINITIONS = [
     {
         "model_id": "categorical_design",
@@ -101,6 +112,51 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def dataframe_sha256(df: pd.DataFrame) -> str:
+    payload = df.to_csv(index=False, lineterminator="\n")
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def relpath(path: Path) -> str:
+    return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+
+
+def cleaning_manifest() -> dict[str, Any]:
+    return json.loads(REAL_CLEANING_MANIFEST_PATH.read_text(encoding="utf-8"))
+
+
+def cleaned_dataset_metadata(df: pd.DataFrame) -> dict[str, Any]:
+    manifest = cleaning_manifest()
+    participants = sorted(df["participant_id"].astype(str).unique().tolist())
+    group_split = (
+        df[["participant_id", "group"]]
+        .drop_duplicates()
+        .groupby("group", observed=True)
+        .size()
+        .astype(int)
+        .to_dict()
+    )
+    feature_info = manifest.get("configuration_inputs", {}).get("feature_table", {})
+    raw_info = manifest.get("raw_provenance", {})
+    return {
+        "cleaned_ratings_path": relpath(REAL_DATA_PATH),
+        "cleaned_ratings_sha256": file_sha256(REAL_DATA_PATH),
+        "cleaning_manifest_path": relpath(REAL_CLEANING_MANIFEST_PATH),
+        "cleaning_manifest_sha256": file_sha256(REAL_CLEANING_MANIFEST_PATH),
+        "cleaning_created_at_utc": manifest.get("created_at_utc"),
+        "cleaning_dataset_version": raw_info.get("stored_path"),
+        "raw_filename": raw_info.get("original_filename"),
+        "raw_path": raw_info.get("stored_path"),
+        "raw_sha256": raw_info.get("sha256"),
+        "analysable_n": int(len(participants)),
+        "participants": participants,
+        "group_split": group_split,
+        "rating_count": int(len(df)),
+        "feature_table_path": feature_info.get("path"),
+        "feature_table_sha256": feature_info.get("sha256"),
+    }
+
+
 def load_real_ratings(path: Path = REAL_DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
     required = {
@@ -159,6 +215,53 @@ def build_split_manifest(df: pd.DataFrame) -> pd.DataFrame:
     manifest["phase6_split_rule"] = "leave-one-trial-out participant-trial; all five candidate rows excluded together"
     manifest["candidate_count"] = manifest["trial_id"].map(df.groupby("trial_id").size())
     return manifest
+
+
+def official_n33_target_validation(df: pd.DataFrame, split_manifest: pd.DataFrame) -> pd.DataFrame:
+    participants = set(df["participant_id"].astype(str).unique())
+    target_counts = split_manifest["trial_id"].map(df.groupby("trial_id").size())
+    history_counts = []
+    for _, split in split_manifest.iterrows():
+        training, _ = target_training_split(df, str(split["trial_id"]))
+        history_counts.append(int(training["participant_id"].eq(str(split["participant_id"])).sum()))
+    rows = [
+        {
+            "check": "exactly_33_participants",
+            "passed": int(df["participant_id"].nunique()) == EXPECTED_N33_COUNTS["participants"],
+            "value": int(df["participant_id"].nunique()),
+        },
+        {
+            "check": "exactly_990_rating_rows",
+            "passed": len(df) == EXPECTED_N33_COUNTS["rating_rows"],
+            "value": len(df),
+        },
+        {
+            "check": "exactly_198_target_trials",
+            "passed": len(split_manifest) == EXPECTED_N33_COUNTS["target_trials"],
+            "value": len(split_manifest),
+        },
+        {
+            "check": "exactly_396_target_model_units",
+            "passed": len(split_manifest) * len(MODEL_DEFINITIONS) == EXPECTED_N33_COUNTS["fold_model_pairs"],
+            "value": len(split_manifest) * len(MODEL_DEFINITIONS),
+        },
+        {
+            "check": "new_participants_p031_p033_present",
+            "passed": REQUIRED_N33_PARTICIPANTS.issubset(participants),
+            "value": "|".join(sorted(REQUIRED_N33_PARTICIPANTS & participants)),
+        },
+        {
+            "check": "each_target_has_five_heldout_rows",
+            "passed": bool((target_counts == EXPECTED_N33_COUNTS["target_candidate_rows"]).all()),
+            "value": str(target_counts.value_counts().to_dict()),
+        },
+        {
+            "check": "each_target_participant_retains_25_history_rows",
+            "passed": bool(all(count == EXPECTED_N33_COUNTS["participant_history_rows"] for count in history_counts)),
+            "value": str(pd.Series(history_counts).value_counts().to_dict()),
+        },
+    ]
+    return pd.DataFrame(rows)
 
 
 def audit_phase6_split_source(df: pd.DataFrame, split_manifest: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -230,7 +333,43 @@ def human_winner_table(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def compatible_hash(fit_method: str, sampler_settings: dict[str, Any] | None = None) -> str:
+def sampler_name(sampler_settings: dict[str, Any]) -> str:
+    if sampler_settings.get("inference_method") == "nutpie":
+        return "nutpie"
+    return str(sampler_settings.get("nuts_sampler", sampler_settings.get("inference_method", "pymc")))
+
+
+def run_metadata(df: pd.DataFrame, split_manifest: pd.DataFrame, fit_method: str, sampler_settings: dict[str, Any] | None = None) -> dict[str, Any]:
+    sampler_settings = sampler_settings or SAMPLER_SETTINGS
+    dataset = cleaned_dataset_metadata(df)
+    target_manifest_sha256 = dataframe_sha256(split_manifest)
+    return {
+        "checkpoint_compatibility_version": CHECKPOINT_COMPATIBILITY_VERSION,
+        "cleaned_ratings_sha256": dataset["cleaned_ratings_sha256"],
+        "cleaning_manifest_sha256": dataset["cleaning_manifest_sha256"],
+        "cleaning_dataset_version": dataset["cleaning_dataset_version"],
+        "raw_sha256": dataset["raw_sha256"],
+        "analysable_n": dataset["analysable_n"],
+        "group_split": dataset["group_split"],
+        "rating_count": dataset["rating_count"],
+        "target_count": int(len(split_manifest)),
+        "model_fit_count": int(len(split_manifest) * len(MODEL_DEFINITIONS)),
+        "target_manifest_sha256": target_manifest_sha256,
+        "target_manifest_version": "phase6_leave_one_trial_out_n33_v1",
+        "model_definitions": MODEL_DEFINITIONS,
+        "fit_method": fit_method,
+        "inference_method": fit_method,
+        "sampler": sampler_name(sampler_settings),
+        "chains": int(sampler_settings["chains"]),
+        "tune": int(sampler_settings["tune"]),
+        "draws": int(sampler_settings["draws"]),
+        "target_accept": float(sampler_settings["target_accept"]),
+        "feature_table_sha256": dataset["feature_table_sha256"],
+        "feature_table_path": dataset["feature_table_path"],
+    }
+
+
+def compatible_hash(fit_method: str, sampler_settings: dict[str, Any] | None = None, metadata: dict[str, Any] | None = None) -> str:
     sampler_settings = sampler_settings or SAMPLER_SETTINGS
     payload = {
         "models": MODEL_DEFINITIONS,
@@ -240,7 +379,10 @@ def compatible_hash(fit_method: str, sampler_settings: dict[str, Any] | None = N
         "fit_method": fit_method,
         "interval": INTERVAL_LEVEL,
         "real_data_sha256": file_sha256(REAL_DATA_PATH),
+        "cleaning_manifest_sha256": file_sha256(REAL_CLEANING_MANIFEST_PATH),
         "protocol_sha256": file_sha256(PROTOCOL_SOURCE),
+        "checkpoint_compatibility_version": CHECKPOINT_COMPATIBILITY_VERSION,
+        "strict_metadata": metadata,
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
@@ -257,18 +399,56 @@ def checkpoint_paths(paths: EvaluationPaths, prediction_example_id: str, model_i
     )
 
 
-def checkpoint_valid(candidate_path: Path, trial_path: Path, diag_path: Path, expected_hash: str) -> bool:
+def checkpoint_metadata(run_meta: dict[str, Any], split_row: pd.Series, model_def: dict[str, Any], run_hash: str) -> dict[str, Any]:
+    formula_sha256 = hashlib.sha256(model_def["formula"].encode("utf-8")).hexdigest()
+    return {
+        **run_meta,
+        "compatible_hash": run_hash,
+        "participant_id": str(split_row["participant_id"]),
+        "target_trial_id": str(split_row["trial_id"]),
+        "trial_id": str(split_row["trial_id"]),
+        "prediction_example_id": str(split_row["prediction_example_id"]),
+        "fold_id": int(split_row["fold_id"]),
+        "model_name": model_def["model_id"],
+        "baseline_model": model_def["model_id"],
+        "model_formula": model_def["formula"],
+        "model_formula_sha256": formula_sha256,
+        "formula": model_def["formula"],
+    }
+
+
+def metadata_equal(actual: Any, expected: Any) -> bool:
+    if isinstance(expected, float):
+        try:
+            return math.isclose(float(actual), expected, rel_tol=0.0, abs_tol=1e-12)
+        except (TypeError, ValueError):
+            return False
+    return actual == expected
+
+
+def checkpoint_status(candidate_path: Path, trial_path: Path, diag_path: Path, expected_metadata: dict[str, Any]) -> tuple[bool, str]:
     if not (candidate_path.exists() and trial_path.exists() and diag_path.exists()):
-        return False
+        return False, "missing_checkpoint_files"
     try:
         diag = json.loads(diag_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        return False
-    if diag.get("compatible_hash") != expected_hash:
-        return False
+        return False, "invalid_checkpoint_json"
+    for key, expected_value in expected_metadata.items():
+        if key not in diag:
+            return False, f"missing_metadata:{key}"
+        if not metadata_equal(diag.get(key), expected_value):
+            return False, f"metadata_mismatch:{key}"
     if diag.get("fit_status") not in {"fit_ok", "convergence_warning"}:
-        return False
-    return len(pd.read_csv(candidate_path)) == 5 and len(pd.read_csv(trial_path)) == 1
+        return False, "fit_status_not_completed"
+    if len(pd.read_csv(candidate_path)) != EXPECTED_N33_COUNTS["target_candidate_rows"]:
+        return False, "candidate_row_count_mismatch"
+    if len(pd.read_csv(trial_path)) != 1:
+        return False, "trial_row_count_mismatch"
+    return True, "compatible"
+
+
+def checkpoint_valid(candidate_path: Path, trial_path: Path, diag_path: Path, expected_metadata: dict[str, Any]) -> bool:
+    return checkpoint_status(candidate_path, trial_path, diag_path, expected_metadata)[0]
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -455,11 +635,13 @@ def fit_one_fold(
     model_def: dict[str, Any],
     paths: EvaluationPaths,
     run_hash: str,
+    run_meta: dict[str, Any],
     fit_method: str,
     sampler_settings: dict[str, Any] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
     candidate_path, trial_path, diag_path = checkpoint_paths(paths, split_row["prediction_example_id"], model_def["model_id"])
-    if checkpoint_valid(candidate_path, trial_path, diag_path, run_hash):
+    expected_metadata = checkpoint_metadata(run_meta, split_row, model_def, run_hash)
+    if checkpoint_valid(candidate_path, trial_path, diag_path, expected_metadata):
         return pd.read_csv(candidate_path), pd.read_csv(trial_path), json.loads(diag_path.read_text(encoding="utf-8"))
 
     training, target = target_training_split(df, str(split_row["trial_id"]))
@@ -503,8 +685,10 @@ def fit_one_fold(
             "fit_status": "fit_failed",
             "message": repr(exc),
             "runtime_seconds": runtime_seconds,
-            "compatible_hash": run_hash,
-            **settings,
+            "random_seed": settings["random_seed"],
+            "cores": settings.get("cores"),
+            "sampler_settings": settings,
+            **expected_metadata,
         }
         write_json(diag_path, diag)
         raise
@@ -529,8 +713,10 @@ def fit_one_fold(
         "participant_other_trial_rows_retained": int(training["participant_id"].eq(split_row["participant_id"]).sum()),
         "same_stimulus_other_participant_rows_retained": int(training["stimulus_id"].isin(target["stimulus_id"]).sum()),
         "target_exclusion_validated": True,
-        "compatible_hash": run_hash,
-        **settings,
+        "random_seed": settings["random_seed"],
+        "cores": settings.get("cores"),
+        "sampler_settings": settings,
+        **expected_metadata,
         **diagnostics,
     }
 
@@ -549,6 +735,7 @@ def fit_fold_task(task: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dic
         task["model_def"],
         task["paths"],
         task["run_hash"],
+        task["run_meta"],
         task["fit_method"],
         task["sampler_settings"],
     )
@@ -816,6 +1003,125 @@ def validate_outputs(split_manifest: pd.DataFrame, candidates: pd.DataFrame, tri
     return pd.DataFrame(rows)
 
 
+def completion_status(split_manifest: pd.DataFrame, diagnostics: pd.DataFrame, fit_method: str, require_full_n33: bool = True) -> dict[str, Any]:
+    expected_pairs = len(split_manifest) * len(MODEL_DEFINITIONS)
+    participants = set(diagnostics.get("participant_id", pd.Series(dtype=str)).astype(str))
+    pair_counts = diagnostics.groupby(["prediction_example_id", "baseline_model"], dropna=False).size() if len(diagnostics) else pd.Series(dtype=int)
+    target_model_counts = diagnostics.groupby("prediction_example_id", dropna=False)["baseline_model"].nunique() if len(diagnostics) else pd.Series(dtype=int)
+    completed_status = diagnostics.get("fit_status", pd.Series(dtype=str)).isin(["fit_ok", "convergence_warning"])
+    method_ok = diagnostics.get("fit_method", pd.Series(dtype=str)).eq(fit_method)
+    leakage_ok = diagnostics.get("target_exclusion_validated", pd.Series(dtype=bool)).eq(True)
+    missing_new_participants = sorted(REQUIRED_N33_PARTICIPANTS - participants)
+    full_n33_ok = bool(
+        int(diagnostics.get("participant_id", pd.Series(dtype=str)).nunique()) == EXPECTED_N33_COUNTS["participants"]
+        and not missing_new_participants
+    )
+    complete = bool(
+        len(diagnostics) == expected_pairs
+        and len(pair_counts) == expected_pairs
+        and bool((pair_counts == 1).all())
+        and int(diagnostics.get("trial_id", pd.Series(dtype=str)).nunique()) == len(split_manifest)
+        and bool((target_model_counts == len(MODEL_DEFINITIONS)).all())
+        and bool(completed_status.all())
+        and bool(method_ok.all())
+        and bool(leakage_ok.all())
+        and (full_n33_ok if require_full_n33 else True)
+    )
+    return {
+        "complete": complete,
+        "expected_fold_model_pairs": int(expected_pairs),
+        "compatible_completed_fold_model_pairs": int(len(diagnostics)),
+        "target_count": int(diagnostics.get("trial_id", pd.Series(dtype=str)).nunique()),
+        "participant_count": int(diagnostics.get("participant_id", pd.Series(dtype=str)).nunique()),
+        "missing_required_new_participants": missing_new_participants,
+        "require_full_n33": bool(require_full_n33),
+        "both_models_for_every_target": bool((target_model_counts == len(MODEL_DEFINITIONS)).all()) if len(target_model_counts) else False,
+        "all_fit_status_complete": bool(completed_status.all()) if len(completed_status) else False,
+        "all_fit_method_matches": bool(method_ok.all()) if len(method_ok) else False,
+        "all_leakage_checks_pass": bool(leakage_ok.all()) if len(leakage_ok) else False,
+    }
+
+
+def heldout_checkpoint_status(
+    output_dir: Path = OUTPUT_DIR,
+    fit_method: str = "mcmc",
+    sampler_settings: dict[str, Any] | None = None,
+    max_folds: int | None = None,
+    fold_ids: list[int] | None = None,
+) -> dict[str, Any]:
+    sampler_settings = sampler_settings or SAMPLER_SETTINGS
+    paths = EvaluationPaths(output_dir=Path(output_dir).resolve())
+    df = load_real_ratings()
+    dataset_validation = validate_real_dataset(df)
+    split_manifest = build_split_manifest(df)
+    official_validation = official_n33_target_validation(df, split_manifest)
+    if fold_ids is not None:
+        requested_folds = set(fold_ids)
+        split_manifest = split_manifest.loc[split_manifest["fold_id"].isin(requested_folds)].copy()
+    if max_folds is not None:
+        split_manifest = split_manifest.head(max_folds).copy()
+    run_meta = run_metadata(df, split_manifest, fit_method, sampler_settings)
+    run_hash = compatible_hash(fit_method, sampler_settings, run_meta)
+    compatible_rows: list[dict[str, Any]] = []
+    incompatible_rows: list[dict[str, Any]] = []
+    missing_rows: list[dict[str, Any]] = []
+    for _, split_row in split_manifest.iterrows():
+        for model_def in MODEL_DEFINITIONS:
+            candidate_path, trial_path, diag_path = checkpoint_paths(paths, split_row["prediction_example_id"], model_def["model_id"])
+            expected_metadata = checkpoint_metadata(run_meta, split_row, model_def, run_hash)
+            compatible, reason = checkpoint_status(candidate_path, trial_path, diag_path, expected_metadata)
+            row = {
+                "fold_id": int(split_row["fold_id"]),
+                "participant_id": str(split_row["participant_id"]),
+                "trial_id": str(split_row["trial_id"]),
+                "prediction_example_id": str(split_row["prediction_example_id"]),
+                "baseline_model": model_def["model_id"],
+                "reason": reason,
+            }
+            if compatible:
+                compatible_rows.append(row)
+            elif reason == "missing_checkpoint_files":
+                missing_rows.append(row)
+            else:
+                incompatible_rows.append(row)
+    compatible_df = pd.DataFrame(compatible_rows)
+    participants_represented = sorted(compatible_df["participant_id"].unique().tolist()) if len(compatible_df) else []
+    required_outputs = [
+        "heldout_split_manifest.csv",
+        "frozen_target_manifest.csv",
+        "candidate_predictions.csv",
+        "trial_predictions.csv",
+        "fold_diagnostics.csv",
+        "leakage_audit.csv",
+        "feature_model_metrics.csv",
+        "stimulus_model_metrics.csv",
+        "participant_level_metrics.csv",
+        "bootstrap_model_comparison.csv",
+        "runtime_summary.csv",
+        "mcmc_vs_laplace_sensitivity.csv",
+        "evaluation_manifest.json",
+    ]
+    return {
+        "output_dir": relpath(paths.output_dir) if paths.output_dir.is_relative_to(REPO_ROOT) else str(paths.output_dir),
+        "checkpoint_dir": relpath(paths.checkpoint_dir) if paths.checkpoint_dir.is_relative_to(REPO_ROOT) else str(paths.checkpoint_dir),
+        "checkpoint_compatibility_version": CHECKPOINT_COMPATIBILITY_VERSION,
+        "expected_folds": int(len(split_manifest)),
+        "expected_fold_model_pairs": int(len(split_manifest) * len(MODEL_DEFINITIONS)),
+        "compatible_completed_folds": int(len(compatible_rows)),
+        "stale_or_incompatible_folds": int(len(incompatible_rows)),
+        "missing_folds": int(len(missing_rows)),
+        "participants_represented": participants_represented,
+        "participant_count_represented": int(len(participants_represented)),
+        "p031_p033_present": REQUIRED_N33_PARTICIPANTS.issubset(set(participants_represented)),
+        "dataset_validation_passed": bool(dataset_validation["passed"].all()),
+        "official_n33_validation_passed": bool(official_validation["passed"].all()),
+        "official_n33_validation": official_validation.to_dict(orient="records"),
+        "final_consolidation_complete": bool(all((paths.output_dir / name).exists() for name in required_outputs)),
+        "required_outputs_missing": [name for name in required_outputs if not (paths.output_dir / name).exists()],
+        "sample_incompatible_reasons": pd.Series([row["reason"] for row in incompatible_rows]).value_counts().head(10).to_dict() if incompatible_rows else {},
+    }
+
+
 def make_figures(metrics: pd.DataFrame, comparison: pd.DataFrame, diagnostics: pd.DataFrame, paths: EvaluationPaths) -> None:
     import matplotlib.pyplot as plt
 
@@ -868,6 +1174,9 @@ def run_real_heldout_evaluation(
         raise ValueError("Real cleaned data failed held-out structure validation.")
 
     split_manifest = build_split_manifest(df)
+    official_validation = official_n33_target_validation(df, split_manifest)
+    if not official_validation["passed"].all():
+        raise ValueError("Official N=33 held-out target validation failed.")
     if fold_ids is not None:
         requested_folds = set(fold_ids)
         available_folds = set(split_manifest["fold_id"].astype(int))
@@ -887,7 +1196,8 @@ def run_real_heldout_evaluation(
     if not leakage["leakage_passed"].all():
         raise ValueError("Leakage audit failed before fitting.")
 
-    run_hash = compatible_hash(fit_method, sampler_settings)
+    run_meta = run_metadata(df, split_manifest, fit_method, sampler_settings)
+    run_hash = compatible_hash(fit_method, sampler_settings, run_meta)
     all_candidates: list[pd.DataFrame] = []
     all_trials: list[pd.DataFrame] = []
     diagnostics: list[dict[str, Any]] = []
@@ -896,7 +1206,8 @@ def run_real_heldout_evaluation(
     for _, split_row in split_manifest.iterrows():
         for model_def in MODEL_DEFINITIONS:
             candidate_path, trial_path, diag_path = checkpoint_paths(paths, split_row["prediction_example_id"], model_def["model_id"])
-            if resume and checkpoint_valid(candidate_path, trial_path, diag_path, run_hash):
+            expected_metadata = checkpoint_metadata(run_meta, split_row, model_def, run_hash)
+            if resume and checkpoint_valid(candidate_path, trial_path, diag_path, expected_metadata):
                 cand, trial, diag = pd.read_csv(candidate_path), pd.read_csv(trial_path), json.loads(diag_path.read_text(encoding="utf-8"))
                 all_candidates.append(cand)
                 all_trials.append(trial)
@@ -909,6 +1220,7 @@ def run_real_heldout_evaluation(
                         "model_def": model_def,
                         "paths": paths,
                         "run_hash": run_hash,
+                        "run_meta": run_meta,
                         "fit_method": fit_method,
                         "sampler_settings": sampler_settings,
                     }
@@ -930,6 +1242,9 @@ def run_real_heldout_evaluation(
     candidates = pd.concat(all_candidates, ignore_index=True)
     trials = pd.concat(all_trials, ignore_index=True)
     diagnostics_df = pd.DataFrame(diagnostics)
+    completion = completion_status(split_manifest, diagnostics_df, fit_method, require_full_n33=fold_ids is None and max_folds is None)
+    if not completion["complete"]:
+        raise ValueError(f"Held-out evaluation did not produce a complete compatible run: {completion}")
     human_winners = human_winner_table(df)
     trials = trials.drop(columns=[col for col in human_winners.columns if col in trials.columns and col != "trial_id"], errors="ignore").merge(human_winners, on="trial_id", how="left", suffixes=("", "_from_preferences"))
     candidates.to_csv(paths.output_dir / "candidate_predictions.csv", index=False)
@@ -943,6 +1258,7 @@ def run_real_heldout_evaluation(
     fit_method_audit.to_csv(paths.output_dir / "fit_method_audit.csv", index=False)
 
     validation = validate_outputs(split_manifest, candidates, trials)
+    official_validation.to_csv(paths.output_dir / "official_n33_target_validation.csv", index=False)
     validation.to_csv(paths.output_dir / "output_validation.csv", index=False)
     metrics = aggregate_metric_rows(trials, candidates)
     metrics.loc[metrics["baseline_model"] == "categorical_design"].to_csv(paths.output_dir / "stimulus_model_metrics.csv", index=False)
@@ -1006,20 +1322,33 @@ def run_real_heldout_evaluation(
         "phase6_split_source_sha256": file_sha256(PROTOCOL_SOURCE),
         "real_data_source": str(REAL_DATA_PATH.relative_to(REPO_ROOT)).replace("\\", "/"),
         "real_data_sha256": file_sha256(REAL_DATA_PATH),
+        "cleaning_manifest_sha256": file_sha256(REAL_CLEANING_MANIFEST_PATH),
+        "raw_sha256": cleaned_dataset_metadata(df)["raw_sha256"],
         "split_rule": "leave-one-trial-out participant-trial; all five candidate rows excluded together",
         "phase6_split_audit": split_audit,
+        "checkpoint_compatibility_version": CHECKPOINT_COMPATIBILITY_VERSION,
+        "target_manifest_sha256": run_meta["target_manifest_sha256"],
         "n_participants": int(df["participant_id"].nunique()),
         "n_trials": int(split_manifest["trial_id"].nunique()),
         "n_candidate_rows": int(len(df)),
+        "model_fit_count": int(len(diagnostics_df)),
+        "group_split": run_meta["group_split"],
         "n_tied_human_trials": int(human_winners["observed_tie"].sum()),
         "models": MODEL_DEFINITIONS,
         "implementation_note": HELDOUT_IMPLEMENTATION_NOTE,
         "sampler_settings": sampler_settings,
+        "inference_method": fit_method,
+        "sampler": run_meta["sampler"],
+        "chains": run_meta["chains"],
+        "tune": run_meta["tune"],
+        "draws": run_meta["draws"],
+        "target_accept": run_meta["target_accept"],
         "parallel_folds": parallel_folds,
         "requested_fold_ids": fold_ids,
         "executed_fit_method": fit_method,
         "approximation_settings": APPROXIMATION_SETTINGS if fit_method == "laplace" else None,
         "compatible_hash": run_hash,
+        "completion_status": completion,
         "validation_passed": bool(validation["passed"].all()),
         "fit_status_counts": diagnostics_df["fit_status"].value_counts().to_dict(),
         "fit_method_counts": diagnostics_df["fit_method"].value_counts().to_dict() if "fit_method" in diagnostics_df else {},

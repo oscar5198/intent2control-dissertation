@@ -26,6 +26,7 @@ from statistical_baseline.real_heldout_evaluation import (  # noqa: E402
     OUTPUT_DIR,
     REAL_DATA_PATH,
     SAMPLER_SETTINGS,
+    heldout_checkpoint_status,
     run_real_heldout_evaluation,
 )
 
@@ -49,6 +50,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-folds", type=int, default=None, help="Optional smoke/debug limit; omit for all 198 folds.")
     parser.add_argument("--fold-id", type=int, action="append", default=None, help="Specific fold_id to run; repeat for multiple folds.")
     parser.add_argument("--parallel-folds", type=int, default=1, help="Number of fold/model fits to run concurrently.")
+    parser.add_argument("--status", action="store_true", help="Report checkpoint/resume status without fitting models.")
     parser.add_argument("--chains", type=int, default=2, help="MCMC chains.")
     parser.add_argument("--draws", type=int, default=500, help="Posterior draws per chain.")
     parser.add_argument("--tune", type=int, default=500, help="Tuning draws per chain.")
@@ -121,6 +123,17 @@ def main() -> int:
     print(json.dumps(dataset, indent=2, default=str))
     print("Held-out MCMC settings:")
     print(json.dumps(settings, indent=2, default=str))
+    if args.status:
+        status = heldout_checkpoint_status(
+            output_dir=args.output_dir,
+            fit_method="mcmc",
+            sampler_settings=settings,
+            max_folds=args.max_folds,
+            fold_ids=args.fold_id,
+        )
+        print("Held-out MCMC checkpoint status:")
+        print(json.dumps(status, indent=2, default=str))
+        return 0
     run_real_heldout_evaluation(
         output_dir=args.output_dir,
         resume=not args.no_resume,
