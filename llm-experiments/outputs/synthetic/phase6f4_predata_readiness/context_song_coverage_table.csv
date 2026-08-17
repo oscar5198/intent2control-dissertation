@@ -1,0 +1,12 @@
+synthetic_label,context_label,song_id,target_count,llm_prediction_available_targets,baseline_available_targets,alignment_complete_targets,human_preference_tie_targets
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-1,id_like_to_know,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-1,in_the_meantime,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-1,lead_me,1,1,1,1,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-1,pouring_room,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-2,id_like_to_know,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-2,in_the_meantime,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-2,lead_me,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,EDR-2,pouring_room,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,FM-1,id_like_to_know,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,FM-1,in_the_meantime,1,1,0,0,0
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,FM-1,lead_me,1,1,0,0,0

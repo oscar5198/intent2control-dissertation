@@ -1,0 +1,3 @@
+model,formula,runtime_seconds,draws,tune,chains,cores,target_accept,random_seed,inference_method
+intercept_only,rating ~ 1 + (1 | participant_id) + (1 | stimulus_id),11.01500939996913,1000,1000,4,1,0.95,42,nutpie
+additive_stimulus,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),36.518881199881434,1000,1000,4,1,0.95,42,nutpie

@@ -1,0 +1,61 @@
+song_id,song_title,group,episode,stimulus_id,mix_id,original_mix_name,posterior_mean_expected_rating,hdi_3%,hdi_97%
+id_like_to_know,I'd Like To Know,group_01,EDR-1,id_like_to_know_pxl_s1,mix_9ffcd672af17,PXL-S1,70.77238003746557,67.19013103477184,74.58393810315428
+id_like_to_know,I'd Like To Know,group_01,EDR-1,id_like_to_know_pxl_s2,mix_6f8b655d7999,PXL-S2,72.87652101252394,69.37773724252159,76.74444536930297
+id_like_to_know,I'd Like To Know,group_01,EDR-1,id_like_to_know_pxl_s3,mix_65f41f41d3ab,PXL-S3,69.40274454425139,65.73829935140967,73.12745470333617
+id_like_to_know,I'd Like To Know,group_01,EDR-1,id_like_to_know_pxl_s5,mix_82d60d7c7fc5,PXL-S5,70.64663326366214,67.19151085539416,74.60767406380302
+id_like_to_know,I'd Like To Know,group_01,EDR-1,id_like_to_know_pxl_s7,mix_b393d3919c78,PXL-S7,71.36926180989202,67.79798444746558,75.03397019263868
+id_like_to_know,I'd Like To Know,group_01,EDR-2,id_like_to_know_pxl_s1,mix_9ffcd672af17,PXL-S1,67.79036881918856,64.19776179231381,71.54578096780055
+id_like_to_know,I'd Like To Know,group_01,EDR-2,id_like_to_know_pxl_s2,mix_6f8b655d7999,PXL-S2,69.89450979424693,66.11467662841011,73.4494533723152
+id_like_to_know,I'd Like To Know,group_01,EDR-2,id_like_to_know_pxl_s3,mix_65f41f41d3ab,PXL-S3,66.42073332597438,62.762207518577036,70.13706768707036
+id_like_to_know,I'd Like To Know,group_01,EDR-2,id_like_to_know_pxl_s5,mix_82d60d7c7fc5,PXL-S5,67.66462204538512,63.69973643948764,71.20671943764579
+id_like_to_know,I'd Like To Know,group_01,EDR-2,id_like_to_know_pxl_s7,mix_b393d3919c78,PXL-S7,68.387250591615,65.0404108160233,72.50005454186166
+id_like_to_know,I'd Like To Know,group_01,FM-1,id_like_to_know_pxl_s1,mix_9ffcd672af17,PXL-S1,70.44761334042485,66.82987681259208,74.18171497849656
+id_like_to_know,I'd Like To Know,group_01,FM-1,id_like_to_know_pxl_s2,mix_6f8b655d7999,PXL-S2,72.55175431548321,68.7723922365646,76.09173428348177
+id_like_to_know,I'd Like To Know,group_01,FM-1,id_like_to_know_pxl_s3,mix_65f41f41d3ab,PXL-S3,69.07797784721066,65.34974515422017,72.6525157376768
+id_like_to_know,I'd Like To Know,group_01,FM-1,id_like_to_know_pxl_s5,mix_82d60d7c7fc5,PXL-S5,70.3218665666214,66.81389467015703,74.27748931683183
+id_like_to_know,I'd Like To Know,group_01,FM-1,id_like_to_know_pxl_s7,mix_b393d3919c78,PXL-S7,71.0444951128513,67.59124884307384,74.87866115021038
+in_the_meantime,In The Meantime,group_02,EDR-1,in_the_meantime_du_h,mix_302f0efe8a80,DU-H,70.77653369079175,67.04515528726161,74.42353114428931
+in_the_meantime,In The Meantime,group_02,EDR-1,in_the_meantime_du_i,mix_9baa86357fd4,DU-I,60.19399834374695,56.53762343031711,64.08878889958899
+in_the_meantime,In The Meantime,group_02,EDR-1,in_the_meantime_du_k,mix_56e65a3ce054,DU-K,66.68675886903058,62.93228598879088,70.25956306092455
+in_the_meantime,In The Meantime,group_02,EDR-1,in_the_meantime_qut_b,mix_c7bdcba64775,QUT-B,67.53446718173512,63.79675753113425,71.29249078748286
+in_the_meantime,In The Meantime,group_02,EDR-1,in_the_meantime_qut_pro,mix_cdaef40f2b94,QUT-pro,66.78563925550617,62.929186373962864,70.43864798056165
+in_the_meantime,In The Meantime,group_02,EDR-2,in_the_meantime_du_h,mix_302f0efe8a80,DU-H,67.79452247251473,64.2199508550866,71.71139684468216
+in_the_meantime,In The Meantime,group_02,EDR-2,in_the_meantime_du_i,mix_9baa86357fd4,DU-I,57.21198712546993,53.56661953999745,61.053361257505934
+in_the_meantime,In The Meantime,group_02,EDR-2,in_the_meantime_du_k,mix_56e65a3ce054,DU-K,63.70474765075357,59.99371220996639,67.31328549781605
+in_the_meantime,In The Meantime,group_02,EDR-2,in_the_meantime_qut_b,mix_c7bdcba64775,QUT-B,64.5524559634581,60.719644835520654,68.30412818083558
+in_the_meantime,In The Meantime,group_02,EDR-2,in_the_meantime_qut_pro,mix_cdaef40f2b94,QUT-pro,63.80362803722916,60.025657713024955,67.54737034156646
+in_the_meantime,In The Meantime,group_02,FM-1,in_the_meantime_du_h,mix_302f0efe8a80,DU-H,70.45176699375102,66.88926810950733,74.26510029449508
+in_the_meantime,In The Meantime,group_02,FM-1,in_the_meantime_du_i,mix_9baa86357fd4,DU-I,59.86923164670622,55.94389141873941,63.43927763243134
+in_the_meantime,In The Meantime,group_02,FM-1,in_the_meantime_du_k,mix_56e65a3ce054,DU-K,66.36199217198985,62.58034137412005,70.01131291119697
+in_the_meantime,In The Meantime,group_02,FM-1,in_the_meantime_qut_b,mix_c7bdcba64775,QUT-B,67.2097004846944,63.64298917543018,71.13822477060904
+in_the_meantime,In The Meantime,group_02,FM-1,in_the_meantime_qut_pro,mix_cdaef40f2b94,QUT-pro,66.46087255846545,62.74850240707267,70.26185721336866
+lead_me,Lead Me,group_01,EDR-1,lead_me_du_d,mix_f1f7973e5bac,DU-D,71.02297315824882,67.24923215176831,74.49446671362072
+lead_me,Lead Me,group_01,EDR-1,lead_me_du_e,mix_271852ba8676,DU-E,71.50204380177925,67.85906010927953,75.23103536665941
+lead_me,Lead Me,group_01,EDR-1,lead_me_mcg_pro2,mix_d3e3580b6e30,McG-pro2,69.0734519973224,65.51771077580811,72.83912453202672
+lead_me,Lead Me,group_01,EDR-1,lead_me_pxl_l1,mix_d5b28dfc8a93,PXL-L1,67.82629668153184,64.20037493056682,71.62835922563194
+lead_me,Lead Me,group_01,EDR-1,lead_me_pxl_l4,mix_c7d9a071ba25,PXL-L4,72.32792672459678,68.84487610067936,76.17121338068964
+lead_me,Lead Me,group_01,EDR-2,lead_me_du_d,mix_f1f7973e5bac,DU-D,68.0409619399718,64.50508483215269,71.83523985721058
+lead_me,Lead Me,group_01,EDR-2,lead_me_du_e,mix_271852ba8676,DU-E,68.52003258350221,64.80186584405804,72.32812194650431
+lead_me,Lead Me,group_01,EDR-2,lead_me_mcg_pro2,mix_d3e3580b6e30,McG-pro2,66.09144077904537,62.48484956321893,69.77897403164657
+lead_me,Lead Me,group_01,EDR-2,lead_me_pxl_l1,mix_d5b28dfc8a93,PXL-L1,64.84428546325482,61.33488441248936,68.74249471297179
+lead_me,Lead Me,group_01,EDR-2,lead_me_pxl_l4,mix_c7d9a071ba25,PXL-L4,69.34591550631976,65.61669574231166,73.0251290487879
+lead_me,Lead Me,group_01,FM-1,lead_me_du_d,mix_f1f7973e5bac,DU-D,70.69820646120809,67.10454274119171,74.26630110546897
+lead_me,Lead Me,group_01,FM-1,lead_me_du_e,mix_271852ba8676,DU-E,71.1772771047385,67.55276831393431,74.94775344649585
+lead_me,Lead Me,group_01,FM-1,lead_me_mcg_pro2,mix_d3e3580b6e30,McG-pro2,68.74868530028166,64.95482122701917,72.23745685893861
+lead_me,Lead Me,group_01,FM-1,lead_me_pxl_l1,mix_d5b28dfc8a93,PXL-L1,67.50152998449111,63.74920158215738,71.09860544559331
+lead_me,Lead Me,group_01,FM-1,lead_me_pxl_l4,mix_c7d9a071ba25,PXL-L4,72.00316002755605,68.46252674544358,75.74480535748293
+pouring_room,Pouring Room,group_02,EDR-1,pouring_room_mcg_pro1,mix_132e75f34470,McG-pro1,64.4958151463491,60.454307795173655,67.99725634833342
+pouring_room,Pouring Room,group_02,EDR-1,pouring_room_mcg_r,mix_0ba76f420c1d,McG-R,64.06152909989562,60.233042111536676,67.61632739164143
+pouring_room,Pouring Room,group_02,EDR-1,pouring_room_mcg_t,mix_be2ccd4c43ff,McG-T,64.28332240829837,60.83879597786955,68.23168020785974
+pouring_room,Pouring Room,group_02,EDR-1,pouring_room_mcg_v,mix_e08faaf8bbb3,McG-V,71.89510904566659,67.99343867331989,75.3545731013453
+pouring_room,Pouring Room,group_02,EDR-1,pouring_room_mcg_x,mix_cbf8555ee2b2,McG-X,72.24176526432652,68.82644891998103,76.30016812186382
+pouring_room,Pouring Room,group_02,EDR-2,pouring_room_mcg_pro1,mix_132e75f34470,McG-pro1,61.513803928072086,57.53204709561178,65.03866497912573
+pouring_room,Pouring Room,group_02,EDR-2,pouring_room_mcg_r,mix_0ba76f420c1d,McG-R,61.0795178816186,57.296340178661296,64.7590523623164
+pouring_room,Pouring Room,group_02,EDR-2,pouring_room_mcg_t,mix_be2ccd4c43ff,McG-T,61.30131119002136,57.69067013756596,65.11472087441722
+pouring_room,Pouring Room,group_02,EDR-2,pouring_room_mcg_v,mix_e08faaf8bbb3,McG-V,68.91309782738958,65.13212507089787,72.48648341034296
+pouring_room,Pouring Room,group_02,EDR-2,pouring_room_mcg_x,mix_cbf8555ee2b2,McG-X,69.2597540460495,65.42489611139439,72.90758924950752
+pouring_room,Pouring Room,group_02,FM-1,pouring_room_mcg_pro1,mix_132e75f34470,McG-pro1,64.17104844930837,60.363858177400786,67.95745770311936
+pouring_room,Pouring Room,group_02,FM-1,pouring_room_mcg_r,mix_0ba76f420c1d,McG-R,63.73676240285489,59.968244331591336,67.35742934126239
+pouring_room,Pouring Room,group_02,FM-1,pouring_room_mcg_t,mix_be2ccd4c43ff,McG-T,63.95855571125765,60.17971972390055,67.60399601755272
+pouring_room,Pouring Room,group_02,FM-1,pouring_room_mcg_v,mix_e08faaf8bbb3,McG-V,71.57034234862586,67.85586701037876,75.2940087343078
+pouring_room,Pouring Room,group_02,FM-1,pouring_room_mcg_x,mix_cbf8555ee2b2,McG-X,71.9169985672858,68.19202817113788,75.59876652771005

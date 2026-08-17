@@ -27,6 +27,7 @@ results/*
 experiments/*
 outputs/*
 bibliography/papers/*
+*.nc
 
 # Curated synthetic analysis inputs used by the dissertation notebooks
 !data/processed/synthetic/

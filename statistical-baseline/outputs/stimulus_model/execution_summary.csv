@@ -1,0 +1,15 @@
+item,value
+notebook,statistical-baseline/notebooks/_02_categorical_stimulus_model.ipynb
+intercept_only_formula,rating ~ 1 + (1 | participant_id) + (1 | stimulus_id)
+full_model_formula,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)
+sampling_config,"{""draws"": 1000, ""tune"": 1000, ""chains"": 4, ""cores"": 1, ""target_accept"": 0.95, ""random_seed"": 42, ""inference_method"": ""nutpie""}"
+intercept_runtime_seconds,11.01500939996913
+full_runtime_seconds,36.518881199881434
+true_participant_ICC,0.3386243386243386
+posterior_participant_ICC_mean,0.2803799662989799
+true_stimulus_ICC,0.13227513227513227
+posterior_stimulus_ICC_mean,0.07531922377849311
+ppc_outside_0_100,0.005341875
+episode_group_rmse,2.716007734486028
+episode_group_coverage,1.0
+posterior_winner_validation_passed,True

@@ -1,0 +1,4 @@
+path,saved,error
+statistical-baseline\outputs\feature_model\intercept_only_feature_model_idata.nc,True,
+statistical-baseline\outputs\feature_model\primary_feature_model_idata.nc,True,
+statistical-baseline\outputs\feature_model\si_sensitivity_feature_model_idata.nc,True,

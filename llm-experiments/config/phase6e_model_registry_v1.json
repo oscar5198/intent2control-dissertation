@@ -1,0 +1,69 @@
+{
+  "schema_version": "phase6e_model_registry_v1",
+  "config_version": "phase6e_primary_inference_config_v1",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "prompt_package_version_required": "phase6d_prompt_package_v1",
+  "models": [
+    {
+      "model_key": "gpt",
+      "display_name": "GPT-family model",
+      "model_family": "GPT-family",
+      "exact_model_id": "UNVERIFIED",
+      "checkpoint_or_revision": "UNVERIFIED",
+      "backend_key": "qmul_primary_unverified",
+      "deployment_environment": "QMUL",
+      "identity_verification_status": "unverified",
+      "identity_verification_source": "No authoritative QMUL GPT serving configuration found in repository during Phase 6E.2 local inspection.",
+      "scientific_role": "primary LLM comparator",
+      "model_identity_independent_of_endpoint": true
+    },
+    {
+      "model_key": "claude_sonnet",
+      "display_name": "Claude Sonnet-family model",
+      "model_family": "Claude Sonnet-family",
+      "exact_model_id": "UNVERIFIED",
+      "checkpoint_or_revision": "UNVERIFIED",
+      "backend_key": "qmul_primary_unverified",
+      "deployment_environment": "QMUL",
+      "identity_verification_status": "unverified",
+      "identity_verification_source": "No authoritative QMUL Claude Sonnet serving configuration found in repository during Phase 6E.2 local inspection.",
+      "scientific_role": "primary LLM comparator",
+      "model_identity_independent_of_endpoint": true
+    },
+    {
+      "model_key": "llama_3_1_70b_instruct",
+      "display_name": "Llama 3.1 70B Instruct",
+      "model_family": "Llama",
+      "exact_model_id": "UNVERIFIED",
+      "checkpoint_or_revision": "UNVERIFIED",
+      "quantisation": {
+        "used": "UNVERIFIED",
+        "method": "UNVERIFIED"
+      },
+      "serving_framework": "UNVERIFIED",
+      "tokenizer_or_chat_template": "UNVERIFIED",
+      "backend_key": "qmul_primary_unverified",
+      "deployment_environment": "QMUL",
+      "identity_verification_status": "unverified",
+      "identity_verification_source": "No authoritative QMUL Llama 3.1 70B checkpoint/serving configuration found in repository during Phase 6E.2 local inspection.",
+      "scientific_role": "primary LLM comparator",
+      "model_identity_independent_of_endpoint": true
+    },
+    {
+      "model_key": "centaur",
+      "display_name": "Centaur",
+      "model_family": "Centaur",
+      "exact_model_id": "UNVERIFIED",
+      "checkpoint_or_revision": "UNVERIFIED",
+      "model_source": "UNVERIFIED",
+      "custom_code_required": "UNVERIFIED",
+      "precision_or_quantisation": "UNVERIFIED",
+      "backend_key": "runpod_centaur_unverified",
+      "deployment_environment": "RunPod",
+      "identity_verification_status": "unverified",
+      "identity_verification_source": "No authoritative Centaur RunPod deployment/checkpoint configuration found in repository during Phase 6E.2 local inspection.",
+      "scientific_role": "primary LLM comparator",
+      "model_identity_independent_of_endpoint": true
+    }
+  ]
+}

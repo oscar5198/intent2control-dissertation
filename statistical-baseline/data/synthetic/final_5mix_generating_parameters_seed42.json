@@ -1,0 +1,29 @@
+{
+  "purpose": "Synthetic pipeline validation only; not empirical evidence.",
+  "random_seed": 42,
+  "n_participants": 40,
+  "grand_mean": 66.0,
+  "group_effects": {
+    "group_01": 0.0,
+    "group_02": 1.5
+  },
+  "episode_effects": {
+    "EDR-1": 2.0,
+    "EDR-2": -1.5,
+    "FM-1": 1.0
+  },
+  "participant_sd": 8.0,
+  "stimulus_sd": 5.0,
+  "residual_sd": 10.0,
+  "rating_min": 0.0,
+  "rating_max": 100.0,
+  "primary_generator": "additive stimulus-based generator; no episode-by-stimulus or episode-by-feature interactions",
+  "z_SI_role": "computed, but retained only as optional/QC-related sensitivity predictor",
+  "participant_variance": 64.0,
+  "stimulus_variance": 25.0,
+  "residual_variance": 100.0,
+  "total_variance": 189.0,
+  "participant_ICC_true": 0.3386243386243386,
+  "stimulus_ICC_true": 0.13227513227513227,
+  "residual_share_true": 0.5291005291005291
+}

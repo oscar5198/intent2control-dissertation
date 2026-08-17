@@ -1,0 +1,22 @@
+{
+  "schema_version": "phase6e2_production_preflight_v1",
+  "config_version": "phase6e_primary_inference_config_v1",
+  "phase6d_prompt_package_frozen": true,
+  "freeze_gates": {
+    "MODEL_IDENTITIES_FROZEN": false,
+    "INFERENCE_BACKENDS_VERIFIED": false,
+    "PRIMARY_INFERENCE_CONFIG_FROZEN": false
+  },
+  "production_inference_allowed": false,
+  "blocking_errors": [],
+  "unresolved_warnings": [
+    "gpt identity remains unverified",
+    "gpt identity verification status is not verified",
+    "claude_sonnet identity remains unverified",
+    "claude_sonnet identity verification status is not verified",
+    "llama_3_1_70b_instruct identity remains unverified",
+    "llama_3_1_70b_instruct identity verification status is not verified",
+    "centaur identity remains unverified",
+    "centaur identity verification status is not verified"
+  ]
+}

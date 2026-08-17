@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "preference_prediction_response_v1",
+  "title": "Preference Prediction Response",
+  "description": "Strict Phase 6D.1 response contract for prediction-only LLM outputs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "predicted_preferred_mix",
+    "predicted_ratings",
+    "predicted_ranking"
+  ],
+  "properties": {
+    "predicted_preferred_mix": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "E"],
+      "description": "Model's explicit predicted most preferred anonymous target candidate."
+    },
+    "predicted_ratings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["A", "B", "C", "D", "E"],
+      "properties": {
+        "A": {"type": "number", "minimum": 0, "maximum": 100},
+        "B": {"type": "number", "minimum": 0, "maximum": 100},
+        "C": {"type": "number", "minimum": 0, "maximum": 100},
+        "D": {"type": "number", "minimum": 0, "maximum": 100},
+        "E": {"type": "number", "minimum": 0, "maximum": 100}
+      },
+      "description": "Predicted 0-100 suitability/preference ratings for A-E. Ratings are JSON numbers and decimals are allowed."
+    },
+    "predicted_ranking": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["A", "B", "C", "D", "E"]
+      },
+      "description": "Complete ranking of A-E from most preferred to least preferred."
+    }
+  }
+}

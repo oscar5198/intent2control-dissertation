@@ -932,11 +932,13 @@ window.StudyApp.app = (function () {
   function updatePracticeCompletionState(config) {
     var completeButton = document.querySelector("[data-practice-complete]");
     var commentSection = document.querySelector("[data-practice-comparative-comment-section]");
+    var validation = isPracticeComplete(config, false);
 
     if (commentSection) {
       commentSection.classList.remove("is-hidden");
     }
-    setDisabled(completeButton, !isPracticeComplete(config, false).valid);
+    updatePracticeCompletionFeedback(validation, false);
+    setDisabled(completeButton, !validation.valid);
   }
 
   function arePracticeRatingsComplete(config) {
@@ -954,8 +956,13 @@ window.StudyApp.app = (function () {
     var comparativeComment = window.StudyApp.storage && window.StudyApp.storage.getItem("practice.comparativeComment");
     var commentInput = document.querySelector("[data-practice-comparative-comment]");
     var commentError = document.getElementById("practice-comparative-comment-error");
-    var commentValid = !window.StudyApp.validation || (window.StudyApp.validation.validateRequiredComment(comparativeComment) && String(comparativeComment || "").length <= (config.commentMaxLength || 1000));
+    var commentText = String(comparativeComment || "");
+    var maxCommentLength = config.commentMaxLength || 1000;
+    var commentTooLong = commentText.length > maxCommentLength;
+    var commentValid = !window.StudyApp.validation || (window.StudyApp.validation.validateRequiredComment(comparativeComment) && !commentTooLong);
     var firstInvalid = null;
+    var missingPlaybackLabels = [];
+    var missingRatingLabels = [];
 
     config.versions.forEach(function (version) {
       var ratingControl = document.querySelector("[data-practice-rating='" + version.id + "']");
@@ -963,6 +970,7 @@ window.StudyApp.app = (function () {
       var audioPlayed = !audioRequired || hasPracticeAudioPlayed(version.id);
       var audioElement = document.querySelector("[data-audio-id='practice." + version.id + "']");
       var ratingValid = touched[version.id] === true && typeof ratings[version.id] === "number";
+      var shortLabel = getShortVersionLabel(version.label);
 
       if (showErrors) {
         if (ratingControl) {
@@ -972,14 +980,20 @@ window.StudyApp.app = (function () {
       if (!audioPlayed && !firstInvalid) {
         firstInvalid = ratingControl || audioElement;
       }
+      if (!audioPlayed) {
+        missingPlaybackLabels.push(shortLabel);
+      }
       if (!ratingValid && !firstInvalid) {
         firstInvalid = ratingControl;
+      }
+      if (!ratingValid) {
+        missingRatingLabels.push(shortLabel);
       }
     });
 
     if (showErrors) {
       if (commentError) {
-        commentError.textContent = String(comparativeComment || "").length > (config.commentMaxLength || 1000) ? "Keep this comment under " + (config.commentMaxLength || 1000) + " characters." : "Provide a comment comparing the versions.";
+        commentError.textContent = commentTooLong ? "Keep this comment under " + maxCommentLength + " characters." : "Provide a comment comparing the versions.";
       }
       setError(commentError, !commentValid);
       if (commentInput) {
@@ -992,8 +1006,40 @@ window.StudyApp.app = (function () {
 
     return {
       valid: !firstInvalid,
-      firstInvalid: firstInvalid
+      firstInvalid: firstInvalid,
+      missingPlaybackLabels: missingPlaybackLabels,
+      missingRatingLabels: missingRatingLabels,
+      commentValid: commentValid,
+      commentTooLong: commentTooLong,
+      maxCommentLength: maxCommentLength,
+      message: buildCompletionFeedback(missingPlaybackLabels, missingRatingLabels, commentValid, commentTooLong, maxCommentLength)
     };
+  }
+
+  function updatePracticeCompletionFeedback(validation, focusFeedback) {
+    var feedback = document.querySelector("[data-practice-completion-feedback]");
+    if (!feedback || !validation) {
+      return false;
+    }
+    feedback.textContent = validation.valid ? "" : validation.message;
+    feedback.classList.toggle("is-hidden", validation.valid);
+    if (!validation.valid && focusFeedback) {
+      feedback.focus();
+    }
+    return true;
+  }
+
+  function buildCompletionFeedback(missingPlaybackLabels, missingRatingLabels, commentValid, commentTooLong, maxCommentLength) {
+    if (window.StudyApp.validation && typeof window.StudyApp.validation.buildCompletionFeedback === "function") {
+      return window.StudyApp.validation.buildCompletionFeedback({
+        missingPlaybackLabels: missingPlaybackLabels,
+        missingRatingLabels: missingRatingLabels,
+        commentValid: commentValid,
+        commentTooLong: commentTooLong,
+        maxCommentLength: maxCommentLength
+      });
+    }
+    return "Before continuing, please complete all required listening, rating, and comment steps.";
   }
 
   function getComparativeCommentPrompt(versions) {
@@ -1019,6 +1065,10 @@ window.StudyApp.app = (function () {
     return "Versions " + labels[0] + "–" + labels[labels.length - 1];
   }
 
+  function getShortVersionLabel(label) {
+    return String(label || "").replace(/^Version\s+/i, "").trim();
+  }
+
   function hasPracticeAudioPlayed(versionId) {
     return Boolean(window.StudyApp.audio && window.StudyApp.audio.hasAudioBeenPlayed("practice." + versionId));
   }
@@ -1029,7 +1079,9 @@ window.StudyApp.app = (function () {
 
     setError(summary, !validation.valid);
     if (!validation.valid) {
+      updatePracticeCompletionFeedback(validation, true);
       if (summary) {
+        summary.textContent = validation.message || "Please complete the practice trial requirements before continuing.";
         summary.focus();
       }
       if (validation.firstInvalid) {

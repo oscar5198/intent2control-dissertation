@@ -1,0 +1,21 @@
+{
+  "schema_version": "phase6b3_prediction_examples_v1",
+  "example_builder_version": "phase6b3_builder_v1",
+  "canonical_row_unit": "participant x held_out_target_trial",
+  "participant_count": 2,
+  "trial_target_count": 12,
+  "target_eligible_trial_count": 11,
+  "target_ineligible_trial_count": 1,
+  "prediction_example_count": 11,
+  "examples_with_5_history_trials": 6,
+  "examples_with_fewer_history_trials": 5,
+  "examples_without_personalised_history_available": 0,
+  "target_ineligibility_reason_counts": {
+    "invalid_mapping": 1,
+    "missing_candidate": 1
+  },
+  "contains_llm_prompts": false,
+  "contains_llm_predictions": false,
+  "contains_model_performance": false,
+  "input_data_contains_target_outcomes": false
+}

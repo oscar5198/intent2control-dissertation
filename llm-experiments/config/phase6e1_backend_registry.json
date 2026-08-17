@@ -1,0 +1,96 @@
+{
+  "schema_version": "phase6e1_backend_registry_v1",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "backends": [
+    {
+      "backend_key": "qmul_placeholder",
+      "backend_type": "qmul_http",
+      "execution_environment": "QMUL server",
+      "transport": "TO_FREEZE_IN_PHASE_6E_2",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": "TO_FREEZE_IN_PHASE_6E_2",
+        "request_shape": "TO_FREEZE_IN_PHASE_6E_2"
+      },
+      "authentication": {
+        "credential_env_var_names": [
+          "TO_FREEZE_IN_PHASE_6E_2"
+        ]
+      },
+      "timeout_seconds": null,
+      "connectivity_metadata": {
+        "network_path": "QMUL internal or approved compute environment"
+      },
+      "capabilities": {
+        "system_message_support": "TO_ASSESS_IN_PHASE_6E_2",
+        "native_json_schema_enforcement": "TO_ASSESS_IN_PHASE_6E_2",
+        "seed_support": "TO_ASSESS_IN_PHASE_6E_2",
+        "usage_reporting": "TO_ASSESS_IN_PHASE_6E_2",
+        "logprob_support": "TO_ASSESS_IN_PHASE_6E_2",
+        "streaming_support": "TO_ASSESS_IN_PHASE_6E_2"
+      },
+      "context_window": {
+        "maximum_context_length": null,
+        "maximum_generation_length": null
+      }
+    },
+    {
+      "backend_key": "runpod_centaur_placeholder",
+      "backend_type": "runpod_http",
+      "execution_environment": "RunPod",
+      "transport": "TO_FREEZE_IN_PHASE_6E_2",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": "RUNPOD_CENTAUR_ENDPOINT_URL",
+        "endpoint_type": "TO_FREEZE_IN_PHASE_6E_2",
+        "request_shape": "TO_FREEZE_IN_PHASE_6E_2"
+      },
+      "authentication": {
+        "credential_env_var_names": [
+          "RUNPOD_API_TOKEN"
+        ]
+      },
+      "timeout_seconds": null,
+      "connectivity_metadata": {
+        "network_path": "RunPod endpoint configured at runtime"
+      },
+      "capabilities": {
+        "system_message_support": "TO_ASSESS_IN_PHASE_6E_2",
+        "native_json_schema_enforcement": "TO_ASSESS_IN_PHASE_6E_2",
+        "seed_support": "TO_ASSESS_IN_PHASE_6E_2",
+        "usage_reporting": "TO_ASSESS_IN_PHASE_6E_2",
+        "logprob_support": "TO_ASSESS_IN_PHASE_6E_2",
+        "streaming_support": "TO_ASSESS_IN_PHASE_6E_2"
+      },
+      "context_window": {
+        "maximum_context_length": null,
+        "maximum_generation_length": null
+      }
+    },
+    {
+      "backend_key": "mock",
+      "backend_type": "mock",
+      "execution_environment": "local test process",
+      "transport": "none",
+      "endpoint_configuration": {},
+      "authentication": {
+        "credential_env_var_names": []
+      },
+      "timeout_seconds": null,
+      "connectivity_metadata": {
+        "network_path": "no network"
+      },
+      "mock_mode": "valid_response",
+      "capabilities": {
+        "system_message_support": true,
+        "native_json_schema_enforcement": false,
+        "seed_support": false,
+        "usage_reporting": false,
+        "logprob_support": false,
+        "streaming_support": false
+      },
+      "context_window": {
+        "maximum_context_length": null,
+        "maximum_generation_length": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+column_name,level,data_type,source_or_calculation,defined_for_ineligible_trials,tie_behaviour,description
+participant_id,trial,string,copied from Phase 6B.1 canonical data,yes,not applicable,Participant identifier.
+trial_id,trial,string,copied from Phase 6B.1 canonical data,yes,not applicable,Stable participant-trial identifier.
+trial_order,trial,integer,copied from Phase 6B.1 canonical data,yes,not applicable,Original study trial order.
+trial_index,trial,integer,copied from Phase 6B.1 canonical data,yes,not applicable,Raw trial index alias.
+episode_id,trial,string,copied from Phase 6B.1 canonical data,yes,not applicable,Listening episode/context identifier.
+scenario_id,trial,string,copied from Phase 6B.1 canonical data,yes,not applicable,Scenario identifier alias.
+song_id,trial,string,copied from Phase 6B.1 canonical data,yes,not applicable,Song identifier.
+excerpt_id,trial,string,copied from Phase 6B.1 canonical data,yes,not applicable,Configured excerpt identifier.
+target_eligible,trial,boolean,derived from rating/mapping eligibility validation,yes,not applicable,Whether the trial can produce a rating-derived held-out target.
+target_ineligibility_reasons,trial,string,derived deterministic reason codes,yes,not applicable,Pipe-separated reason codes for target-ineligible trials.
+history_eligible,trial,boolean,currently same rating/mapping requirements as target eligibility,yes,not applicable,Whether the trial can serve as interpretable personalised-history evidence in later phases.
+history_ineligibility_reasons,trial,string,derived deterministic reason codes,yes,not applicable,Pipe-separated reason codes for history-ineligible trials.
+history_comment_available,trial,boolean,derived from non-empty consistent comparative comment,yes,not applicable,Whether a trial-level comment is available for later history construction.
+observed_max_rating,trial,number,max human_rating across A-E,blank,no tie breaking; maximum value shared by all maxima,Maximum observed human rating for eligible trial.
+observed_preferred_set,trial,JSON array string,A-E labels whose rating equals observed_max_rating,blank,all tied maxima retained in A-E order,Authoritative human preferred set; outcome-derived and never prompt-safe.
+observed_preferred_mix,trial,string,unique element of observed_preferred_set if single winner else blank,blank,tied trials are blank; no arbitrary tie breaker,Convenience unique-winner label only for single-winner trials.
+is_single_winner,trial,boolean,len(observed_preferred_set) == 1,blank,false for any max-rating tie,Whether exactly one candidate has the maximum rating.
+n_preferred_tied,trial,integer,length of observed_preferred_set,blank,2-5 for tied maximum trials,Number of maximum-rated candidates.
+human_rating_A,trial,number,pivoted human_rating for presentation label A,partly if present,not applicable,Ground-truth rating for A; outcome-derived and never prompt-safe.
+human_rating_B,trial,number,pivoted human_rating for presentation label B,partly if present,not applicable,Ground-truth rating for B; outcome-derived and never prompt-safe.
+human_rating_C,trial,number,pivoted human_rating for presentation label C,partly if present,not applicable,Ground-truth rating for C; outcome-derived and never prompt-safe.
+human_rating_D,trial,number,pivoted human_rating for presentation label D,partly if present,not applicable,Ground-truth rating for D; outcome-derived and never prompt-safe.
+human_rating_E,trial,number,pivoted human_rating for presentation label E,partly if present,not applicable,Ground-truth rating for E; outcome-derived and never prompt-safe.
+observed_rank_A,trial,number,descending average rank from human ratings,blank,equal ratings receive average/mid-rank,Observed tie-aware rank for A; outcome-derived and never prompt-safe.
+observed_rank_B,trial,number,descending average rank from human ratings,blank,equal ratings receive average/mid-rank,Observed tie-aware rank for B; outcome-derived and never prompt-safe.
+observed_rank_C,trial,number,descending average rank from human ratings,blank,equal ratings receive average/mid-rank,Observed tie-aware rank for C; outcome-derived and never prompt-safe.
+observed_rank_D,trial,number,descending average rank from human ratings,blank,equal ratings receive average/mid-rank,Observed tie-aware rank for D; outcome-derived and never prompt-safe.
+observed_rank_E,trial,number,descending average rank from human ratings,blank,equal ratings receive average/mid-rank,Observed tie-aware rank for E; outcome-derived and never prompt-safe.
+is_observed_preferred,candidate,boolean,presentation_label is in observed_preferred_set,false for ineligible,all tied maxima are true,Candidate-level indicator; outcome-derived and never prompt-safe.
+observed_rank,candidate,number,label-specific descending average rank,blank,equal ratings receive average/mid-rank,Candidate-level tie-aware rank; outcome-derived and never prompt-safe.

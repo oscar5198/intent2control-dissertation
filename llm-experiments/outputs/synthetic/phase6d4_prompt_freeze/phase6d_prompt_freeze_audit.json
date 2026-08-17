@@ -1,0 +1,112 @@
+{
+  "schema_version": "phase6d4_prompt_freeze_audit_v1",
+  "package_version": "phase6d_prompt_package_v1",
+  "prompt_spec_version": "phase6d_prompt_spec_v1",
+  "response_schema_version": "preference_prediction_response_v1",
+  "rendered_prompt_schema_version": "phase6d2_rendered_prompt_v1",
+  "semantic_spec_valid": true,
+  "renderer_valid": true,
+  "response_schema_valid": true,
+  "deterministic_rendering": true,
+  "condition_integrity": true,
+  "target_leakage_free": true,
+  "provenance_leakage_free": true,
+  "sensitivity_feature_leakage_free": true,
+  "repair_policy_valid": true,
+  "artifact_hashes_valid": true,
+  "reference_prompts_valid": true,
+  "prompt_size_structural_check": true,
+  "completion_checks": {
+    "prompt_spec_version_consistent": true,
+    "response_schema_version_consistent": true,
+    "renderer_uses_frozen_prompt_spec": true,
+    "rendered_prompts_deterministic": true,
+    "matched_condition_equivalence_passes": true,
+    "target_leakage_checks_pass": true,
+    "provenance_leakage_checks_pass": true,
+    "sensitivity_feature_absent": true,
+    "target_history_overlap_checks_pass": true,
+    "response_schema_machine_valid": true,
+    "representative_synthetic_prompts_render": true,
+    "phase6d_tests_expected_to_pass": true
+  },
+  "synthetic_reference_counts": {
+    "rendered_prompts": 22,
+    "non_history": 11,
+    "personalised_history": 11,
+    "matched_condition_pairs": 11
+  },
+  "condition_integrity_failures": {
+    "pair_equivalence_failures": 0,
+    "target_leakage_failures": 0,
+    "identifier_provenance_leakage_failures": 0,
+    "sensitivity_feature_leakage_failures": 0,
+    "history_target_overlap_failures": 0,
+    "history_source_correctness_failures": 0,
+    "comment_boundary_failures": 0,
+    "repair_prompt_failures": 0
+  },
+  "prompt_size_reference": {
+    "non_history": {
+      "count": 11,
+      "characters_min": 2780,
+      "characters_median": 2802,
+      "characters_max": 2850,
+      "approximate_words_min": 370,
+      "approximate_words_median": 377,
+      "approximate_words_max": 379
+    },
+    "personalised_history": {
+      "count": 11,
+      "characters_min": 7139,
+      "characters_median": 8166,
+      "characters_max": 8209,
+      "approximate_words_min": 1001,
+      "approximate_words_median": 1149,
+      "approximate_words_max": 1153
+    }
+  },
+  "max_history_trial_count": 5,
+  "response_fixture_validation": {
+    "valid_fixture_passed": true,
+    "valid_fixture_errors": [],
+    "invalid_fixtures_failed": true,
+    "invalid_fixture_results": {
+      "missing_rating": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "'E' is a required property"
+        ]
+      },
+      "duplicate_ranking_item": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "['C', 'D', 'A', 'E', 'E'] has non-unique elements"
+        ]
+      },
+      "invalid_label": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "'F' is not one of ['A', 'B', 'C', 'D', 'E']"
+        ]
+      },
+      "rating_above_100": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "101 is greater than the maximum of 100"
+        ]
+      },
+      "explanatory_text_outside_json": {
+        "valid_json_object": false,
+        "schema_errors": [
+          "fixture is not a JSON object"
+        ]
+      }
+    }
+  },
+  "PHASE6D_PROMPT_PACKAGE_FROZEN": true,
+  "phase6d_prompt_package_frozen": true,
+  "contains_llm_responses": false,
+  "contains_real_participant_outcomes": false,
+  "contains_provider_specific_model_configuration": false
+}

@@ -1,0 +1,9 @@
+check,observed,expected,passed
+Rows,1200,1200,True
+Participants,40,40,True
+Stimuli,20,20,True
+Ratings per participant,[30],[30],True
+Five candidates per participant-song-episode,[5],[5],True
+Ratings between 0 and 100,"[32.981624761996194, 100.0]","[0, 100]",True
+No missing predictors,complete,complete,True
+Valid group-song assignment,valid,valid,True

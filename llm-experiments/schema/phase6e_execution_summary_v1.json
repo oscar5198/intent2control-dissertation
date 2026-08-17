@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase6e_execution_summary_v1",
+  "title": "Phase 6E.3 Execution Summary",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "prediction_logging_version",
+    "run_id",
+    "run_type",
+    "expected_predictions",
+    "predictions_attempted",
+    "valid_primary",
+    "valid_after_repair",
+    "invalid",
+    "backend_failures",
+    "attempts_total"
+  ],
+  "properties": {
+    "schema_version": {"const": "phase6e_execution_summary_v1"},
+    "prediction_logging_version": {"const": "phase6e_prediction_logging_v1"},
+    "total_transport_retries": {"type": "integer"},
+    "total_formatting_repairs": {"type": "integer"},
+    "blocked": {"type": "integer"},
+    "pending": {"type": "integer"},
+    "INFERENCE_RUN_COMPLETE": {"type": "boolean"},
+    "ALL_EXPECTED_PREDICTIONS_VALID": {"type": "boolean"},
+    "contains_ground_truth": {"const": false}
+  }
+}

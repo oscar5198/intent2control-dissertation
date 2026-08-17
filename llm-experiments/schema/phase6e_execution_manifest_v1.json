@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase6e_execution_manifest_v1",
+  "title": "Phase 6E.1 Execution Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "inference_interface_version",
+    "prompt_package_version",
+    "response_schema_version",
+    "mode",
+    "rendered_prompts_read",
+    "selected_model_keys",
+    "expected_request_count",
+    "requests_created",
+    "requests"
+  ],
+  "properties": {
+    "schema_version": {"const": "phase6e_execution_manifest_v1"},
+    "inference_interface_version": {"const": "phase6e_inference_interface_v1"},
+    "prompt_package_version": {"const": "phase6d_prompt_package_v1"},
+    "response_schema_version": {"const": "preference_prediction_response_v1"},
+    "mode": {"enum": ["dry_run", "mock"]},
+    "rendered_prompts_read": {"type": "integer"},
+    "selected_model_keys": {"type": "array", "items": {"type": "string"}},
+    "expected_request_count": {"type": "integer"},
+    "requests_created": {"type": "integer"},
+    "requests": {"type": "array"}
+  }
+}

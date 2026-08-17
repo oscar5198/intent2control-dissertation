@@ -1,0 +1,9 @@
+synthetic_label,model_key,condition,mean_per_trial_mae,coverage
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,centaur,non_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,centaur,personalised_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,claude_sonnet,non_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,claude_sonnet,personalised_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,gpt,non_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,gpt,personalised_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,llama_3_1_70b_instruct,non_history,15.5272727273,1
+SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,llama_3_1_70b_instruct,personalised_history,15.5272727273,1

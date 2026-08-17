@@ -1,79 +1,111 @@
-# Intent2Control with Controllable Intent Strength
+﻿# Intent2Control with Controllable Intent Strength
 
-## Project Description
+This repository contains the MSc dissertation project **Intent2Control with
+Controllable Intent Strength**. The current work centres on an online listening
+study that tests how semantic listening contexts relate to listener preference
+for alternative music mixes.
 
-This repository contains the MSc dissertation project **Intent2Control with Controllable Intent Strength**. The project explores semantic audio control: mapping natural-language mixing intentions to audio processing parameters such as equalisation, compression, and reverberation.
+## Active Final Listening Study
 
-The long-term aim is to investigate how mixing intent can be represented, interpreted, and translated into controllable audio-processing behaviour, including different degrees of intent strength.
+The live study is the five-mix interface in:
 
-## Academic Context
+`study-interface/frontend-5mix/`
 
-- **Programme:** MSc dissertation project
-- **Supervisor:** Prof. Georgios Velissaridis
-- **Current phase:** Phase 0 - Project Setup
+The active Netlify form is `listening-study-5mix`. While the study is live, do
+not rename this folder or change its stimulus configuration, audio paths,
+runtime A-E randomisation, trial randomisation, form fields, or response JSON
+structure without a separate deployment plan.
 
-## Planned Repository Structure
+Active songs and selected mixes:
+
+| Group | Song | Five selected mixes |
+| --- | --- | --- |
+| `group_01` | Lead Me | DU-D, DU-E, PXL-L1, PXL-L4, McG-pro2 |
+| `group_01` | I'd Like To Know | PXL-S3, PXL-S5, PXL-S1, PXL-S2, PXL-S7 |
+| `group_02` | In The Meantime | QUT-B, DU-H, DU-I, DU-K, QUT-pro |
+| `group_02` | Pouring Room | McG-R, McG-T, McG-X, McG-pro1, McG-V |
+
+The obsolete three-mix and six-mix frontend folders were removed locally. The
+current five-mix frontend remains the source of truth for the live interface.
+
+## Repository Map
 
 ```text
 intent2control-dissertation/
-├── bibliography/       # Reference material and bibliography files
-├── data/
-│   ├── raw/            # Raw datasets and source audio files (not tracked)
-│   └── processed/      # Processed datasets and derived data (not tracked)
-├── dissertation/       # Dissertation drafts, outlines, and written material
-├── docs/               # Project notes, design documents, and documentation
-├── experiments/        # Experiment outputs and exploratory runs (not tracked)
-├── notebooks/          # Jupyter notebooks for exploration and analysis
-├── results/            # Generated figures, tables, and model outputs (not tracked)
-├── src/                # Source code for the project
-├── .gitignore
-└── README.md
+|-- data/                    # Raw and processed data areas
+|-- study-interface/          # Live five-mix frontend, docs, export scripts
+|-- results/                  # Reserved for final reported outputs
+|-- outputs/                  # Reproducible/generated analysis outputs
+|-- stimulus-selection/       # Top-level guide to selection code and evidence
+|-- src/stimulus_selection/   # Reusable stimulus-selection source code
+|-- configs/                  # Pipeline configuration
+|-- statistical-baseline/     # Guide to baseline notebooks and outputs
+|-- llm-experiments/          # Planned LLM evaluation protocol and checks
+|-- dissertation/             # Dissertation drafts, figures, and tables
+|-- tests/                    # Stimulus-selection and interface validation
+|-- bibliography/             # Reference PDFs and bibliography material
+`-- README.md
 ```
 
-## Status
+## Stimulus Selection
 
-This repository is currently in initial setup. No implementation code, datasets, experiments, or results have been added yet.
+Reusable code lives in `src/stimulus_selection/`, with configuration in
+`configs/stimulus_selection.yaml`.
 
-## Stimulus Selection Pipeline
+The final five-mix selection evidence is in:
 
-This repository now contains the dissertation-specific stimulus-selection pipeline used to prepare candidate audio for the online listening study. The code lives in `src/stimulus_selection`, with configuration in `configs/stimulus_selection.yaml`, tests in `tests/stimulus_selection`, and reproducible generated outputs in `outputs/stimulus_selection`.
+`outputs/stimulus_selection/11_five_mix_selection_review_20260806/`
 
-The pipeline has five planned stages:
+Start with `stimulus-selection/README.md` and
+`outputs/stimulus_selection/README.md` for the current provenance map. Some
+folders with older names are intentionally retained because the final five-mix
+traceability files still reference them, especially
+`outputs/stimulus_selection/09_six_mix_proposals/` and shared material under
+`outputs/stimulus_selection/08_backup_song_expansion/`.
 
-1. Stage 1 - canonical inventory and audio validation: join Mix Evaluation Dataset metadata, verify public audio availability, classify institution provenance, flag duplicate candidates, and rank eligible songs.
-2. Stage 2 - excerpt alignment: align and trim public listening-test excerpts without modifying source files.
-3. Stage 3 - feature extraction: compute mix-balance descriptors, including the vendored, attributed Diff-MST feature transforms.
-4. Stage 4 - triplet selection: choose three mix versions per song according to the study design and reproducibility constraints.
-5. Stage 5 - stimulus export and study-interface handoff: produce final manifests and audio assets for the online listening study.
+## Statistical Baseline
 
-Diff-MST is treated as an attributed external source. Stage 3 vendors only the five feature transforms needed for stimulus selection, plus the Bark filterbank helpers, under `src/stimulus_selection/third_party/diffmst_features`. The full Diff-MST model, training code and data loaders are not runtime dependencies. The features describe mix dynamics, Bark-spectrum characteristics and stereo spatialisation; they are not subjective quality scores.
+The statistical baseline work is documented from `statistical-baseline/README.md`.
+The notebooks, synthetic baseline data, and generated outputs are consolidated
+under `statistical-baseline/`.
 
-To reproduce Stage 1 from the dissertation repository root:
+This area includes Bambi/PyMC/ArviZ modelling, participant random-effect models,
+episode-by-stimulus models, acoustic-feature models, sample-size simulations,
+posterior winner calculations, and final evaluation support.
+
+## LLM Experiments
+
+Planned personalised LLM prediction work is organised under `llm-experiments/`.
+The current evaluation protocol and environment-testing notebook are preserved
+there. Human-response comparisons and final model results should not be treated
+as complete until the experiment has been run and frozen.
+
+## Data, Results, And Responses
+
+Raw/source datasets, processed data, participant exports, and generated results
+should stay separated. Do not commit raw participant exports or modify response
+data without a separate anonymisation and retention decision.
+
+Response interpretation for the active study depends on Netlify JSON fields such
+as `mix_mapping_json`, `presentation_order_json`, `responses_json`, and
+`actual_mix_id`. Use:
+
+`study-interface/scripts/netlify_forms_to_long_csv_with_mix_ids.py`
+
+## Validation
+
+Useful validation entry points include:
 
 ```powershell
-$env:PYTHONPATH = "src"
-python -m stimulus_selection.cli inventory --config configs/stimulus_selection.yaml
-python -m unittest discover -s tests\stimulus_selection -v
+python study-interface\scripts\validate_frontend_5mix.py
+python -m pytest tests\study_interface tests\stimulus_selection
 ```
 
-Stage 1 writes reproducible CSV and Markdown reports to `outputs/stimulus_selection/`. These generated outputs are ignored by git.
+The five-mix validator checks stimulus IDs, real mix IDs, audio existence, group
+assignment, and the absence of obsolete donor audio from the active frontend.
 
-To validate the Stage 3 Diff-MST feature implementation against the external reference:
+## Dissertation And References
 
-```powershell
-$env:PYTHONPATH = "src"
-python -m stimulus_selection.cli validate-diffmst-features `
-  --config configs/stimulus_selection.yaml `
-  --reference-root "C:/Users/oscar/Documents/7. QMUL UNIVERSITY/1. Master Program/3. MSc Project/Diff-MST"
-```
-
-This writes `outputs/stimulus_selection/03_feature_extraction/tables/reference_equivalence_report.csv` and `outputs/stimulus_selection/03_feature_extraction/reports/diffmst_feature_validation_report.md`. It does not extract features for every dataset mix.
-
-To run Stage 3B raw feature extraction for the Stage-2-retained human mixes:
-
-```powershell
-$env:PYTHONPATH = "src"
-python -m stimulus_selection.cli extract-features --config configs/stimulus_selection.yaml
-```
-
-This writes the raw Diff-MST feature table, schema, quality checks, summaries, report and diagnostic figures under `outputs/stimulus_selection/`. It stops before feature scaling, PCA, distance calculation, triplet selection and loudness normalisation.
+Dissertation drafts, figures, and tables live in `dissertation/`. Reference PDFs
+and bibliography material remain in `bibliography/` because they have not been
+proven redundant.

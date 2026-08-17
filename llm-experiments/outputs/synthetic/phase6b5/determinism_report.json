@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "comparisons": {
+    "analysis_ready_csv": true,
+    "analysis_issues_csv": true,
+    "candidate_ground_truth_csv": true,
+    "trial_ground_truth_csv": true,
+    "prediction_examples_jsonl": true,
+    "prompt_data_jsonl": true,
+    "prediction_example_ids": true,
+    "condition_object_ids": true,
+    "structural_counts": true
+  }
+}

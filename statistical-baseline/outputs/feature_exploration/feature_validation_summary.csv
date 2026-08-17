@@ -1,0 +1,11 @@
+check,observed,expected,passed
+Exactly 20 stimuli,20,20,True
+Exactly 4 songs,4,4,True
+Exactly 5 mixes per song,"{'id_like_to_know': 5, 'in_the_meantime': 5, 'lead_me': 5, 'pouring_room': 5}",all songs have 5,True
+Exactly 2 groups,2,2,True
+No duplicate stimulus_id,0,0,True
+Complete z_RMS,20,20,True
+Complete z_CF,20,20,True
+Complete z_SW,20,20,True
+Complete z_SI,20,20,True
+Complete group/song/mix/stimulus mapping,complete,complete,True

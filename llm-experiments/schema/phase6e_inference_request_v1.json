@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase6e_inference_request_v1",
+  "title": "Phase 6E.1 Canonical Inference Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inference_interface_version",
+    "inference_request_id",
+    "rendered_prompt_id",
+    "condition_object_id",
+    "prediction_example_id",
+    "condition",
+    "model_key",
+    "backend_key",
+    "prompt_package_version",
+    "messages",
+    "response_schema_version",
+    "inference_config_id",
+    "attempt_type",
+    "attempt_number"
+  ],
+  "properties": {
+    "schema_version": {"const": "phase6e_inference_request_v1"},
+    "inference_interface_version": {"const": "phase6e_inference_interface_v1"},
+    "inference_request_id": {"type": "string"},
+    "rendered_prompt_id": {"type": "string"},
+    "condition_object_id": {"type": "string"},
+    "prediction_example_id": {"type": "string"},
+    "condition": {"enum": ["non_history", "personalised_history"]},
+    "model_key": {"type": "string"},
+    "backend_key": {"type": "string"},
+    "prompt_package_version": {"const": "phase6d_prompt_package_v1"},
+    "messages": {"type": "array", "minItems": 2, "maxItems": 2},
+    "response_schema_version": {"const": "preference_prediction_response_v1"},
+    "inference_config_id": {"type": "string"},
+    "attempt_type": {"enum": ["primary", "format_repair"]},
+    "attempt_number": {"type": "integer", "minimum": 1}
+  }
+}

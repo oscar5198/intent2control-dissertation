@@ -1,0 +1,29 @@
+{
+  "schema_version": "phase6c2_heldout_baseline_dry_run_v1",
+  "protocol_version": "phase6c_baseline_prediction_v1",
+  "analysis_ready_csv": "llm-experiments\\outputs\\synthetic\\phase6b5\\final_analysis_ready_long.csv",
+  "prediction_examples_jsonl": "llm-experiments\\outputs\\synthetic\\phase6b5\\final_prediction_examples.jsonl",
+  "config_path": "statistical-baseline\\config\\phase6c_baseline_models.json",
+  "selected_models": [
+    "categorical_design",
+    "primary_acoustic"
+  ],
+  "prediction_example_count": 11,
+  "target_candidate_row_count": 55,
+  "fit_plan_row_count": 22,
+  "expected_fit_count": 22,
+  "resume_completed_fit_count": 0,
+  "alignment": {
+    "passed": true,
+    "prediction_examples": 11,
+    "candidate_rows": 55,
+    "failures": []
+  },
+  "fit_plan_validation": {
+    "passed": true,
+    "failures": []
+  },
+  "dry_run_passed": true,
+  "contains_real_model_fits": false,
+  "contains_final_performance": false
+}

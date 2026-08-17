@@ -1,0 +1,185 @@
+{
+  "schema_version": "phase6d2_rendered_prompt_dataset_v1",
+  "prompt_spec_version": "phase6d_prompt_spec_v1",
+  "response_schema_version": "preference_prediction_response_v1",
+  "prompt_data_objects_read": 22,
+  "rendered_prompts_written": 22,
+  "non_history_count": 11,
+  "personalised_history_count": 11,
+  "rendering_failures": 0,
+  "leakage_failures": 0,
+  "condition_pair_equivalence_failures": 0,
+  "schema_version_mismatches": 0,
+  "deterministic_rerun_passed": true,
+  "max_history_trial_count": 5,
+  "size_summary": {
+    "non_history": {
+      "count": 11,
+      "characters_min": 2780,
+      "characters_median": 2802,
+      "characters_max": 2850,
+      "approximate_words_min": 370,
+      "approximate_words_median": 377,
+      "approximate_words_max": 379
+    },
+    "personalised_history": {
+      "count": 11,
+      "characters_min": 7139,
+      "characters_median": 8166,
+      "characters_max": 8209,
+      "approximate_words_min": 1001,
+      "approximate_words_median": 1149,
+      "approximate_words_max": 1153
+    }
+  },
+  "failures": [],
+  "leakage_failure_messages": [],
+  "condition_pair_reports": [
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_01",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_02",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_03",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_04",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_05",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_06",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P002__heldout__SYNTHETIC_PHASE6B1_P002__trial_01",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P002__heldout__SYNTHETIC_PHASE6B1_P002__trial_02",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P002__heldout__SYNTHETIC_PHASE6B1_P002__trial_03",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P002__heldout__SYNTHETIC_PHASE6B1_P002__trial_04",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    },
+    {
+      "prediction_example_id": "SYNTHETIC_PHASE6B1_P002__heldout__SYNTHETIC_PHASE6B1_P002__trial_05",
+      "passed": true,
+      "checks": {
+        "same_system_message": true,
+        "same_target_section": true,
+        "same_participant_metadata_section": true,
+        "same_acoustic_guide": true,
+        "same_target_candidates": true,
+        "same_output_instructions": true,
+        "history_section_only_in_personalised_history": true
+      }
+    }
+  ],
+  "contains_llm_responses": false,
+  "contains_provider_specific_transport": false,
+  "contains_ground_truth": false
+}

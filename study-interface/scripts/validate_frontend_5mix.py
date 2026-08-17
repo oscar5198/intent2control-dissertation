@@ -115,6 +115,8 @@ def main():
     submission_js = read_text(FRONTEND / "js" / "netlify-submission.js")
     storage_js = read_text(FRONTEND / "js" / "storage.js")
     app_js = read_text(FRONTEND / "js" / "app.js")
+    validation_js = read_text(FRONTEND / "js" / "validation.js")
+    practice_html = read_text(FRONTEND / "pages" / "practice.html")
     trial_html = read_text(FRONTEND / "pages" / "trial.html")
 
     if "listening-study-5mix" not in index_html or "listening-study-6mix" in index_html:
@@ -127,6 +129,10 @@ def main():
         fail("storage documented keys must include practice Versions D and E")
     if "Version F" in trial_html or "all six" in trial_html.lower():
         fail("trial.html still contains six-version participant text")
+    if "data-practice-completion-feedback" not in practice_html or "data-trial-completion-feedback" not in trial_html:
+        fail("practice and main-study pages must include accessible completion feedback regions")
+    if "buildCompletionFeedback" not in validation_js:
+        fail("shared validation helper must build missing-requirement feedback")
 
     if 'localPreviewSubmissionUnavailable' not in submission_js or 'isLocalPreviewHost' not in submission_js:
         fail("netlify-submission.js must explicitly guard local preview submissions")

@@ -2,14 +2,20 @@
 
 The deployed static frontend submits the final listening-study response to Netlify Forms.
 
+Current live study note: the active final interface is the five-mix frontend in
+`study-interface/frontend-5mix/`. Earlier three-mix and six-mix interface
+folders have been removed locally, but the response-reconstruction workflow
+below remains relevant to the current five-mix Netlify export because it
+preserves `actual_mix_id` and runtime A-E mappings.
+
 ## Configuration
 
-- Form name: `listening-study`
-- Static declaration: `study-interface/frontend/index.html`
-- Submission code: `study-interface/frontend/js/netlify-submission.js`
-- Study version constant: `STUDY_VERSION = "2026-08-05-three-episode-v1"` in `netlify-submission.js`
+- Form name: `listening-study-5mix`
+- Static declaration: `study-interface/frontend-5mix/index.html`
+- Submission code: `study-interface/frontend-5mix/js/netlify-submission.js`
+- Study version constant: `STUDY_VERSION = "five_mix_frontend_v1_2026-08-06"` in `netlify-submission.js`
 
-Netlify detects the hidden form at deploy time. The review page sends a URL-encoded `POST` to the current deployed HTML path, normally `/pages/review.html`, with `form-name=listening-study`. No API keys or secrets are used in the frontend.
+Netlify detects the hidden form at deploy time. The review page sends a URL-encoded `POST` to the current deployed HTML path, normally `/pages/review.html`, with `form-name=listening-study-5mix`. No API keys or secrets are used in the frontend.
 
 ## Exported CSV columns
 
@@ -45,25 +51,27 @@ Netlify should export these columns:
 
 ```json
 {
-  "EDR-1": ["lead_me", "red_to_blue"]
+  "EDR-1": ["lead_me", "id_like_to_know"]
 }
 ```
 
-`mix_mapping_json` is nested by episode and song because the current interface randomises Version A/B/C mappings per trial:
+`mix_mapping_json` is nested by episode and song because the current interface randomises Version A-E mappings per trial:
 
 ```json
 {
   "EDR-1": {
     "lead_me": {
-      "A": "lead_me_pxl_l1",
-      "B": "lead_me_pxl_l4",
-      "C": "lead_me_mcg_pro2"
+      "A": "lead_me_du_d",
+      "B": "lead_me_du_e",
+      "C": "lead_me_pxl_l1",
+      "D": "lead_me_pxl_l4",
+      "E": "lead_me_mcg_pro2"
     }
   }
 }
 ```
 
-`presentation_order_json` records displayed label order by episode and song. The interface displays A/B/C in fixed positions, so each trial is normally `["A", "B", "C"]`; the physical stimulus behind each label is stored in `mix_mapping_json`.
+`presentation_order_json` records displayed label order by episode and song. The current interface displays A-E in fixed positions, so each trial is normally `["A", "B", "C", "D", "E"]`; the physical stimulus behind each label is stored in `mix_mapping_json`.
 
 `responses_json` is one object per mix rating:
 
@@ -100,7 +108,7 @@ After confirmed success, a small local marker is stored in `final.submissionResu
 
 ## Testing
 
-Run a local HTTP server from `study-interface/frontend`, complete the flow for Group 1 and Group 2, and use browser devtools or a fetch mock to inspect the final `POST` to the current review-page path. Direct Netlify Forms storage cannot be fully verified locally; after deployment, complete a pilot submission and confirm it appears under Netlify Site dashboard -> Forms -> `listening-study`.
+Run a local HTTP server from `study-interface/frontend-5mix`, complete the flow for Group 1 and Group 2, and use browser devtools or a fetch mock to inspect the final `POST` to the current review-page path. Direct Netlify Forms storage cannot be fully verified locally; after deployment, complete a pilot submission and confirm it appears under Netlify Site dashboard -> Forms -> `listening-study-5mix`.
 
 Before launch, export pilot/test submissions from Netlify, confirm `study_version`, then delete pilot/test submissions from the Netlify Forms dashboard so launch data starts cleanly.
 
@@ -114,15 +122,15 @@ python study-interface/scripts/netlify_forms_to_long_csv.py netlify-export.csv l
 
 The script parses `responses_json`, preserves participant-level fields, writes a long-format CSV, and creates a validation report beside the output. Do not run it on or commit real participant data.
 
-## Six-Mix Metadata Export
+## Metadata Export With Mix IDs
 
-The separate six-mix form `listening-study-6mix` stores enough researcher-facing data to reconstruct the exact physical mixes shown in each trial when the raw Netlify participant-level CSV is available. The raw Netlify CSV is one row per completed submission and contains structured JSON columns such as `assigned_song_ids_json`, `episode_order_json` or `scenario_order_json`, `song_order_json`, `mix_mapping_json`, `presentation_order_json`, `responses_json`, and `client_validation_json`.
+The current five-mix form `listening-study-5mix` stores enough researcher-facing data to reconstruct the exact physical mixes shown in each trial when the raw Netlify participant-level CSV is available. The raw Netlify CSV is one row per completed submission and contains structured JSON columns such as `assigned_song_ids_json`, `episode_order_json` or `scenario_order_json`, `song_order_json`, `mix_mapping_json`, `presentation_order_json`, `responses_json`, and `client_validation_json`.
 
-The analysis-ready six-mix processing utility is:
+The analysis-ready processing utility is:
 
 ```cmd
-python "study-interface\scripts\netlify_forms_6mix_to_long_csv.py" ^
-  --input "outputs\study_data_checks\listening-study-6mix.csv" ^
+python "study-interface\scripts\netlify_forms_to_long_csv_with_mix_ids.py" ^
+  --input "outputs\study_data_checks\listening-study-5mix.csv" ^
   --output-dir "outputs\study_data_checks"
 ```
 

@@ -1,0 +1,5 @@
+participant_id,trial_id,presentation_label,code,message
+SYNTHETIC_PHASE6B1_P001,SYNTHETIC_PHASE6B1_P001__trial_04,,missing_or_inconsistent_comment,"Expected one repeated trial comment, found 0 distinct non-empty comments."
+SYNTHETIC_PHASE6B1_P002,SYNTHETIC_PHASE6B1_P002__trial_06,,incomplete_trial_row_count,"Expected 5 candidate rows, found 4."
+SYNTHETIC_PHASE6B1_P002,SYNTHETIC_PHASE6B1_P002__trial_06,,incomplete_or_invalid_labels,"Expected labels A-E once each, found ['A', 'B', 'C', 'D']."
+SYNTHETIC_PHASE6B1_P002,SYNTHETIC_PHASE6B1_P002__trial_06,,presentation_order_disagreement,"Response label order ['A', 'B', 'C', 'D'] differs from presentation_order_json ['A', 'B', 'C', 'D', 'E']."

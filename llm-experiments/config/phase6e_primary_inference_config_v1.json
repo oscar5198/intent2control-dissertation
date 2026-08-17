@@ -1,0 +1,62 @@
+{
+  "schema_version": "phase6e_primary_inference_config_v1",
+  "config_version": "phase6e_primary_inference_config_v1",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "prompt_package_version_required": "phase6d_prompt_package_v1",
+  "response_schema_version": "preference_prediction_response_v1",
+  "model_registry_path": "llm-experiments/config/phase6e_model_registry_v1.json",
+  "backend_registry_path": "llm-experiments/config/phase6e_backend_registry_v1.json",
+  "capability_matrix_path": "llm-experiments/config/phase6e_capability_matrix_v1.json",
+  "shared_scientific_settings": {
+    "primary_generations_per_request": 1,
+    "best_of_n": 1,
+    "self_consistency_voting": false,
+    "few_shot_examples": 0,
+    "chain_of_thought_requested": false,
+    "reasoning_output_scored": false,
+    "canonical_temperature_policy": {
+      "preferred_temperature": 0,
+      "policy": "Use temperature 0 where technically supported; otherwise use the closest verified low-variance backend setting and document the exception.",
+      "chosen_for_quality": false
+    },
+    "top_p_policy": {
+      "canonical_policy": "backend_default_with_temperature_zero",
+      "explicit_value_if_required": 1,
+      "chosen_for_quality": false
+    },
+    "seed_policy": {
+      "project_level_seed": 20260814,
+      "use_when_supported": true,
+      "unsupported_behavior": "record seed_supported=false; do not query repeatedly or cherry-pick"
+    },
+    "max_output_tokens": 256,
+    "max_output_policy": "Conservative allowance for one compact JSON object plus formatting overhead; sufficient for primary and formatting-repair responses.",
+    "stop_sequence_policy": "No custom stop sequences unless a verified backend contract requires one; never use a stop sequence that could truncate valid JSON.",
+    "structured_output_policy": "Every output is validated locally against preference_prediction_response_v1 regardless of native backend enforcement.",
+    "system_message_policy": "Use native system role where supported; if unavailable, preserve semantic role distinction using the verified official template and flag the exception.",
+    "batching_policy": "Each prompt is one independent scientific inference request; batching/concurrency is operational only and must preserve deterministic request-output linkage."
+  },
+  "backend_timeout_defaults": {
+    "qmul_seconds": 300,
+    "runpod_centaur_seconds": 600,
+    "status": "operational_defaults_subject_to_pre_experiment_infrastructure_adjustment"
+  },
+  "freeze_gates": {
+    "MODEL_IDENTITIES_FROZEN": false,
+    "INFERENCE_BACKENDS_VERIFIED": false,
+    "PRIMARY_INFERENCE_CONFIG_FROZEN": false
+  },
+  "production_inference_allowed": false,
+  "unresolved_items": [
+    "Exact GPT-family model ID/checkpoint on QMUL",
+    "Exact Claude Sonnet-family model ID/checkpoint on QMUL",
+    "Exact Llama 3.1 70B Instruct checkpoint, revision, quantisation and serving framework on QMUL",
+    "Exact Centaur checkpoint/source/revision and RunPod deployment contract",
+    "QMUL request/response contract and authentication requirements",
+    "RunPod request/response contract and authentication requirements",
+    "Structured-output mechanism per backend",
+    "Tokenizer/context limits per model",
+    "Seed, temperature and top-p support per backend",
+    "Usage metadata and healthcheck availability"
+  ]
+}

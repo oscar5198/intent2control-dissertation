@@ -1,0 +1,136 @@
+{
+  "schema_version": "phase6e_execution_summary_v1",
+  "prediction_logging_version": "phase6e_prediction_logging_v1",
+  "run_id": "phase6e4_synthetic_failure_matrix",
+  "run_type": "synthetic_mock",
+  "expected_predictions": 12,
+  "predictions_attempted": 12,
+  "valid_primary": 5,
+  "valid_after_repair": 2,
+  "invalid": 1,
+  "backend_failures": 4,
+  "blocked": 0,
+  "pending": 0,
+  "attempts_total": 23,
+  "total_transport_retries": 8,
+  "total_formatting_repairs": 3,
+  "INFERENCE_RUN_COMPLETE": true,
+  "ALL_EXPECTED_PREDICTIONS_VALID": false,
+  "token_usage_totals": {
+    "input_tokens": null,
+    "output_tokens": null,
+    "total_tokens": null
+  },
+  "cost_totals": {
+    "total_cost": null,
+    "currency": null,
+    "cost_source": "unavailable"
+  },
+  "latency_summary": {
+    "count": 23,
+    "min_seconds": 0.0,
+    "max_seconds": 0.0,
+    "total_seconds": 0.0
+  },
+  "model_counts": {
+    "centaur": 3,
+    "claude_sonnet": 2,
+    "gpt": 5,
+    "llama_3_1_70b_instruct": 2
+  },
+  "condition_counts": {
+    "non_history": 6,
+    "personalised_history": 6
+  },
+  "by_model_condition": {
+    "centaur__non_history": {
+      "predictions": 1,
+      "valid_outputs": 0,
+      "primary_validity_rate": 0.0,
+      "repairs_attempted": 0,
+      "repairs_successful": 0,
+      "invalid_outputs": 0,
+      "backend_failures": 1,
+      "transport_retries": 2,
+      "unresolved_pending": 0
+    },
+    "centaur__personalised_history": {
+      "predictions": 2,
+      "valid_outputs": 1,
+      "primary_validity_rate": 0.5,
+      "repairs_attempted": 0,
+      "repairs_successful": 0,
+      "invalid_outputs": 0,
+      "backend_failures": 1,
+      "transport_retries": 1,
+      "unresolved_pending": 0
+    },
+    "claude_sonnet__non_history": {
+      "predictions": 0,
+      "valid_outputs": 0,
+      "primary_validity_rate": null,
+      "repairs_attempted": 0,
+      "repairs_successful": 0,
+      "invalid_outputs": 0,
+      "backend_failures": 0,
+      "transport_retries": 0,
+      "unresolved_pending": 0
+    },
+    "claude_sonnet__personalised_history": {
+      "predictions": 2,
+      "valid_outputs": 2,
+      "primary_validity_rate": 0.5,
+      "repairs_attempted": 1,
+      "repairs_successful": 1,
+      "invalid_outputs": 0,
+      "backend_failures": 0,
+      "transport_retries": 1,
+      "unresolved_pending": 0
+    },
+    "gpt__non_history": {
+      "predictions": 4,
+      "valid_outputs": 2,
+      "primary_validity_rate": 0.5,
+      "repairs_attempted": 1,
+      "repairs_successful": 0,
+      "invalid_outputs": 1,
+      "backend_failures": 1,
+      "transport_retries": 1,
+      "unresolved_pending": 0
+    },
+    "gpt__personalised_history": {
+      "predictions": 1,
+      "valid_outputs": 1,
+      "primary_validity_rate": 0.0,
+      "repairs_attempted": 1,
+      "repairs_successful": 1,
+      "invalid_outputs": 0,
+      "backend_failures": 0,
+      "transport_retries": 0,
+      "unresolved_pending": 0
+    },
+    "llama_3_1_70b_instruct__non_history": {
+      "predictions": 1,
+      "valid_outputs": 1,
+      "primary_validity_rate": 1.0,
+      "repairs_attempted": 0,
+      "repairs_successful": 0,
+      "invalid_outputs": 0,
+      "backend_failures": 0,
+      "transport_retries": 1,
+      "unresolved_pending": 0
+    },
+    "llama_3_1_70b_instruct__personalised_history": {
+      "predictions": 1,
+      "valid_outputs": 0,
+      "primary_validity_rate": 0.0,
+      "repairs_attempted": 0,
+      "repairs_successful": 0,
+      "invalid_outputs": 0,
+      "backend_failures": 1,
+      "transport_retries": 2,
+      "unresolved_pending": 0
+    }
+  },
+  "contains_ground_truth": false
+}

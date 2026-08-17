@@ -1,0 +1,32 @@
+{
+  "metric_protocol_version": "phase6f_metric_protocol_v1",
+  "synthetic_metric_notice": "Synthetic/mock metric values are pipeline-validation outputs only and must not be interpreted as model performance.",
+  "ground_truth_targets": 11,
+  "nominal_single_winner_chance_reference": 0.2,
+  "llm": {
+    "expected_predictions": 88,
+    "valid_numeric_predictions": 88,
+    "continuous_metric_coverage": "1",
+    "rank_correlations_defined": 88,
+    "ranking_metric_coverage": "1",
+    "undefined_observed_rank_count": 0,
+    "undefined_predicted_rank_count": 0,
+    "backend_failure_count": 0,
+    "invalid_count": 0,
+    "missing_not_run_count": 0
+  },
+  "baseline": {
+    "expected_predictions": 2,
+    "valid_numeric_predictions": 2,
+    "continuous_metric_coverage": "1",
+    "rank_correlations_defined": 2,
+    "ranking_metric_coverage": "1",
+    "undefined_observed_rank_count": 0,
+    "undefined_predicted_rank_count": 0,
+    "backend_failure_count": 0,
+    "invalid_count": 0,
+    "missing_not_run_count": 0
+  },
+  "baseline_smoke_subset_caveat": "Phase 6C synthetic smoke baseline currently covers only available aligned smoke rows, not all 11 targets.",
+  "no_inferential_statistics_emitted": true
+}

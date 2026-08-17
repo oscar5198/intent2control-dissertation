@@ -1,0 +1,19 @@
+column_name,level,data_type,description
+prediction_example_id,target,string,Stable Phase 6B prediction-example linkage key.
+participant_id,target,string,Anonymous participant identifier.
+trial_id,target,string,Held-out target trial identifier.
+baseline_model,model,string,Stable baseline model ID.
+fit_status,model,string,fit_ok convergence_warning fit_failed or pending/dry-run status.
+predicted_rating_A,target,number,Predicted expected rating for target candidate A.
+predicted_rating_B,target,number,Predicted expected rating for target candidate B.
+predicted_rating_C,target,number,Predicted expected rating for target candidate C.
+predicted_rating_D,target,number,Predicted expected rating for target candidate D.
+predicted_rating_E,target,number,Predicted expected rating for target candidate E.
+predicted_preferred_mix,target,string,Unique model-predicted preferred candidate if not tied; blank for exact predicted ties.
+is_predicted_tie,target,boolean,Whether the highest predicted rating is exactly tied.
+predicted_tied_labels,target,JSON array string,Model-only tied labels in A-E order when an exact predicted tie occurs.
+posterior_win_probability_A,target,number,Posterior winning probability for candidate A.
+posterior_win_probability_B,target,number,Posterior winning probability for candidate B.
+posterior_win_probability_C,target,number,Posterior winning probability for candidate C.
+posterior_win_probability_D,target,number,Posterior winning probability for candidate D.
+posterior_win_probability_E,target,number,Posterior winning probability for candidate E.

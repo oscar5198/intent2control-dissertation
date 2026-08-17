@@ -1,0 +1,4 @@
+scenario,description,group_02_minus_group_01,episode_EDR_2_minus_EDR_1,episode_FM_1_minus_EDR_1,z_RMS,z_CF,z_SW,participant_sd,stimulus_sd,residual_sd,participant_ICC,stimulus_ICC,residual_share
+moderate_expected,"Moderate expected feature, episode, group, participant, stimulus and residual effects.",1.2,-1.4,2.0,2.2,-1.7,1.9,8.5,3.2,9.8,0.4046938889822438,0.05735730689519969,0.5379488041225564
+smaller_effects_harder,Fixed effects scaled to 60% of the moderate scenario; random and residual SDs unchanged.,0.72,-0.84,1.2,1.32,-1.02,1.14,8.5,3.2,9.8,0.4046938889822438,0.05735730689519969,0.5379488041225564
+higher_noise,Moderate fixed effects with higher participant and residual variability.,1.2,-1.4,2.0,2.2,-1.7,1.9,11.0,3.2,12.5,0.4208842046679884,0.03561863021322481,0.5434971651187868

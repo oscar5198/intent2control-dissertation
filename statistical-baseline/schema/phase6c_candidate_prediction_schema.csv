@@ -1,0 +1,14 @@
+column_name,level,data_type,description
+prediction_example_id,target,string,Stable Phase 6B prediction-example linkage key.
+participant_id,target,string,Anonymous participant identifier.
+trial_id,target,string,Held-out target trial identifier.
+presentation_label,candidate,string,Anonymous candidate label A-E.
+stimulus_id,candidate,string,Internal stimulus identifier retained for joining and auditing; not LLM-facing.
+baseline_model,model,string,Stable baseline model ID.
+fit_status,model,string,fit_ok convergence_warning fit_failed or pending/dry-run status.
+predicted_mean_rating,candidate,number,Primary predicted expected rating used for deterministic winner derivation.
+posterior_predictive_mean,candidate,number,Posterior predictive mean if generated separately from expected rating.
+posterior_predictive_sd,candidate,number,Posterior expected-rating draw standard deviation.
+posterior_expected_ci_lower,candidate,number,Lower 95 percent credible interval endpoint for posterior expected mean rating.
+posterior_expected_ci_upper,candidate,number,Upper 95 percent credible interval endpoint for posterior expected mean rating.
+posterior_winning_probability,candidate,number,Draw-by-draw posterior candidate winning probability when available.

@@ -1,0 +1,13 @@
+song_id,episode,n_candidates,winner_accuracy,posterior_probability_true_winner,true_winner_probability_gt_0_50,draw_level_tie_rate,final_probability_tie,probability_sum
+id_like_to_know,EDR-1,5,False,0.34625,False,0.0,False,1.0
+id_like_to_know,EDR-2,5,False,0.34625,False,0.0,False,1.0
+id_like_to_know,FM-1,5,False,0.34625,False,0.0,False,1.0
+in_the_meantime,EDR-1,5,True,1.0,True,0.0,False,1.0
+in_the_meantime,EDR-2,5,True,1.0,True,0.0,False,1.0
+in_the_meantime,FM-1,5,True,1.0,True,0.0,False,1.0
+lead_me,EDR-1,5,False,0.282375,False,0.00025,False,1.0
+lead_me,EDR-2,5,False,0.282375,False,0.00025,False,1.0
+lead_me,FM-1,5,False,0.282375,False,0.00025,False,1.0
+pouring_room,EDR-1,5,False,0.35775,False,0.0005,False,1.0
+pouring_room,EDR-2,5,False,0.35775,False,0.0005,False,1.0
+pouring_room,FM-1,5,False,0.35775,False,0.0005,False,1.0

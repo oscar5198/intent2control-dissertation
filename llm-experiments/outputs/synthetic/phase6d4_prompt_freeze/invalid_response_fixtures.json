@@ -1,0 +1,72 @@
+{
+  "fixtures": {
+    "missing_rating": {
+      "predicted_preferred_mix": "C",
+      "predicted_ratings": {
+        "A": 60,
+        "B": 45,
+        "C": 80,
+        "D": 70
+      },
+      "predicted_ranking": [
+        "C",
+        "D",
+        "A",
+        "E",
+        "B"
+      ]
+    },
+    "duplicate_ranking_item": {
+      "predicted_preferred_mix": "C",
+      "predicted_ratings": {
+        "A": 60,
+        "B": 45,
+        "C": 80,
+        "D": 70,
+        "E": 55
+      },
+      "predicted_ranking": [
+        "C",
+        "D",
+        "A",
+        "E",
+        "E"
+      ]
+    },
+    "invalid_label": {
+      "predicted_preferred_mix": "F",
+      "predicted_ratings": {
+        "A": 60,
+        "B": 45,
+        "C": 80,
+        "D": 70,
+        "E": 55
+      },
+      "predicted_ranking": [
+        "C",
+        "D",
+        "A",
+        "E",
+        "B"
+      ]
+    },
+    "rating_above_100": {
+      "predicted_preferred_mix": "C",
+      "predicted_ratings": {
+        "A": 60,
+        "B": 45,
+        "C": 101,
+        "D": 70,
+        "E": 55
+      },
+      "predicted_ranking": [
+        "C",
+        "D",
+        "A",
+        "E",
+        "B"
+      ]
+    },
+    "explanatory_text_outside_json": "The best mix is C. {\"predicted_preferred_mix\":\"C\"}"
+  }
+}

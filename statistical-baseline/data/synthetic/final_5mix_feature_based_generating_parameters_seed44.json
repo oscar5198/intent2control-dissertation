@@ -1,0 +1,31 @@
+{
+  "purpose": "Feature-driven synthetic validation only; not empirical evidence.",
+  "random_seed": 44,
+  "n_participants": 40,
+  "grand_mean": 66.0,
+  "group_effects": {
+    "group_01": 0.0,
+    "group_02": 1.5
+  },
+  "episode_effects": {
+    "EDR-1": 2.0,
+    "EDR-2": -1.5,
+    "FM-1": 1.0
+  },
+  "feature_effects_primary": {
+    "z_RMS": 2.6,
+    "z_CF": -2.1,
+    "z_SW": 2.3
+  },
+  "feature_effects_si_sensitivity_truth": {
+    "z_SI": 0.0
+  },
+  "participant_sd": 8.0,
+  "stimulus_residual_sd": 3.0,
+  "residual_sd": 9.0,
+  "participant_ICC_true": 0.4155844155844156,
+  "stimulus_ICC_true": 0.05844155844155844,
+  "residual_share_true": 0.525974025974026,
+  "primary_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+  "sensitivity_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + z_SI + (1 | participant_id) + (1 | stimulus_id)"
+}

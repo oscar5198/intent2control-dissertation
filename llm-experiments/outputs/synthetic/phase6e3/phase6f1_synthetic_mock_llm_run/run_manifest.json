@@ -1,0 +1,32 @@
+{
+  "schema_version": "phase6e_run_manifest_v1",
+  "prediction_logging_version": "phase6e_prediction_logging_v1",
+  "run_id": "phase6f1_synthetic_mock_llm_run",
+  "run_type": "synthetic_mock",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "prompt_package_version": "phase6d_prompt_package_v1",
+  "inference_config_version": "phase6e_primary_inference_config_v1",
+  "model_set": [
+    "gpt",
+    "claude_sonnet",
+    "llama_3_1_70b_instruct",
+    "centaur"
+  ],
+  "rendered_prompt_dataset": {
+    "path": "llm-experiments/outputs/synthetic/phase6d2_rendered_prompts/rendered_prompts.jsonl",
+    "sha256": "a4b8ca87aefbc0eabd7b3223d3e8dc3ba0400ae73dbb28427cf346601d0aa411",
+    "rendered_prompt_count": 22,
+    "prompt_package_version": "phase6d_prompt_package_v1"
+  },
+  "started_at": "2026-08-14T18:02:29.056098+00:00",
+  "ended_at": "2026-08-14T18:02:29.139373+00:00",
+  "expected_request_count": 88,
+  "completed_count": 88,
+  "valid_count": 88,
+  "invalid_count": 0,
+  "failed_count": 0,
+  "environment_summary": {
+    "backend": "mock",
+    "real_model_calls": false
+  }
+}

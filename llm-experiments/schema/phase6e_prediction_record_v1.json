@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase6e_prediction_record_v1",
+  "title": "Phase 6E.3 Canonical Prediction Record",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "prediction_logging_version",
+    "prediction_record_id",
+    "prediction_example_id",
+    "condition",
+    "model_key",
+    "prompt_package_version",
+    "inference_config_version",
+    "final_status",
+    "number_of_attempts",
+    "response_validity"
+  ],
+  "properties": {
+    "schema_version": {"const": "phase6e_prediction_record_v1"},
+    "prediction_logging_version": {"const": "phase6e_prediction_logging_v1"},
+    "failure_handling_version": {"type": ["string", "null"]},
+    "final_status": {
+      "enum": [
+        "pending",
+        "primary_in_progress",
+        "valid_primary",
+        "repair_pending",
+        "repair_in_progress",
+        "valid_after_repair",
+        "invalid_after_repair",
+        "backend_retry_pending",
+        "backend_failed",
+        "not_run",
+        "blocked_by_preflight"
+      ]
+    },
+    "scientific_generation_count": {"type": "integer"},
+    "transport_attempt_count": {"type": "integer"},
+    "transport_retry_count": {"type": "integer"},
+    "format_repair_attempt_count": {"type": "integer"},
+    "predicted_preferred_mix": {"type": ["string", "null"]},
+    "predicted_rating_A": {"type": ["number", "null"]},
+    "predicted_rating_B": {"type": ["number", "null"]},
+    "predicted_rating_C": {"type": ["number", "null"]},
+    "predicted_rating_D": {"type": ["number", "null"]},
+    "predicted_rating_E": {"type": ["number", "null"]},
+    "predicted_ranking": {"type": ["array", "null"]},
+    "total_latency_seconds": {"type": ["number", "null"]}
+  }
+}

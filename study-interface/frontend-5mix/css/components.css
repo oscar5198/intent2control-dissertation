@@ -305,6 +305,21 @@
   color: var(--colour-error);
 }
 
+.completion-feedback {
+  max-width: 44rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--colour-warning);
+  border-radius: var(--radius-card);
+  color: var(--colour-text-primary);
+  background: #fffaf0;
+  font-size: var(--font-size-help);
+  font-weight: 600;
+}
+
+.completion-feedback.is-hidden {
+  display: none !important;
+}
+
 .feedback-area {
   padding: var(--space-4);
   border: 1px solid var(--colour-border);

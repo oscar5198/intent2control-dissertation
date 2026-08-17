@@ -8,20 +8,27 @@ The archived pipeline used Diff-MST acoustic features, within-song robust scalin
 
 ## Why It Was Superseded
 
-This approach is no longer the authoritative final stimulus-selection method for the study. It was superseded on 2026-08-03 by the corrected acoustic candidate-pool and rating-stratification workflow, followed by frontend integration of selected Similar/Wide rating triplets.
+This approach is no longer the authoritative final stimulus-selection method for the study. It was superseded first by the corrected acoustic candidate-pool and rating-stratification workflow, then by the current five-mix final-selection review.
 
-The key reason for supersession is methodological: the final study now uses corrected acoustic candidate pools and prior-rating stratification to select three mixes per song, rather than presenting the medoid/contrast triplets as final participant stimuli.
+The key reason for supersession is methodological: the final study now uses the
+five-mix selections documented in
+`outputs/stimulus_selection/11_five_mix_selection_review_20260806/`, rather than
+presenting the medoid/contrast triplets as final participant stimuli.
 
-## Current Replacement Pipeline
+## Replacement Pipeline
 
-The authoritative current pipeline is:
+The current five-mix source of truth is
+`study-interface/frontend-5mix/config/stimuli.json`, with final selection
+evidence in `outputs/stimulus_selection/11_five_mix_selection_review_20260806/`.
+Earlier supporting evidence includes:
 
 1. Four-song study allocation from `outputs/stimulus_selection/01_dataset_and_song_selection/tables/four_song_selection.csv`.
 2. Corrected acoustic candidate pools from `outputs/stimulus_selection/04_mix_selection_v2/tables/acoustic_candidate_pool.csv`.
 3. Prior-rating integration from `outputs/stimulus_selection/05_ratings_integration/tables/mix_preference_rating_summary_within_song.csv`.
 4. Similar/Wide triplet recommendations from `outputs/stimulus_selection/06_rating_stratification/tables/supervisor_shortlist.csv`.
-5. Active frontend integration from `study-interface/frontend/config/stimuli.json`.
-6. Researcher/supervisor perceptual quality review, currently pending, documented in `outputs/stimulus_selection/07_perceptual_review/PERCEPTUAL_REVIEW_STATUS.md`.
+5. Historical six-mix proposal evidence in `outputs/stimulus_selection/09_six_mix_proposals/`.
+6. Backup-song expansion evidence for `I'd Like To Know` in `outputs/stimulus_selection/08_backup_song_expansion/`.
+7. Final five-mix review and traceability in `outputs/stimulus_selection/11_five_mix_selection_review_20260806/`.
 
 ## Archived Content
 

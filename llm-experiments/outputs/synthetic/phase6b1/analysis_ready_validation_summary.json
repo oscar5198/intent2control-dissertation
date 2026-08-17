@@ -1,0 +1,18 @@
+{
+  "input_csv": "llm-experiments\\fixtures\\synthetic\\phase6b1_five_mix_netlify_export.csv",
+  "stimulus_config_json": "study-interface\\frontend-5mix\\config\\stimuli.json",
+  "feature_table_csv": "statistical-baseline\\outputs\\feature_exploration\\final_20_stimulus_feature_table.csv",
+  "canonical_row_unit": "participant x trial x candidate_mix",
+  "participant_count": 2,
+  "trial_count": 12,
+  "candidate_row_count": 59,
+  "complete_trial_count": 11,
+  "incomplete_or_malformed_trial_count": 1,
+  "issue_counts": {
+    "incomplete_or_invalid_labels": 1,
+    "incomplete_trial_row_count": 1,
+    "presentation_order_disagreement": 1
+  },
+  "feature_audit_counts": {},
+  "contains_preference_labels": false
+}

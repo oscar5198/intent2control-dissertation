@@ -1,0 +1,21 @@
+group,song_id,song_title,stimulus_id,original_mix_name,scalar_pc1,scalar_pc2
+group_01,lead_me,Lead Me,lead_me_du_d,DU-D,-0.71544469468455,1.0701212635188222
+group_01,lead_me,Lead Me,lead_me_du_e,DU-E,0.03343275946334673,-1.358789704224935
+group_01,lead_me,Lead Me,lead_me_pxl_l1,PXL-L1,-0.9415427510256629,0.04825727972436106
+group_01,lead_me,Lead Me,lead_me_pxl_l4,PXL-L4,-0.4312205170974992,-2.087591523783943
+group_01,lead_me,Lead Me,lead_me_mcg_pro2,McG-pro2,-1.817783445799288,1.6062608169864443
+group_01,id_like_to_know,I'd Like To Know,id_like_to_know_pxl_s3,PXL-S3,-1.4119971817050954,0.06320304480089547
+group_01,id_like_to_know,I'd Like To Know,id_like_to_know_pxl_s5,PXL-S5,0.23470029309380647,-1.5283096748560105
+group_01,id_like_to_know,I'd Like To Know,id_like_to_know_pxl_s1,PXL-S1,-0.6044322061177181,-1.5320162297285003
+group_01,id_like_to_know,I'd Like To Know,id_like_to_know_pxl_s2,PXL-S2,-1.4901699553110894,-0.362094960167871
+group_01,id_like_to_know,I'd Like To Know,id_like_to_know_pxl_s7,PXL-S7,0.22352549284015127,0.3234699736742753
+group_02,in_the_meantime,In The Meantime,in_the_meantime_qut_b,QUT-B,-0.725875594773092,-0.5367362283996154
+group_02,in_the_meantime,In The Meantime,in_the_meantime_du_h,DU-H,-0.9929164812217912,-0.3320292994611791
+group_02,in_the_meantime,In The Meantime,in_the_meantime_du_i,DU-I,2.502153447029538,-0.14453385001002583
+group_02,in_the_meantime,In The Meantime,in_the_meantime_du_k,DU-K,2.002912988165901,-0.6908809241282885
+group_02,in_the_meantime,In The Meantime,in_the_meantime_qut_pro,QUT-pro,1.0136233352937192,0.1700049528802876
+group_02,pouring_room,Pouring Room,pouring_room_mcg_r,McG-R,0.43252914887170724,1.1522501816858826
+group_02,pouring_room,Pouring Room,pouring_room_mcg_t,McG-T,2.023104502799435,0.9288993203162897
+group_02,pouring_room,Pouring Room,pouring_room_mcg_x,McG-X,0.7606171299103227,0.7785517375800596
+group_02,pouring_room,Pouring Room,pouring_room_mcg_pro1,McG-pro1,-0.5774472735391788,1.4179989571393279
+group_02,pouring_room,Pouring Room,pouring_room_mcg_v,McG-V,0.48223100380703615,1.0139648664537222

@@ -1,0 +1,59 @@
+{
+  "schema_version": "phase6f2_hash_manifest_v1",
+  "metric_protocol_version": "phase6f_metric_protocol_v1",
+  "hash_algorithm": "sha256",
+  "artifacts": {
+    "phase6f1_llm_predictions": {
+      "path": "llm-experiments/outputs/synthetic/phase6f1_e2e/llm_predictions_for_evaluation.csv",
+      "sha256": "7b32ff68e6429e673dd95d3e17dafcfd2fb33e5594e91063371dbeeb301d1d02"
+    },
+    "phase6f1_baseline_predictions": {
+      "path": "llm-experiments/outputs/synthetic/phase6f1_e2e/baseline_predictions_for_evaluation.csv",
+      "sha256": "470fc8993669632ebda67510843294d4e3f07a6784ece3dc6a87bef893ceb090"
+    },
+    "phase6f1_ground_truth": {
+      "path": "llm-experiments/outputs/synthetic/phase6f1_e2e/ground_truth_for_evaluation.csv",
+      "sha256": "daf85c47c77c174d2a574d1d2f6b40323ae829c30aaba3c24a6f42590c0bae03"
+    },
+    "phase6f1_alignment_manifest": {
+      "path": "llm-experiments/outputs/synthetic/phase6f1_e2e/prediction_alignment_manifest.jsonl",
+      "sha256": "0a5202d692929ddf15c69da2676b05017b94822ab06d95c3d5f70dd10f15a29a"
+    },
+    "scored_llm_predictions": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/scored_llm_predictions.csv",
+      "sha256": "0fe8031f2262c686e3d9e858109ba57b28e3bf82f72be2c98a63f815798f3f8e"
+    },
+    "scored_baseline_predictions": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/scored_baseline_predictions.csv",
+      "sha256": "fdd6d80d76929e8e7d283aee77aca72e956656705455259225525a4284f14bd5"
+    },
+    "llm_metric_summary": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/llm_metric_summary.csv",
+      "sha256": "2e38fbba185e11525fbc9fea246b1b75d1a1431fd14631243517dace9dbab8f4"
+    },
+    "baseline_metric_summary": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/baseline_metric_summary.csv",
+      "sha256": "20a5a3c13cd266ccf87c218f20431ff4180232d271090bdfe7f9acb54b7654c8"
+    },
+    "participant_llm_metrics": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/participant_llm_metrics.csv",
+      "sha256": "17fab8d512177d783f8301267ec81983456412acc9099a4edcde8d676f8bf2d1"
+    },
+    "participant_baseline_metrics": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/participant_baseline_metrics.csv",
+      "sha256": "e4e7a7c8d89c8a1f639d0e814c600025f77c31fdc4177a649c8943469567e2e3"
+    },
+    "metric_coverage_summary": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/metric_coverage_summary.json",
+      "sha256": "d9130794d02d4c24b66e455feabef7c6d8c782b4a37a46f7668349323c995d08"
+    },
+    "phase6f2_metric_audit": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/phase6f2_metric_audit.json",
+      "sha256": "8c25fd0aa6508b06533ea5db2e325287ef6a999d275ee7428dcd41f66a5ccecf"
+    },
+    "phase6f2_metric_validation_report": {
+      "path": "llm-experiments/outputs/synthetic/phase6f2_metrics/phase6f2_metric_validation_report.md",
+      "sha256": "c4c52756f6d9583cec79a6029a602cf0b17d64e4b22c2856ed2330eea3d79ccd"
+    }
+  }
+}

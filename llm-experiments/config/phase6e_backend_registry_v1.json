@@ -1,0 +1,135 @@
+{
+  "schema_version": "phase6e_backend_registry_v1",
+  "config_version": "phase6e_primary_inference_config_v1",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "backends": [
+    {
+      "backend_key": "qmul_primary_unverified",
+      "backend_type": "qmul_http",
+      "execution_environment": "QMUL",
+      "serving_mode": "UNVERIFIED",
+      "transport": "UNVERIFIED",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": "QMUL_LLM_ENDPOINT_URL",
+        "request_shape": "UNVERIFIED",
+        "response_shape": "UNVERIFIED",
+        "model_list_contract": "UNVERIFIED",
+        "healthcheck_contract": "UNVERIFIED"
+      },
+      "authentication": {
+        "required": "UNVERIFIED",
+        "credential_env_var_names": [
+          "QMUL_LLM_API_TOKEN"
+        ],
+        "must_never_log": [
+          "authorization headers",
+          "runtime auth tokens",
+          "API tokens",
+          "authenticated URLs"
+        ]
+      },
+      "timeout_seconds": 300,
+      "timeout_status": "operational_default_unverified_latency",
+      "backend_verification_status": "unverified",
+      "request_contract_status": "unverified",
+      "response_contract_status": "unverified",
+      "connectivity_probe_status": "not_run_no_endpoint_configuration_available",
+      "capabilities": {
+        "system_message_support": "UNVERIFIED",
+        "native_json_schema_enforcement": "UNVERIFIED",
+        "native_json_mode": "UNVERIFIED",
+        "seed_support": "UNVERIFIED",
+        "temperature_support": "UNVERIFIED",
+        "top_p_support": "UNVERIFIED",
+        "usage_reporting": "UNVERIFIED",
+        "logprob_support": "UNVERIFIED",
+        "streaming_support": "UNVERIFIED"
+      },
+      "context_window": {
+        "maximum_context_length": "UNVERIFIED",
+        "maximum_generation_length": "UNVERIFIED"
+      }
+    },
+    {
+      "backend_key": "runpod_centaur_unverified",
+      "backend_type": "runpod_http",
+      "execution_environment": "RunPod",
+      "serving_mode": "UNVERIFIED",
+      "transport": "UNVERIFIED",
+      "endpoint_configuration": {
+        "endpoint_url_env_var": "RUNPOD_CENTAUR_ENDPOINT_URL",
+        "endpoint_type": "UNVERIFIED",
+        "request_shape": "UNVERIFIED",
+        "response_shape": "UNVERIFIED",
+        "healthcheck_contract": "UNVERIFIED"
+      },
+      "authentication": {
+        "required": "UNVERIFIED",
+        "credential_env_var_names": [
+          "RUNPOD_API_TOKEN"
+        ],
+        "must_never_log": [
+          "authorization headers",
+          "runtime auth tokens",
+          "RunPod API tokens",
+          "authenticated URLs"
+        ]
+      },
+      "timeout_seconds": 600,
+      "timeout_status": "operational_default_unverified_latency",
+      "backend_verification_status": "unverified",
+      "request_contract_status": "unverified",
+      "response_contract_status": "unverified",
+      "connectivity_probe_status": "not_run_no_endpoint_configuration_available",
+      "capabilities": {
+        "system_message_support": "UNVERIFIED",
+        "native_json_schema_enforcement": "UNVERIFIED",
+        "native_json_mode": "UNVERIFIED",
+        "seed_support": "UNVERIFIED",
+        "temperature_support": "UNVERIFIED",
+        "top_p_support": "UNVERIFIED",
+        "usage_reporting": "UNVERIFIED",
+        "logprob_support": "UNVERIFIED",
+        "streaming_support": "UNVERIFIED"
+      },
+      "context_window": {
+        "maximum_context_length": "UNVERIFIED",
+        "maximum_generation_length": "UNVERIFIED"
+      }
+    },
+    {
+      "backend_key": "mock",
+      "backend_type": "mock",
+      "execution_environment": "local_test_process",
+      "serving_mode": "deterministic_mock",
+      "transport": "none",
+      "endpoint_configuration": {},
+      "authentication": {
+        "required": false,
+        "credential_env_var_names": [],
+        "must_never_log": []
+      },
+      "timeout_seconds": null,
+      "timeout_status": "not_applicable",
+      "backend_verification_status": "verified_for_tests_only",
+      "request_contract_status": "verified_for_tests_only",
+      "response_contract_status": "verified_for_tests_only",
+      "connectivity_probe_status": "not_applicable",
+      "capabilities": {
+        "system_message_support": true,
+        "native_json_schema_enforcement": false,
+        "native_json_mode": false,
+        "seed_support": false,
+        "temperature_support": false,
+        "top_p_support": false,
+        "usage_reporting": false,
+        "logprob_support": false,
+        "streaming_support": false
+      },
+      "context_window": {
+        "maximum_context_length": null,
+        "maximum_generation_length": null
+      }
+    }
+  ]
+}

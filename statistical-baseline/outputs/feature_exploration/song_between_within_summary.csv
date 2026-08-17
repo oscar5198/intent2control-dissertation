@@ -1,0 +1,5 @@
+feature,between_song_mean_range,mean_within_song_sd,overall_sd,dominant_pattern
+z_RMS,1.262631443658571,0.7870058194313495,0.9999999999999999,between-song prominent
+z_CF,1.2470375706399563,0.7868939122388636,1.0,between-song prominent
+z_SW,0.9692115092581356,0.8870913813300986,1.0000000000000002,between-song prominent
+z_SI,1.3787753528207811,0.7534104757057739,0.9999999999999999,between-song prominent

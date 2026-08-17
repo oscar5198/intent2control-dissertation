@@ -1,87 +1,78 @@
 # Master Stimulus Selection Index
 
-This is the repository-level source map for the current final stimulus-selection design. It documents which files are authoritative for the active four-song, two-group study and which files are preserved only as legacy or exploratory work.
+This is the repository-level source map for the current final five-mix stimulus
+selection. The live interface is the source of truth for what participants see;
+the files below explain how those final stimuli were selected and how older
+evidence is retained.
 
 ## Current Authoritative Design
 
-The active frontend configuration is the authoritative source for the stimuli currently used in the study interface.
-
 | Element | Authoritative file(s) | Notes |
 | --- | --- | --- |
-| Final song list | `outputs/stimulus_selection/01_dataset_and_song_selection/tables/four_song_selection.csv`; reflected in `study-interface/frontend/config/stimuli.json` | Four songs: Lead Me; Red To Blue; In The Meantime; Pouring Room. |
-| Participant-group allocation | `study-interface/frontend/config/stimuli.json`; `study-interface/docs/final-stimuli-manifest.md` | `group_01`: Lead Me, Red To Blue. `group_02`: In The Meantime, Pouring Room. |
-| Selected three mixes per song | `study-interface/frontend/config/stimuli.json`; derived table `outputs/stimulus_selection/09_current_frontend_integration/tables/current_frontend_stimuli.csv` | This supersedes legacy `final_selected_mixes.csv` files. |
-| Similar/Wide category decisions | `study-interface/frontend/config/stimuli.json`; `study-interface/docs/final-stimuli-manifest.md` | Lead Me, Red To Blue, and In The Meantime use Wide Ratings. Pouring Room uses Similar Ratings. |
-| Frontend runtime configuration | `study-interface/frontend/config/stimuli.json`; `study-interface/frontend/config/study-config.json` | Current status: technically integrated; perceptual approval pending. |
-| Candidate pools | `outputs/stimulus_selection/04_mix_selection_v2/tables/acoustic_candidate_pool.csv`; `outputs/stimulus_selection/04_mix_selection_v2/tables/acoustic_candidate_pool_summary.csv` | Corrected acoustic candidate pools; stereo imbalance retained as QC, not diversity distance. |
-| Prior-rating data | `outputs/stimulus_selection/05_ratings_integration/tables/mix_preference_rating_summary_within_song.csv`; `outputs/stimulus_selection/05_ratings_integration/tables/mix_preference_rating_summary.csv` | Brecht/Mix Evaluation no-context prior ratings integrated by mix. |
-| Rating-stratified recommendations | `outputs/stimulus_selection/06_rating_stratification/tables/supervisor_shortlist.csv` | Contains Similar Ratings and Wide Ratings triplets for each song. |
-| Current acoustic-selection outputs | `outputs/stimulus_selection/04_mix_selection_v2/` and `outputs/stimulus_selection/06_rating_stratification/diagnostics/` | Diagnostic and candidate-pool outputs supporting the active procedure. |
-| Perceptual review status | `outputs/stimulus_selection/07_perceptual_review/PERCEPTUAL_REVIEW_STATUS.md` | Final researcher/supervisor perceptual approval is pending. |
+| Live frontend stimulus configuration | `study-interface/frontend-5mix/config/stimuli.json` | Current source of truth for songs, groups, stimulus IDs, real mix IDs, scenarios, and audio paths. |
+| Final five-mix package | `outputs/stimulus_selection/11_five_mix_selection_review_20260806/` | Current final-selection review and traceability folder. |
+| Final five-mix selections | `outputs/stimulus_selection/11_five_mix_selection_review_20260806/recommended_five_mix_selections.csv` | Researcher-facing table of the selected five mixes per active song. |
+| Final traceability | `outputs/stimulus_selection/11_five_mix_selection_review_20260806/five_mix_selection_traceability.md` and `.csv` | Links final frontend stimuli to selection evidence, source audio, hashes, QC, and provenance. |
+| Source manifest | `outputs/stimulus_selection/11_five_mix_selection_review_20260806/authoritative_sources_manifest.csv` | Lists the input evidence used by the final review script. |
+| Review-generation script | `outputs/stimulus_selection/11_five_mix_selection_review_20260806/generate_five_mix_review.py` | Documents/reproduces the final five-mix review outputs. |
+| Response interpretation | `study-interface/scripts/netlify_forms_to_long_csv_with_mix_ids.py` | Converts Netlify exports while preserving runtime labels and `actual_mix_id`. |
 
 ## Active Study Allocation
 
-| Group | Participant excerpt | Artist | Song | Active category | Active mixes |
-| --- | --- | --- | --- | --- | --- |
-| `group_01` | Song A | The DoneFors | Lead Me | Wide Ratings | PXL-L1; PXL-L4; McG-pro2 |
-| `group_01` | Song B | Broken Crank | Red To Blue | Wide Ratings | McG-C; McG-H; McG-pro1 |
-| `group_02` | Song A | Fredy V | In The Meantime | Wide Ratings | DU-K; QUT-pro; DU-N |
-| `group_02` | Song B | The DoneFors | Pouring Room | Similar Ratings | McG-R; McG-T; McG-X |
+| Group | Participant excerpt | Song | Active mixes |
+| --- | --- | --- | --- |
+| `group_01` | Song A | Lead Me | DU-D; DU-E; PXL-L1; PXL-L4; McG-pro2 |
+| `group_01` | Song B | I'd Like To Know | PXL-S3; PXL-S5; PXL-S1; PXL-S2; PXL-S7 |
+| `group_02` | Song A | In The Meantime | QUT-B; DU-H; DU-I; DU-K; QUT-pro |
+| `group_02` | Song B | Pouring Room | McG-R; McG-T; McG-X; McG-pro1; McG-V |
 
-## Current Pipeline
+Anonymous Version A-E labels are randomised at runtime for each trial. Do not
+interpret participant labels without `mix_mapping_json`,
+`presentation_order_json`, and `responses_json` from the Netlify export.
+
+## Current Provenance Flow
 
 ```text
-Dataset inspection and four-song allocation
+dataset inspection and song allocation
 -> excerpt selection and alignment
 -> Diff-MST feature extraction
--> corrected acoustic candidate-pool generation
+-> corrected acoustic candidate pools
 -> prior-rating integration
--> Similar/Wide rating stratification
--> alignment verification and supervisor review package
--> frontend integration in stimuli.json
--> researcher/supervisor perceptual quality review (pending)
+-> Similar/Wide rating stratification and supervisor review
+-> six-mix proposal evidence for main active songs
+-> backup-song expansion evidence for I'd Like To Know
+-> final five-mix selection review
+-> frontend-5mix configuration
 ```
-
-Song-level selection, acoustic candidate-pool generation, within-song mix selection, rating stratification, frontend integration, and perceptual review are distinct stages. The current frontend uses the rating-stratified Similar/Wide choices listed above; the earlier medoid/contrast triplets are not current final study stimuli.
-
-## Important Quality Caveat
-
-Algorithmic rating/acoustic diversity does not guarantee acceptable production quality. Informal researcher listening found that several selected mixes, particularly in Wide Ratings sets, sounded subjectively poor or production-unbalanced. The active frontend triplets have been technically integrated, but final perceptual quality review by the researcher and supervisor is still required before final study deployment.
-
-Candidate-pool outputs remain available so the supervisor can request replacement decisions without losing the corrected acoustic/rating context.
 
 ## Current Output Map
 
 | Folder | Purpose | Status |
 | --- | --- | --- |
-| `01_dataset_and_song_selection/` | Dataset inspection, inventory, and four-song selection | Current song-selection evidence. |
-| `02_excerpt_selection/` | Approved 28-second excerpt decisions and diagnostics | Current excerpt evidence. |
-| `03_feature_extraction/` | Diff-MST feature extraction and feature diagnostics | Current objective feature source. |
-| `04_mix_selection_v2/` | Corrected acoustic candidate pools and diagnostics | Current acoustic-selection output. |
-| `05_ratings_integration/` | Prior-rating aggregation and validation | Current prior-rating source. |
-| `05_alignment_verification/` | Alignment QA for rating-stratified triplets | Current alignment evidence. |
-| `06_rating_stratification/` | Similar/Wide rating-stratified recommendations and candidate-review audio | Current recommendation source. |
-| `07_perceptual_review/` | Current perceptual review status and pending supervisor decisions | Current approval-status source. |
-| `07_supervisor_review_package/` | Supervisor-facing main review package | Current review package. |
-| `09_current_frontend_integration/` | Frontend-derived current stimulus table and validation notes | Current frontend integration record. |
-| `archive/medoid_contrast_legacy/` | Earlier representative/contrast outputs and old final summaries | Legacy only; not authoritative. |
-| `08_backup_song_expansion/` | Backup-song candidate material | Backup only; not active frontend stimuli. |
+| `01_dataset_and_song_selection/` | Dataset inspection, inventory, and initial song-selection evidence | Retained provenance. |
+| `02_excerpt_selection/` | Approved 28-second excerpt decisions and diagnostics | Retained provenance. |
+| `03_feature_extraction/` | Diff-MST feature extraction and feature diagnostics | Retained objective-feature source. |
+| `04_mix_selection_v2/` | Corrected acoustic candidate pools and diagnostics | Retained acoustic-selection evidence. |
+| `05_ratings_integration/` | Prior-rating aggregation and validation | Retained historical-rating source. |
+| `05_alignment_verification/` | Alignment QA for earlier rating-stratified sets | Retained provenance. |
+| `06_rating_stratification/` | Similar/Wide recommendation triplets and review audio | Retained supporting evidence. |
+| `07_supervisor_review_package/` | Supervisor-facing review material for original candidates | Retained supporting evidence for active and replaced candidates. |
+| `08_backup_song_expansion/` | Backup-song expansion and replacement-song evidence | Retained because active `I'd Like To Know` depends on it. |
+| `09_six_mix_proposals/` | Six-mix proposal evidence, QC, distances, alignment, and audio manifests | Retained because final five-mix traceability references it. |
+| `10_abx_fixed_excerpt_similarity_review/` | Fixed-excerpt similarity review | Retained supporting evidence. |
+| `11_five_mix_selection_review_20260806/` | Final five-mix review and traceability | Current authoritative final-selection package. |
+| `09_current_frontend_integration/` | Older frontend-derived three-mix/stale integration record | Historical only; not authoritative for the live five-mix interface. |
+| `archive/medoid_contrast_legacy/` | Earlier representative/contrast outputs and old final summaries | Legacy only; retained for methodology history. |
 | `logs_and_provenance/` | Reorganisation and provenance logs | Historical/provenance support. |
 
-## Legacy Work
+## Validation
 
-The earlier medoid/contrast outputs have been moved to `outputs/stimulus_selection/archive/medoid_contrast_legacy/`. They are preserved for methodological history and comparison, but they should not be cited as current active study stimuli.
+Validate the active frontend with:
 
-Archived legacy paths:
+```powershell
+python study-interface\scripts\validate_frontend_5mix.py
+```
 
-- `outputs/stimulus_selection/archive/medoid_contrast_legacy/04_mix_selection/`
-- `outputs/stimulus_selection/archive/medoid_contrast_legacy/06_final_summaries/`
-- `outputs/stimulus_selection/archive/medoid_contrast_legacy/final_stimuli/`
-
-## Validation Status
-
-- Active frontend WAV references exist: see `outputs/stimulus_selection/09_current_frontend_integration/validation/frontend_stimulus_integrity.md`.
-- Each active song has exactly three configured mixes.
-- Participant-facing labels remain neutral in the frontend config.
-- Manifest and `stimuli.json` agree on group allocation, category choices, and active mix names.
-- Final perceptual approval remains pending.
+The validator checks the active five-mix configuration, group allocation,
+stimulus IDs, real mix IDs, referenced audio files, and obsolete donor-audio
+exclusion inside `study-interface/frontend-5mix/`.

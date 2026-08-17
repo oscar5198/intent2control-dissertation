@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase6e_run_manifest_v1",
+  "title": "Phase 6E.3 Run Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "prediction_logging_version",
+    "run_id",
+    "run_type",
+    "inference_interface_version",
+    "prompt_package_version",
+    "inference_config_version",
+    "model_set",
+    "rendered_prompt_dataset",
+    "started_at",
+    "expected_request_count"
+  ],
+  "properties": {
+    "schema_version": {"const": "phase6e_run_manifest_v1"},
+    "prediction_logging_version": {"const": "phase6e_prediction_logging_v1"},
+    "run_type": {"enum": ["synthetic_mock", "synthetic_dry_run", "production"]}
+  }
+}

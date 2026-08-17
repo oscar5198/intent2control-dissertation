@@ -1,0 +1,9 @@
+check,observed,expected,passed
+20 stimuli,20,20,True
+4 songs,4,4,True
+2 groups,2,2,True
+5 mixes per song,[5],[5],True
+complete z_RMS,True,True,True
+complete z_CF,True,True,True
+complete z_SW,True,True,True
+complete z_SI,True,True,True

@@ -1,0 +1,89 @@
+{
+  "design_version": "phase3c_final_5mix_3episode_20stimulus_additive_feature_v1",
+  "formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+  "sample_sizes": [
+    20,
+    30,
+    40,
+    50,
+    60,
+    80
+  ],
+  "replications": 10,
+  "scenarios": {
+    "moderate_expected": {
+      "grand_mean": 68.0,
+      "group_effects": {
+        "group_01": 0.0,
+        "group_02": 1.2
+      },
+      "episode_effects": {
+        "EDR-1": 0.0,
+        "EDR-2": -1.4,
+        "FM-1": 2.0
+      },
+      "feature_effects": {
+        "z_RMS": 2.2,
+        "z_CF": -1.7,
+        "z_SW": 1.9
+      },
+      "participant_sd": 8.5,
+      "stimulus_sd": 3.2,
+      "residual_sd": 9.8,
+      "description": "Moderate expected feature, episode, group, participant, stimulus and residual effects."
+    },
+    "smaller_effects_harder": {
+      "description": "Fixed effects scaled to 60% of the moderate scenario; random and residual SDs unchanged.",
+      "grand_mean": 68.0,
+      "group_effects": {
+        "group_01": 0.0,
+        "group_02": 0.72
+      },
+      "episode_effects": {
+        "EDR-1": 0.0,
+        "EDR-2": -0.84,
+        "FM-1": 1.2
+      },
+      "feature_effects": {
+        "z_RMS": 1.32,
+        "z_CF": -1.02,
+        "z_SW": 1.14
+      },
+      "participant_sd": 8.5,
+      "stimulus_sd": 3.2,
+      "residual_sd": 9.8
+    },
+    "higher_noise": {
+      "grand_mean": 68.0,
+      "group_effects": {
+        "group_01": 0.0,
+        "group_02": 1.2
+      },
+      "episode_effects": {
+        "EDR-1": 0.0,
+        "EDR-2": -1.4,
+        "FM-1": 2.0
+      },
+      "feature_effects": {
+        "z_RMS": 2.2,
+        "z_CF": -1.7,
+        "z_SW": 1.9
+      },
+      "stimulus_sd": 3.2,
+      "description": "Moderate fixed effects with higher participant and residual variability.",
+      "participant_sd": 11.0,
+      "residual_sd": 12.5
+    }
+  },
+  "feature_sha256": "6b3d3a7b475590c50510acbaf3ad4e394baaddf68b2410a83ba0d4d77a76b922",
+  "sampling": {
+    "draws": 400,
+    "tune": 400,
+    "chains": 2,
+    "cores": 1,
+    "target_accept": 0.95,
+    "inference_method": "nutpie"
+  },
+  "compatibility_hash": "90f4b61c902f982fd7e3739e68f40f668f2e7cf64244bff0216622c41edb1cca",
+  "replication_fallback_reason": "Fallback from 20 to 10 replications per condition because 360 repeated Bayesian fits was not computationally practical in this desktop execution."
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "phase6d_prompt_package_verification_v1",
+  "package_version": "phase6d_prompt_package_v1",
+  "prompt_spec_version": "phase6d_prompt_spec_v1",
+  "response_schema_version": "preference_prediction_response_v1",
+  "artifact_hashes_valid": true,
+  "artifact_hash_mismatches": [],
+  "reference_prompt_hashes_valid": true,
+  "reference_prompt_hash_mismatches": [],
+  "response_fixture_validation": {
+    "valid_fixture_passed": true,
+    "valid_fixture_errors": [],
+    "invalid_fixtures_failed": true,
+    "invalid_fixture_results": {
+      "missing_rating": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "'E' is a required property"
+        ]
+      },
+      "duplicate_ranking_item": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "['C', 'D', 'A', 'E', 'E'] has non-unique elements"
+        ]
+      },
+      "invalid_label": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "'F' is not one of ['A', 'B', 'C', 'D', 'E']"
+        ]
+      },
+      "rating_above_100": {
+        "valid_json_object": true,
+        "schema_errors": [
+          "101 is greater than the maximum of 100"
+        ]
+      },
+      "explanatory_text_outside_json": {
+        "valid_json_object": false,
+        "schema_errors": [
+          "fixture is not a JSON object"
+        ]
+      }
+    }
+  },
+  "condition_integrity": true,
+  "deterministic_rendering": true,
+  "prompt_size_structural_check": true,
+  "PHASE6D_PROMPT_PACKAGE_FROZEN": true
+}

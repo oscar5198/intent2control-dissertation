@@ -1,0 +1,61 @@
+column_name,level,data_type,source,required,allowed_values_or_range,description
+participant_id,participant,string,raw Netlify study_id,yes,non-empty stable study identifier,Canonical anonymous participant identifier copied from study_id.
+study_id,participant,string,raw Netlify study_id,yes,non-empty stable study identifier,Original exported study identifier retained for traceability.
+study_version,participant,string,raw Netlify study_version,no,,Frontend study version.
+schema_version,participant,string,raw Netlify schema_version,no,,Netlify export schema version.
+stimulus_configuration_version,participant,string,raw Netlify stimulus_configuration_version,no,,Stimulus configuration version used by the submitted session.
+source_version,participant,string,raw Netlify source_version,no,,Frontend submission source version.
+submission_status,participant,string,raw Netlify submission_status,no,,Submission status recorded by the frontend.
+group_id,participant,string,raw Netlify group_id/study_group,yes for complete participant,group_01 or group_02 in active study,Assigned participant song group.
+study_group,participant,string,raw Netlify study_group/group_id,no,group_01 or group_02 in active study,Exported group alias retained for traceability.
+started_at,participant,string,raw Netlify started_at,no,ISO timestamp if present,Study start timestamp.
+completed_at,participant,string,raw Netlify completed_at,no,ISO timestamp if present,Study completion timestamp.
+duration_seconds,participant,number/string,raw Netlify duration_seconds,no,non-negative if present,Study duration in seconds.
+age_range,participant,string,demographics_json.age_range,no,questionnaire option values,Permitted Phase 6A background metadata.
+gender,participant,string,demographics_json.gender,no,questionnaire option values,Permitted Phase 6A background metadata.
+cultural_influence_country,participant,string,demographics_json.cultural_influence_country,no,text response,Permitted Phase 6A background metadata.
+music_listening_habits,participant,string,demographics_json.music_listening_habits,no,questionnaire option values,Permitted Phase 6A background metadata.
+music_production_or_audio_engineering_experience,participant,string,demographics_json.music_production_or_audio_engineering_experience,no,questionnaire option values,Permitted Phase 6A background metadata.
+hearing_difficulty,participant,string,demographics_json.hearing_difficulty,no,questionnaire option values,Permitted Phase 6A background metadata.
+participant_metadata_missing_fields,participant,string,derived from permitted metadata fields,no,pipe-separated field names,Missingness audit for participant metadata; missing metadata does not invalidate ratings.
+trial_id,trial,string,derived deterministically from participant_id and trial_index,yes,participant_id__trial_NN,Stable participant-trial identifier for later held-out evaluation.
+trial_order,trial,integer,responses_json.trial_index,yes for complete trial,1-6 in active complete study,Original study trial order.
+trial_index,trial,integer,responses_json.trial_index,yes for complete trial,1-6 in active complete study,Raw trial index retained as exported.
+episode_id,trial,string,responses_json.episode_id/scenario_id,yes,EDR-1 EDR-2 FM-1 in active study,Listening episode/context identifier.
+scenario_id,trial,string,responses_json.scenario_id/episode_id,no,EDR-1 EDR-2 FM-1 in active study,Scenario identifier alias.
+episode_position,trial,integer,responses_json.episode_position,no,1-3 in active complete study,Position of episode in participant order.
+context_title,trial,string,stimuli.json scenarios,no,,Scenario title from active stimulus config.
+context_label,trial,string,stimuli.json scenarios,no,EDR-1 EDR-2 FM-1,Canonical context label.
+context_text,trial,string,stimuli.json scenarios,no,,Scenario/vignette text.
+context_dominant_function,trial,string,stimuli.json scenarios,no,Enjoyment Relaxation-Distraction Focus-Motivation,Dominant function label from active config.
+song_id,trial,string,responses_json.song_id,yes,active sourceSongId values,Song identifier.
+excerpt_id,trial,string,responses_json.excerpt_id or active stimulus config,yes,active excerpt IDs,Configured excerpt identifier.
+song_position,trial,integer,responses_json.song_position,no,1-2 within episode,Song order within the episode.
+participant_song_label,trial,string,stimuli.json excerpt participantLabel,no,Song A or Song B,Participant-facing song label.
+song_title,trial,string,stimuli.json finalExcerptName,no,active song titles,Researcher-facing song title for traceability.
+presentation_label,candidate,string,responses_json.display_label and mapping metadata,yes,A B C D E,Trial-specific anonymous candidate label.
+display_position,candidate,integer,responses_json.display_position,yes for complete trial,1-5,Displayed position of the anonymous label.
+stimulus_id,candidate,string,responses_json.stimulus_id validated against mix_mapping_json,yes,active stimulus_id,Stable stimulus identifier.
+actual_mix_id,candidate,string,responses_json.actual_mix_id or active config,no,active actualMixId,Underlying mix identifier distinct from presentation label.
+audio_path,candidate,string,responses_json.audio_path or active config,no,,Frontend audio path.
+human_rating,candidate,number,responses_json.rating,yes for complete candidate,0-100,Human rating preserved for later target construction; no preference label is derived in Phase 6B.1.
+rating_set,candidate,boolean,responses_json.rating_set,no,true false,Whether frontend recorded deliberate rating interaction.
+audio_played,candidate,boolean,responses_json.audio_played,no,true false,Whether frontend recorded required playback.
+first_play_timestamp,candidate,string,responses_json.first_play_timestamp,no,ISO timestamp if present,First playback timestamp for candidate.
+comparative_comment,trial,string,responses_json.comparative_comment,yes for complete trial,non-empty in complete trial,Trial-level comparative comment repeated across the five candidate rows.
+response_time_ms,candidate,number,responses_json.response_time_ms,no,non-negative if present,Trial/candidate response time as exported.
+z_RMS,candidate,number,final_20_stimulus_feature_table.csv joined by stimulus_id,yes for active complete candidate,numeric,Primary frozen acoustic descriptor.
+z_CF,candidate,number,final_20_stimulus_feature_table.csv joined by stimulus_id,yes for active complete candidate,numeric,Primary frozen acoustic descriptor.
+z_SW,candidate,number,final_20_stimulus_feature_table.csv joined by stimulus_id,yes for active complete candidate,numeric,Primary frozen acoustic descriptor.
+z_SI,candidate,number,final_20_stimulus_feature_table.csv joined by stimulus_id,no numeric sensitivity-only,numeric,Sensitivity-only acoustic descriptor.
+z_SI_role,candidate,string,final_20_stimulus_feature_table.csv,no,,Role label documenting z_SI as sensitivity/QC-oriented.
+acoustic_feature_source_file,candidate,string,final_20_stimulus_feature_table.csv,no,,Source feature file recorded in feature table.
+acoustic_feature_table_used,candidate,string,final_20_stimulus_feature_table.csv,no,,Feature table provenance recorded in feature table.
+active_stimulus_match,candidate,boolean,stimuli.json active stimulus lookup,yes,true false,Whether stimulus_id is part of active five-mix config.
+feature_join_status,candidate,string,feature join validation,yes,matched missing,Whether acoustic features matched exactly by stimulus_id.
+trial_row_count,trial,integer,derived from grouped responses_json rows,yes,5 for complete trial,Number of candidate rows found for participant-trial.
+trial_labels,trial,string,derived from grouped responses_json rows,yes for complete trial,A|B|C|D|E,Pipe-separated labels present in the trial.
+trial_stimulus_ids,trial,string,derived from grouped responses_json rows,yes for complete trial,pipe-separated stimulus IDs,Stimulus IDs present in the trial.
+trial_validation_status,trial,string,validation layer,yes,complete incomplete malformed,Trial-level validation status without applying final exclusion criteria.
+candidate_validation_status,candidate,string,validation layer,yes,valid invalid,Candidate-level validation status.
+validation_issues,candidate,string,validation layer,no,pipe-separated issue codes,Validation issues affecting this row/trial.

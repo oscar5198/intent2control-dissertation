@@ -1,0 +1,179 @@
+{
+  "schema_version": "phase6d_prompt_package_manifest_v1",
+  "package_version": "phase6d_prompt_package_v1",
+  "prompt_spec_version": "phase6d_prompt_spec_v1",
+  "response_schema_version": "preference_prediction_response_v1",
+  "rendered_prompt_schema_version": "phase6d2_rendered_prompt_v1",
+  "condition_integrity_schema_version": "phase6d3_condition_integrity_v1",
+  "template_artifact_path": "llm-experiments/prompts/phase6d_prompt_template_v1.json",
+  "response_schema_path": "llm-experiments/schema/preference_prediction_response_v1.json",
+  "rendered_prompt_schema_path": "llm-experiments/schema/rendered_prompt_v1.json",
+  "renderer_module_path": "llm-experiments/src/llm_experiments/prompts/render.py",
+  "condition_validator_module_path": "llm-experiments/src/llm_experiments/prompts/validate_conditions.py",
+  "provider_adapter_boundary_path": "llm-experiments/prompts/phase6e_provider_adapter_boundary.md",
+  "primary_experimental_conditions": [
+    "non_history",
+    "personalised_history"
+  ],
+  "condition_contract": {
+    "non_history": "Same target and participant metadata, with no prior-trial evidence.",
+    "personalised_history": "Same target and participant metadata, plus eligible prior-trial evidence from the same participant.",
+    "only_substantive_difference": "Previous listening evidence from this participant",
+    "condition_integrity_gate_required": true
+  },
+  "acoustic_input_contract": {
+    "primary_features": [
+      "z_RMS",
+      "z_CF",
+      "z_SW"
+    ],
+    "rendered_precision_decimal_places": 2,
+    "sensitivity_only_features_excluded": [
+      "z_SI"
+    ]
+  },
+  "participant_metadata_contract": {
+    "fields": [
+      "age_range",
+      "gender",
+      "cultural_influence_country",
+      "music_listening_habits",
+      "music_production_or_audio_engineering_experience",
+      "hearing_difficulty"
+    ],
+    "missing_value": "Not provided"
+  },
+  "song_identity_policy": {
+    "rendered_identity": "participant-facing within-study labels only, such as Song A or Song B",
+    "excluded": [
+      "actual song title",
+      "song_id",
+      "excerpt_id",
+      "stimulus_id",
+      "actual_mix_id",
+      "filename",
+      "audio_path"
+    ]
+  },
+  "candidate_order_policy": {
+    "target_candidates": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "history_candidates": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "history_trials": "original trial_order ascending"
+  },
+  "reasoning_policy": {
+    "primary_inference": "zero-shot",
+    "chain_of_thought_requested": false,
+    "rationale_output_field": false,
+    "scored_fields_only": [
+      "predicted_preferred_mix",
+      "predicted_ratings",
+      "predicted_ranking"
+    ]
+  },
+  "few_shot_policy": {
+    "primary_few_shot_examples": 0,
+    "provider_adapters_may_inject_demonstrations": false,
+    "future_few_shot_requires_new_package_version": true
+  },
+  "structured_output_policy": {
+    "primary_response_schema": "preference_prediction_response_v1",
+    "semantic_schema_varies_by_model": false,
+    "provider_without_native_schema_enforcement": "request JSON text and validate locally against the same schema"
+  },
+  "repair_policy": {
+    "maximum_primary_generation_attempts": 1,
+    "maximum_format_repair_attempts": 1,
+    "repair_is_formatting_only": true,
+    "repair_receives_ground_truth": false,
+    "repair_receives_correctness_feedback": false,
+    "after_failed_repair": "mark invalid/missing",
+    "format_repair_instruction": "Your previous response did not match the required JSON format. Repair formatting only and return exactly one JSON object that conforms to the supplied schema. Do not add new participant information, do not include ground truth or correctness feedback, and do not hint which candidate should win."
+  },
+  "condition_object_rendered_prompt_linkage": [
+    "prediction_example_id",
+    "condition_object_id",
+    "rendered_prompt_id",
+    "future inference request/prediction ID"
+  ],
+  "provider_adapter_boundary": {
+    "may_change": [
+      "API request format",
+      "message transport",
+      "native schema-enforcement syntax",
+      "tokenizer-specific counting",
+      "model endpoint parameters"
+    ],
+    "may_not_change": [
+      "system instruction",
+      "user-message semantic content",
+      "history evidence",
+      "candidate order",
+      "participant metadata",
+      "acoustic values",
+      "task definition",
+      "response semantics"
+    ],
+    "provider_specific_model_configuration_included": false
+  },
+  "artifact_hash_algorithm": "sha256",
+  "artifact_hashes": {
+    "prompt_specification": {
+      "path": "llm-experiments/prompts/prompt_specification.md",
+      "sha256": "a22e5f79336412d64716abefb6700fcc23d4501778fd1932ad7b2fc0b1734288"
+    },
+    "semantic_template": {
+      "path": "llm-experiments/prompts/phase6d_prompt_template_v1.json",
+      "sha256": "4a0ef6a35cf94caf8d9df896df7f09feaf751ed8d293bf5865e864620b45a1d3"
+    },
+    "response_schema": {
+      "path": "llm-experiments/schema/preference_prediction_response_v1.json",
+      "sha256": "069b971135ab0700ab98271c28f0bf35fb63e07bfea67940d47b8cb881e5abbe"
+    },
+    "rendered_prompt_schema": {
+      "path": "llm-experiments/schema/rendered_prompt_v1.json",
+      "sha256": "ddafc104156e360e441274caabd28547d4126e8417aac60283c837428de41877"
+    },
+    "prompt_spec_module": {
+      "path": "llm-experiments/src/llm_experiments/prompts/prompt_spec.py",
+      "sha256": "5ae878fa72fb472a12949927ff32b933f71f4e244e3ada8ced64cc829b22041b"
+    },
+    "renderer_module": {
+      "path": "llm-experiments/src/llm_experiments/prompts/render.py",
+      "sha256": "785051a9b3f460ea4359dcf00bf7659a069fb67f246b02b76a0f07f95cfb1bdf"
+    },
+    "condition_validator_module": {
+      "path": "llm-experiments/src/llm_experiments/prompts/validate_conditions.py",
+      "sha256": "c2f81a44e156d669181cd50decc38bfb4b9555afb57bd00e8a50f8d615ea041c"
+    },
+    "freeze_module": {
+      "path": "llm-experiments/src/llm_experiments/prompts/freeze_package.py",
+      "sha256": "eb96aad799388be65a60e165f5c04fa11177353c14b55079709fb88049bb7d99"
+    },
+    "provider_adapter_boundary": {
+      "path": "llm-experiments/prompts/phase6e_provider_adapter_boundary.md",
+      "sha256": "269e1b587ccfba400a48a236c7062c1fa9709b2b70fb673478a06ccaea9aa9f5"
+    }
+  },
+  "reference_prompt_hashes": {
+    "non_history_system_message_sha256": "243e97941c4357cc4a841575ff8a64d71de69b3f12f74c75004fa98239f52cd0",
+    "non_history_user_message_sha256": "1e13c66417a6d258fc9fb5fb5d450b985945129c79f2e263031d5179c8a858b4",
+    "non_history_rendered_prompt_object_sha256": "5905415381d4056a2a130d342fdcd82955085b9bb40dda4988a7b8e14cd03984",
+    "personalised_history_system_message_sha256": "243e97941c4357cc4a841575ff8a64d71de69b3f12f74c75004fa98239f52cd0",
+    "personalised_history_user_message_sha256": "58910e8450a7c42f9db8d342fda0dcbe4514ee4f55e090e409e51f9b2ab3d936",
+    "personalised_history_rendered_prompt_object_sha256": "00ddbe2689bdc8394f1875c366792e4837a59ed61bb840f9973f11524edeab08",
+    "reference_prompt_pair_sha256": "5c8be2c51c17a499c990f490694a8d23bf976303b7be184627e189de72ecaf32"
+  },
+  "freeze_gate": "PHASE6D_PROMPT_PACKAGE_FROZEN"
+}

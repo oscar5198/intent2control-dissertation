@@ -1,0 +1,20 @@
+column_name,level,data_type,description
+prediction_example_id,target,string,Stable Phase 6B prediction-example linkage key.
+baseline_model,model,string,Stable baseline model ID.
+fit_status,model,string,fit_ok convergence_warning or fit_failed.
+protocol_version,model,string,Phase 6C baseline prediction protocol version.
+inference_mode,model,string,dry_run smoke_test or production.
+seed,model,integer,Model-specific random seed.
+chains,model,integer,Number of chains requested.
+draws,model,integer,Posterior draws per chain requested.
+tune,model,integer,Tuning iterations per chain requested.
+target_accept,model,number,Sampler target acceptance rate.
+sampling_backend,model,string,Configured sampling backend.
+runtime_seconds,diagnostic,number,Runtime for this fit when available.
+target_exclusion_validated,diagnostic,boolean,Whether fit-time target-trial exclusion assertions passed.
+training_row_count,diagnostic,integer,Rows used in target-specific training data.
+divergences,diagnostic,integer,Number of divergent transitions if sampling ran.
+max_rhat,diagnostic,number,Maximum R-hat recorded for the fit if available.
+min_bulk_ess,diagnostic,number,Minimum bulk effective sample size if available.
+min_tail_ess,diagnostic,number,Minimum tail effective sample size if available.
+message,diagnostic,string,Compact warning or failure message; failures are recorded rather than silently discarded.

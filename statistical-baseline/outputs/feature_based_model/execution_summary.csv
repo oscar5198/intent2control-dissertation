@@ -1,0 +1,25 @@
+﻿item,value
+notebook,statistical-baseline/notebooks/_04_feature_based_model.ipynb
+feature_dataset_shape,"(1200, 13)"
+feature_dataset_path,statistical-baseline\data\synthetic\feature_based_ratings.csv
+z_column_source,reconstructed_from_notebook_3_documented_transform
+data_generating_coefficients,"{""grand_mean"": 63.0, ""episode"": {""Relaxation"": 0.0, ""Distraction"": -2.5, ""Enjoyment"": 3.0, ""Focus"": 1.5, ""Motivation"": 2.5}, ""feature_main"": {""z_RMS"": 2.5, ""z_CF"": -1.8, ""z_SW"": 2.2, ""z_SI"": -1.2}, ""feature_interactions"": {""Focus:z_SW"": 2.0, ""Motivation:z_SW"": 2.5, ""Distraction:z_SI"": 1.8}, ""participant_sd"": 7.0, ""residual_sd"": 8.5}"
+clipped_ratings,0
+additive_formula,rating ~ episode + z_RMS + z_CF + z_SW + z_SI + (1 | participant_id)
+interaction_formula,rating ~ episode + z_RMS + z_CF + z_SW + z_SI + episode:z_SW + episode:z_SI + (1 | participant_id)
+sampling_config,"{""draws"": 1000, ""tune"": 1000, ""chains"": 4, ""cores"": 1, ""target_accept"": 0.95, ""random_seed"": 44, ""inference_method"": ""nutpie""}"
+additive_divergences,0
+interaction_divergences,0
+max_rhat,1.01
+min_ess,345.0
+posterior_predictive_boundary_violations,"[{'model': 'additive', 'ppc_mean': 0.0007139583333333334}, {'model': 'reduced_interaction', 'ppc_mean': 0.0007654166666666666}]"
+loo_preferred_synthetic_model,reduced_interaction
+coefficient_recovery_coverage_rate,1.0
+cell_mean_rmse,1.9458374662397642
+cell_mean_coverage,0.8
+strongest_posterior_coefficient_correlation,"{'coefficient_a': 'z_SW', 'coefficient_b': ""episode:z_SW[('Enjoyment',)]"", 'correlation': -0.692698782706181, 'abs_correlation': 0.692698782706181}"
+posterior_winner_probability_sum_ok,True
+posterior_winner_final_ties,0
+draw_level_tie_probability_max,0.0
+export_directory,statistical-baseline\outputs\feature_based_model
+unresolved_statistical_concerns,Only twelve unique stimulus feature vectors; simulated rather than empirical effects; Gaussian PPC can produce ratings outside 0-100; participant-level cross-validation still required.

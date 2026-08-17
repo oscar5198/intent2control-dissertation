@@ -1,0 +1,4 @@
+model,divergences,max_rhat,min_bulk_ess,min_tail_ess,max_treedepth_warnings,min_bfmi
+intercept_only,0,1.02,282.0,487.0,0,0.614676799521844
+primary_feature,0,1.02,391.0,641.0,0,0.689841783126899
+si_sensitivity,0,1.01,648.0,870.0,0,0.7204658297443686

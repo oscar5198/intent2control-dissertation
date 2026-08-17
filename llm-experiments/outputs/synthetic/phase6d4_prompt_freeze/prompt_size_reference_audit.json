@@ -1,0 +1,36 @@
+{
+  "schema_version": "phase6d4_prompt_size_reference_audit_v1",
+  "package_version": "phase6d_prompt_package_v1",
+  "dataset_class": "synthetic/test",
+  "size_summary": {
+    "non_history": {
+      "count": 11,
+      "characters_min": 2780,
+      "characters_median": 2802,
+      "characters_max": 2850,
+      "approximate_words_min": 370,
+      "approximate_words_median": 377,
+      "approximate_words_max": 379
+    },
+    "personalised_history": {
+      "count": 11,
+      "characters_min": 7139,
+      "characters_median": 8166,
+      "characters_max": 8209,
+      "approximate_words_min": 1001,
+      "approximate_words_median": 1149,
+      "approximate_words_max": 1153
+    }
+  },
+  "max_history_trial_count": 5,
+  "prompt_size_difference": {
+    "character_difference_min": 4289,
+    "character_difference_median": 5334,
+    "character_difference_max": 5407,
+    "word_difference_min": 703,
+    "word_difference_median": 872,
+    "word_difference_max": 880
+  },
+  "prompt_size_structural_check": true,
+  "context_window_note": "Largest synthetic prompt is structurally small relative to modern LLM context windows; provider-specific token limits remain a Phase 6E concern."
+}

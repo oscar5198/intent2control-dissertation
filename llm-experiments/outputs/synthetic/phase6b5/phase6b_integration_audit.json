@@ -1,0 +1,206 @@
+{
+  "schema_version": "phase6b5_synthetic_integration_v1",
+  "synthetic_fixture": "llm-experiments/outputs/synthetic/phase6b5/phase6b5_integration_synthetic_raw_export.csv",
+  "source_fixture": "llm-experiments/fixtures/synthetic/phase6b1_five_mix_netlify_export.csv",
+  "stages_executed": [
+    "6B.1",
+    "6B.2",
+    "6B.3",
+    "6B.4"
+  ],
+  "expected_structural_counts": {
+    "participant_count": 2,
+    "trial_count": 12,
+    "analysis_ready_candidate_rows": 59,
+    "complete_participant_candidate_rows": 30,
+    "complete_trial_count": 10,
+    "incomplete_or_malformed_trial_count": 2,
+    "target_eligible_trial_count": 11,
+    "target_ineligible_trial_count": 1,
+    "history_eligible_trial_count": 11,
+    "prediction_example_count": 11,
+    "non_history_object_count": 11,
+    "personalised_history_object_count": 11,
+    "condition_object_count": 22,
+    "examples_lacking_personalised_history": 0
+  },
+  "observed_structural_counts": {
+    "participant_count": 2,
+    "trial_count": 12,
+    "analysis_ready_candidate_rows": 59,
+    "complete_participant_candidate_rows": 30,
+    "complete_trial_count": 10,
+    "incomplete_or_malformed_trial_count": 2,
+    "target_eligible_trial_count": 11,
+    "target_ineligible_trial_count": 1,
+    "history_eligible_trial_count": 11,
+    "prediction_example_count": 11,
+    "non_history_object_count": 11,
+    "personalised_history_object_count": 11,
+    "condition_object_count": 22,
+    "examples_lacking_personalised_history": 0
+  },
+  "audits": {
+    "structural_counts": {
+      "passed": true,
+      "expected": {
+        "participant_count": 2,
+        "trial_count": 12,
+        "analysis_ready_candidate_rows": 59,
+        "complete_participant_candidate_rows": 30,
+        "complete_trial_count": 10,
+        "incomplete_or_malformed_trial_count": 2,
+        "target_eligible_trial_count": 11,
+        "target_ineligible_trial_count": 1,
+        "history_eligible_trial_count": 11,
+        "prediction_example_count": 11,
+        "non_history_object_count": 11,
+        "personalised_history_object_count": 11,
+        "condition_object_count": 22,
+        "examples_lacking_personalised_history": 0
+      },
+      "observed": {
+        "participant_count": 2,
+        "trial_count": 12,
+        "analysis_ready_candidate_rows": 59,
+        "complete_participant_candidate_rows": 30,
+        "complete_trial_count": 10,
+        "incomplete_or_malformed_trial_count": 2,
+        "target_eligible_trial_count": 11,
+        "target_ineligible_trial_count": 1,
+        "history_eligible_trial_count": 11,
+        "prediction_example_count": 11,
+        "non_history_object_count": 11,
+        "personalised_history_object_count": 11,
+        "condition_object_count": 22,
+        "examples_lacking_personalised_history": 0
+      }
+    },
+    "phase6b1": {
+      "passed": true,
+      "checks": {
+        "one_row_per_candidate": true,
+        "complete_participant_has_30_rows": true,
+        "complete_trials_have_five_rows": true,
+        "ratings_attached_to_labels": true,
+        "comments_preserved_or_missing_as_fixture_controls": true,
+        "metadata_mapped": true,
+        "primary_acoustic_features_attached": true,
+        "trial_ids_deterministic": true,
+        "malformed_or_incomplete_flagged": true
+      }
+    },
+    "phase6b2": {
+      "passed": true,
+      "checks": {
+        "eligible_trials_have_ground_truth": true,
+        "ineligible_trial_has_no_fabricated_target": true,
+        "maximum_tie_retained": true,
+        "no_arbitrary_tie_breaking": true,
+        "non_maximum_tie_ranked_with_average_rank": true,
+        "target_history_eligibility_consistent": true
+      }
+    },
+    "phase6b3": {
+      "passed": true,
+      "checks": {
+        "complete_participant_has_six_examples": true,
+        "ineligible_trial_not_target": true,
+        "targets_are_eligible": true,
+        "target_excluded_from_history": true,
+        "history_ordered": true,
+        "target_candidates_a_to_e": true,
+        "ground_truth_complete": true
+      }
+    },
+    "phase6b4": {
+      "passed": true,
+      "checks": {
+        "non_history_has_no_history": true,
+        "personalised_history_has_history": true,
+        "target_candidates_a_to_e": true,
+        "target_uses_primary_features": true
+      }
+    },
+    "leakage": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "provenance_leakage": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "condition_equivalence": {
+      "passed": true,
+      "paired_condition_count": 11,
+      "failures": []
+    },
+    "schema": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "identifier_integrity": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "history_rotation": {
+      "passed": true,
+      "checks": {
+        "trial_02_can_be_history_for_trial_01": true,
+        "trial_02_ratings_absent_when_trial_02_is_target": true,
+        "trial_02_comment_absent_when_trial_02_is_target": true
+      }
+    },
+    "acoustic_mapping": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "metadata": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "context": {
+      "passed": true,
+      "failure_count": 0,
+      "failures": []
+    },
+    "hidden_ground_truth_separation": {
+      "passed": true,
+      "checks": {
+        "prompt_data_has_no_ground_truth_key": true,
+        "prediction_examples_retain_ground_truth": true,
+        "authoritative_scoring_source": "phase6b3_prediction_examples_jsonl"
+      }
+    },
+    "determinism": {
+      "passed": true,
+      "comparisons": {
+        "analysis_ready_csv": true,
+        "analysis_issues_csv": true,
+        "candidate_ground_truth_csv": true,
+        "trial_ground_truth_csv": true,
+        "prediction_examples_jsonl": true,
+        "prompt_data_jsonl": true,
+        "prediction_example_ids": true,
+        "condition_object_ids": true,
+        "structural_counts": true
+      }
+    }
+  },
+  "READY_FOR_LLM_INFERENCE": {
+    "ready": true,
+    "failed_checks": [],
+    "note": "Synthetic Phase 6B gate only; does not authorize LLM inference on real data without final export validation."
+  },
+  "contains_real_participant_data": false,
+  "contains_llm_prompts": false,
+  "contains_llm_predictions": false,
+  "contains_model_performance": false,
+  "phase6b_complete": true
+}

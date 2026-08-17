@@ -1,0 +1,61 @@
+{
+  "schema_version": "phase6e_run_manifest_v1",
+  "prediction_logging_version": "phase6e_prediction_logging_v1",
+  "run_id": "phase6e4_synthetic_failure_matrix",
+  "run_type": "synthetic_mock",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "prompt_package_version": "phase6d_prompt_package_v1",
+  "inference_config_version": "phase6e_primary_inference_config_v1",
+  "model_set": [
+    "centaur",
+    "claude_sonnet",
+    "gpt",
+    "llama_3_1_70b_instruct"
+  ],
+  "rendered_prompt_dataset": {
+    "path": "llm-experiments/outputs/synthetic/phase6d2_rendered_prompts/rendered_prompts.jsonl",
+    "sha256": "a4b8ca87aefbc0eabd7b3223d3e8dc3ba0400ae73dbb28427cf346601d0aa411",
+    "rendered_prompt_count": 12,
+    "prompt_package_version": "phase6d_prompt_package_v1"
+  },
+  "started_at": "2026-08-14T15:47:10.701056+00:00",
+  "ended_at": "2026-08-14T15:47:10.722564+00:00",
+  "expected_request_count": 12,
+  "completed_count": 12,
+  "valid_count": 7,
+  "invalid_count": 1,
+  "failed_count": 4,
+  "environment_summary": {
+    "backend": "mock",
+    "real_model_calls": false,
+    "failure_handling_version": "phase6e_failure_handling_v1",
+    "max_primary_generations": 1,
+    "max_format_repair_generations": 1,
+    "max_transport_retries": 2,
+    "retryable_error_codes": [
+      "timeout",
+      "connection_error",
+      "http_server_error",
+      "backend_unavailable",
+      "rate_limited",
+      "empty_response"
+    ],
+    "non_retryable_error_codes": [
+      "prompt_package_invalid",
+      "model_config_not_frozen",
+      "backend_not_verified",
+      "schema_missing",
+      "http_client_error",
+      "bad_credentials",
+      "unsupported_model",
+      "missing_text_field",
+      "malformed_provider_response",
+      "invalid_json",
+      "schema_invalid",
+      "logging_conflict",
+      "duplicate_request_conflict",
+      "unexpected_internal_error"
+    ]
+  },
+  "failure_handling_version": "phase6e_failure_handling_v1"
+}

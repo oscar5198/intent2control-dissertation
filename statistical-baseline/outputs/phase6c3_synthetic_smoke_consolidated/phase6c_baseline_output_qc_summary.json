@@ -1,0 +1,42 @@
+{
+  "schema_version": "phase6c3_baseline_consolidation_v1",
+  "protocol_version": "phase6c_baseline_prediction_v1",
+  "run_type": "synthetic_smoke",
+  "mode": "partial",
+  "prediction_quantity": "posterior_expected_mean_rating",
+  "credible_interval_level": 0.95,
+  "configuration_snapshot_hash": "286472d6db776df5ee3b5813b340818e0f28a73500d70eec03392607f3a8ff64",
+  "expected_primary_fits": 2,
+  "completed_primary_fits": 2,
+  "warning_primary_fits": 2,
+  "failed_primary_fits": 0,
+  "missing_primary_fits": 0,
+  "expected_sensitivity_fits": 0,
+  "completed_sensitivity_fits": 0,
+  "candidate_prediction_rows": 10,
+  "trial_summary_rows": 2,
+  "diagnostic_rows": 2,
+  "duplicate_rows": 0,
+  "a_e_completeness_failures": 0,
+  "probability_sum_failures": 0,
+  "preferred_mix_consistency_failures": 0,
+  "candidate_trial_consistency_failures": 0,
+  "phase6b_alignment_failures": 0,
+  "leakage_failures": 0,
+  "configuration_failures": 0,
+  "validation_failure_count": 0,
+  "validation_warning_count": 2,
+  "synthetic_structural_validation": "PASS",
+  "BASELINE_PRIMARY_OUTPUTS_COMPLETE": true,
+  "production_complete": false,
+  "contains_final_performance": false,
+  "failures": {},
+  "warnings": {
+    "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_01 x categorical_design": [
+      "Fit completed with convergence_warning; retained as structurally completed."
+    ],
+    "SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_01 x primary_acoustic": [
+      "Fit completed with convergence_warning; retained as structurally completed."
+    ]
+  }
+}

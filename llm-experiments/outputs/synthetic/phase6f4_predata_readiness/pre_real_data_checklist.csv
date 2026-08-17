@@ -1,0 +1,11 @@
+step_order,remaining_step,status
+1,lock final survey export,pending
+2,verify exact four model/checkpoint identities,pending
+3,verify QMUL serving contracts,pending
+4,verify RunPod Centaur contract,pending
+5,freeze Phase 6E.2 production gates,pending
+6,run final Phase 6B pipeline,pending
+7,run Phase 6C baseline production,pending
+8,render final real prompts,pending
+9,execute LLM production,pending
+10,run scoring/comparison/reporting,ready_after_real_inputs

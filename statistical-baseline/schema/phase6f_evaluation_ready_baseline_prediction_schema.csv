@@ -1,0 +1,20 @@
+column_name,data_type,nullable,model_role,prediction_quantity,protocol_version,description
+prediction_example_id,string,false,all,prediction_link,phase6c_baseline_prediction_v1,Stable Phase 6B prediction-example key used for later joining to hidden ground truth.
+participant_id,string,false,all,prediction_metadata,phase6c_baseline_prediction_v1,Anonymous participant identifier copied from prediction-side baseline output.
+trial_id,string,false,all,prediction_metadata,phase6c_baseline_prediction_v1,Held-out target trial identifier copied from prediction-side baseline output.
+baseline_model,string,false,all,model_identity,phase6c_baseline_prediction_v1,Stable baseline model ID.
+model_role,string,false,primary_or_sensitivity,model_identity,phase6c_baseline_prediction_v1,Model role from the frozen Phase 6C configuration.
+predicted_preferred_mix,string,true,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Unique predicted preferred A-E label; blank when the frozen exact-tie rule marks a tie.
+predicted_tie,boolean,false,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Whether the highest posterior mean expected rating is exactly tied.
+predicted_rating_A,number,false,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Posterior mean expected rating for candidate A.
+predicted_rating_B,number,false,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Posterior mean expected rating for candidate B.
+predicted_rating_C,number,false,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Posterior mean expected rating for candidate C.
+predicted_rating_D,number,false,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Posterior mean expected rating for candidate D.
+predicted_rating_E,number,false,all,posterior_expected_mean_rating,phase6c_baseline_prediction_v1,Posterior mean expected rating for candidate E.
+winning_probability_A,number,false,all,posterior_winning_probability,phase6c_baseline_prediction_v1,Draw-level posterior winning probability for candidate A.
+winning_probability_B,number,false,all,posterior_winning_probability,phase6c_baseline_prediction_v1,Draw-level posterior winning probability for candidate B.
+winning_probability_C,number,false,all,posterior_winning_probability,phase6c_baseline_prediction_v1,Draw-level posterior winning probability for candidate C.
+winning_probability_D,number,false,all,posterior_winning_probability,phase6c_baseline_prediction_v1,Draw-level posterior winning probability for candidate D.
+winning_probability_E,number,false,all,posterior_winning_probability,phase6c_baseline_prediction_v1,Draw-level posterior winning probability for candidate E.
+fit_status,string,false,all,fit_qc,phase6c_baseline_prediction_v1,Fit status retained from Phase 6C.2; warning fits are structurally retained.
+protocol_version,string,false,all,protocol_identity,phase6c_baseline_prediction_v1,Frozen Phase 6C baseline prediction protocol version.

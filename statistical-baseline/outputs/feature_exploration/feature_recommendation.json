@@ -1,0 +1,20 @@
+{
+  "recommended_option": "Option A with SI sensitivity",
+  "primary_predictors": [
+    "z_RMS",
+    "z_CF",
+    "z_SW"
+  ],
+  "sensitivity_predictors": [
+    "z_RMS",
+    "z_CF",
+    "z_SW",
+    "z_SI"
+  ],
+  "primary_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+  "sensitivity_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + z_SI + (1 | participant_id) + (1 | stimulus_id)",
+  "si_recommendation": "sensitivity_only",
+  "bark_recommendation": "exclude_from_primary_model",
+  "rationale": "RMS, crest factor, and stereo width are complete, jointly standardised, have usable variation, and are the repository-supported scalar diversity predictors. Stereo imbalance is complete but repository method evidence treats it as QC-only, so it should not be primary. Bark raw bands are complete but no globally valid final-20 PCA/scalar representation exists.",
+  "interpretation": "A 1-unit acoustic coefficient in Phase 3B.4 is a rating-point association with a 1-SD increase in the predictor. Coefficients are associative, uncertainty reflects only 20 stimulus-level feature observations, group is confounded with assigned song set, and the stimulus random intercept captures residual between-stimulus differences."
+}

@@ -1,0 +1,17 @@
+{
+  "predicted_preferred_mix": "C",
+  "predicted_ratings": {
+    "A": 60,
+    "B": 45,
+    "C": 80,
+    "D": 70,
+    "E": 55
+  },
+  "predicted_ranking": [
+    "C",
+    "D",
+    "A",
+    "E",
+    "B"
+  ]
+}

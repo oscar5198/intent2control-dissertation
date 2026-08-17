@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "phase6d2_rendered_prompt_v1",
+  "title": "Phase 6D.2 Rendered Prompt",
+  "description": "Model-agnostic rendered prompt object with system/user messages only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "rendered_prompt_id",
+    "condition_object_id",
+    "prediction_example_id",
+    "condition",
+    "prompt_spec_version",
+    "response_schema_version",
+    "source_prompt_data_schema_version",
+    "source_prompt_data_builder_version",
+    "messages"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "phase6d2_rendered_prompt_v1"
+    },
+    "rendered_prompt_id": {
+      "type": "string",
+      "description": "Deterministic ID derived from condition_object_id and prompt_spec_version."
+    },
+    "condition_object_id": {
+      "type": "string"
+    },
+    "prediction_example_id": {
+      "type": "string"
+    },
+    "condition": {
+      "type": "string",
+      "enum": ["non_history", "personalised_history"]
+    },
+    "prompt_spec_version": {
+      "const": "phase6d_prompt_spec_v1"
+    },
+    "response_schema_version": {
+      "const": "preference_prediction_response_v1"
+    },
+    "source_prompt_data_schema_version": {
+      "type": "string"
+    },
+    "source_prompt_data_builder_version": {
+      "type": "string"
+    },
+    "messages": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["role", "content"],
+          "properties": {
+            "role": {"const": "system"},
+            "content": {"type": "string"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["role", "content"],
+          "properties": {
+            "role": {"const": "user"},
+            "content": {"type": "string"}
+          }
+        }
+      ]
+    }
+  }
+}

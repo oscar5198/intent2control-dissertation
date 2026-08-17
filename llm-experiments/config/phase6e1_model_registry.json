@@ -1,0 +1,63 @@
+{
+  "schema_version": "phase6e1_model_registry_v1",
+  "inference_interface_version": "phase6e_inference_interface_v1",
+  "prompt_package_version_required": "phase6d_prompt_package_v1",
+  "models": [
+    {
+      "model_key": "gpt",
+      "provider_family": "GPT-family",
+      "model_label": "GPT-family model",
+      "checkpoint_or_model_identifier": "TO_FREEZE_IN_PHASE_6E_2",
+      "role_in_experiment": "planned principal LLM comparator",
+      "deployment_location": "QMUL",
+      "default_backend_key": "qmul_placeholder",
+      "inference_config_version": "phase6e1_inference_config_placeholder_v1",
+      "response_capabilities": {
+        "structured_json_target": true,
+        "native_schema_enforcement": "TO_ASSESS_IN_PHASE_6E_2"
+      }
+    },
+    {
+      "model_key": "claude_sonnet",
+      "provider_family": "Claude Sonnet-family",
+      "model_label": "Claude Sonnet-family model",
+      "checkpoint_or_model_identifier": "TO_FREEZE_IN_PHASE_6E_2",
+      "role_in_experiment": "planned principal LLM comparator",
+      "deployment_location": "QMUL",
+      "default_backend_key": "qmul_placeholder",
+      "inference_config_version": "phase6e1_inference_config_placeholder_v1",
+      "response_capabilities": {
+        "structured_json_target": true,
+        "native_schema_enforcement": "TO_ASSESS_IN_PHASE_6E_2"
+      }
+    },
+    {
+      "model_key": "llama_3_1_70b_instruct",
+      "provider_family": "Llama",
+      "model_label": "Llama 3.1 70B Instruct",
+      "checkpoint_or_model_identifier": "TO_FREEZE_IN_PHASE_6E_2",
+      "role_in_experiment": "planned principal LLM comparator",
+      "deployment_location": "QMUL",
+      "default_backend_key": "qmul_placeholder",
+      "inference_config_version": "phase6e1_inference_config_placeholder_v1",
+      "response_capabilities": {
+        "structured_json_target": true,
+        "native_schema_enforcement": "TO_ASSESS_IN_PHASE_6E_2"
+      }
+    },
+    {
+      "model_key": "centaur",
+      "provider_family": "Centaur",
+      "model_label": "Centaur",
+      "checkpoint_or_model_identifier": "TO_FREEZE_IN_PHASE_6E_2",
+      "role_in_experiment": "planned principal LLM comparator",
+      "deployment_location": "RunPod",
+      "default_backend_key": "runpod_centaur_placeholder",
+      "inference_config_version": "phase6e1_inference_config_placeholder_v1",
+      "response_capabilities": {
+        "structured_json_target": true,
+        "native_schema_enforcement": "TO_ASSESS_IN_PHASE_6E_2"
+      }
+    }
+  ]
+}

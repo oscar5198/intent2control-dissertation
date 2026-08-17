@@ -556,6 +556,7 @@ window.StudyApp.trial = (function () {
 
     setError(summary, !validation.valid);
     if (!validation.valid) {
+      updateTrialCompletionFeedback(validation, true);
       if (summary) {
         summary.textContent = validation.message || "Please complete the listening task requirements before continuing.";
         summary.focus();
@@ -638,28 +639,26 @@ window.StudyApp.trial = (function () {
     return {
       valid: firstInvalid === null,
       firstInvalid: firstInvalid,
+      missingPlaybackLabels: missingPlaybackLabels,
+      missingRatingLabels: missingRatingLabels,
+      commentValid: commentValid,
+      commentTooLong: commentText.length > maxTrialCommentLength,
+      maxCommentLength: maxTrialCommentLength,
       message: buildTrialValidationMessage(missingPlaybackLabels, missingRatingLabels, commentValid, commentText)
     };
   }
 
   function buildTrialValidationMessage(missingPlaybackLabels, missingRatingLabels, commentValid, commentText) {
-    var messages = [];
-
-    if (missingPlaybackLabels.length > 0) {
-      messages.push("Please listen to " + formatVersionList(missingPlaybackLabels) + " before continuing.");
+    if (window.StudyApp.validation && typeof window.StudyApp.validation.buildCompletionFeedback === "function") {
+      return window.StudyApp.validation.buildCompletionFeedback({
+        missingPlaybackLabels: missingPlaybackLabels,
+        missingRatingLabels: missingRatingLabels,
+        commentValid: commentValid,
+        commentTooLong: commentText.length > maxTrialCommentLength,
+        maxCommentLength: maxTrialCommentLength
+      });
     }
-
-    if (missingRatingLabels.length === 1) {
-      messages.push("Set a preference rating for " + formatVersionList(missingRatingLabels) + ".");
-    } else if (missingRatingLabels.length > 1) {
-      messages.push("Set preference ratings for " + formatVersionList(missingRatingLabels) + ".");
-    }
-
-    if (!commentValid) {
-      messages.push(commentText.length > maxTrialCommentLength ? "Keep the comment under " + maxTrialCommentLength + " characters." : "Provide a comment comparing the versions.");
-    }
-
-    return messages.join(" ");
+    return "Please complete the listening task requirements before continuing.";
   }
 
   function formatVersionList(labels) {
@@ -694,7 +693,21 @@ window.StudyApp.trial = (function () {
       button.setAttribute("data-ready-to-submit", String(validation.valid));
     }
 
+    updateTrialCompletionFeedback(validation, false);
     return validation.valid;
+  }
+
+  function updateTrialCompletionFeedback(validation, focusFeedback) {
+    var feedback = document.querySelector("[data-trial-completion-feedback]");
+    if (!feedback || !validation) {
+      return false;
+    }
+    feedback.textContent = validation.valid ? "" : validation.message;
+    feedback.classList.toggle("is-hidden", validation.valid);
+    if (!validation.valid && focusFeedback) {
+      feedback.focus();
+    }
+    return true;
   }
 
   function areCurrentTrialRatingsComplete() {

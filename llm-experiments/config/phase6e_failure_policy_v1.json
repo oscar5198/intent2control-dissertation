@@ -1,0 +1,43 @@
+{
+  "schema_version": "phase6e_failure_policy_v1",
+  "failure_handling_version": "phase6e_failure_handling_v1",
+  "max_primary_generations": 1,
+  "max_format_repair_generations": 1,
+  "max_transport_retries": 2,
+  "retryable_error_codes": [
+    "timeout",
+    "connection_error",
+    "http_server_error",
+    "backend_unavailable",
+    "rate_limited",
+    "empty_response"
+  ],
+  "non_retryable_error_codes": [
+    "prompt_package_invalid",
+    "model_config_not_frozen",
+    "backend_not_verified",
+    "schema_missing",
+    "http_client_error",
+    "bad_credentials",
+    "unsupported_model",
+    "missing_text_field",
+    "malformed_provider_response",
+    "invalid_json",
+    "schema_invalid",
+    "logging_conflict",
+    "duplicate_request_conflict",
+    "unexpected_internal_error"
+  ],
+  "backoff": {
+    "strategy": "deterministic_exponential",
+    "initial_delay_seconds": 0,
+    "multiplier": 2,
+    "maximum_delay_seconds": 0
+  },
+  "empty_response_policy": "retry_as_response_extraction_failure_without_format_repair",
+  "invalid_json_policy": "one_formatting_repair",
+  "schema_invalid_policy": "one_formatting_repair",
+  "transport_retries_count_as_scientific_generations": false,
+  "format_repair_receives_ground_truth": false,
+  "format_repair_receives_correctness_feedback": false
+}
