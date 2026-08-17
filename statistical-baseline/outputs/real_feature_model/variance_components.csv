@@ -1,0 +1,7 @@
+model_name,term,mean,sd,hdi_3,hdi_97,mcse,mcse_sd,ess_bulk,ess_tail,r_hat
+primary_feature,1|participant_id_sigma,12.477,1.999,8.797,16.065,0.065,0.048,969.0,1411.0,1.01
+primary_feature,1|stimulus_id_sigma,11.246,2.584,7.061,16.099,0.075,0.084,1195.0,1994.0,1.0
+primary_feature,sigma,26.866,0.628,25.772,28.107,0.008,0.011,5690.0,2932.0,1.0
+si_sensitivity,1|participant_id_sigma,12.452,1.926,9.123,16.178,0.06,0.038,1042.0,1816.0,1.0
+si_sensitivity,1|stimulus_id_sigma,11.499,2.658,7.199,16.664,0.087,0.066,1028.0,1532.0,1.0
+si_sensitivity,sigma,26.847,0.615,25.737,28.019,0.008,0.01,5713.0,3049.0,1.0

@@ -1,0 +1,5 @@
+baseline_model,fit_method,fit_status,fold_count
+categorical_design,mcmc,convergence_warning,197
+categorical_design,mcmc,fit_ok,1
+primary_acoustic,mcmc,convergence_warning,187
+primary_acoustic,mcmc,fit_ok,11

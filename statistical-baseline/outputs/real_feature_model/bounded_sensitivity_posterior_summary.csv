@@ -1,0 +1,11 @@
+model_name,term,mean,sd,hdi_3,hdi_97,mcse,mcse_sd,ess_bulk,ess_tail,r_hat
+bounded_beta_primary_sensitivity,Intercept,-0.163,0.223,-0.575,0.256,0.007,0.004,1051.0,1317.0,1.0
+bounded_beta_primary_sensitivity,episode[EDR-2],0.137,0.089,-0.027,0.301,0.001,0.001,4354.0,2571.0,1.0
+bounded_beta_primary_sensitivity,episode[FM-1],-0.316,0.09,-0.48,-0.145,0.001,0.001,3917.0,2603.0,1.0
+bounded_beta_primary_sensitivity,group[group_02],0.557,0.321,-0.047,1.158,0.01,0.007,976.0,1353.0,1.0
+bounded_beta_primary_sensitivity,z_RMS,0.236,0.118,0.028,0.466,0.003,0.002,1500.0,1929.0,1.0
+bounded_beta_primary_sensitivity,z_CF,-0.236,0.132,-0.486,0.016,0.004,0.002,1315.0,2029.0,1.0
+bounded_beta_primary_sensitivity,z_SW,-0.095,0.13,-0.344,0.142,0.004,0.003,1126.0,1776.0,1.0
+bounded_beta_primary_sensitivity,1|participant_id_sigma,0.524,0.079,0.381,0.674,0.003,0.002,975.0,1289.0,1.0
+bounded_beta_primary_sensitivity,1|stimulus_id_sigma,0.487,0.108,0.304,0.684,0.003,0.002,1118.0,2179.0,1.0
+bounded_beta_primary_sensitivity,phi,1.49,0.06,1.377,1.603,0.001,0.001,4913.0,2712.0,1.0

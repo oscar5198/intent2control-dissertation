@@ -1,0 +1,4 @@
+model_name,divergences,max_rhat,min_bulk_ess,min_tail_ess,max_tree_depth,tree_depth_warnings,energy_warnings,runtime_seconds,sampler
+primary_feature,0,1.01,969.0,1363.0,,0,0,23.77792428433895,bambi_pymc_nutpie
+si_sensitivity,0,1.01,1028.0,1264.0,,0,0,15.586328938603401,bambi_pymc_nutpie
+bounded_beta_primary_sensitivity,0,1.01,975.0,1289.0,,0,0,86.91923204064369,explicit_pymc_beta_nutpie

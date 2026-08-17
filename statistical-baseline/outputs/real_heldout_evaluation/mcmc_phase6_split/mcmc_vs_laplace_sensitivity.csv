@@ -1,0 +1,2 @@
+comparison,status,reason,mcmc_completed_fold_model_pairs,laplace_completed_fold_model_pairs
+mcmc_vs_laplace_identical_fold_subset,official_mcmc_executed,Official held-out evaluation executed with MCMC; Laplace outputs are not part of this run.,396,0

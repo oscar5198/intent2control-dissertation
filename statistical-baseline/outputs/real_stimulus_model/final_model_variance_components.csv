@@ -1,0 +1,4 @@
+model_name,icc_scope,icc_label,formula,primary_for_results,term,mean,sd,hdi_3,hdi_97,mcse,mcse_sd,ess_bulk,ess_tail,r_hat
+final_stimulus,conditional / final-model ICC,conditional / final-model ICC,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),True,1|participant_id_sigma,12.314,1.942,8.841,15.921,0.067,0.043,878.0,1614.0,1.01
+final_stimulus,conditional / final-model ICC,conditional / final-model ICC,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),True,1|stimulus_id_sigma,13.46,2.586,9.018,18.434,0.089,0.066,848.0,1324.0,1.0
+final_stimulus,conditional / final-model ICC,conditional / final-model ICC,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),True,sigma,26.851,0.619,25.696,28.035,0.009,0.011,4725.0,2752.0,1.0

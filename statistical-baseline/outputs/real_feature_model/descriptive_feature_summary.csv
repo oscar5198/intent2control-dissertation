@@ -1,0 +1,18 @@
+feature,quartile,n,rating_mean,rating_median,rating_sd,rating_min,rating_max,unique_stimuli,interpretation_note
+z_RMS,Q1,294,45.183673469387756,46.5,32.4118169172813,0.0,100.0,6,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_RMS,Q2,201,42.27860696517413,39.0,30.544099103587115,0.0,100.0,4,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_RMS,Q3,297,56.622895622895626,58.0,31.571763187637,0.0,100.0,6,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_RMS,Q4,198,63.30808080808081,71.0,28.11688863930108,0.0,100.0,4,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_CF,Q1,252,53.98015873015873,55.0,30.26581446243114,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_CF,Q2,249,51.51004016064257,53.0,32.28478524732854,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_CF,Q3,246,54.86991869918699,55.0,31.120164563227213,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_CF,Q4,243,46.11934156378601,47.0,33.546288428576794,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SW,Q1,249,53.93975903614458,54.0,32.295766250139316,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SW,Q2,252,53.095238095238095,56.0,31.09180047721901,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SW,Q3,246,56.207317073170735,59.0,30.398336879135698,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SW,Q4,243,43.193415637860085,39.0,32.61064506174419,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SI,Q1,294,56.53741496598639,63.0,31.347501189687424,0.0,100.0,6,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SI,Q2,246,54.36991869918699,52.0,31.773775439938653,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SI,Q3,246,50.86991869918699,52.0,32.68263205986798,0.0,100.0,5,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+z_SI,Q4,204,42.26960784313726,43.5,30.226743416707095,0.0,100.0,4,"descriptive only; acoustic predictors vary at 20 stimulus levels, not 900 independent observations"
+outcome_boundary_distribution,all,990,51.65050505050505,52.0,31.946920631947904,0.0,100.0,20,exact_zeros=73; exact_hundreds=71; <=5=96; >=95=94; transformed Beta sensitivity uses Smithson-Verkuilen adjustment

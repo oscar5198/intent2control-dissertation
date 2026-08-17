@@ -1,0 +1,8 @@
+check,passed,value
+exactly_33_participants,True,33
+exactly_990_rating_rows,True,990
+exactly_198_target_trials,True,198
+exactly_396_target_model_units,True,396
+new_participants_p031_p033_present,True,P031|P032|P033
+each_target_has_five_heldout_rows,True,{5: 198}
+each_target_participant_retains_25_history_rows,True,{25: 198}

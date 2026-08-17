@@ -1,0 +1,9 @@
+metric,difference_direction,bootstrap_replicates,mean_difference,ci_lower,ci_upper,probability_difference_gt_0
+strict_unique_winner_accuracy,primary_acoustic_minus_categorical_design,2000,0.0,0.0,0.0,0.0
+tie_compatible_accuracy,primary_acoustic_minus_categorical_design,2000,0.0,0.0,0.0,0.0
+top2_hit_rate,primary_acoustic_minus_categorical_design,2000,0.020234848484848484,-0.025252525252525193,0.06565656565656575,0.7835
+mean_spearman,primary_acoustic_minus_categorical_design,2000,0.008354541039924947,-0.003535353535353558,0.021062507887488337,0.9095
+mean_ndcg,primary_acoustic_minus_categorical_design,2000,0.001249025771957296,-6.48254072966925e-05,0.002794382476960254,0.9695
+mae,primary_acoustic_minus_categorical_design,2000,0.02553081971559446,-0.02709553464570096,0.07650337616948612,0.8265
+rmse,primary_acoustic_minus_categorical_design,2000,0.020307857939834237,-0.0417893478509054,0.08242273335514073,0.729
+mean_observed_winner_probability_mass,primary_acoustic_minus_categorical_design,2000,0.0018366893939393847,-0.00219267676767682,0.005783333333333325,0.8175

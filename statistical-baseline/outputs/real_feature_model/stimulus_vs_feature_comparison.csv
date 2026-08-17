@@ -1,0 +1,12 @@
+aspect,stimulus_model,feature_model
+formula,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)
+icc_scope,conditional / final-model ICC,conditional / final-model ICC
+runtime_seconds,12.7335683144629,23.77792428433895
+participant_ICC_mean,0.145,0.156
+stimulus_ICC_mean,0.173,0.128
+ppc_outside_0_100,0.1196474747474747,0.12090227272727273
+episode_EDR_2_mean,2.202,2.231
+episode_FM_1_mean,-6.675,-6.641
+group_group_02_mean,5.995,16.766
+interpretability,direct stimulus-level baseline; does not explain acoustic drivers,native rating-point acoustic associations for RMS/CF/SW
+main_limitation,additive; no Episode x Stimulus interaction,features vary across only 20 stimuli; additive; no Episode x Feature interaction

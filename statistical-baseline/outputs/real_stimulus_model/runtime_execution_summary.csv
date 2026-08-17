@@ -1,0 +1,3 @@
+model_name,formula,draws,tune,chains,target_accept,seed,sampler,runtime_seconds
+intercept_only,rating ~ 1 + (1 | participant_id) + (1 | stimulus_id),1000,1000,4,0.95,20260817,explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler',20.299583785235882
+final_stimulus,rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id),1000,1000,4,0.95,20260817,explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler',12.7335683144629
