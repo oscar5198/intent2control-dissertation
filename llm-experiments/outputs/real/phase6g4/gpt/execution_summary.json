@@ -1,0 +1,35 @@
+{
+  "schema_version": "phase6g4a_gpt_execution_summary_v1",
+  "run_id": "phase6g4a_gpt_production",
+  "preflight_passed": false,
+  "preflight_failures": [
+    "openai_api_key_present",
+    "openai_sdk_installed"
+  ],
+  "exact_requested_model": "gpt-5.5",
+  "actual_returned_models": [],
+  "expected_predictions": 396,
+  "attempted_prediction_count": 0,
+  "terminal_prediction_count": 0,
+  "non_history_count": 0,
+  "personalised_history_count": 0,
+  "valid_primary_count": 0,
+  "valid_after_repair_count": 0,
+  "invalid_count": 0,
+  "backend_failure_count": 0,
+  "transport_retry_count": 0,
+  "formatting_repair_count": 0,
+  "prompt_hash_mismatch_count": 0,
+  "duplicate_prediction_count": 0,
+  "unexpected_model_identity_changes": 0,
+  "ground_truth_dependency": false,
+  "token_usage_totals": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "reasoning_tokens": 0,
+    "total_tokens": 0
+  },
+  "total_api_calls": 0,
+  "GPT_PRODUCTION_INFERENCE_COMPLETE": false,
+  "ALL_GPT_PREDICTIONS_VALID": false
+}
