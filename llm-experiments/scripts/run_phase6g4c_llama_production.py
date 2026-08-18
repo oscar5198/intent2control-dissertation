@@ -15,6 +15,7 @@ if str(LLM_SRC) not in sys.path:
 from llm_experiments.inference.phase6g4c_llama import (  # noqa: E402
     build_canonical_llama_outputs,
     prepare_backend_failed_recovery,
+    regenerate_llama_resume_summaries_offline,
     run_llama_resume_after_recovery,
     run_llama_backend_failed_recovery,
     run_llama_production,
@@ -54,6 +55,24 @@ def main() -> int:
             "ALL_LLAMA_PREDICTIONS_VALID": manifest["ALL_LLAMA_PREDICTIONS_VALID"],
         }, indent=2))
         return 0
+    if args.offline_regenerate_summaries:
+        result = regenerate_llama_resume_summaries_offline(args.repo_root.resolve())
+        summary = result["resume_execution_summary"]
+        canonical = result["canonical_merge_manifest"]
+        print(json.dumps({
+            "offline_summary_regenerated": summary["offline_summary_regenerated"],
+            "model_generations": result["model_generations"],
+            "new_production_predictions": result["new_production_predictions"],
+            "prediction_content_changed": result["prediction_content_changed"],
+            "resume_expected_predictions": summary["expected_predictions"],
+            "resume_attempted_prediction_count": summary["attempted_prediction_count"],
+            "resume_terminal_prediction_count": summary["terminal_prediction_count"],
+            "resume_remaining_predictions": summary["remaining_predictions"],
+            "canonical_prediction_count": canonical["canonical_prediction_count"],
+            "canonical_unresolved_count": canonical["unresolved_count"],
+            "canonical_source_counts": canonical["canonical_source_counts"],
+        }, indent=2))
+        return 0
     if args.recover_backend_failed:
         summary = run_llama_backend_failed_recovery(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
     elif args.resume_after_recovery:
@@ -87,6 +106,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--recover-backend-failed", action="store_true", help="Run a guarded recovery batch only for source run backend_failed slots.")
     parser.add_argument("--canonical-merge", action="store_true", help="Build canonical Llama predictions from Run 01, recovery, and resume artifacts without inference.")
     parser.add_argument("--resume-after-recovery", action="store_true", help="Run a guarded batch for canonical-unresolved request IDs after backend-failed recovery.")
+    parser.add_argument("--offline-regenerate-summaries", action="store_true", help="Regenerate Run 03 and canonical summaries from existing logs without inference.")
     return parser.parse_args()
 
 

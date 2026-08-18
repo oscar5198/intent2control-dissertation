@@ -76,6 +76,10 @@ def valid_prediction_for(request_ref: dict, run_id: str, source_label: str = "va
         "condition": request_ref["condition"],
         "model_key": llama.MODEL_KEY,
         "final_status": source_label,
+        "terminal": True,
+        "actual_returned_model": llama.REQUEST_MODEL,
+        "transport_retry_count": 0,
+        "formatting_repair_count": 0,
         "response_schema_valid": True,
         "raw_final_response_text": body,
         "normalized_final_response_text": body,
@@ -93,6 +97,10 @@ def backend_failed_prediction_for(request_ref: dict) -> dict:
         "condition": request_ref["condition"],
         "model_key": llama.MODEL_KEY,
         "final_status": "backend_failed",
+        "terminal": True,
+        "actual_returned_model": None,
+        "transport_retry_count": 2,
+        "formatting_repair_count": 0,
         "response_schema_valid": False,
         "raw_final_response_text": None,
         "normalized_final_response_text": None,
@@ -767,7 +775,11 @@ def test_guarded_resume_skips_recovered_ids_and_adds_five_new_canonical_predicti
     manifest = load_json(canonical / "canonical_merge_manifest.json")
     canonical_rows = load_jsonl(canonical / "canonical_predictions.jsonl")
 
+    assert summary["expected_predictions"] == 391
     assert summary["predictions_executed_this_invocation"] == 5
+    assert summary["attempted_prediction_count"] == 5
+    assert summary["terminal_prediction_count"] == 5
+    assert summary["remaining_predictions"] == 386
     assert len(called_request_ids) == 5
     assert not set(called_request_ids).intersection({row["request_id"] for row in first_five})
     assert manifest["canonical_prediction_count"] == 10
@@ -778,6 +790,73 @@ def test_guarded_resume_skips_recovered_ids_and_adds_five_new_canonical_predicti
     assert (production / "predictions.jsonl").read_text(encoding="utf-8") == before_production
     assert (recovery / "predictions.jsonl").read_text(encoding="utf-8") == before_recovery
     assert manifest["ground_truth_dependency"] is False
+
+
+def test_second_resume_invocation_preserves_run03_universe_and_remaining_zero(monkeypatch, tmp_path) -> None:
+    shard = load_json(LLAMA_SHARD)
+    first_five = shard["requests"][:5]
+    production = tmp_path / "llama"
+    recovery = tmp_path / "llama_recovery_run_02"
+    resume = tmp_path / "llama_resume_after_recovery"
+    canonical = tmp_path / "llama_canonical"
+    write_jsonl_file(production / "predictions.jsonl", [backend_failed_prediction_for(row) for row in first_five])
+    write_jsonl_file(production / "attempt_log.jsonl", [{"request_id": row["request_id"], "failure_code": "generation_error"} for row in first_five for _ in range(3)])
+    write_jsonl_file(recovery / "predictions.jsonl", [valid_prediction_for(row, llama.RECOVERY_RUN_ID) for row in first_five])
+    write_jsonl_file(recovery / "attempt_log.jsonl", [{"request_id": row["request_id"], "failure_code": None} for row in first_five])
+    calls: list[str] = []
+
+    def fake_execute(request_ref, rendered_prompt, prompt_hash, response_schema, run_id):
+        calls.append(request_ref["request_id"])
+        return [{
+            "schema_version": "phase6g4c_llama_attempt_v1",
+            "run_id": run_id,
+            "request_id": request_ref["request_id"],
+            "prediction_id": llama.prediction_id(request_ref),
+            "rendered_prompt_id": request_ref["rendered_prompt_id"],
+            "prediction_example_id": request_ref["prediction_example_id"],
+            "condition": request_ref["condition"],
+            "model_key": llama.MODEL_KEY,
+            "actual_returned_model": llama.REQUEST_MODEL,
+            "attempt_type": "primary",
+            "attempt_number": 1,
+            "transport_attempt_number": 1,
+            "request_status": "completed",
+            "raw_response_text": valid_response()["decoded_text"],
+            "normalized_response_text": valid_response()["decoded_text"],
+            "response_schema_valid": True,
+            "validation_status": "valid",
+            "validation_errors": [],
+            "failure_code": None,
+            "failure_category": None,
+            "retryable": False,
+            "token_usage": {"output_tokens": 10},
+        }]
+
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
+    monkeypatch.setattr(llama, "execute_prediction", fake_execute)
+
+    first = llama.run_llama_resume_after_recovery(REPO_ROOT, guarded_batch_size=5, production_output_dir=production, recovery_output_dir=recovery, resume_output_dir=resume, canonical_output_dir=canonical)
+    second = llama.run_llama_resume_after_recovery(REPO_ROOT, guarded_batch_size=386, production_output_dir=production, recovery_output_dir=recovery, resume_output_dir=resume, canonical_output_dir=canonical)
+    manifest = load_json(canonical / "canonical_merge_manifest.json")
+    canonical_summary = load_json(canonical / "canonical_execution_summary.json")
+
+    assert first["expected_predictions"] == 391
+    assert first["remaining_predictions"] == 386
+    assert second["expected_predictions"] == 391
+    assert second["guarded_batch_limit"] == 386
+    assert second["predictions_executed_this_invocation"] == 386
+    assert second["attempted_prediction_count"] == 391
+    assert second["terminal_prediction_count"] == 391
+    assert second["remaining_predictions"] == 0
+    assert second["valid_primary_count"] == 391
+    assert second["backend_failure_count"] == 0
+    assert len(calls) == 391
+    assert len(set(calls)) == 391
+    assert manifest["canonical_prediction_count"] == 396
+    assert manifest["unresolved_count"] == 0
+    assert manifest["canonical_source_counts"] == {"recovery_run02": 5, "resume_run03": 391}
+    assert canonical_summary["LLAMA_PRODUCTION_INFERENCE_COMPLETE"] is True
+    assert canonical_summary["ALL_LLAMA_PREDICTIONS_VALID"] is True
 
 
 def test_final_canonical_gates_use_canonical_predictions_not_superseded_failures(tmp_path) -> None:
@@ -802,3 +881,60 @@ def test_final_canonical_gates_use_canonical_predictions_not_superseded_failures
     assert summary["condition_balance_valid"] is True
     assert summary["LLAMA_PRODUCTION_INFERENCE_COMPLETE"] is True
     assert summary["ALL_LLAMA_PREDICTIONS_VALID"] is True
+
+
+def test_offline_regeneration_repairs_resume_summary_without_model_calls(monkeypatch, tmp_path) -> None:
+    shard = load_json(LLAMA_SHARD)
+    first_five = shard["requests"][:5]
+    production = tmp_path / "llama"
+    recovery = tmp_path / "llama_recovery_run_02"
+    resume = tmp_path / "llama_resume_after_recovery"
+    canonical = tmp_path / "llama_canonical"
+    write_jsonl_file(production / "predictions.jsonl", [backend_failed_prediction_for(row) for row in first_five])
+    write_jsonl_file(production / "attempt_log.jsonl", [{"request_id": row["request_id"], "failure_code": "generation_error"} for row in first_five for _ in range(3)])
+    write_jsonl_file(recovery / "predictions.jsonl", [valid_prediction_for(row, llama.RECOVERY_RUN_ID) for row in first_five])
+    write_jsonl_file(recovery / "attempt_log.jsonl", [{"request_id": row["request_id"], "failure_code": None} for row in first_five])
+    write_jsonl_file(resume / "predictions.jsonl", [valid_prediction_for(row, llama.RESUME_RUN_ID) for row in shard["requests"][5:]])
+    write_jsonl_file(resume / "attempt_log.jsonl", [{"request_id": row["request_id"], "actual_returned_model": llama.REQUEST_MODEL, "token_usage": {"output_tokens": 10}} for row in shard["requests"][5:]])
+    llama.build_canonical_llama_outputs(REPO_ROOT, production, recovery, resume, canonical)
+    llama.write_json(resume / "run_manifest.json", {
+        "schema_version": "phase6g4c_llama_run_manifest_v1",
+        "run_id": llama.RESUME_RUN_ID,
+        "run_mode": "resume",
+        "expected_request_count": 386,
+        "target_request_count": 386,
+        "guarded_batch_limit": 386,
+        "preflight": {"passed": True, "prompt_hash_mismatches": []},
+    })
+    llama.write_json(resume / "execution_summary.json", {
+        "run_id": llama.RESUME_RUN_ID,
+        "expected_predictions": 386,
+        "guarded_batch_limit": 386,
+        "predictions_executed_this_invocation": 386,
+        "attempted_prediction_count": 391,
+        "terminal_prediction_count": 391,
+        "remaining_predictions": -5,
+        "stopped_after_guarded_batch": False,
+    })
+    monkeypatch.setattr(llama, "invoke_llama", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("model call prohibited")))
+    monkeypatch.setattr(llama, "execute_prediction", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("inference prohibited")))
+
+    result = llama.regenerate_llama_resume_summaries_offline(REPO_ROOT, production_output_dir=production, recovery_output_dir=recovery, resume_output_dir=resume, canonical_output_dir=canonical)
+    regenerated = load_json(resume / "execution_summary.json")
+    canonical_summary = load_json(canonical / "canonical_execution_summary.json")
+
+    assert result["model_generations"] == 0
+    assert result["new_production_predictions"] == 0
+    assert result["prediction_content_changed"] is False
+    assert regenerated["expected_predictions"] == 391
+    assert regenerated["guarded_batch_limit"] == 386
+    assert regenerated["predictions_executed_this_invocation"] == 386
+    assert regenerated["attempted_prediction_count"] == 391
+    assert regenerated["terminal_prediction_count"] == 391
+    assert regenerated["remaining_predictions"] == 0
+    assert regenerated["valid_primary_count"] == 391
+    assert regenerated["backend_failure_count"] == 0
+    assert regenerated["offline_summary_regeneration_model_calls"] == 0
+    assert canonical_summary["LLAMA_PRODUCTION_INFERENCE_COMPLETE"] is True
+    assert canonical_summary["ALL_LLAMA_PREDICTIONS_VALID"] is True
+    assert canonical_summary["duplicate_prediction_count"] == 0

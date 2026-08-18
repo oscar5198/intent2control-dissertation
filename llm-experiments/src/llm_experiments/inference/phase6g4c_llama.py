@@ -79,13 +79,14 @@ def run_llama_production(
     target_request_ids: set[str] | None = None,
     recovery_source: dict[str, Any] | None = None,
     run_mode: str = "production",
+    expected_request_count: int | None = None,
 ) -> dict[str, Any]:
     if guarded_batch_size < 1:
         raise ValueError("--guarded-batch-size must be at least 1")
     out = repo_root / output_dir
     out.mkdir(parents=True, exist_ok=True)
     preflight = run_preflight(repo_root, output_dir, run_mode=run_mode)
-    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id, target_request_ids=target_request_ids, recovery_source=recovery_source, run_mode=run_mode)
+    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id, target_request_ids=target_request_ids, recovery_source=recovery_source, run_mode=run_mode, expected_request_count=expected_request_count)
     write_json(out / "run_manifest.json", run_manifest)
     if not preflight["passed"]:
         summary = build_blocked_summary(run_manifest, preflight)
@@ -483,6 +484,7 @@ def build_execution_summary(run_manifest: dict[str, Any], attempts: list[dict[st
     terminal_count = sum(1 for row in predictions if row["terminal"])
     actual_models = sorted({row.get("actual_returned_model") for row in attempts if row.get("actual_returned_model")})
     expected_count = run_manifest["expected_request_count"]
+    remaining_count = max(0, expected_count - terminal_count)
     return {
         "schema_version": "phase6g4c_llama_execution_summary_v1",
         "run_id": run_manifest["run_id"],
@@ -493,7 +495,7 @@ def build_execution_summary(run_manifest: dict[str, Any], attempts: list[dict[st
         "guarded_batch_requested": True,
         "guarded_batch_limit": run_manifest["guarded_batch_limit"],
         "predictions_executed_this_invocation": executed_this_invocation,
-        "remaining_predictions": expected_count - terminal_count,
+        "remaining_predictions": remaining_count,
         "stopped_after_guarded_batch": stopped_after_guarded_batch,
         "attempted_prediction_count": len(predictions),
         "terminal_prediction_count": terminal_count,
@@ -565,9 +567,11 @@ def build_run_manifest(
     target_request_ids: set[str] | None = None,
     recovery_source: dict[str, Any] | None = None,
     run_mode: str = "production",
+    expected_request_count: int | None = None,
 ) -> dict[str, Any]:
     shard = load_json(repo_root / LLAMA_SHARD)
-    expected_count = len(target_request_ids) if target_request_ids is not None else len(shard.get("requests", []))
+    target_count = len(target_request_ids) if target_request_ids is not None else len(shard.get("requests", []))
+    expected_count = expected_request_count if expected_request_count is not None else target_count
     return {
         "schema_version": "phase6g4c_llama_run_manifest_v1",
         "run_id": run_id,
@@ -600,7 +604,7 @@ def build_run_manifest(
         "expected_request_count": expected_count,
         "full_shard_request_count": len(shard.get("requests", [])),
         "shard_request_count": len(shard.get("requests", [])),
-        "target_request_count": expected_count,
+        "target_request_count": target_count,
         "target_request_ids_sha256": sha256_json(sorted(target_request_ids)) if target_request_ids is not None else None,
         "output_dir": str(output_dir).replace("\\", "/"),
         "output_namespace": output_namespace_checks(repo_root, output_dir, run_mode),
@@ -825,9 +829,75 @@ def run_llama_resume_after_recovery(
 ) -> dict[str, Any]:
     manifest = build_canonical_llama_outputs(repo_root, production_output_dir=production_output_dir, recovery_output_dir=recovery_output_dir, resume_output_dir=resume_output_dir, canonical_output_dir=canonical_output_dir)
     target_ids = set(manifest["unresolved_request_ids"])
-    summary = run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=resume_output_dir, run_id=RESUME_RUN_ID, target_request_ids=target_ids, recovery_source={"canonical_merge_manifest": manifest, "source_run_id": RUN_ID, "eligible_request_count": len(target_ids), "eligibility_rule": "resume unresolved canonical Llama request IDs only"}, run_mode="resume")
+    resume_universe_count = resume_expected_request_count(repo_root, resume_output_dir, target_ids)
+    summary = run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=resume_output_dir, run_id=RESUME_RUN_ID, target_request_ids=target_ids, recovery_source={"canonical_merge_manifest": manifest, "source_run_id": RUN_ID, "eligible_request_count": len(target_ids), "resume_universe_count": resume_universe_count, "eligibility_rule": "resume unresolved canonical Llama request IDs only"}, run_mode="resume", expected_request_count=resume_universe_count)
     build_canonical_llama_outputs(repo_root, production_output_dir=production_output_dir, recovery_output_dir=recovery_output_dir, resume_output_dir=resume_output_dir, canonical_output_dir=canonical_output_dir)
     return summary
+
+
+def resume_expected_request_count(repo_root: Path, resume_output_dir: Path, target_request_ids: set[str]) -> int:
+    existing_predictions = load_jsonl(repo_root / resume_output_dir / "predictions.jsonl")
+    existing_ids = {row["request_id"] for row in existing_predictions if row.get("request_id")}
+    return len(existing_ids | target_request_ids)
+
+
+def regenerate_llama_resume_summaries_offline(
+    repo_root: Path,
+    production_output_dir: Path = OUTPUT_DIR,
+    recovery_output_dir: Path = RECOVERY_OUTPUT_DIR,
+    resume_output_dir: Path = RESUME_OUTPUT_DIR,
+    canonical_output_dir: Path = CANONICAL_OUTPUT_DIR,
+) -> dict[str, Any]:
+    out = repo_root / resume_output_dir
+    manifest_path = out / "run_manifest.json"
+    manifest = load_json(manifest_path)
+    predictions = load_jsonl(out / "predictions.jsonl")
+    attempts = load_jsonl(out / "attempt_log.jsonl")
+    current_summary = load_json(out / "execution_summary.json") if (out / "execution_summary.json").exists() else {}
+    canonical_manifest_path = repo_root / canonical_output_dir / "canonical_merge_manifest.json"
+    canonical_manifest = load_json(canonical_manifest_path) if canonical_manifest_path.exists() else {}
+    resume_source_count = canonical_manifest.get("canonical_source_counts", {}).get("resume_run03")
+    expected_count = max(
+        len({row["request_id"] for row in predictions if row.get("request_id")}),
+        int(resume_source_count or 0),
+        int(manifest.get("expected_request_count") or 0),
+    )
+    corrected_manifest = dict(manifest)
+    corrected_manifest["expected_request_count"] = expected_count
+    corrected_manifest["target_request_count"] = manifest.get("target_request_count")
+    corrected_manifest["offline_summary_regenerated_at_utc"] = iso_now()
+    corrected_manifest["offline_summary_regeneration"] = {
+        "model_generations": 0,
+        "new_production_predictions": 0,
+        "prediction_content_changed": False,
+        "ground_truth_dependency": False,
+        "expected_count_source": "max(existing_resume_predictions, canonical resume_run03 source count, prior manifest expected_request_count)",
+    }
+    preflight = corrected_manifest.get("preflight") or {"passed": True, "prompt_hash_mismatches": []}
+    summary = build_execution_summary(
+        corrected_manifest,
+        attempts,
+        predictions,
+        preflight,
+        int(current_summary.get("predictions_executed_this_invocation") or 0),
+        bool(current_summary.get("stopped_after_guarded_batch", False)),
+    )
+    summary["offline_summary_regenerated"] = True
+    summary["offline_summary_regeneration_model_calls"] = 0
+    summary["prediction_content_changed"] = False
+    write_json(manifest_path, corrected_manifest)
+    write_json(out / "execution_summary.json", summary)
+    write_json(out / "failure_summary.json", build_failure_summary(attempts, predictions))
+    canonical_manifest_after = build_canonical_llama_outputs(repo_root, production_output_dir=production_output_dir, recovery_output_dir=recovery_output_dir, resume_output_dir=resume_output_dir, canonical_output_dir=canonical_output_dir)
+    return {
+        "schema_version": "phase6g4c_llama_offline_summary_regeneration_v1",
+        "resume_execution_summary": summary,
+        "canonical_merge_manifest": canonical_manifest_after,
+        "model_generations": 0,
+        "new_production_predictions": 0,
+        "prediction_content_changed": False,
+        "ground_truth_dependency": False,
+    }
 
 
 def is_schema_valid_prediction(prediction: dict[str, Any] | None) -> bool:
