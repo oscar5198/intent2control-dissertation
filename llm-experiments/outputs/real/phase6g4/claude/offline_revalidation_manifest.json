@@ -1,0 +1,76 @@
+{
+  "schema_version": "phase6g4b_claude_offline_revalidation_manifest_v1",
+  "created_at_utc": "2026-08-18T12:42:32.558225+00:00",
+  "run_id": "phase6g4b_claude_production_run_01",
+  "parser_normalizer_version": "phase6g4b_claude_response_normalizer_v1",
+  "source_attempt_log": "llm-experiments/outputs/real/phase6g4/claude/attempt_log.jsonl",
+  "source_attempt_log_sha256": "7be202ef2904195571bc06a602c3d0bfccac82154b19955ea8c0b3096b5449b6",
+  "requests_revalidated": 5,
+  "predictions_recovered_from_primary_attempts": 3,
+  "predictions_recovered_from_repair_attempts": 2,
+  "predictions_still_invalid": 0,
+  "api_calls_during_offline_recovery": 0,
+  "production_preflight_passed": false,
+  "production_preflight_source": "run_manifest.preflight",
+  "offline_revalidation_performed": true,
+  "ground_truth_dependency": false,
+  "selection_rule": "choose earliest attempt that becomes schema-valid under deterministic Claude response normalisation",
+  "normalization_policy": "accept bare JSON, one outer json Markdown fence, or one outer generic Markdown fence; reject prose, trailing text, multiple fences, malformed JSON, and schema-invalid JSON via existing validator",
+  "records": [
+    {
+      "schema_version": "phase6g4b_claude_offline_revalidation_record_v1",
+      "request_id": "phase6g4::claude_sonnet::P001__heldout__P001__trial_01__non_history__phase6d_prompt_spec_v1",
+      "primary_response_exists": true,
+      "primary_valid_after_normalization": true,
+      "repair_response_exists": true,
+      "primary_and_repair_predictions_differ": false,
+      "canonical_attempt_type": "primary",
+      "canonical_prediction_id": "phase6g4b_claude_pred_4d9ec1164c4f6bf0a13bae7429d3b82c",
+      "final_status": "valid_primary"
+    },
+    {
+      "schema_version": "phase6g4b_claude_offline_revalidation_record_v1",
+      "request_id": "phase6g4::claude_sonnet::P001__heldout__P001__trial_01__personalised_history__phase6d_prompt_spec_v1",
+      "primary_response_exists": true,
+      "primary_valid_after_normalization": false,
+      "repair_response_exists": true,
+      "primary_and_repair_predictions_differ": null,
+      "canonical_attempt_type": "format_repair",
+      "canonical_prediction_id": "phase6g4b_claude_pred_e427371be38a02c5403f0f1c4b78ccff",
+      "final_status": "valid_after_repair"
+    },
+    {
+      "schema_version": "phase6g4b_claude_offline_revalidation_record_v1",
+      "request_id": "phase6g4::claude_sonnet::P001__heldout__P001__trial_02__non_history__phase6d_prompt_spec_v1",
+      "primary_response_exists": true,
+      "primary_valid_after_normalization": true,
+      "repair_response_exists": true,
+      "primary_and_repair_predictions_differ": false,
+      "canonical_attempt_type": "primary",
+      "canonical_prediction_id": "phase6g4b_claude_pred_0cc752f807302bfc812a2b6d478ac193",
+      "final_status": "valid_primary"
+    },
+    {
+      "schema_version": "phase6g4b_claude_offline_revalidation_record_v1",
+      "request_id": "phase6g4::claude_sonnet::P001__heldout__P001__trial_02__personalised_history__phase6d_prompt_spec_v1",
+      "primary_response_exists": true,
+      "primary_valid_after_normalization": false,
+      "repair_response_exists": true,
+      "primary_and_repair_predictions_differ": null,
+      "canonical_attempt_type": "format_repair",
+      "canonical_prediction_id": "phase6g4b_claude_pred_34b0619ce5343437428bb54f02c3007d",
+      "final_status": "valid_after_repair"
+    },
+    {
+      "schema_version": "phase6g4b_claude_offline_revalidation_record_v1",
+      "request_id": "phase6g4::claude_sonnet::P001__heldout__P001__trial_03__non_history__phase6d_prompt_spec_v1",
+      "primary_response_exists": true,
+      "primary_valid_after_normalization": true,
+      "repair_response_exists": true,
+      "primary_and_repair_predictions_differ": false,
+      "canonical_attempt_type": "primary",
+      "canonical_prediction_id": "phase6g4b_claude_pred_4b52ab93fdd4f63b1725daf7615e7d48",
+      "final_status": "valid_primary"
+    }
+  ]
+}

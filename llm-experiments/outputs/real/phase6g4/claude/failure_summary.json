@@ -1,10 +1,14 @@
 {
   "schema_version": "phase6g4b_claude_failure_summary_v1",
-  "blocked_by_preflight": true,
-  "failures": [
-    "anthropic_api_key_present",
-    "anthropic_api_key_has_no_leading_or_trailing_whitespace",
-    "anthropic_api_key_contains_no_cr_or_lf",
-    "anthropic_sdk_installed"
-  ]
+  "blocked_by_preflight": false,
+  "failure_codes": {
+    "invalid_json": 168
+  },
+  "final_statuses": {
+    "valid_primary": 235,
+    "valid_after_repair": 161
+  },
+  "backend_failures": [],
+  "invalid_predictions": [],
+  "output_budget_exhausted_predictions": []
 }

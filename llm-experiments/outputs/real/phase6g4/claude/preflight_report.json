@@ -1,6 +1,6 @@
 {
   "schema_version": "phase6g4b_claude_preflight_v1",
-  "checked_at_utc": "2026-08-18T12:08:53.773723+00:00",
+  "checked_at_utc": "2026-08-18T12:40:38.946425+00:00",
   "passed": false,
   "checks": {
     "phase6d_prompt_package_frozen": true,
@@ -15,15 +15,14 @@
     "anthropic_api_key_present": false,
     "anthropic_api_key_has_no_leading_or_trailing_whitespace": false,
     "anthropic_api_key_contains_no_cr_or_lf": false,
-    "anthropic_sdk_installed": false,
+    "anthropic_sdk_installed": true,
     "output_directory_production_claude_namespace": true,
     "no_hidden_ground_truth_loaded": true
   },
   "failures": [
     "anthropic_api_key_present",
     "anthropic_api_key_has_no_leading_or_trailing_whitespace",
-    "anthropic_api_key_contains_no_cr_or_lf",
-    "anthropic_sdk_installed"
+    "anthropic_api_key_contains_no_cr_or_lf"
   ],
   "claude_shard_request_count": 396,
   "condition_counts": {
