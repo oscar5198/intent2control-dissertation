@@ -1,0 +1,59 @@
+{
+  "schema_version": "phase6g4a_gpt_run_manifest_v1",
+  "run_id": "phase6g4a_gpt_corrected_run_01",
+  "created_at_utc": "2026-08-18T02:04:15.332627+00:00",
+  "run_type": "final_real_gpt_5_5_production_inference",
+  "model_key": "gpt",
+  "exact_requested_model": "gpt-5.5",
+  "expected_returned_model": "gpt-5.5-2026-04-23",
+  "backend": "OpenAI Responses API",
+  "rendered_prompt_dataset": "llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl",
+  "gpt_shard_manifest": "llm-experiments/outputs/real/phase6g3/phase6g3_qmul_gpt_shard_manifest.json",
+  "gpt_shard_sha256": "439d705b9dc707a58b9755b17785da61ee40c21ea0ed711505c9fe86d2722011",
+  "expected_request_count": 396,
+  "shard_request_count": 396,
+  "output_dir": "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_01",
+  "guarded_batch_requested": true,
+  "guarded_batch_limit": 3,
+  "guarded_batch_semantics": "execute at most N previously-unexecuted canonical prediction units, then stop cleanly",
+  "preflight": {
+    "schema_version": "phase6g4a_gpt_preflight_v1",
+    "checked_at_utc": "2026-08-18T02:04:15.330625+00:00",
+    "passed": false,
+    "checks": {
+      "phase6d_prompt_package_frozen": true,
+      "phase6g1_real_data_ready": true,
+      "phase6g2d_production_ready": true,
+      "phase6g3_prompt_freeze_ready": true,
+      "gpt_shard_count_valid": true,
+      "prompt_hashes_valid": true,
+      "request_ids_deterministic_unique": true,
+      "openai_api_key_present": false,
+      "openai_api_key_has_no_leading_or_trailing_whitespace": false,
+      "openai_api_key_contains_no_cr_or_lf": false,
+      "openai_sdk_installed": false,
+      "output_directory_production_gpt_namespace": true,
+      "no_hidden_ground_truth_loaded": true
+    },
+    "failures": [
+      "openai_api_key_present",
+      "openai_api_key_has_no_leading_or_trailing_whitespace",
+      "openai_api_key_contains_no_cr_or_lf",
+      "openai_sdk_installed"
+    ],
+    "gpt_shard_request_count": 396,
+    "condition_counts": {
+      "non_history": 198,
+      "personalised_history": 198
+    },
+    "prompt_hash_mismatches": [],
+    "duplicate_request_ids": [],
+    "credential_policy": "OPENAI_API_KEY presence checked as boolean only; secret value is never logged.",
+    "openai_api_key_policy": "must exist, must have no leading/trailing whitespace, and must contain no CR/LF characters; value is never serialized"
+  },
+  "temperature_sent": false,
+  "top_p_sent": false,
+  "seed_sent": false,
+  "max_output_tokens": 256,
+  "contains_hidden_ground_truth": false
+}

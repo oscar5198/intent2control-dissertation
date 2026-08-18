@@ -12,15 +12,29 @@ LLM_SRC = REPO_ROOT / "llm-experiments" / "src"
 if str(LLM_SRC) not in sys.path:
     sys.path.insert(0, str(LLM_SRC))
 
-from llm_experiments.inference.phase6g4a_gpt import run_gpt_production  # noqa: E402
+from llm_experiments.inference.phase6g4a_gpt import prepare_infrastructure_recovery, run_gpt_production  # noqa: E402
 
 
 def main() -> int:
     args = parse_args()
+    if args.prepare_recovery:
+        recovery = prepare_infrastructure_recovery(args.repo_root.resolve())
+        print(json.dumps({
+            "old_run_id": recovery["old_run_id"],
+            "new_corrected_run_id": recovery["new_corrected_run_id"],
+            "archive_dir": recovery["archive_dir"],
+            "affected_prediction_count": recovery["failure_classification"]["affected_prediction_count"],
+            "failed_transport_attempt_count": recovery["failure_classification"]["failed_transport_attempt_count"],
+        }, indent=2))
+        return 0
     summary = run_gpt_production(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
     print(json.dumps({
         "preflight_passed": summary["preflight_passed"],
         "preflight_failures": summary.get("preflight_failures", []),
+        "guarded_batch_limit": summary["guarded_batch_limit"],
+        "predictions_executed_this_invocation": summary["predictions_executed_this_invocation"],
+        "remaining_predictions": summary["remaining_predictions"],
+        "stopped_after_guarded_batch": summary["stopped_after_guarded_batch"],
         "attempted_prediction_count": summary["attempted_prediction_count"],
         "terminal_prediction_count": summary["terminal_prediction_count"],
         "GPT_PRODUCTION_INFERENCE_COMPLETE": summary["GPT_PRODUCTION_INFERENCE_COMPLETE"],
@@ -33,6 +47,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Phase 6G.4A GPT-5.5 production inference from the frozen GPT shard.")
     parser.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     parser.add_argument("--guarded-batch-size", type=int, default=5)
+    parser.add_argument("--prepare-recovery", action="store_true", help="Archive/record the confirmed infrastructure-failure run and exit without inference.")
     return parser.parse_args()
 
 

@@ -10,7 +10,7 @@ import hashlib
 import json
 import os
 import time
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime, timezone
 from importlib import util
 from pathlib import Path
@@ -26,7 +26,9 @@ from llm_experiments.prompts.prompt_spec import load_jsonl, write_json
 
 
 SCHEMA_VERSION = "phase6g4a_gpt_production_inference_v1"
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
+BASE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
+OUTPUT_DIR = BASE_OUTPUT_DIR / "corrected_run_01"
+FAILED_INFRA_ARCHIVE_DIR = BASE_OUTPUT_DIR / "failed_infrastructure_run_01"
 RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
 GPT_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_gpt_shard_manifest.json")
 PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
@@ -42,13 +44,20 @@ MAX_OUTPUT_TOKENS = 256
 MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
 TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed"}
+CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_01"
+FAILED_INFRASTRUCTURE_RUN_ID = "phase6g4a_gpt_failed_infrastructure_run_01"
 
 
-def run_gpt_production(repo_root: Path, guarded_batch_size: int = 5) -> dict[str, Any]:
-    out = repo_root / OUTPUT_DIR
+def run_gpt_production(
+    repo_root: Path,
+    guarded_batch_size: int = 5,
+    output_dir: Path = OUTPUT_DIR,
+    run_id: str = CORRECTED_RUN_ID,
+) -> dict[str, Any]:
+    out = repo_root / output_dir
     out.mkdir(parents=True, exist_ok=True)
-    preflight = run_preflight(repo_root)
-    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size)
+    preflight = run_preflight(repo_root, output_dir=output_dir)
+    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id)
     write_json(out / "run_manifest.json", run_manifest)
     if not preflight["passed"]:
         summary = build_blocked_summary(run_manifest, preflight)
@@ -67,30 +76,95 @@ def run_gpt_production(repo_root: Path, guarded_batch_size: int = 5) -> dict[str
     terminal_ids = {row["request_id"] for row in existing_predictions if row.get("final_status") in TERMINAL_STATUSES}
     attempts: list[dict[str, Any]] = load_jsonl(out / "attempt_log.jsonl")
     actual_models: set[str] = {row.get("actual_returned_model") for row in attempts if row.get("actual_returned_model")}
+    executed_this_invocation = 0
+    stopped_after_guarded_batch = False
 
-    for index, request_ref in enumerate(requests):
+    for request_ref in requests:
         if request_ref["request_id"] in terminal_ids:
             continue
-        if index >= guarded_batch_size and actual_models and actual_models != {EXPECTED_RETURNED_MODEL}:
+        if executed_this_invocation >= guarded_batch_size:
+            stopped_after_guarded_batch = True
+            break
+        if actual_models and actual_models != {EXPECTED_RETURNED_MODEL}:
             break
         rendered_prompt = rendered[request_ref["rendered_prompt_id"]]
-        prediction_attempts = execute_prediction(request_ref, rendered_prompt, prompt_hashes[request_ref["rendered_prompt_id"]], response_schema)
+        prediction_attempts = execute_prediction(request_ref, rendered_prompt, prompt_hashes[request_ref["rendered_prompt_id"]], response_schema, run_id)
         attempts.extend(prediction_attempts)
         append_jsonl(out / "attempt_log.jsonl", prediction_attempts)
-        prediction = finalize_prediction(request_ref, prediction_attempts)
+        prediction = finalize_prediction(request_ref, prediction_attempts, run_id)
         append_jsonl(out / "predictions.jsonl", [prediction])
         terminal_ids.add(request_ref["request_id"])
+        executed_this_invocation += 1
         actual_models.update(row.get("actual_returned_model") for row in prediction_attempts if row.get("actual_returned_model"))
 
     predictions = load_predictions(out / "predictions.jsonl")
-    summary = build_execution_summary(run_manifest, attempts, predictions, preflight)
+    summary = build_execution_summary(run_manifest, attempts, predictions, preflight, executed_this_invocation, stopped_after_guarded_batch)
     write_json(out / "execution_summary.json", summary)
     write_json(out / "failure_summary.json", build_failure_summary(attempts, predictions))
     write_report(out / "gpt_production_qc_report.md", summary, preflight)
     return summary
 
 
-def run_preflight(repo_root: Path) -> dict[str, Any]:
+def prepare_infrastructure_recovery(repo_root: Path) -> dict[str, Any]:
+    """Record the confirmed failed infrastructure run as separate provenance."""
+    archive = repo_root / FAILED_INFRA_ARCHIVE_DIR
+    archive.mkdir(parents=True, exist_ok=True)
+    shard = load_json(repo_root / GPT_SHARD)
+    active_base = repo_root / BASE_OUTPUT_DIR
+    files_to_preserve = [
+        "attempt_log.jsonl",
+        "predictions.jsonl",
+        "run_manifest.json",
+        "execution_summary.json",
+        "failure_summary.json",
+        "gpt_production_qc_report.md",
+        "preflight_report.json",
+    ]
+    moved_files = []
+    for name in files_to_preserve:
+        source = active_base / name
+        destination = archive / name
+        if source.exists() and not destination.exists():
+            source.replace(destination)
+            moved_files.append(name)
+    existing_attempts = load_jsonl(archive / "attempt_log.jsonl")
+    existing_predictions = load_jsonl(archive / "predictions.jsonl")
+    affected_prediction_ids = [prediction_id(row) for row in shard.get("requests", [])]
+    manifest = {
+        "schema_version": "phase6g4a_gpt_infrastructure_recovery_manifest_v1",
+        "created_at_utc": iso_now(),
+        "old_run_id": FAILED_INFRASTRUCTURE_RUN_ID,
+        "new_corrected_run_id": CORRECTED_RUN_ID,
+        "archive_dir": str(FAILED_INFRA_ARCHIVE_DIR).replace("\\", "/"),
+        "moved_files": moved_files,
+        "local_failed_attempt_log_present": bool(existing_attempts),
+        "local_failed_prediction_log_present": bool(existing_predictions),
+        "failure_classification": {
+            "final_status": "backend_failed",
+            "failure_category": "transport",
+            "failure_code": "connection_error",
+            "affected_prediction_count": 396,
+            "failed_transport_attempt_count": 1188,
+            "successful_provider_generation_count": 0,
+            "returned_model_identity_count": 0,
+            "token_usage_count": 0,
+            "formatting_repair_count": 0,
+        },
+        "affected_prediction_ids": affected_prediction_ids,
+        "confirmed_root_cause": "malformed OPENAI_API_KEY contained trailing newline, producing an illegal HTTP Authorization header before requests reached OpenAI",
+        "clean_rerun_justification": "No successful provider generations, response text, returned model identities, or token usage were obtained; failed attempts are infrastructure provenance, not scientific GPT predictions.",
+        "corrected_environment_probe": {
+            "non_study_probe_succeeded": True,
+            "output": "API OK",
+            "returned_model": EXPECTED_RETURNED_MODEL,
+        },
+        "secret_policy": "No API key or secret value is stored; only the confirmed non-secret root-cause class is recorded.",
+    }
+    write_json(archive / "recovery_manifest.json", manifest)
+    return manifest
+
+
+def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, Any]:
     failures: list[str] = []
     prompt_verification = verify_prompt_package(repo_root)
     phase6g1 = load_json(repo_root / PHASE6G1_GATE)
@@ -100,7 +174,7 @@ def run_preflight(repo_root: Path) -> dict[str, Any]:
     hash_manifest = load_json(repo_root / PROMPT_HASH_MANIFEST)
     rendered = {row["rendered_prompt_id"]: row for row in load_jsonl(repo_root / RENDERED_PROMPTS)}
     requests = shard.get("requests", [])
-    output_dir_ok = str(OUTPUT_DIR).replace("\\", "/").endswith("phase6g4/gpt")
+    output_dir_ok = str(output_dir).replace("\\", "/").endswith("phase6g4/gpt/corrected_run_01")
     hash_mismatches = []
     prompt_hashes = {row["rendered_prompt_id"]: row["message_payload_sha256"] for row in hash_manifest["records"]}
     for row in requests:
@@ -110,6 +184,7 @@ def run_preflight(repo_root: Path) -> dict[str, Any]:
             hash_mismatches.append(row["request_id"])
     duplicate_ids = duplicate_values([row["request_id"] for row in requests])
     condition_counts = Counter(row["condition"] for row in requests)
+    key_state = inspect_openai_api_key()
     checks = {
         "phase6d_prompt_package_frozen": bool(prompt_verification.get("PHASE6D_PROMPT_PACKAGE_FROZEN")),
         "phase6g1_real_data_ready": bool(phase6g1.get("REAL_PHASE6B_READY")),
@@ -118,7 +193,9 @@ def run_preflight(repo_root: Path) -> dict[str, Any]:
         "gpt_shard_count_valid": len(requests) == 396 and condition_counts.get("non_history") == 198 and condition_counts.get("personalised_history") == 198,
         "prompt_hashes_valid": not hash_mismatches,
         "request_ids_deterministic_unique": not duplicate_ids,
-        "openai_api_key_present": bool(os.environ.get("OPENAI_API_KEY")),
+        "openai_api_key_present": key_state["present"],
+        "openai_api_key_has_no_leading_or_trailing_whitespace": key_state["has_no_leading_or_trailing_whitespace"],
+        "openai_api_key_contains_no_cr_or_lf": key_state["contains_no_cr_or_lf"],
         "openai_sdk_installed": bool(util.find_spec("openai")),
         "output_directory_production_gpt_namespace": output_dir_ok,
         "no_hidden_ground_truth_loaded": not shard.get("contains_hidden_ground_truth", False),
@@ -137,17 +214,33 @@ def run_preflight(repo_root: Path) -> dict[str, Any]:
         "prompt_hash_mismatches": hash_mismatches,
         "duplicate_request_ids": duplicate_ids,
         "credential_policy": "OPENAI_API_KEY presence checked as boolean only; secret value is never logged.",
+        "openai_api_key_policy": "must exist, must have no leading/trailing whitespace, and must contain no CR/LF characters; value is never serialized",
     }
 
 
-def execute_prediction(request_ref: dict[str, Any], rendered_prompt: dict[str, Any], prompt_hash: str, response_schema: dict[str, Any]) -> list[dict[str, Any]]:
+def inspect_openai_api_key() -> dict[str, bool]:
+    value = os.environ.get("OPENAI_API_KEY")
+    if value is None:
+        return {
+            "present": False,
+            "has_no_leading_or_trailing_whitespace": False,
+            "contains_no_cr_or_lf": False,
+        }
+    return {
+        "present": True,
+        "has_no_leading_or_trailing_whitespace": value == value.strip(),
+        "contains_no_cr_or_lf": "\n" not in value and "\r" not in value,
+    }
+
+
+def execute_prediction(request_ref: dict[str, Any], rendered_prompt: dict[str, Any], prompt_hash: str, response_schema: dict[str, Any], run_id: str) -> list[dict[str, Any]]:
     attempts = []
-    primary_attempt = call_with_transport_retries(request_ref, rendered_prompt, prompt_hash, response_schema, "primary", 1)
+    primary_attempt = call_with_transport_retries(request_ref, rendered_prompt, prompt_hash, response_schema, "primary", 1, run_id)
     attempts.extend(primary_attempt)
     final_primary = primary_attempt[-1]
     if should_repair(final_primary["validation_status"], final_primary["request_status"], final_primary.get("raw_response_text")):
         repair_messages = render_format_repair(final_primary["raw_response_text"], response_schema)["messages"]
-        repair_attempts = call_with_transport_retries(request_ref, {"messages": repair_messages}, prompt_hash, response_schema, "format_repair", 2)
+        repair_attempts = call_with_transport_retries(request_ref, {"messages": repair_messages}, prompt_hash, response_schema, "format_repair", 2, run_id)
         attempts.extend(repair_attempts[:MAX_FORMAT_REPAIRS + MAX_TRANSPORT_RETRIES])
     return attempts
 
@@ -159,6 +252,7 @@ def call_with_transport_retries(
     response_schema: dict[str, Any],
     attempt_type: str,
     attempt_number: int,
+    run_id: str,
 ) -> list[dict[str, Any]]:
     attempts = []
     for transport_attempt in range(1, MAX_TRANSPORT_RETRIES + 2):
@@ -191,6 +285,7 @@ def call_with_transport_retries(
             failure=failure,
             latency=latency,
             started_at=started_at,
+            run_id=run_id,
         )
         attempts.append(attempt)
         if request_status == "completed" or failure["failure_code"] not in RETRYABLE_FAILURES or transport_attempt > MAX_TRANSPORT_RETRIES:
@@ -234,7 +329,7 @@ def build_attempt_record(**kwargs: Any) -> dict[str, Any]:
     usage = normalize_usage(provider.get("usage"))
     return {
         "schema_version": "phase6g4a_gpt_attempt_v1",
-        "run_id": "phase6g4a_gpt_production",
+        "run_id": kwargs["run_id"],
         "request_id": request_ref["request_id"],
         "prediction_id": prediction_id(request_ref),
         "rendered_prompt_id": request_ref["rendered_prompt_id"],
@@ -268,7 +363,7 @@ def build_attempt_record(**kwargs: Any) -> dict[str, Any]:
     }
 
 
-def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, Any]]) -> dict[str, Any]:
+def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, Any]], run_id: str) -> dict[str, Any]:
     successful = next((row for row in attempts if row["response_schema_valid"]), None)
     primary_valid = next((row for row in attempts if row["attempt_type"] == "primary" and row["response_schema_valid"]), None)
     repair_attempted = any(row["attempt_type"] == "format_repair" for row in attempts)
@@ -284,6 +379,7 @@ def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, An
         status = "invalid_after_repair"
     return {
         "schema_version": "phase6g4a_gpt_prediction_v1",
+        "run_id": run_id,
         "request_id": request_ref["request_id"],
         "prediction_id": prediction_id(request_ref),
         "rendered_prompt_id": request_ref["rendered_prompt_id"],
@@ -304,7 +400,14 @@ def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, An
     }
 
 
-def build_execution_summary(run_manifest: dict[str, Any], attempts: list[dict[str, Any]], predictions: list[dict[str, Any]], preflight: dict[str, Any]) -> dict[str, Any]:
+def build_execution_summary(
+    run_manifest: dict[str, Any],
+    attempts: list[dict[str, Any]],
+    predictions: list[dict[str, Any]],
+    preflight: dict[str, Any],
+    executed_this_invocation: int,
+    stopped_after_guarded_batch: bool,
+) -> dict[str, Any]:
     statuses = Counter(row["final_status"] for row in predictions)
     conditions = Counter(row["condition"] for row in predictions)
     actual_models = sorted({row.get("actual_returned_model") for row in attempts if row.get("actual_returned_model")})
@@ -319,6 +422,11 @@ def build_execution_summary(run_manifest: dict[str, Any], attempts: list[dict[st
         "exact_requested_model": REQUEST_MODEL,
         "actual_returned_models": actual_models,
         "expected_predictions": 396,
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": run_manifest["guarded_batch_limit"],
+        "predictions_executed_this_invocation": executed_this_invocation,
+        "remaining_predictions": 396 - terminal_count,
+        "stopped_after_guarded_batch": stopped_after_guarded_batch,
         "attempted_prediction_count": len(predictions),
         "terminal_prediction_count": terminal_count,
         "non_history_count": conditions.get("non_history", 0),
@@ -350,6 +458,11 @@ def build_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any
         "exact_requested_model": REQUEST_MODEL,
         "actual_returned_models": [],
         "expected_predictions": 396,
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": run_manifest["guarded_batch_limit"],
+        "predictions_executed_this_invocation": 0,
+        "remaining_predictions": 396,
+        "stopped_after_guarded_batch": False,
         "attempted_prediction_count": 0,
         "terminal_prediction_count": 0,
         "non_history_count": 0,
@@ -371,11 +484,11 @@ def build_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any
     }
 
 
-def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch_size: int) -> dict[str, Any]:
+def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch_size: int, output_dir: Path, run_id: str) -> dict[str, Any]:
     shard = load_json(repo_root / GPT_SHARD)
     return {
         "schema_version": "phase6g4a_gpt_run_manifest_v1",
-        "run_id": "phase6g4a_gpt_production",
+        "run_id": run_id,
         "created_at_utc": iso_now(),
         "run_type": "final_real_gpt_5_5_production_inference",
         "model_key": MODEL_KEY,
@@ -387,7 +500,10 @@ def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch
         "gpt_shard_sha256": sha256_file(repo_root / GPT_SHARD),
         "expected_request_count": 396,
         "shard_request_count": len(shard.get("requests", [])),
-        "guarded_batch_size": guarded_batch_size,
+        "output_dir": str(output_dir).replace("\\", "/"),
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": guarded_batch_size,
+        "guarded_batch_semantics": "execute at most N previously-unexecuted canonical prediction units, then stop cleanly",
         "preflight": preflight,
         "temperature_sent": False,
         "top_p_sent": False,
@@ -418,6 +534,11 @@ def write_report(path: Path, summary: dict[str, Any], preflight: dict[str, Any])
         f"- Actual returned models: `{summary['actual_returned_models']}`",
         f"- Attempted predictions: `{summary['attempted_prediction_count']}`",
         f"- Terminal predictions: `{summary['terminal_prediction_count']}`",
+        f"- Guarded batch requested: `{str(summary.get('guarded_batch_requested', True)).lower()}`",
+        f"- Guarded batch limit: `{summary.get('guarded_batch_limit')}`",
+        f"- Predictions executed this invocation: `{summary.get('predictions_executed_this_invocation')}`",
+        f"- Remaining predictions: `{summary.get('remaining_predictions')}`",
+        f"- Stopped after guarded batch: `{str(summary.get('stopped_after_guarded_batch')).lower()}`",
         f"- Non-history: `{summary['non_history_count']}`",
         f"- Personalised-history: `{summary['personalised_history_count']}`",
         f"- Valid primary: `{summary['valid_primary_count']}`",
