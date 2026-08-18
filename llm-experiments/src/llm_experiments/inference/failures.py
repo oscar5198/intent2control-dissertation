@@ -32,10 +32,21 @@ RESPONSE_EXTRACTION_FAILURES = {
 STRUCTURAL_VALIDATION_FAILURES = {"invalid_json", "schema_invalid"}
 OUTPUT_BUDGET_FAILURES = {"output_budget_exhausted"}
 REFUSAL_FAILURES = {"refusal"}
+LOCAL_BACKEND_FAILURES = {
+    "cuda_out_of_memory",
+    "host_out_of_memory",
+    "model_load_error",
+    "tokenizer_error",
+    "generation_error",
+    "device_placement_error",
+    "quantization_runtime_error",
+    "local_backend_error",
+}
 INTERNAL_FAILURES = {
     "logging_conflict",
     "duplicate_request_conflict",
     "unexpected_internal_error",
+    "model_mismatch",
 }
 
 RETRYABLE_FAILURES = {
@@ -51,6 +62,7 @@ NON_RETRYABLE_FAILURES = (
     | {"http_client_error", "bad_credentials", "unsupported_model"}
     | {"missing_text_field", "malformed_provider_response"}
     | STRUCTURAL_VALIDATION_FAILURES
+    | LOCAL_BACKEND_FAILURES
     | INTERNAL_FAILURES
 )
 REPAIRABLE_VALIDATION_STATUSES = {"invalid_json", "schema_invalid"}
@@ -73,6 +85,8 @@ def failure_category(code: str | None) -> str | None:
         return "output_budget"
     if code in REFUSAL_FAILURES:
         return "refusal"
+    if code in LOCAL_BACKEND_FAILURES:
+        return "local_backend"
     if code in INTERNAL_FAILURES:
         return "internal"
     return "unknown"

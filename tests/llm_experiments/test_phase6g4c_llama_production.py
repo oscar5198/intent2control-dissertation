@@ -333,3 +333,158 @@ def test_artifacts_do_not_serialize_secrets_or_ground_truth(monkeypatch, tmp_pat
         assert "true_preferred" not in json.dumps(row).lower()
         assert "ground_truth" not in json.dumps(row).lower()
         assert_no_secrets(row)
+
+
+def test_local_exception_type_message_stage_and_category_are_preserved(monkeypatch, tmp_path) -> None:
+    def fake_invoke(messages: list[dict[str, str]], attempt_type: str) -> dict:
+        raise llama.LlamaRuntimeError("model_load", RuntimeError("bitsandbytes failed to load CUDA kernels"))
+
+    out = tmp_path / "phase6g4" / "llama"
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
+
+    summary = llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
+    attempts = load_jsonl(out / "attempt_log.jsonl")
+
+    assert summary["backend_failure_count"] == 1
+    assert attempts[0]["request_status"] == "error"
+    assert attempts[0]["exception_type"] == "RuntimeError"
+    assert attempts[0]["exception_message"] == "bitsandbytes failed to load CUDA kernels"
+    assert attempts[0]["backend_stage"] == "model_load"
+    assert attempts[0]["runtime_error_category"] == "quantization_runtime_error"
+    assert attempts[0]["failure_code"] == "quantization_runtime_error"
+    assert attempts[0]["failure_category"] == "local_backend"
+    assert attempts[0]["retryable"] is False
+
+
+def test_cuda_oom_classification_is_explicit(monkeypatch, tmp_path) -> None:
+    def fake_invoke(messages: list[dict[str, str]], attempt_type: str) -> dict:
+        raise llama.LlamaRuntimeError("generation", RuntimeError("CUDA out of memory. Tried to allocate 2.00 GiB"))
+
+    out = tmp_path / "phase6g4" / "llama"
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
+
+    llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
+    attempts = load_jsonl(out / "attempt_log.jsonl")
+
+    assert attempts[0]["failure_code"] == "cuda_out_of_memory"
+    assert attempts[0]["failure_category"] == "local_backend"
+    assert attempts[0]["cuda_oom_detected"] is True
+    assert attempts[0]["host_oom_detected"] is False
+
+
+def test_generic_generation_error_is_not_connection_error(monkeypatch, tmp_path) -> None:
+    def fake_invoke(messages: list[dict[str, str]], attempt_type: str) -> dict:
+        raise llama.LlamaRuntimeError("generation", RuntimeError("shape mismatch during cache update"))
+
+    out = tmp_path / "phase6g4" / "llama"
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
+
+    llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
+    attempts = load_jsonl(out / "attempt_log.jsonl")
+
+    assert attempts[0]["failure_code"] == "generation_error"
+    assert attempts[0]["failure_category"] == "local_backend"
+    assert attempts[0]["failure_code"] != "connection_error"
+    assert attempts[0]["backend_stage"] == "generation"
+
+
+def test_diagnostic_mode_does_not_write_production_predictions(monkeypatch, tmp_path) -> None:
+    diagnostic_out = tmp_path / "llama_runtime_diagnostics"
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "invoke_llama", lambda messages, attempt_type, max_new_tokens=8: valid_response())
+
+    result = llama.run_llama_runtime_diagnostic(REPO_ROOT, output_dir=diagnostic_out, max_new_tokens=4)
+
+    assert result["diagnostic_only"] is True
+    assert result["ground_truth_dependency"] is False
+    assert result["prompt_source"] == "synthetic_non_study_minimal_prompt"
+    assert result["diagnostic_max_new_tokens"] == 4
+    assert result["runtime_success"] is True
+    assert (diagnostic_out / "runtime_diagnostic.json").exists()
+    assert not (diagnostic_out / "predictions.jsonl").exists()
+    assert not (diagnostic_out / "attempt_log.jsonl").exists()
+
+
+def test_diagnostic_mode_writes_real_exception_information(monkeypatch, tmp_path) -> None:
+    diagnostic_out = tmp_path / "llama_runtime_diagnostics"
+
+    def fake_invoke(messages: list[dict[str, str]], attempt_type: str, max_new_tokens: int = 8) -> dict:
+        raise llama.LlamaRuntimeError("device_transfer", RuntimeError("tensor on CPU cannot move to cuda"))
+
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
+
+    result = llama.run_llama_runtime_diagnostic(REPO_ROOT, output_dir=diagnostic_out, max_new_tokens=4)
+
+    assert result["runtime_success"] is False
+    assert result["runtime_diagnostic"]["exception_type"] == "RuntimeError"
+    assert result["runtime_diagnostic"]["backend_stage"] == "device_transfer"
+    assert result["runtime_diagnostic"]["runtime_error_category"] == "device_placement_error"
+    assert_no_secrets(load_json(diagnostic_out / "runtime_diagnostic.json"))
+
+
+def test_backend_failed_recovery_eligibility_excludes_valid_predictions() -> None:
+    predictions = [
+        {"request_id": "r1", "final_status": "backend_failed"},
+        {"request_id": "r2", "final_status": "valid_primary"},
+        {"request_id": "r3", "final_status": "valid_after_repair"},
+        {"request_id": "r4", "final_status": "invalid_after_repair"},
+    ]
+
+    assert llama.backend_failed_recovery_eligible_request_ids(predictions) == ["r1"]
+
+
+def test_prepare_recovery_preserves_historical_run01_artifacts_and_deduplicates(tmp_path) -> None:
+    source = tmp_path / "phase6g4" / "llama"
+    recovery = tmp_path / "phase6g4" / "llama_recovery_run_02"
+    source.mkdir(parents=True)
+    predictions = [
+        {"request_id": "r1", "final_status": "backend_failed"},
+        {"request_id": "r1", "final_status": "backend_failed"},
+        {"request_id": "r2", "final_status": "valid_primary"},
+    ]
+    attempts = [{"request_id": "r1", "failure_code": "model_load_error"}]
+    (source / "predictions.jsonl").write_text("\n".join(json.dumps(row) for row in predictions) + "\n", encoding="utf-8")
+    (source / "attempt_log.jsonl").write_text("\n".join(json.dumps(row) for row in attempts) + "\n", encoding="utf-8")
+    before_predictions = (source / "predictions.jsonl").read_text(encoding="utf-8")
+    before_attempts = (source / "attempt_log.jsonl").read_text(encoding="utf-8")
+
+    manifest = llama.prepare_backend_failed_recovery(REPO_ROOT, source_output_dir=source, recovery_output_dir=recovery)
+
+    assert manifest["eligible_request_count"] == 1
+    assert manifest["eligible_request_ids"] == ["r1"]
+    assert manifest["historical_source_artifacts_preserved"] is True
+    assert manifest["ground_truth_dependency"] is False
+    assert (recovery / "backend_failed_recovery_manifest.json").exists()
+    assert (source / "predictions.jsonl").read_text(encoding="utf-8") == before_predictions
+    assert (source / "attempt_log.jsonl").read_text(encoding="utf-8") == before_attempts
+    assert_no_secrets(manifest)
+
+
+def test_backend_failed_recovery_run_uses_distinct_namespace_and_no_duplicate_targets(monkeypatch, tmp_path) -> None:
+    source = tmp_path / "phase6g4" / "llama"
+    recovery = tmp_path / "phase6g4" / "llama_recovery_run_02"
+    source.mkdir(parents=True)
+    shard = load_json(LLAMA_SHARD)
+    eligible_ids = [shard["requests"][0]["request_id"], shard["requests"][1]["request_id"]]
+    source_predictions = [{"request_id": eligible_ids[0], "final_status": "backend_failed"}, {"request_id": eligible_ids[1], "final_status": "backend_failed"}]
+    (source / "predictions.jsonl").write_text("\n".join(json.dumps(row) for row in source_predictions) + "\n", encoding="utf-8")
+    (source / "attempt_log.jsonl").write_text(json.dumps({"request_id": eligible_ids[0], "failure_code": "model_load_error"}) + "\n", encoding="utf-8")
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "invoke_llama", lambda messages, attempt_type: valid_response())
+
+    first = llama.run_llama_backend_failed_recovery(REPO_ROOT, guarded_batch_size=1, source_output_dir=source, recovery_output_dir=recovery)
+    second = llama.run_llama_backend_failed_recovery(REPO_ROOT, guarded_batch_size=2, source_output_dir=source, recovery_output_dir=recovery)
+    recovered_predictions = load_jsonl(recovery / "predictions.jsonl")
+
+    assert first["run_id"] == "phase6g4c_llama_backend_failed_recovery_run_02"
+    assert first["expected_predictions"] == 2
+    assert first["predictions_executed_this_invocation"] == 1
+    assert second["predictions_executed_this_invocation"] == 1
+    assert second["remaining_predictions"] == 0
+    assert len(recovered_predictions) == 2
+    assert len({row["request_id"] for row in recovered_predictions}) == 2
+    assert {row["run_id"] for row in recovered_predictions} == {"phase6g4c_llama_backend_failed_recovery_run_02"}

@@ -5,7 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import time
+import traceback
 from collections import Counter
 from datetime import datetime, timezone
 from importlib import util
@@ -23,6 +25,8 @@ from llm_experiments.prompts.prompt_spec import write_json
 
 SCHEMA_VERSION = "phase6g4c_llama_production_inference_v1"
 OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama")
+DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_runtime_diagnostics")
+RECOVERY_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_recovery_run_02")
 RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
 LLAMA_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_llama_shard_manifest.json")
 PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
@@ -36,6 +40,7 @@ PHASE6E_BACKEND_REGISTRY = Path("llm-experiments/config/phase6e_backend_registry
 PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_gate.json")
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 RUN_ID = "phase6g4c_llama_production_run_01"
+RECOVERY_RUN_ID = "phase6g4c_llama_backend_failed_recovery_run_02"
 MODEL_KEY = "llama_3_1_70b_instruct"
 EXPERIMENT_MODEL_LABEL = "Llama 3.1 70B Instruct"
 REQUEST_MODEL = "meta-llama/Llama-3.1-70B-Instruct"
@@ -54,13 +59,29 @@ _TOKENIZER: Any = None
 _MODEL: Any = None
 
 
-def run_llama_production(repo_root: Path, guarded_batch_size: int = 5, output_dir: Path = OUTPUT_DIR, run_id: str = RUN_ID) -> dict[str, Any]:
+class LlamaRuntimeError(RuntimeError):
+    """Local backend exception with a deterministic runtime stage."""
+
+    def __init__(self, stage: str, original: BaseException):
+        super().__init__(str(original))
+        self.stage = stage
+        self.original = original
+
+
+def run_llama_production(
+    repo_root: Path,
+    guarded_batch_size: int = 5,
+    output_dir: Path = OUTPUT_DIR,
+    run_id: str = RUN_ID,
+    target_request_ids: set[str] | None = None,
+    recovery_source: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if guarded_batch_size < 1:
         raise ValueError("--guarded-batch-size must be at least 1")
     out = repo_root / output_dir
     out.mkdir(parents=True, exist_ok=True)
     preflight = run_preflight(repo_root, output_dir)
-    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id)
+    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id, target_request_ids=target_request_ids, recovery_source=recovery_source)
     write_json(out / "run_manifest.json", run_manifest)
     if not preflight["passed"]:
         summary = build_blocked_summary(run_manifest, preflight)
@@ -81,7 +102,8 @@ def run_llama_production(repo_root: Path, guarded_batch_size: int = 5, output_di
     executed_this_invocation = 0
     stopped_after_guarded_batch = False
 
-    for request_ref in shard["requests"]:
+    request_sequence = [row for row in shard["requests"] if target_request_ids is None or row["request_id"] in target_request_ids]
+    for request_ref in request_sequence:
         if request_ref["request_id"] in terminal_ids:
             continue
         if executed_this_invocation >= guarded_batch_size:
@@ -193,12 +215,13 @@ def call_with_transport_retries(request_ref: dict[str, Any], rendered_prompt: di
             request_status = provider.get("status", "completed")
             error = provider.get("error")
         except Exception as exc:  # pragma: no cover - live local runtime errors only
+            diagnostics = llama_exception_diagnostics(exc)
             raw_text = None
             normalized = normalize_llama_response_text(raw_text)
             validation = validate_response_text(None, response_schema)
             request_status = "error"
-            error = {"type": "connection_error", "message": str(exc)}
-            provider = {"metadata": {}, "usage": None, "incomplete_details": None, "error": error}
+            error = {"type": diagnostics["runtime_error_category"], "message": diagnostics["exception_message"], "backend_stage": diagnostics["backend_stage"]}
+            provider = {"metadata": {"local_runtime_diagnostic": diagnostics}, "usage": None, "incomplete_details": None, "error": error, "runtime_diagnostic": diagnostics}
         failure = classify_failure({"status": request_status, "error": error, "incomplete_details": provider.get("incomplete_details")}, validation)
         attempt = build_attempt_record(request_ref, prompt_hash, attempt_type, attempt_number, transport_attempt, request_status, raw_text, normalized, validation, provider, failure, time.perf_counter() - started, started_at, run_id)
         attempts.append(attempt)
@@ -207,31 +230,55 @@ def call_with_transport_retries(request_ref: dict[str, Any], rendered_prompt: di
     return attempts
 
 
-def invoke_llama(messages: list[dict[str, str]], attempt_type: str) -> dict[str, Any]:
+def invoke_llama(messages: list[dict[str, str]], attempt_type: str, max_new_tokens: int = MAX_NEW_TOKENS) -> dict[str, Any]:
     global _MODEL, _TOKENIZER
-    import torch  # type: ignore[import-not-found]
-    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig  # type: ignore[import-not-found]
+    try:
+        import torch  # type: ignore[import-not-found]
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig  # type: ignore[import-not-found]
+    except Exception as exc:  # pragma: no cover - dependency/runtime specific
+        raise LlamaRuntimeError("runtime_import", exc) from exc
 
     if _TOKENIZER is None or _MODEL is None:
-        quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True)
-        _TOKENIZER = AutoTokenizer.from_pretrained(REQUEST_MODEL, revision=REVISION, local_files_only=True)
-        _MODEL = AutoModelForCausalLM.from_pretrained(REQUEST_MODEL, revision=REVISION, quantization_config=quant_config, device_map="auto", max_memory={0: "43GiB"}, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, local_files_only=True)
-        _MODEL.eval()
+        try:
+            quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True)
+        except Exception as exc:  # pragma: no cover - dependency/runtime specific
+            raise LlamaRuntimeError("quantization_config", exc) from exc
+        try:
+            _TOKENIZER = AutoTokenizer.from_pretrained(REQUEST_MODEL, revision=REVISION, local_files_only=True)
+        except Exception as exc:  # pragma: no cover - dependency/runtime specific
+            raise LlamaRuntimeError("tokenizer_load", exc) from exc
+        try:
+            _MODEL = AutoModelForCausalLM.from_pretrained(REQUEST_MODEL, revision=REVISION, quantization_config=quant_config, device_map="auto", max_memory={0: "43GiB"}, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, local_files_only=True)
+            _MODEL.eval()
+        except Exception as exc:  # pragma: no cover - dependency/runtime specific
+            raise LlamaRuntimeError("model_load", exc) from exc
     started = time.perf_counter()
-    inputs = _TOKENIZER.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt")
-    if hasattr(inputs, "to"):
-        inputs = inputs.to("cuda")
-    with torch.inference_mode():
-        outputs = _MODEL.generate(inputs, max_new_tokens=MAX_NEW_TOKENS, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
-    generated = outputs[0][inputs.shape[-1]:]
-    decoded = _TOKENIZER.decode(generated, skip_special_tokens=True)
+    try:
+        inputs = _TOKENIZER.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt")
+    except Exception as exc:  # pragma: no cover - dependency/runtime specific
+        raise LlamaRuntimeError("chat_template", exc) from exc
+    try:
+        if hasattr(inputs, "to"):
+            inputs = inputs.to("cuda")
+    except Exception as exc:  # pragma: no cover - dependency/runtime specific
+        raise LlamaRuntimeError("device_transfer", exc) from exc
+    try:
+        with torch.inference_mode():
+            outputs = _MODEL.generate(inputs, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
+    except Exception as exc:  # pragma: no cover - dependency/runtime specific
+        raise LlamaRuntimeError("generation", exc) from exc
+    try:
+        generated = outputs[0][inputs.shape[-1]:]
+        decoded = _TOKENIZER.decode(generated, skip_special_tokens=True)
+    except Exception as exc:  # pragma: no cover - dependency/runtime specific
+        raise LlamaRuntimeError("decode", exc) from exc
     generated_token_count = len(generated) if hasattr(generated, "__len__") else None
-    status = "incomplete" if generated_token_count == MAX_NEW_TOKENS else "completed"
+    status = "incomplete" if generated_token_count == max_new_tokens else "completed"
     incomplete_details = {"reason": "max_output_tokens"} if status == "incomplete" else None
     return {
         "status": status,
         "decoded_text": decoded,
-        "metadata": {"model": REQUEST_MODEL, "revision": REVISION, "request_api": REQUEST_API, "attempt_type": attempt_type, "latency_seconds": time.perf_counter() - started, "device_map": getattr(_MODEL, "hf_device_map", None), "backend_type": BACKEND_TYPE, "generated_token_count": generated_token_count},
+        "metadata": {"model": REQUEST_MODEL, "revision": REVISION, "request_api": REQUEST_API, "attempt_type": attempt_type, "latency_seconds": time.perf_counter() - started, "device_map": getattr(_MODEL, "hf_device_map", None), "backend_type": BACKEND_TYPE, "generated_token_count": generated_token_count, "diagnostic_max_new_tokens": max_new_tokens if max_new_tokens != MAX_NEW_TOKENS else None},
         "usage": {"output_tokens": generated_token_count} if generated_token_count is not None else None,
         "incomplete_details": incomplete_details,
     }
@@ -239,6 +286,7 @@ def invoke_llama(messages: list[dict[str, str]], attempt_type: str) -> dict[str,
 
 def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, normalized: dict[str, Any], validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
     metadata = sanitize_provider_metadata(provider.get("metadata") or {})
+    diagnostic = provider.get("runtime_diagnostic") or metadata.get("local_runtime_diagnostic") or {}
     actual_model = metadata.get("model")
     if actual_model and actual_model != EXPECTED_RETURNED_MODEL:
         failure = {"failure_code": "model_mismatch", "failure_category": "internal", "retryable": False}
@@ -277,6 +325,13 @@ def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_
         "ended_at": iso_now(),
         "provider_response_metadata": metadata,
         "incomplete_details": provider.get("incomplete_details"),
+        "exception_type": diagnostic.get("exception_type"),
+        "exception_message": diagnostic.get("exception_message"),
+        "backend_stage": diagnostic.get("backend_stage"),
+        "runtime_error_category": diagnostic.get("runtime_error_category"),
+        "cuda_oom_detected": diagnostic.get("cuda_oom_detected", False),
+        "host_oom_detected": diagnostic.get("host_oom_detected", False),
+        "traceback_tail": diagnostic.get("traceback_tail"),
         "failure_code": failure["failure_code"],
         "failure_category": failure["failure_category"],
         "retryable": failure["retryable"],
@@ -341,17 +396,18 @@ def build_execution_summary(run_manifest: dict[str, Any], attempts: list[dict[st
     conditions = Counter(row["condition"] for row in predictions)
     terminal_count = sum(1 for row in predictions if row["terminal"])
     actual_models = sorted({row.get("actual_returned_model") for row in attempts if row.get("actual_returned_model")})
+    expected_count = run_manifest["expected_request_count"]
     return {
         "schema_version": "phase6g4c_llama_execution_summary_v1",
         "run_id": run_manifest["run_id"],
         "preflight_passed": preflight["passed"],
         "exact_requested_backend_model": REQUEST_MODEL,
         "actual_returned_models": actual_models,
-        "expected_predictions": 396,
+        "expected_predictions": expected_count,
         "guarded_batch_requested": True,
         "guarded_batch_limit": run_manifest["guarded_batch_limit"],
         "predictions_executed_this_invocation": executed_this_invocation,
-        "remaining_predictions": 396 - terminal_count,
+        "remaining_predictions": expected_count - terminal_count,
         "stopped_after_guarded_batch": stopped_after_guarded_batch,
         "attempted_prediction_count": len(predictions),
         "terminal_prediction_count": terminal_count,
@@ -371,12 +427,13 @@ def build_execution_summary(run_manifest: dict[str, Any], attempts: list[dict[st
         "ground_truth_dependency": False,
         "token_usage_totals": sum_usage(attempts),
         "total_api_calls": len(attempts),
-        "LLAMA_PRODUCTION_INFERENCE_COMPLETE": len(predictions) == 396 and terminal_count == 396,
-        "ALL_LLAMA_PREDICTIONS_VALID": len(predictions) == 396 and all(row["response_schema_valid"] for row in predictions),
+        "LLAMA_PRODUCTION_INFERENCE_COMPLETE": len(predictions) == expected_count and terminal_count == expected_count,
+        "ALL_LLAMA_PREDICTIONS_VALID": len(predictions) == expected_count and all(row["response_schema_valid"] for row in predictions),
     }
 
 
 def build_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any]) -> dict[str, Any]:
+    expected_count = run_manifest["expected_request_count"]
     return {
         "schema_version": "phase6g4c_llama_execution_summary_v1",
         "run_id": run_manifest["run_id"],
@@ -384,11 +441,11 @@ def build_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any
         "preflight_failures": preflight["failures"],
         "exact_requested_backend_model": REQUEST_MODEL,
         "actual_returned_models": [],
-        "expected_predictions": 396,
+        "expected_predictions": expected_count,
         "guarded_batch_requested": True,
         "guarded_batch_limit": run_manifest["guarded_batch_limit"],
         "predictions_executed_this_invocation": 0,
-        "remaining_predictions": 396,
+        "remaining_predictions": expected_count,
         "stopped_after_guarded_batch": False,
         "attempted_prediction_count": 0,
         "terminal_prediction_count": 0,
@@ -413,8 +470,17 @@ def build_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any
     }
 
 
-def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch_size: int, output_dir: Path, run_id: str) -> dict[str, Any]:
+def build_run_manifest(
+    repo_root: Path,
+    preflight: dict[str, Any],
+    guarded_batch_size: int,
+    output_dir: Path,
+    run_id: str,
+    target_request_ids: set[str] | None = None,
+    recovery_source: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     shard = load_json(repo_root / LLAMA_SHARD)
+    expected_count = len(target_request_ids) if target_request_ids is not None else len(shard.get("requests", []))
     return {
         "schema_version": "phase6g4c_llama_run_manifest_v1",
         "run_id": run_id,
@@ -439,8 +505,11 @@ def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch
         "rendered_prompt_dataset_sha256": sha256_file(repo_root / RENDERED_PROMPTS),
         "llama_shard_manifest": str(LLAMA_SHARD).replace("\\", "/"),
         "llama_shard_sha256": sha256_file(repo_root / LLAMA_SHARD),
-        "expected_request_count": 396,
+        "expected_request_count": expected_count,
+        "full_shard_request_count": len(shard.get("requests", [])),
         "shard_request_count": len(shard.get("requests", [])),
+        "target_request_count": expected_count,
+        "target_request_ids_sha256": sha256_json(sorted(target_request_ids)) if target_request_ids is not None else None,
         "output_dir": str(output_dir).replace("\\", "/"),
         "guarded_batch_requested": True,
         "guarded_batch_limit": guarded_batch_size,
@@ -448,6 +517,7 @@ def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch
         "inference_parameters": inference_parameters(),
         "native_json_schema_support": False,
         "contains_hidden_ground_truth": False,
+        "recovery_source": recovery_source,
     }
 
 
@@ -490,6 +560,163 @@ def write_report(path: Path, summary: dict[str, Any], preflight: dict[str, Any])
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def run_llama_runtime_diagnostic(repo_root: Path, output_dir: Path = DIAGNOSTIC_OUTPUT_DIR, max_new_tokens: int = 8) -> dict[str, Any]:
+    if max_new_tokens < 1:
+        raise ValueError("--diagnostic-max-new-tokens must be at least 1")
+    out = repo_root / output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    preflight = run_preflight(repo_root, OUTPUT_DIR)
+    messages = [
+        {"role": "system", "content": "You are a diagnostic runtime checker. Return only a tiny JSON object."},
+        {"role": "user", "content": 'Return exactly: {"diagnostic":"ok"}'},
+    ]
+    manifest = {
+        "schema_version": "phase6g4c_llama_runtime_diagnostic_v1",
+        "created_at_utc": iso_now(),
+        "diagnostic_only": True,
+        "appends_production_predictions": False,
+        "appends_production_attempt_log": False,
+        "ground_truth_dependency": False,
+        "prompt_source": "synthetic_non_study_minimal_prompt",
+        "model_key": MODEL_KEY,
+        "exact_backend_model_id": REQUEST_MODEL,
+        "revision": REVISION,
+        "backend_key": BACKEND_KEY,
+        "backend_type": BACKEND_TYPE,
+        "request_api": REQUEST_API,
+        "local_files_only": True,
+        "production_max_new_tokens": MAX_NEW_TOKENS,
+        "diagnostic_max_new_tokens": max_new_tokens,
+        "preflight_passed": preflight["passed"],
+        "preflight_failures": preflight["failures"],
+        "runtime_success": False,
+        "runtime_diagnostic": None,
+        "provider_metadata": None,
+    }
+    if not preflight["passed"]:
+        manifest["runtime_diagnostic"] = {"runtime_error_category": "preflight_blocked", "preflight_failures": preflight["failures"]}
+        write_json(out / "runtime_diagnostic.json", manifest)
+        return manifest
+    try:
+        provider = invoke_llama(messages, "runtime_diagnostic", max_new_tokens=max_new_tokens)
+        manifest["runtime_success"] = provider.get("status") == "completed"
+        manifest["provider_metadata"] = sanitize_provider_metadata(provider.get("metadata") or {})
+        manifest["runtime_diagnostic"] = {
+            "status": provider.get("status"),
+            "incomplete_details": provider.get("incomplete_details"),
+            "decoded_text_preview": truncate_text(provider.get("decoded_text"), 400),
+        }
+    except Exception as exc:  # pragma: no cover - live local runtime diagnostic only
+        manifest["runtime_diagnostic"] = llama_exception_diagnostics(exc)
+    write_json(out / "runtime_diagnostic.json", manifest)
+    return manifest
+
+
+def prepare_backend_failed_recovery(repo_root: Path, source_output_dir: Path = OUTPUT_DIR, recovery_output_dir: Path = RECOVERY_OUTPUT_DIR, recovery_run_id: str = RECOVERY_RUN_ID) -> dict[str, Any]:
+    source = repo_root / source_output_dir
+    recovery = repo_root / recovery_output_dir
+    recovery.mkdir(parents=True, exist_ok=True)
+    source_predictions = load_jsonl(source / "predictions.jsonl")
+    source_attempts = load_jsonl(source / "attempt_log.jsonl")
+    eligible_ids = backend_failed_recovery_eligible_request_ids(source_predictions)
+    manifest = {
+        "schema_version": "phase6g4c_llama_backend_failed_recovery_manifest_v1",
+        "created_at_utc": iso_now(),
+        "recovery_run_id": recovery_run_id,
+        "source_run_id": RUN_ID,
+        "source_output_dir": str(source_output_dir).replace("\\", "/"),
+        "recovery_output_dir": str(recovery_output_dir).replace("\\", "/"),
+        "eligibility_rule": "final_status == backend_failed only; no accuracy, scoring, or hidden ground truth",
+        "eligible_request_count": len(eligible_ids),
+        "eligible_request_ids": eligible_ids,
+        "eligible_request_ids_sha256": sha256_json(eligible_ids),
+        "source_predictions_sha256": sha256_file(source / "predictions.jsonl") if (source / "predictions.jsonl").exists() else None,
+        "source_attempt_log_sha256": sha256_file(source / "attempt_log.jsonl") if (source / "attempt_log.jsonl").exists() else None,
+        "historical_source_artifacts_preserved": True,
+        "canonical_merge_required_after_success": True,
+        "ground_truth_dependency": False,
+        "duplicate_source_request_ids": duplicate_values([row.get("request_id") for row in source_predictions if row.get("request_id")]),
+        "source_attempt_count": len(source_attempts),
+    }
+    write_json(recovery / "backend_failed_recovery_manifest.json", manifest)
+    return manifest
+
+
+def run_llama_backend_failed_recovery(repo_root: Path, guarded_batch_size: int = 5, source_output_dir: Path = OUTPUT_DIR, recovery_output_dir: Path = RECOVERY_OUTPUT_DIR, recovery_run_id: str = RECOVERY_RUN_ID) -> dict[str, Any]:
+    manifest = prepare_backend_failed_recovery(repo_root, source_output_dir, recovery_output_dir, recovery_run_id)
+    target_ids = set(manifest["eligible_request_ids"])
+    return run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=recovery_output_dir, run_id=recovery_run_id, target_request_ids=target_ids, recovery_source=manifest)
+
+
+def backend_failed_recovery_eligible_request_ids(predictions: list[dict[str, Any]]) -> list[str]:
+    return sorted({row["request_id"] for row in predictions if row.get("final_status") == "backend_failed"})
+
+
+def llama_exception_diagnostics(exc: BaseException, fallback_stage: str = "local_backend") -> dict[str, Any]:
+    stage = getattr(exc, "stage", fallback_stage)
+    original = getattr(exc, "original", exc)
+    message = sanitize_exception_message(str(original))
+    category = classify_llama_runtime_error(original, stage)
+    return {
+        "exception_type": type(original).__name__,
+        "exception_message": message,
+        "backend_stage": stage,
+        "runtime_error_category": category,
+        "cuda_oom_detected": is_cuda_oom(original),
+        "host_oom_detected": is_host_oom(original),
+        "traceback_tail": safe_traceback_tail(original),
+    }
+
+
+def classify_llama_runtime_error(exc: BaseException, stage: str) -> str:
+    message = str(exc).lower()
+    if is_cuda_oom(exc):
+        return "cuda_out_of_memory"
+    if is_host_oom(exc):
+        return "host_out_of_memory"
+    if "bitsandbytes" in message or stage == "quantization_config":
+        return "quantization_runtime_error"
+    if stage in {"tokenizer_load", "chat_template", "decode"}:
+        return "tokenizer_error"
+    if stage == "model_load":
+        return "model_load_error"
+    if stage == "device_transfer":
+        return "device_placement_error"
+    if stage == "generation":
+        return "generation_error"
+    return "local_backend_error"
+
+
+def is_cuda_oom(exc: BaseException) -> bool:
+    message = str(exc).lower()
+    return "cuda out of memory" in message or ("outofmemoryerror" in type(exc).__name__.lower() and "cuda" in message)
+
+
+def is_host_oom(exc: BaseException) -> bool:
+    message = str(exc).lower()
+    if is_cuda_oom(exc):
+        return False
+    return any(marker in message for marker in ("cannot allocate memory", "std::bad_alloc", "defaultcpuallocator", "out of memory", "killed"))
+
+
+def safe_traceback_tail(exc: BaseException, max_lines: int = 6) -> list[str]:
+    lines = traceback.format_exception(type(exc), exc, exc.__traceback__)
+    return [sanitize_exception_message(line.rstrip()) for line in lines[-max_lines:]]
+
+
+def sanitize_exception_message(message: str, limit: int = 1000) -> str:
+    cleaned = message.replace("\r", "\\r").replace("\n", "\\n")
+    cleaned = re.sub(r"(?i)(api[_-]?key|token|authorization|bearer)\s*[:=]\s*\S+", r"\1=<redacted>", cleaned)
+    cleaned = re.sub(r"sk-[A-Za-z0-9_\-]{8,}", "sk-<redacted>", cleaned)
+    return cleaned[:limit]
+
+
+def truncate_text(value: str | None, limit: int) -> str | None:
+    if value is None:
+        return None
+    return value[:limit]
 
 
 def normalize_llama_response_text(raw_text: str | None) -> dict[str, str | None]:
