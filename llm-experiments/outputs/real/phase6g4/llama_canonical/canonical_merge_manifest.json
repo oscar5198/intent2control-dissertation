@@ -1,6 +1,6 @@
 {
   "schema_version": "phase6g4c_llama_canonical_merge_manifest_v1",
-  "merge_created_at_utc": "2026-08-18T19:38:53.459312+00:00",
+  "merge_created_at_utc": "2026-08-18T19:55:38.675556+00:00",
   "merge_version": "phase6g4c_llama_canonical_merge_v1",
   "canonical_output_dir": "llm-experiments/outputs/real/phase6g4/llama_canonical",
   "selection_rule": "If Run 01 was backend_failed and the same request_id has a schema-valid Recovery Run 02 prediction, use Recovery Run 02; never replace an originally valid Run 01 prediction; never use ground truth or accuracy.",

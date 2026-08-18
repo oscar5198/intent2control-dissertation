@@ -6,11 +6,11 @@
   "actual_returned_models": [
     "meta-llama/Llama-3.1-70B-Instruct"
   ],
-  "expected_predictions": 386,
+  "expected_predictions": 391,
   "guarded_batch_requested": true,
   "guarded_batch_limit": 386,
   "predictions_executed_this_invocation": 386,
-  "remaining_predictions": -5,
+  "remaining_predictions": 0,
   "stopped_after_guarded_batch": false,
   "attempted_prediction_count": 391,
   "terminal_prediction_count": 391,
@@ -35,6 +35,9 @@
     "total_tokens": null
   },
   "total_api_calls": 391,
-  "LLAMA_PRODUCTION_INFERENCE_COMPLETE": false,
-  "ALL_LLAMA_PREDICTIONS_VALID": false
+  "LLAMA_PRODUCTION_INFERENCE_COMPLETE": true,
+  "ALL_LLAMA_PREDICTIONS_VALID": true,
+  "offline_summary_regenerated": true,
+  "offline_summary_regeneration_model_calls": 0,
+  "prediction_content_changed": false
 }

@@ -23,7 +23,7 @@
   "rendered_prompt_dataset_sha256": "4608647ede9cd017847ba7940d0ecc930623e49da386bac80c5389605fce920e",
   "llama_shard_manifest": "llm-experiments/outputs/real/phase6g3/phase6g3_qmul_llama_shard_manifest.json",
   "llama_shard_sha256": "5fa897a9b14d99b1e19d79a05c16d7025f35afd582910b35e470f6a3e0ccaa0d",
-  "expected_request_count": 386,
+  "expected_request_count": 391,
   "full_shard_request_count": 396,
   "shard_request_count": 396,
   "target_request_count": 386,
@@ -594,5 +594,13 @@
   },
   "source_production_run_id": "phase6g4c_llama_production_run_01",
   "source_failed_request_count": 386,
-  "recovery_eligibility_rule": "resume unresolved canonical Llama request IDs only"
+  "recovery_eligibility_rule": "resume unresolved canonical Llama request IDs only",
+  "offline_summary_regenerated_at_utc": "2026-08-18T19:55:38.590895+00:00",
+  "offline_summary_regeneration": {
+    "model_generations": 0,
+    "new_production_predictions": 0,
+    "prediction_content_changed": false,
+    "ground_truth_dependency": false,
+    "expected_count_source": "max(existing_resume_predictions, canonical resume_run03 source count, prior manifest expected_request_count)"
+  }
 }
