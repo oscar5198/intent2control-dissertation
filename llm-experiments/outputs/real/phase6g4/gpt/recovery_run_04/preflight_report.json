@@ -1,0 +1,36 @@
+{
+  "schema_version": "phase6g4a_gpt_recovery_preflight_v1",
+  "checked_at_utc": "2026-08-18T10:36:00.460256+00:00",
+  "passed": false,
+  "checks": {
+    "phase6d_prompt_package_frozen": true,
+    "phase6g3_prompt_freeze_ready": true,
+    "source_run03_id_valid": true,
+    "source_run03_count_valid": true,
+    "source_run03_status_counts_valid": true,
+    "source_run03_attempt_count_valid": true,
+    "source_run03_prompt_hashes_valid": true,
+    "source_run03_model_config_valid": true,
+    "gpt_shard_count_valid": true,
+    "openai_api_key_present": false,
+    "openai_api_key_has_no_leading_or_trailing_whitespace": false,
+    "openai_api_key_contains_no_cr_or_lf": false,
+    "openai_sdk_installed": false,
+    "output_directory_recovery_namespace": true,
+    "no_hidden_ground_truth_loaded": true
+  },
+  "failures": [
+    "openai_api_key_present",
+    "openai_api_key_has_no_leading_or_trailing_whitespace",
+    "openai_api_key_contains_no_cr_or_lf",
+    "openai_sdk_installed"
+  ],
+  "source_status_counts": {
+    "backend_failed": 126,
+    "output_budget_exhausted": 6,
+    "valid_primary": 264
+  },
+  "prompt_hash_mismatches": [],
+  "credential_policy": "OPENAI_API_KEY presence checked as boolean only; secret value is never logged.",
+  "ground_truth_dependency": false
+}

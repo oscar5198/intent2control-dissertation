@@ -23,6 +23,7 @@ TRANSPORT_FAILURES = {
     "bad_credentials",
     "unsupported_model",
 }
+QUOTA_FAILURES = {"quota_exhausted"}
 RESPONSE_EXTRACTION_FAILURES = {
     "empty_response",
     "missing_text_field",
@@ -61,6 +62,8 @@ def failure_category(code: str | None) -> str | None:
         return "preflight"
     if code in TRANSPORT_FAILURES:
         return "transport"
+    if code in QUOTA_FAILURES:
+        return "quota"
     if code in RESPONSE_EXTRACTION_FAILURES:
         return "response_extraction"
     if code in STRUCTURAL_VALIDATION_FAILURES:
@@ -104,6 +107,8 @@ def classify_failure(
         code = "timeout"
     elif status == "backend_unavailable":
         code = "backend_unavailable"
+    elif http_status == 429 and _is_quota_exhaustion(error):
+        code = "quota_exhausted"
     elif http_status == 429:
         code = "rate_limited"
     elif isinstance(http_status, int) and 500 <= http_status <= 599:
@@ -128,3 +133,9 @@ def classify_failure(
         "http_status_code": http_status,
         "retry_after_seconds": error.get("retry_after_seconds") or provider_response.get("retry_after_seconds"),
     }
+
+
+def _is_quota_exhaustion(error: dict[str, Any]) -> bool:
+    values = [str(error.get(key, "")).lower() for key in ("type", "code", "message")]
+    haystack = " ".join(values)
+    return any(marker in haystack for marker in ("insufficient_quota", "credit_balance_exhausted", "quota exhausted", "no api credits"))

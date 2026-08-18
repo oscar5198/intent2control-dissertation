@@ -106,20 +106,21 @@ def test_prompt_schema_and_model_identity_unchanged_by_budget_correction() -> No
     assert load_json(CONFIG_CORRECTION)["scientific_policy"]["decoding_policy_changed"] is False
 
 
-def test_corrected_run_03_preflight_namespace_is_distinct_and_blocked_locally() -> None:
+def test_corrected_run_03_namespace_records_authoritative_completed_run() -> None:
     summary = load_json(SUMMARY)
     manifest = load_json(RUN_MANIFEST)
 
     assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_03"
     assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_03")
-    assert summary["preflight_passed"] is False
-    assert summary["attempted_prediction_count"] == 0
-    assert summary["total_api_calls"] == 0
-    assert summary["guarded_batch_limit"] == 6
-    assert summary["predictions_executed_this_invocation"] == 0
-    assert summary["remaining_predictions"] == 396
-    assert not (OUT / "attempt_log.jsonl").exists()
-    assert not (OUT / "predictions.jsonl").exists()
+    assert summary["preflight_passed"] is True
+    assert summary["attempted_prediction_count"] == 396
+    assert summary["terminal_prediction_count"] == 396
+    assert summary["valid_primary_count"] == 264
+    assert summary["backend_failure_count"] == 126
+    assert summary["output_budget_exhausted_count"] == 6
+    assert summary["remaining_predictions"] == 0
+    assert (OUT / "attempt_log.jsonl").exists()
+    assert (OUT / "predictions.jsonl").exists()
 
 
 def test_prior_diagnostic_runs_preserved_as_non_scientific_evidence() -> None:
@@ -292,8 +293,7 @@ def test_no_ground_truth_or_secrets_are_serialized() -> None:
 def test_qc_report_records_recovery_guardrails() -> None:
     text = QC_REPORT.read_text(encoding="utf-8")
 
-    assert "Preflight passed: `false`" in text
-    assert "Guarded batch limit: `6`" in text
-    assert "Predictions executed this invocation: `0`" in text
-    assert "Output-budget exhausted: `0`" in text
+    assert "Preflight passed: `true`" in text
+    assert "Attempted predictions: `396`" in text
+    assert "Output-budget exhausted: `6`" in text
     assert "accuracy:" not in text.lower()
