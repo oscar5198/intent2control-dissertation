@@ -58,6 +58,12 @@ def valid_response() -> dict:
     }
 
 
+def fenced_response(choice: str = "B") -> str:
+    return f'''```json
+{{"predicted_preferred_mix":"{choice}","predicted_ratings":{{"A":58,"B":74,"C":65,"D":50,"E":68}},"predicted_ranking":["B","E","C","A","D"]}}
+```'''
+
+
 def test_claude_preflight_blocks_malformed_key_before_requests(monkeypatch) -> None:
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test\n")
     monkeypatch.setattr(claude.util, "find_spec", lambda name: object() if name == "anthropic" else None)
@@ -138,6 +144,28 @@ def test_provider_call_uses_anthropic_messages_with_thinking_disabled(monkeypatc
     assert "seed" not in captured
 
 
+def test_claude_response_normalizer_accepts_only_outer_fences() -> None:
+    bare = '{"predicted_preferred_mix":"B"}'
+    json_fenced = '```json\n{"predicted_preferred_mix":"B"}\n```'
+    generic_fenced = '```\n{"predicted_preferred_mix":"B"}\n```'
+
+    assert claude.normalize_claude_response_text(bare)["normalized_response_text"] == bare
+    assert claude.normalize_claude_response_text(f"  {json_fenced}\n")["normalized_response_text"] == '{"predicted_preferred_mix":"B"}'
+    assert claude.normalize_claude_response_text(generic_fenced)["normalized_response_text"] == '{"predicted_preferred_mix":"B"}'
+    assert claude.normalize_claude_response_text(json_fenced)["response_normalization"] == "markdown_json_fence_removed"
+    assert claude.normalize_claude_response_text(generic_fenced)["response_normalization"] == "markdown_generic_fence_removed"
+
+
+def test_claude_response_normalizer_rejects_prose_trailing_text_and_multiple_fences() -> None:
+    prose = 'Here is JSON:\n```json\n{"predicted_preferred_mix":"B"}\n```'
+    trailing = '```json\n{"predicted_preferred_mix":"B"}\n```\nextra'
+    multiple = '```json\n{"a":1}\n```\n```json\n{"b":2}\n```'
+
+    assert claude.normalize_claude_response_text(prose)["normalized_response_text"] == prose
+    assert claude.normalize_claude_response_text(trailing)["normalized_response_text"] == trailing
+    assert claude.normalize_claude_response_text(multiple)["normalized_response_text"] == multiple
+
+
 def test_guarded_batch_resume_and_duplicate_prevention(monkeypatch, tmp_path) -> None:
     calls = {"count": 0}
 
@@ -161,6 +189,30 @@ def test_guarded_batch_resume_and_duplicate_prevention(monkeypatch, tmp_path) ->
     assert len(predictions) == 10
     assert len({row["request_id"] for row in predictions}) == 10
     assert len({row["prediction_id"] for row in predictions}) == 10
+
+
+def test_fenced_valid_primary_is_valid_primary_without_format_repair(monkeypatch, tmp_path) -> None:
+    calls = {"count": 0}
+
+    def fake_invoke(messages: list[dict[str, str]], attempt_type: str) -> dict:
+        calls["count"] += 1
+        return {"status": "completed", "output_text": fenced_response(), "metadata": {"model": "claude-sonnet-5"}, "usage": {"input_tokens": 1, "output_tokens": 2}}
+
+    out = tmp_path / "phase6g4" / "claude"
+    monkeypatch.setattr(claude, "run_preflight", lambda repo_root, output_dir=claude.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(claude, "invoke_anthropic", fake_invoke)
+
+    summary = claude.run_claude_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
+    attempts = load_jsonl(out / "attempt_log.jsonl")
+    predictions = load_jsonl(out / "predictions.jsonl")
+
+    assert calls["count"] == 1
+    assert attempts[0]["raw_response_text"].startswith("```json")
+    assert attempts[0]["normalized_response_text"].startswith('{"predicted_preferred_mix"')
+    assert attempts[0]["response_normalization"] == "markdown_json_fence_removed"
+    assert predictions[0]["final_status"] == "valid_primary"
+    assert predictions[0]["formatting_repair_count"] == 0
+    assert summary["formatting_repair_count"] == 0
 
 
 def test_malformed_completed_response_gets_one_format_repair(monkeypatch, tmp_path) -> None:
@@ -214,6 +266,17 @@ def test_max_tokens_stop_is_output_budget_and_not_repaired(monkeypatch, tmp_path
     assert summary["output_budget_exhausted_count"] == 1
 
 
+def test_malformed_and_schema_invalid_fenced_json_rejected() -> None:
+    schema = claude.load_response_schema(REPO_ROOT / claude.RESPONSE_SCHEMA)
+    malformed = claude.normalize_claude_response_text("```json\n{bad json\n```")
+    schema_invalid = claude.normalize_claude_response_text('```json\n{"predicted_preferred_mix":"B"}\n```')
+
+    assert claude.validate_response_text(malformed["normalized_response_text"], schema)["valid"] is False
+    assert claude.validate_response_text(malformed["normalized_response_text"], schema)["status"] == "invalid_json"
+    assert claude.validate_response_text(schema_invalid["normalized_response_text"], schema)["valid"] is False
+    assert claude.validate_response_text(schema_invalid["normalized_response_text"], schema)["status"] == "schema_invalid"
+
+
 def test_failure_classification_rate_limit_quota_and_refusal_distinct() -> None:
     rate = classify_failure({"status": "error", "error": {"http_status_code": 429, "type": "rate_limit_error"}}, {})
     quota = classify_failure({"status": "error", "error": {"http_status_code": 429, "type": "insufficient_quota", "code": "credit_balance_exhausted"}}, {})
@@ -256,6 +319,46 @@ def test_quota_exhaustion_halts_invocation_without_retries(monkeypatch, tmp_path
     assert summary["remaining_predictions"] == 395
 
 
+def test_offline_revalidation_chooses_earliest_valid_and_resume_skips(monkeypatch, tmp_path) -> None:
+    out = tmp_path / "phase6g4" / "claude"
+    out.mkdir(parents=True)
+    shard = load_json(CLAUDE_SHARD)
+    first = shard["requests"][0]
+    second = shard["requests"][1]
+    attempts = [
+        make_attempt(first, "primary", fenced_response("B"), False, "invalid_json"),
+        make_attempt(first, "format_repair", valid_response()["output_text"].replace('"A"', '"C"', 1), True, "valid"),
+        make_attempt(second, "primary", "{bad json", False, "invalid_json"),
+        make_attempt(second, "format_repair", valid_response()["output_text"], True, "valid"),
+    ]
+    write_jsonl_for_test(out / "attempt_log.jsonl", attempts)
+    manifest = claude.build_run_manifest(REPO_ROOT, fake_preflight(), 5, out, claude.RUN_ID)
+    claude.write_json(out / "run_manifest.json", manifest)
+    claude.write_json(out / "preflight_report.json", fake_preflight())
+    calls = {"count": 0}
+    monkeypatch.setattr(claude, "run_preflight", lambda repo_root, output_dir=claude.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(claude, "invoke_anthropic", lambda messages, attempt_type: calls.__setitem__("count", calls["count"] + 1) or valid_response())
+
+    revalidation = claude.revalidate_existing_claude_attempts(REPO_ROOT, output_dir=out)
+    predictions = load_jsonl(out / "predictions.jsonl")
+    resume = claude.run_claude_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
+
+    assert revalidation["api_calls_during_offline_recovery"] == 0
+    assert revalidation["requests_revalidated"] == 2
+    assert revalidation["predictions_recovered_from_primary_attempts"] == 1
+    assert revalidation["predictions_recovered_from_repair_attempts"] == 1
+    assert revalidation["predictions_still_invalid"] == 0
+    assert predictions[0]["final_status"] == "valid_primary"
+    assert predictions[0]["formatting_repair_count"] == 0
+    assert predictions[1]["final_status"] == "valid_after_repair"
+    assert predictions[1]["formatting_repair_count"] == 1
+    assert revalidation["records"][0]["primary_and_repair_predictions_differ"] is True
+    assert resume["predictions_executed_this_invocation"] == 1
+    assert calls["count"] == 1
+    assert len(load_jsonl(out / "predictions.jsonl")) == 3
+    assert len({row["request_id"] for row in load_jsonl(out / "predictions.jsonl")}) == 3
+
+
 def test_prompt_hashes_and_no_ground_truth_or_secrets() -> None:
     preflight = load_json(PREFLIGHT)
     manifest = load_json(RUN_MANIFEST)
@@ -271,3 +374,49 @@ def test_prompt_hashes_and_no_ground_truth_or_secrets() -> None:
         assert "final_trial_ground_truth" not in text
         assert "final_candidate_ground_truth" not in text
     assert "ANTHROPIC_API_KEY" not in QC_REPORT.read_text(encoding="utf-8")
+
+
+def make_attempt(request: dict, attempt_type: str, raw_text: str, valid: bool, validation_status: str) -> dict:
+    return {
+        "schema_version": "phase6g4b_claude_attempt_v1",
+        "run_id": claude.RUN_ID,
+        "request_id": request["request_id"],
+        "prediction_id": claude.prediction_id(request),
+        "rendered_prompt_id": request["rendered_prompt_id"],
+        "prediction_example_id": request["prediction_example_id"],
+        "condition": request["condition"],
+        "model_key": claude.MODEL_KEY,
+        "shard_model_key": request["model_key"],
+        "exact_requested_model": claude.REQUEST_MODEL,
+        "actual_returned_model": "claude-sonnet-5",
+        "prompt_hash": request["prompt_hash"],
+        "attempt_type": attempt_type,
+        "attempt_number": 1 if attempt_type == "primary" else 2,
+        "transport_attempt_number": 1,
+        "request_status": "completed",
+        "raw_response_text": raw_text,
+        "validation_status": validation_status,
+        "response_schema_valid": valid,
+        "validation_errors": [],
+        "token_usage": {"input_tokens": 1, "output_tokens": 2, "reasoning_tokens": None, "total_tokens": 3},
+        "latency_seconds": 0.1,
+        "started_at": "2026-08-18T00:00:00+00:00",
+        "ended_at": "2026-08-18T00:00:01+00:00",
+        "provider_response_metadata": {"model": "claude-sonnet-5"},
+        "failure_code": None if valid else validation_status,
+        "failure_category": None if valid else "structural_validation",
+        "retryable": False,
+        "max_tokens": 1024,
+        "thinking_disabled_sent": True,
+        "temperature_sent": False,
+        "top_p_sent": False,
+        "top_k_sent": False,
+        "seed_sent": False,
+        "assistant_prefill_sent": False,
+    }
+
+
+def write_jsonl_for_test(path: Path, rows: list[dict]) -> None:
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n")

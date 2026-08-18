@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import time
 from collections import Counter
 from datetime import datetime, timezone
@@ -38,6 +39,7 @@ MAX_TOKENS = 1024
 MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
 TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed", "output_budget_exhausted", "quota_exhausted", "refusal"}
+NORMALIZER_VERSION = "phase6g4b_claude_response_normalizer_v1"
 
 
 def run_claude_production(repo_root: Path, guarded_batch_size: int = 5, output_dir: Path = OUTPUT_DIR, run_id: str = RUN_ID) -> dict[str, Any]:
@@ -147,6 +149,112 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
     }
 
 
+def revalidate_existing_claude_attempts(repo_root: Path, output_dir: Path = OUTPUT_DIR, run_id: str = RUN_ID) -> dict[str, Any]:
+    out = repo_root / output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    attempt_path = out / "attempt_log.jsonl"
+    attempts = load_jsonl(attempt_path)
+    response_schema = load_response_schema(repo_root / RESPONSE_SCHEMA)
+    shard = load_json(repo_root / CLAUDE_SHARD)
+    request_by_id = {row["request_id"]: row for row in shard["requests"]}
+    source_attempt_hash = sha256_file(attempt_path) if attempt_path.exists() else None
+    if (out / "predictions.jsonl").exists() and not (out / "predictions_before_revalidation.jsonl").exists():
+        shutil.copy2(out / "predictions.jsonl", out / "predictions_before_revalidation.jsonl")
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for attempt in attempts:
+        grouped.setdefault(attempt["request_id"], []).append(attempt)
+    predictions = []
+    provenance = []
+    recovered_primary = 0
+    recovered_repair = 0
+    still_invalid = 0
+    for request_id in sorted(grouped, key=lambda key: request_order(key, shard["requests"])):
+        request_ref = request_by_id[request_id]
+        revalidated_attempts = [revalidate_attempt(row, response_schema) for row in grouped[request_id]]
+        selected = next((row for row in revalidated_attempts if row["response_schema_valid"]), None)
+        if selected is not None and selected["attempt_type"] == "primary":
+            recovered_primary += 1
+        elif selected is not None:
+            recovered_repair += 1
+        else:
+            still_invalid += 1
+        prediction = finalize_prediction(request_ref, revalidated_attempts, run_id)
+        predictions.append(prediction)
+        original_primary = next((row for row in grouped[request_id] if row["attempt_type"] == "primary"), None)
+        repair = next((row for row in grouped[request_id] if row["attempt_type"] == "format_repair"), None)
+        provenance.append({
+            "schema_version": "phase6g4b_claude_offline_revalidation_record_v1",
+            "request_id": request_id,
+            "primary_response_exists": original_primary is not None,
+            "primary_valid_after_normalization": bool(original_primary and revalidate_attempt(original_primary, response_schema)["response_schema_valid"]),
+            "repair_response_exists": repair is not None,
+            "primary_and_repair_predictions_differ": predictions_differ(original_primary, repair, response_schema),
+            "canonical_attempt_type": selected["attempt_type"] if selected else None,
+            "canonical_prediction_id": prediction["prediction_id"],
+            "final_status": prediction["final_status"],
+        })
+    write_jsonl(out / "predictions.jsonl", predictions)
+    summary = build_execution_summary(
+        load_json(out / "run_manifest.json") if (out / "run_manifest.json").exists() else build_run_manifest(repo_root, run_preflight(repo_root, output_dir), 5, output_dir, run_id),
+        [row for rows in grouped.values() for row in rows],
+        predictions,
+        load_json(out / "preflight_report.json") if (out / "preflight_report.json").exists() else run_preflight(repo_root, output_dir),
+        0,
+        False,
+        False,
+    )
+    write_json(out / "execution_summary.json", summary)
+    write_json(out / "failure_summary.json", build_failure_summary([row for rows in grouped.values() for row in rows], predictions))
+    write_report(out / "claude_production_qc_report.md", summary, load_json(out / "preflight_report.json") if (out / "preflight_report.json").exists() else run_preflight(repo_root, output_dir))
+    manifest = {
+        "schema_version": "phase6g4b_claude_offline_revalidation_manifest_v1",
+        "created_at_utc": iso_now(),
+        "run_id": run_id,
+        "parser_normalizer_version": NORMALIZER_VERSION,
+        "source_attempt_log": str(Path(output_dir) / "attempt_log.jsonl").replace("\\", "/"),
+        "source_attempt_log_sha256": source_attempt_hash,
+        "requests_revalidated": len(grouped),
+        "predictions_recovered_from_primary_attempts": recovered_primary,
+        "predictions_recovered_from_repair_attempts": recovered_repair,
+        "predictions_still_invalid": still_invalid,
+        "api_calls_during_offline_recovery": 0,
+        "ground_truth_dependency": False,
+        "selection_rule": "choose earliest attempt that becomes schema-valid under deterministic Claude response normalisation",
+        "normalization_policy": "accept bare JSON, one outer json Markdown fence, or one outer generic Markdown fence; reject prose, trailing text, multiple fences, malformed JSON, and schema-invalid JSON via existing validator",
+        "records": provenance,
+    }
+    write_json(out / "offline_revalidation_manifest.json", manifest)
+    return manifest
+
+
+def revalidate_attempt(attempt: dict[str, Any], response_schema: dict[str, Any]) -> dict[str, Any]:
+    updated = dict(attempt)
+    normalized = normalize_claude_response_text(attempt.get("raw_response_text"))
+    validation = validate_response_text(normalized["normalized_response_text"], response_schema)
+    updated["normalized_response_text"] = normalized["normalized_response_text"]
+    updated["response_normalization"] = normalized["response_normalization"]
+    updated["response_normalizer_version"] = NORMALIZER_VERSION
+    updated["validation_status"] = validation["status"]
+    updated["response_schema_valid"] = validation["valid"]
+    updated["validation_errors"] = validation["errors"]
+    return updated
+
+
+def request_order(request_id: str, requests: list[dict[str, Any]]) -> int:
+    order = {row["request_id"]: idx for idx, row in enumerate(requests)}
+    return order.get(request_id, 10**9)
+
+
+def predictions_differ(primary: dict[str, Any] | None, repair: dict[str, Any] | None, response_schema: dict[str, Any]) -> bool | None:
+    if primary is None or repair is None:
+        return None
+    primary_valid = revalidate_attempt(primary, response_schema)
+    repair_valid = revalidate_attempt(repair, response_schema)
+    if not primary_valid["response_schema_valid"] or not repair_valid["response_schema_valid"]:
+        return None
+    return json.loads(primary_valid["normalized_response_text"]) != json.loads(repair_valid["normalized_response_text"])
+
+
 def inspect_anthropic_api_key() -> dict[str, bool]:
     value = os.environ.get("ANTHROPIC_API_KEY")
     if value is None:
@@ -174,17 +282,19 @@ def call_with_transport_retries(request_ref: dict[str, Any], rendered_prompt: di
         try:
             provider = invoke_anthropic(rendered_prompt["messages"], attempt_type)
             raw_text = provider.get("output_text")
-            validation = validate_response_text(raw_text, response_schema)
+            normalized = normalize_claude_response_text(raw_text)
+            validation = validate_response_text(normalized["normalized_response_text"], response_schema)
             request_status = provider.get("status", "completed")
             error = provider.get("error")
         except Exception as exc:  # pragma: no cover - only live provider errors
             raw_text = None
+            normalized = normalize_claude_response_text(raw_text)
             validation = validate_response_text(None, response_schema)
             request_status = "error"
             error = error_from_exception(exc)
             provider = {"metadata": {}, "usage": None, "incomplete_details": None, "error": error}
         failure = classify_failure({"status": request_status, "error": error, "incomplete_details": provider.get("incomplete_details")}, validation)
-        attempt = build_attempt_record(request_ref, prompt_hash, attempt_type, attempt_number, transport_attempt, request_status, raw_text, validation, provider, failure, time.perf_counter() - started, started_at, run_id)
+        attempt = build_attempt_record(request_ref, prompt_hash, attempt_type, attempt_number, transport_attempt, request_status, raw_text, normalized, validation, provider, failure, time.perf_counter() - started, started_at, run_id)
         attempts.append(attempt)
         if request_status == "completed" or failure["failure_code"] not in RETRYABLE_FAILURES or transport_attempt > MAX_TRANSPORT_RETRIES:
             return attempts
@@ -256,7 +366,7 @@ def error_from_exception(exc: Exception) -> dict[str, Any]:
     return {"type": error_type or "connection_error", "code": code, "message": message, "http_status_code": status_code}
 
 
-def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
+def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, normalized: dict[str, Any], validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
     metadata = sanitize_provider_metadata(provider.get("metadata") or {})
     return {
         "schema_version": "phase6g4b_claude_attempt_v1",
@@ -277,6 +387,9 @@ def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_
         "transport_attempt_number": transport_attempt,
         "request_status": request_status,
         "raw_response_text": raw_text,
+        "normalized_response_text": normalized["normalized_response_text"],
+        "response_normalization": normalized["response_normalization"],
+        "response_normalizer_version": NORMALIZER_VERSION,
         "validation_status": validation["status"],
         "response_schema_valid": validation["valid"],
         "validation_errors": validation["errors"],
@@ -303,6 +416,7 @@ def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, An
     successful = next((row for row in attempts if row["response_schema_valid"]), None)
     primary_valid = next((row for row in attempts if row["attempt_type"] == "primary" and row["response_schema_valid"]), None)
     repair_attempted = any(row["attempt_type"] == "format_repair" for row in attempts)
+    formatting_repair_count = 0 if primary_valid else sum(1 for row in attempts if row["attempt_type"] == "format_repair")
     if primary_valid:
         status = "valid_primary"
     elif successful:
@@ -336,10 +450,33 @@ def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, An
         "terminal": status in TERMINAL_STATUSES,
         "attempt_count": len(attempts),
         "transport_retry_count": sum(1 for row in attempts if row["transport_attempt_number"] > 1),
-        "formatting_repair_count": sum(1 for row in attempts if row["attempt_type"] == "format_repair"),
+        "formatting_repair_count": formatting_repair_count,
         "response_schema_valid": bool(successful),
         "raw_final_response_text": (successful or attempts[-1]).get("raw_response_text"),
+        "normalized_final_response_text": (successful or attempts[-1]).get("normalized_response_text"),
         "token_usage_totals": sum_usage(attempts),
+    }
+
+
+def normalize_claude_response_text(raw_text: str | None) -> dict[str, str | None]:
+    if raw_text is None:
+        return {"normalized_response_text": None, "response_normalization": "none"}
+    stripped = raw_text.strip()
+    if not stripped.startswith("```"):
+        return {"normalized_response_text": stripped, "response_normalization": "none" if stripped == raw_text else "leading_trailing_whitespace_removed"}
+    lines = stripped.splitlines()
+    if len(lines) < 3:
+        return {"normalized_response_text": stripped, "response_normalization": "none"}
+    opening = lines[0].strip()
+    closing = lines[-1].strip()
+    if opening not in {"```", "```json"} or closing != "```":
+        return {"normalized_response_text": stripped, "response_normalization": "none"}
+    if any(line.strip().startswith("```") for line in lines[1:-1]):
+        return {"normalized_response_text": stripped, "response_normalization": "none"}
+    inner = "\n".join(lines[1:-1]).strip()
+    return {
+        "normalized_response_text": inner,
+        "response_normalization": "markdown_json_fence_removed" if opening == "```json" else "markdown_generic_fence_removed",
     }
 
 
@@ -553,6 +690,13 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
 def append_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n")
+
+
+def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
         for row in rows:
             handle.write(json.dumps(row, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n")
 
