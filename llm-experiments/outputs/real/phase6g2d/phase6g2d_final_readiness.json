@@ -1,0 +1,35 @@
+{
+  "schema_version": "phase6g2d_final_readiness_v1",
+  "frozen_at_utc": "2026-08-18T00:54:23.521396+00:00",
+  "qmul_validation": {
+    "valid": true,
+    "backend_verified": true,
+    "execution_architectures_verified": true,
+    "production_config_verified": true,
+    "errors": [],
+    "warnings": []
+  },
+  "runpod_validation": {
+    "valid": true,
+    "backend_verified": true,
+    "execution_architectures_verified": true,
+    "production_config_verified": true,
+    "errors": [],
+    "warnings": []
+  },
+  "PHASE6D_PROMPT_PACKAGE_FROZEN": true,
+  "REAL_PHASE6B_READY": true,
+  "prediction_example_count": 198,
+  "condition_object_count": 396,
+  "expected_rendered_prompt_count": 396,
+  "expected_primary_request_count": 1584,
+  "dry_run_manifest_request_count": 1584,
+  "hidden_ground_truth_loaded_by_manifest": false,
+  "MODEL_IDENTITIES_FROZEN": true,
+  "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": true,
+  "INFERENCE_BACKENDS_VERIFIED": true,
+  "PRIMARY_INFERENCE_CONFIG_FROZEN": true,
+  "PRODUCTION_INFERENCE_READY": true,
+  "PHASE6G2_COMPLETE": true,
+  "PHASE6G3_CAN_BEGIN_IMMEDIATELY": true
+}

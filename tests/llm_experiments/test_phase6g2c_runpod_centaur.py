@@ -24,17 +24,17 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_runpod_artifact_has_live_metadata_but_is_not_production_verified() -> None:
+def test_runpod_artifact_has_verified_live_metadata_and_production_probe() -> None:
     artifact = load_json(ARTIFACT)
     validation = validate_remote_artifact(ARTIFACT, "runpod")
 
     assert validation["valid"] is True
-    assert validation["backend_verified"] is False
+    assert validation["backend_verified"] is True
     assert validation["execution_architectures_verified"] is True
-    assert validation["production_config_verified"] is False
+    assert validation["production_config_verified"] is True
     assert artifact["RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED"] is True
-    assert artifact["RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED"] is False
-    assert artifact["overall_runpod_centaur_verified"] is False
+    assert artifact["RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED"] is True
+    assert artifact["overall_runpod_centaur_verified"] is True
 
 
 def test_centaur_identity_runtime_and_context_match_live_evidence() -> None:
@@ -54,7 +54,9 @@ def test_centaur_identity_runtime_and_context_match_live_evidence() -> None:
     assert record["tokenizer"]["model_max_length"] == 131072
     assert record["context_limit"] == 32768
     assert record["underlying_tokenizer_limit"] == 131072
-    assert load_json(ARTIFACT)["unresolved_items"] == ["model_load_health_check", "trivial_generation_probe"]
+    assert record["health_check"]["status"] == "succeeded"
+    assert record["trivial_generation_probe"]["status"] == "succeeded"
+    assert load_json(ARTIFACT)["unresolved_items"] == []
 
 
 def test_centaur_generation_policy_and_common_output_contract_are_prepared() -> None:

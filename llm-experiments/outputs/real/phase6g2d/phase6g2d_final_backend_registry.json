@@ -1,0 +1,109 @@
+{
+  "schema_version": "phase6g2d_final_backend_registry_v1",
+  "frozen_at_utc": "2026-08-18T00:54:23.518397+00:00",
+  "backends": [
+    {
+      "backend_key": "qmul_openai_provider_api_verified",
+      "backend_type": "openai_responses_api",
+      "execution_environment": "QMUL",
+      "request_api": "OpenAI.responses.create",
+      "response_extraction_contract": "response.output_text",
+      "authentication": {
+        "required": true,
+        "credential_env_var_names": [
+          "OPENAI_API_KEY"
+        ]
+      },
+      "timeout_seconds": 300,
+      "backend_verified": true,
+      "health_check": {
+        "healthy": true,
+        "source": "live_qmul_connectivity_and_system_probe"
+      },
+      "system_message_mapping": "Responses API instructions field"
+    },
+    {
+      "backend_key": "qmul_anthropic_provider_api_verified",
+      "backend_type": "anthropic_messages_api",
+      "execution_environment": "QMUL",
+      "request_api": "Anthropic.messages.create",
+      "response_extraction_contract": "message.content[0].text",
+      "authentication": {
+        "required": true,
+        "credential_env_var_names": [
+          "ANTHROPIC_API_KEY"
+        ]
+      },
+      "timeout_seconds": 300,
+      "backend_verified": true,
+      "health_check": {
+        "healthy": true,
+        "source": "live_qmul_connectivity_and_system_probe"
+      },
+      "system_message_mapping": "Anthropic system parameter"
+    },
+    {
+      "backend_key": "qmul_llama_transformers_local_verified",
+      "backend_type": "qmul_local_transformers",
+      "execution_environment": "QMUL",
+      "request_api": "AutoModelForCausalLM.generate",
+      "response_extraction_contract": "tokenizer.decode(generated, skip_special_tokens=True)",
+      "authentication": {
+        "required": false,
+        "credential_env_var_names": []
+      },
+      "timeout_seconds": 300,
+      "backend_verified": true,
+      "health_check": {
+        "healthy": true,
+        "source": "live_qmul_local_transformers_load_eval_generate_smoke_test"
+      },
+      "message_serialization": "tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True) if tokenizer.chat_template is verified",
+      "local_files_only": true
+    },
+    {
+      "backend_key": "runpod_centaur_adapter_verified",
+      "backend_type": "runpod_centaur_adapter",
+      "execution_environment": "RunPod",
+      "request_api": "FastLanguageModel.generate",
+      "response_extraction_contract": "decoded_text",
+      "authentication": {
+        "required": true,
+        "credential_env_var_names": [
+          "RUNPOD_CENTAUR_ENDPOINT_URL",
+          "RUNPOD_API_TOKEN"
+        ],
+        "must_never_log": [
+          "authorization headers",
+          "RunPod API tokens",
+          "authenticated URLs"
+        ]
+      },
+      "timeout_seconds": 600,
+      "backend_verified": true,
+      "health_check": {
+        "status": "succeeded",
+        "healthy": true,
+        "latency_seconds": 292.37919192700065,
+        "deployment_form": "adapter",
+        "device_map": null,
+        "loader": "unsloth.FastLanguageModel.from_pretrained",
+        "adapter_snapshot_used": "/workspace/huggingface/hub/models--marcelbinz--Llama-3.1-Centaur-70B-adapter/snapshots/159600db8be99dc183c289923148dfd96cbd8e07",
+        "base_snapshot_used_via_temporary_adapter_config": "/workspace/huggingface/hub/models--unsloth--Meta-Llama-3.1-70B-bnb-4bit/snapshots/a009b8db2439814febe725486a5ed388f12a8744",
+        "canonical_adapter_files_modified": false,
+        "max_seq_length": 32768,
+        "load_in_4bit": true,
+        "for_inference_called": true
+      },
+      "trivial_generation_probe": {
+        "status": "succeeded",
+        "prompt": "Reply exactly with: Centaur connectivity verified.",
+        "output": " 1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11",
+        "latency_seconds": 9.278275617998588
+      },
+      "message_serialization": "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes",
+      "local_files_only": true
+    }
+  ],
+  "INFERENCE_BACKENDS_VERIFIED": true
+}

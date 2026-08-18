@@ -49,7 +49,7 @@ python llm-experiments/scripts/import_phase6g2_remote_verification.py --qmul llm
 ## Gates
 
 - `SCIENTIFIC_MODEL_IDENTITIES_SELECTED`: `true`
-- `EXACT_DEPLOYMENT_IDENTITIES_VERIFIED`: `false`
+- `EXACT_DEPLOYMENT_IDENTITIES_VERIFIED`: `true`
 - `QMUL_BACKENDS_VERIFIED`: `true`
-- `RUNPOD_CENTAUR_VERIFIED`: `false`
+- `RUNPOD_CENTAUR_VERIFIED`: `true`
 - `PRODUCTION_INFERENCE_READY`: `false`

@@ -1,0 +1,41 @@
+{
+  "schema_version": "phase6g2d_final_inference_config_v1",
+  "frozen_at_utc": "2026-08-18T00:54:23.518397+00:00",
+  "prompt_package_version_required": "phase6d_prompt_package_v1",
+  "response_schema_version": "preference_prediction_response_v1",
+  "model_registry_path": "llm-experiments/outputs/real/phase6g2d/phase6g2d_final_model_registry.json",
+  "backend_registry_path": "llm-experiments/outputs/real/phase6g2d/phase6g2d_final_backend_registry.json",
+  "capability_matrix_path": "llm-experiments/outputs/real/phase6g2d/phase6g2d_final_capability_matrix.json",
+  "model_keys": [
+    "gpt",
+    "claude_sonnet",
+    "llama_3_1_70b_instruct",
+    "centaur"
+  ],
+  "common_cross_model_policy": {
+    "zero_shot": true,
+    "few_shot_examples": 0,
+    "chain_of_thought_requested": false,
+    "reasoning_output_scored": false,
+    "primary_generations_per_request": 1,
+    "maximum_format_repair_attempts": 1,
+    "max_output_tokens": 256,
+    "local_response_validation_schema": "preference_prediction_response_v1",
+    "do_not_use_hidden_ground_truth": true
+  },
+  "decoding_policy": {
+    "gpt": "provider_native_temperature_omitted",
+    "claude_sonnet": "provider_native_temperature_omitted",
+    "llama_3_1_70b_instruct": "greedy_do_sample_false",
+    "centaur": "greedy_do_sample_false"
+  },
+  "freeze_gates": {
+    "MODEL_IDENTITIES_FROZEN": true,
+    "EXACT_DEPLOYMENT_IDENTITIES_VERIFIED": true,
+    "INFERENCE_BACKENDS_VERIFIED": true,
+    "PRIMARY_INFERENCE_CONFIG_FROZEN": true,
+    "PRODUCTION_INFERENCE_READY": true
+  },
+  "production_inference_allowed_after_phase6g2d": true,
+  "capability_matrix_model_count": 4
+}

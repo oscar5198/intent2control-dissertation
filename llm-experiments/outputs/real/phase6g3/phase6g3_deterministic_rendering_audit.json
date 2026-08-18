@@ -1,0 +1,11 @@
+{
+  "schema_version": "phase6g3_deterministic_rendering_audit_v1",
+  "first_count": 396,
+  "second_count": 396,
+  "ids_identical": true,
+  "prompt_hashes_identical": true,
+  "rendered_dataset_sha256_first": "7fd4e94391b386046c46fd75667bbf5ecd225f061542d89051e6e880421ca32b",
+  "rendered_dataset_sha256_second": "7fd4e94391b386046c46fd75667bbf5ecd225f061542d89051e6e880421ca32b",
+  "deterministic_rendering_passed": true,
+  "contains_timestamps_in_prompt_records": false
+}

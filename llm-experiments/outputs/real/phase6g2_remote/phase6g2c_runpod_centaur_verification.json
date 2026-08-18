@@ -127,8 +127,8 @@
       "offline_resolution_strategy": "temporary adapter_config.json copy points base_model_name_or_path to exact local base snapshot"
     },
     "centaur_choice_convention_audit": {
-      "recommendation_exists": "true",
-      "technically_required": "false",
+      "recommendation_exists": true,
+      "technically_required": false,
       "evidence_source_note": "Centaur model card recommends choice markers; they are not technically required; primary experiment preserves the frozen cross-model prompt contract.",
       "would_alter_frozen_phase6d_semantic_prompt": true,
       "decision_for_primary_experiment": "retain_common_frozen_phase6d_prompt_for_cross_model_equivalence",

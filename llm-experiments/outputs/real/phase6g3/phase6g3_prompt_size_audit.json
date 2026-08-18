@@ -1,0 +1,28 @@
+{
+  "schema_version": "phase6g3_prompt_size_audit_v1",
+  "rendered_prompt_count": 396,
+  "condition_size_summary": {
+    "non_history": {
+      "count": 198,
+      "characters_min": 3227,
+      "characters_median": 3264.0,
+      "characters_max": 3369,
+      "approximate_words_min": 435,
+      "approximate_words_median": 443.0,
+      "approximate_words_max": 460
+    },
+    "personalised_history": {
+      "count": 198,
+      "characters_min": 8396,
+      "characters_median": 9034.0,
+      "characters_max": 10632,
+      "approximate_words_min": 1188,
+      "approximate_words_median": 1326.5,
+      "approximate_words_max": 1617
+    }
+  },
+  "history_trial_count_distribution": {
+    "5": 198
+  },
+  "maximum_history_trials": 5
+}

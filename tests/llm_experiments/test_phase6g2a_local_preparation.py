@@ -101,16 +101,18 @@ def test_import_validator_accepts_controlled_valid_fixtures(tmp_path: Path) -> N
     assert validate_remote_artifact(runpod, "runpod")["valid"] is True
 
 
-def test_local_readiness_gates_keep_production_blocked() -> None:
+def test_local_readiness_gates_reflect_imported_remote_evidence_but_keep_6g2a_blocked() -> None:
     readiness = load_json(REAL_OUTPUT_DIR / "phase6g2a_local_preparation_readiness.json")
 
     assert readiness["local_preparation_ready"] is True
     assert readiness["SCIENTIFIC_MODEL_IDENTITIES_SELECTED"] is True
-    assert readiness["EXACT_DEPLOYMENT_IDENTITIES_VERIFIED"] is False
+    assert readiness["EXACT_DEPLOYMENT_IDENTITIES_VERIFIED"] is True
     assert readiness["QMUL_EXECUTION_ARCHITECTURES_VERIFIED"] is True
     assert readiness["QMUL_PRODUCTION_CONFIG_VERIFIED"] is True
     assert readiness["QMUL_BACKENDS_VERIFIED"] is True
-    assert readiness["RUNPOD_CENTAUR_VERIFIED"] is False
+    assert readiness["RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED"] is True
+    assert readiness["RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED"] is True
+    assert readiness["RUNPOD_CENTAUR_VERIFIED"] is True
     assert readiness["PRIMARY_INFERENCE_CONFIG_FROZEN"] is False
     assert readiness["PRODUCTION_INFERENCE_READY"] is False
     assert readiness["remote_scripts_ready"] is True

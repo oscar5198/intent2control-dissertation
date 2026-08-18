@@ -1,0 +1,14 @@
+{
+  "schema_version": "phase6g3_leakage_audit_v1",
+  "rendered_prompt_count": 396,
+  "target_leakage_failures": 0,
+  "identifier_provenance_leakage_failures": 0,
+  "sensitivity_feature_leakage_failures": 0,
+  "history_target_overlap_failures": 0,
+  "comment_boundary_failures": 0,
+  "condition_equivalence_failures": 0,
+  "direct_text_scan_failures": 0,
+  "failures": [],
+  "leakage_failures": 0,
+  "contains_hidden_ground_truth": false
+}

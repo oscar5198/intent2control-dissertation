@@ -1,8 +1,24 @@
 {
   "schema_version": "phase6g2d_production_registry_scaffold_v1",
-  "status": "blocked_pending_remote_verification",
+  "status": "ready_for_manual_final_registry_freeze",
   "deployment_plan_schema_version": "phase6g2a_model_deployment_plan_v1",
-  "can_freeze_final_production_registry": false,
+  "qmul_validation": {
+    "valid": true,
+    "backend_verified": true,
+    "execution_architectures_verified": true,
+    "production_config_verified": true,
+    "errors": [],
+    "warnings": []
+  },
+  "runpod_validation": {
+    "valid": true,
+    "backend_verified": true,
+    "execution_architectures_verified": true,
+    "production_config_verified": true,
+    "errors": [],
+    "warnings": []
+  },
+  "can_freeze_final_production_registry": true,
   "PRODUCTION_INFERENCE_READY": false,
   "real_prompt_context_audit_hook": {
     "status": "interface_prepared_token_counts_pending_remote_tokenizers",
