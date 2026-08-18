@@ -120,11 +120,14 @@ def test_blocked_local_artifacts_and_policy_fields() -> None:
 def test_invoke_llama_uses_frozen_local_transformers_contract(monkeypatch) -> None:
     captured: dict[str, object] = {}
 
-    class FakeInputs:
-        shape = (1, 3)
+    class FakeTensor:
+        def __init__(self, name: str, values: list[int]):
+            self.name = name
+            self.values = values
+            self.shape = (1, len(values))
 
         def to(self, device: str):
-            captured["device"] = device
+            captured.setdefault("tensor_moves", []).append((self.name, device))
             return self
 
     class FakeTokenizer:
@@ -133,7 +136,10 @@ def test_invoke_llama_uses_frozen_local_transformers_contract(monkeypatch) -> No
         def apply_chat_template(self, messages, **kwargs):
             captured["messages"] = messages
             captured["chat_template_kwargs"] = kwargs
-            return FakeInputs()
+            return {
+                "input_ids": FakeTensor("input_ids", [10, 11, 12]),
+                "attention_mask": FakeTensor("attention_mask", [1, 1, 1]),
+            }
 
         def decode(self, generated, **kwargs):
             captured["decode_tokens"] = list(generated)
@@ -146,7 +152,11 @@ def test_invoke_llama_uses_frozen_local_transformers_contract(monkeypatch) -> No
         def eval(self):
             captured["eval_called"] = True
 
-        def generate(self, inputs, **kwargs):
+        def get_input_embeddings(self):
+            return SimpleNamespace(weight=SimpleNamespace(device="cuda:0"))
+
+        def generate(self, *args, **kwargs):
+            captured["generate_positional_args"] = args
             captured["generate_kwargs"] = kwargs
             return [[10, 11, 12, 13, 14]]
 
@@ -191,13 +201,17 @@ def test_invoke_llama_uses_frozen_local_transformers_contract(monkeypatch) -> No
     assert captured["model_from_pretrained"]["kwargs"]["max_memory"] == {0: "43GiB"}
     assert captured["quantization_config"]["load_in_4bit"] is True
     assert captured["quantization_config"]["bnb_4bit_quant_type"] == "nf4"
-    assert captured["chat_template_kwargs"] == {"tokenize": True, "add_generation_prompt": True, "return_tensors": "pt"}
+    assert captured["chat_template_kwargs"] == {"tokenize": True, "add_generation_prompt": True, "return_tensors": "pt", "return_dict": True}
+    assert captured["generate_positional_args"] == ()
+    assert "input_ids" in captured["generate_kwargs"]
+    assert "attention_mask" in captured["generate_kwargs"]
     assert captured["generate_kwargs"]["max_new_tokens"] == 256
     assert captured["generate_kwargs"]["do_sample"] is False
     assert "temperature" not in captured["generate_kwargs"]
     assert "top_p" not in captured["generate_kwargs"]
     assert "seed" not in captured["generate_kwargs"]
-    assert captured["device"] == "cuda"
+    assert captured["tensor_moves"] == [("input_ids", "cuda:0"), ("attention_mask", "cuda:0")]
+    assert captured["decode_tokens"] == [13, 14]
 
 
 def test_guarded_batch_resume_and_duplicate_prevention(monkeypatch, tmp_path) -> None:
@@ -225,6 +239,51 @@ def test_guarded_batch_resume_and_duplicate_prevention(monkeypatch, tmp_path) ->
     assert len({row["request_id"] for row in predictions}) == 6
     assert len({row["prediction_id"] for row in predictions}) == 6
     assert {row["run_id"] for row in predictions} == {"phase6g4c_llama_production_run_01"}
+
+
+def test_named_model_inputs_are_required_and_prompt_length_comes_from_input_ids() -> None:
+    class FakeMapping:
+        def __init__(self):
+            self.store = {"input_ids": SimpleNamespace(shape=(1, 7)), "attention_mask": object()}
+
+        def keys(self):
+            return self.store.keys()
+
+        def __getitem__(self, key):
+            return self.store[key]
+
+    named = llama.ensure_named_model_inputs(FakeMapping())
+
+    assert named["input_ids"].shape[-1] == 7
+    assert "attention_mask" in named
+    try:
+        llama.ensure_named_model_inputs(SimpleNamespace(shape=(1, 7)))
+    except TypeError as exc:
+        assert "mapping" in str(exc)
+    else:  # pragma: no cover - assertion guard
+        raise AssertionError("non-mapping chat template output was accepted")
+
+
+def test_input_device_comes_from_model_embeddings_and_only_tensors_move() -> None:
+    moves: list[tuple[str, str]] = []
+
+    class FakeTensor:
+        def __init__(self, name: str):
+            self.name = name
+
+        def to(self, device: str):
+            moves.append((self.name, device))
+            return self
+
+    model = SimpleNamespace(get_input_embeddings=lambda: SimpleNamespace(weight=SimpleNamespace(device="cuda:0")))
+    inputs = {"input_ids": FakeTensor("input_ids"), "attention_mask": FakeTensor("attention_mask"), "metadata": "kept"}
+
+    device = llama.model_input_device(model)
+    moved = llama.move_model_inputs_to_device(inputs, device)
+
+    assert device == "cuda:0"
+    assert moves == [("input_ids", "cuda:0"), ("attention_mask", "cuda:0")]
+    assert moved["metadata"] == "kept"
 
 
 def test_fenced_valid_primary_is_valid_primary_without_format_repair(monkeypatch, tmp_path) -> None:

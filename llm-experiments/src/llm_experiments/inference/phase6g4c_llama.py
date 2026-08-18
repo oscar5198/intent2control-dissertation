@@ -254,21 +254,23 @@ def invoke_llama(messages: list[dict[str, str]], attempt_type: str, max_new_toke
             raise LlamaRuntimeError("model_load", exc) from exc
     started = time.perf_counter()
     try:
-        inputs = _TOKENIZER.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt")
+        model_inputs = _TOKENIZER.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt", return_dict=True)
+        model_inputs = ensure_named_model_inputs(model_inputs)
     except Exception as exc:  # pragma: no cover - dependency/runtime specific
         raise LlamaRuntimeError("chat_template", exc) from exc
     try:
-        if hasattr(inputs, "to"):
-            inputs = inputs.to("cuda")
+        input_device = model_input_device(_MODEL)
+        model_inputs = move_model_inputs_to_device(model_inputs, input_device)
     except Exception as exc:  # pragma: no cover - dependency/runtime specific
         raise LlamaRuntimeError("device_transfer", exc) from exc
     try:
         with torch.inference_mode():
-            outputs = _MODEL.generate(inputs, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
+            outputs = _MODEL.generate(**model_inputs, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
     except Exception as exc:  # pragma: no cover - dependency/runtime specific
         raise LlamaRuntimeError("generation", exc) from exc
     try:
-        generated = outputs[0][inputs.shape[-1]:]
+        prompt_length = model_inputs["input_ids"].shape[-1]
+        generated = outputs[0][prompt_length:]
         decoded = _TOKENIZER.decode(generated, skip_special_tokens=True)
     except Exception as exc:  # pragma: no cover - dependency/runtime specific
         raise LlamaRuntimeError("decode", exc) from exc
@@ -282,6 +284,43 @@ def invoke_llama(messages: list[dict[str, str]], attempt_type: str, max_new_toke
         "usage": {"output_tokens": generated_token_count} if generated_token_count is not None else None,
         "incomplete_details": incomplete_details,
     }
+
+
+def ensure_named_model_inputs(model_inputs: Any) -> dict[str, Any]:
+    if not hasattr(model_inputs, "keys"):
+        raise TypeError("apply_chat_template(return_dict=True) did not return a mapping of named model inputs")
+    named = {key: model_inputs[key] for key in model_inputs.keys()}
+    if "input_ids" not in named:
+        raise TypeError("tokenized chat template output is missing input_ids")
+    return named
+
+
+def model_input_device(model: Any) -> Any:
+    get_embeddings = getattr(model, "get_input_embeddings", None)
+    if callable(get_embeddings):
+        embeddings = get_embeddings()
+        weight = getattr(embeddings, "weight", None)
+        device = getattr(weight, "device", None)
+        if device is not None:
+            return device
+    parameters = getattr(model, "parameters", None)
+    if callable(parameters):
+        try:
+            first_parameter = next(parameters())
+            device = getattr(first_parameter, "device", None)
+            if device is not None:
+                return device
+        except StopIteration:
+            pass
+    device = getattr(model, "device", None)
+    return device if device is not None else "cuda"
+
+
+def move_model_inputs_to_device(model_inputs: dict[str, Any], device: Any) -> dict[str, Any]:
+    moved = {}
+    for key, value in model_inputs.items():
+        moved[key] = value.to(device) if hasattr(value, "to") else value
+    return moved
 
 
 def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, normalized: dict[str, Any], validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
@@ -344,7 +383,7 @@ def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_
         "repetition_penalty_sent": False,
         "response_format_sent": False,
         "stop_sequences_sent": False,
-        "chat_template_handling": "tokenizer.apply_chat_template(add_generation_prompt=True)",
+        "chat_template_handling": "tokenizer.apply_chat_template(return_dict=True, add_generation_prompt=True) then model.generate(**model_inputs)",
     }
 
 
@@ -495,7 +534,7 @@ def build_run_manifest(
         "backend_type": BACKEND_TYPE,
         "request_api": REQUEST_API,
         "endpoint_base_url": None,
-        "endpoint_shape": "in_process_tokenizer_apply_chat_template_then_AutoModelForCausalLM_generate",
+        "endpoint_shape": "in_process_tokenizer_apply_chat_template_return_dict_then_AutoModelForCausalLM_generate_named_inputs",
         "openai_compatible_http": False,
         "serving_framework": "transformers",
         "authentication_required": False,
