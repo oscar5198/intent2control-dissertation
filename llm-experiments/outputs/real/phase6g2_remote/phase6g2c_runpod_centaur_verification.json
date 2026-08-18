@@ -1,12 +1,12 @@
 {
   "schema_version": "phase6g_runpod_centaur_verification_v1",
   "environment": "RunPod",
-  "verification_timestamp_utc": "2026-08-18T00:22:58.910741+00:00",
+  "verification_timestamp_utc": "2026-08-18T00:39:38.075514+00:00",
   "verification_script_version": "phase6g2c_runpod_centaur_verify_script_v2",
   "host_metadata": {
-    "platform": "Windows-10-10.0.26200-SP0",
-    "python_version": "3.10.14",
-    "evidence_environment": "local_or_unverified"
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+    "python_version": "3.12.3",
+    "evidence_environment": "RunPod"
   },
   "model_record": {
     "model_key": "centaur",
@@ -35,7 +35,7 @@
       "peft": "0.20.0",
       "bitsandbytes": "0.50.0",
       "accelerate": "1.14.0",
-      "requests": "UNVERIFIED",
+      "requests": "2.34.2",
       "cuda": "12.9",
       "huggingface_hub": "1.27.0",
       "unsloth": "2026.8.15",
@@ -50,21 +50,23 @@
       "primary_device": "cuda:0",
       "vram": "80GB"
     },
-    "quantisation": "4bit_bnb",
-    "precision": "bnb_4bit_runtime_dtype_auto",
-    "serving_framework": "unsloth.FastLanguageModel",
+    "quantisation": "bnb-4bit",
+    "precision": "4bit",
+    "serving_framework": "unsloth",
     "serving_framework_verified": true,
-    "endpoint_type": "RunPod_self_hosted_adapter_runtime",
+    "endpoint_type": "local_model_inference",
     "endpoint_url_sanitized": "UNVERIFIED",
     "tokenizer": {
       "tokenizer_class": "TokenizersBackend",
       "chat_template_status": "absent",
       "model_max_length": 131072,
-      "tokenizer_source": "exact local adapter snapshot with base snapshot resolution"
+      "tokenizer_source": "loaded_from_exact_local_adapter_snapshot"
     },
     "tokenizer_chat_template": "absent",
     "model_config": {
-      "model_architecture": "LlamaForCausalLM",
+      "model_architecture": [
+        "LlamaForCausalLM"
+      ],
       "context_limit": 32768,
       "effective_context_limit": 32768,
       "underlying_tokenizer_limit": 131072,
@@ -96,12 +98,24 @@
     "message_serialization": "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes",
     "structured_output_mechanism": "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair",
     "health_check": {
-      "status": "not_run",
-      "healthy": false
+      "status": "succeeded",
+      "healthy": true,
+      "latency_seconds": 292.37919192700065,
+      "deployment_form": "adapter",
+      "device_map": null,
+      "loader": "unsloth.FastLanguageModel.from_pretrained",
+      "adapter_snapshot_used": "/workspace/huggingface/hub/models--marcelbinz--Llama-3.1-Centaur-70B-adapter/snapshots/159600db8be99dc183c289923148dfd96cbd8e07",
+      "base_snapshot_used_via_temporary_adapter_config": "/workspace/huggingface/hub/models--unsloth--Meta-Llama-3.1-70B-bnb-4bit/snapshots/a009b8db2439814febe725486a5ed388f12a8744",
+      "canonical_adapter_files_modified": false,
+      "max_seq_length": 32768,
+      "load_in_4bit": true,
+      "for_inference_called": true
     },
     "trivial_generation_probe": {
-      "status": "not_run",
-      "prompt": "Reply exactly with: Centaur connectivity verified."
+      "status": "succeeded",
+      "prompt": "Reply exactly with: Centaur connectivity verified.",
+      "output": " 1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11",
+      "latency_seconds": 9.278275617998588
     },
     "request_contract": "frozen_phase6d_messages_serialized_to_single_prompt_text_for_local_centaur_generation",
     "response_extraction_contract": "decoded_text",
@@ -113,15 +127,15 @@
       "offline_resolution_strategy": "temporary adapter_config.json copy points base_model_name_or_path to exact local base snapshot"
     },
     "centaur_choice_convention_audit": {
-      "recommendation_exists": true,
-      "technically_required": false,
-      "evidence_source_note": "Centaur << >> recommendation exists but is not technically required for generation.",
+      "recommendation_exists": "true",
+      "technically_required": "false",
+      "evidence_source_note": "Centaur model card recommends choice markers; they are not technically required; primary experiment preserves the frozen cross-model prompt contract.",
       "would_alter_frozen_phase6d_semantic_prompt": true,
       "decision_for_primary_experiment": "retain_common_frozen_phase6d_prompt_for_cross_model_equivalence",
       "methodological_blocker": false
     },
     "execution_architecture_verified": true,
-    "production_configuration_verified": false
+    "production_configuration_verified": true
   },
   "checks": {
     "model_key_is_centaur": true,
@@ -131,18 +145,15 @@
     "runtime_versions_recorded": true,
     "tokenizer_template_recorded": true,
     "context_limit_recorded": true,
-    "health_check_succeeded": false,
-    "trivial_generation_succeeded": false,
+    "health_check_succeeded": true,
+    "trivial_generation_succeeded": true,
     "backend_contract_verified": true,
     "choice_convention_not_methodological_blocker": true
   },
-  "unresolved_items": [
-    "model_load_health_check",
-    "trivial_generation_probe"
-  ],
+  "unresolved_items": [],
   "RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED": true,
-  "RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED": false,
-  "overall_runpod_centaur_verified": false,
+  "RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED": true,
+  "overall_runpod_centaur_verified": true,
   "credential_policy": "No credentials, HF_TOKEN values, RunPod tokens, or authenticated URLs are emitted.",
   "scope": "no participant data, no study prompts, no production inference"
 }
