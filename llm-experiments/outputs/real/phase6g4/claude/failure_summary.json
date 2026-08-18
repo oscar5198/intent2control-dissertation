@@ -1,0 +1,10 @@
+{
+  "schema_version": "phase6g4b_claude_failure_summary_v1",
+  "blocked_by_preflight": true,
+  "failures": [
+    "anthropic_api_key_present",
+    "anthropic_api_key_has_no_leading_or_trailing_whitespace",
+    "anthropic_api_key_contains_no_cr_or_lf",
+    "anthropic_sdk_installed"
+  ]
+}

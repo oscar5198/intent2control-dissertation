@@ -31,6 +31,7 @@ RESPONSE_EXTRACTION_FAILURES = {
 }
 STRUCTURAL_VALIDATION_FAILURES = {"invalid_json", "schema_invalid"}
 OUTPUT_BUDGET_FAILURES = {"output_budget_exhausted"}
+REFUSAL_FAILURES = {"refusal"}
 INTERNAL_FAILURES = {
     "logging_conflict",
     "duplicate_request_conflict",
@@ -70,6 +71,8 @@ def failure_category(code: str | None) -> str | None:
         return "structural_validation"
     if code in OUTPUT_BUDGET_FAILURES:
         return "output_budget"
+    if code in REFUSAL_FAILURES:
+        return "refusal"
     if code in INTERNAL_FAILURES:
         return "internal"
     return "unknown"
@@ -119,6 +122,8 @@ def classify_failure(
         code = "bad_credentials"
     elif status == "incomplete" and (provider_response.get("incomplete_details") or {}).get("reason") == "max_output_tokens":
         code = "output_budget_exhausted"
+    elif code == "refusal":
+        code = "refusal"
     elif validation.get("status") == "missing_response" and status == "completed":
         code = "empty_response"
     elif validation.get("status") in STRUCTURAL_VALIDATION_FAILURES:
