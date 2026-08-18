@@ -61,6 +61,11 @@ MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
 TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed", "output_budget_exhausted", "quota_exhausted", "refusal", "model_mismatch"}
 NORMALIZER_VERSION = "phase6g4d_centaur_response_normalizer_v1"
+CENTAUR_RECOVERY_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_recovery_run_02")
+VERIFIED_PROMPT_SERIALIZATION_STRATEGY = "phase6g2c_verified_raw_prompt_text_no_chat_template"
+VERIFIED_TOKENIZER_INVOCATION = "tokenizer(prompt_text, return_tensors='pt')['input_ids']"
+VERIFIED_GENERATION_INVOCATION = "model.generate(input_ids, max_new_tokens=N, do_sample=False, pad_token_id=tokenizer.eos_token_id)"
+MESSAGE_SERIALIZATION_CONTRACT = "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes"
 
 _TOKENIZER: Any = None
 _MODEL: Any = None
@@ -250,31 +255,52 @@ def invoke_centaur(messages: list[dict[str, str]], attempt_type: str, max_new_to
     started = time.perf_counter()
     try:
         prompt_text = serialize_centaur_messages(messages)
-        model_inputs = _TOKENIZER(prompt_text, return_tensors="pt")
+        input_ids = tokenize_centaur_prompt(_TOKENIZER, prompt_text)
     except Exception as exc:  # pragma: no cover
         raise CentaurRuntimeError("tokenizer", exc) from exc
     try:
-        model_inputs = move_model_inputs_to_device(ensure_named_model_inputs(model_inputs), "cuda")
+        input_ids = move_tensor_to_device(input_ids, "cuda")
     except Exception as exc:  # pragma: no cover
         raise CentaurRuntimeError("device_transfer", exc) from exc
     try:
         with torch.inference_mode():
-            outputs = _MODEL.generate(**model_inputs, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
+            outputs = _MODEL.generate(input_ids, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
     except Exception as exc:  # pragma: no cover
         raise CentaurRuntimeError("generation", exc) from exc
     try:
-        prompt_length = model_inputs["input_ids"].shape[-1]
+        prompt_length = input_ids.shape[-1]
         generated = outputs[0][prompt_length:]
         decoded = _TOKENIZER.decode(generated, skip_special_tokens=True)
+        decoded_with_special_tokens = _TOKENIZER.decode(generated, skip_special_tokens=False)
     except Exception as exc:  # pragma: no cover
         raise CentaurRuntimeError("decode", exc) from exc
     generated_token_count = len(generated) if hasattr(generated, "__len__") else None
     status = "incomplete" if generated_token_count == max_new_tokens else "completed"
+    token_diagnostics = build_token_diagnostics(
+        _TOKENIZER,
+        input_ids,
+        generated,
+        decoded,
+        decoded_with_special_tokens,
+        max_new_tokens,
+    )
     return {
         "status": status,
         "decoded_text": decoded,
-        "metadata": {"model": REQUEST_MODEL, "revision": REVISION, "base_model": BASE_MODEL, "base_revision": BASE_REVISION, "request_api": REQUEST_API, "attempt_type": attempt_type, "latency_seconds": time.perf_counter() - started, "backend_type": BACKEND_TYPE, "generated_token_count": generated_token_count, "diagnostic_max_new_tokens": max_new_tokens if max_new_tokens != MAX_NEW_TOKENS else None},
-        "usage": {"output_tokens": generated_token_count} if generated_token_count is not None else None,
+        "metadata": {
+            "model": REQUEST_MODEL,
+            "revision": REVISION,
+            "base_model": BASE_MODEL,
+            "base_revision": BASE_REVISION,
+            "request_api": REQUEST_API,
+            "attempt_type": attempt_type,
+            "latency_seconds": time.perf_counter() - started,
+            "backend_type": BACKEND_TYPE,
+            "generated_token_count": generated_token_count,
+            "diagnostic_max_new_tokens": max_new_tokens if max_new_tokens != MAX_NEW_TOKENS else None,
+            **token_diagnostics,
+        },
+        "usage": {"input_tokens": token_diagnostics["prompt_token_count"], "output_tokens": generated_token_count, "total_tokens": token_diagnostics["prompt_token_count"] + generated_token_count} if generated_token_count is not None else None,
         "incomplete_details": {"reason": "max_output_tokens"} if status == "incomplete" else None,
     }
 
@@ -312,6 +338,12 @@ def run_centaur_runtime_diagnostic(repo_root: Path, output_dir: Path = DIAGNOSTI
         "runtime_success": False,
         "runtime_diagnostic": None,
         "provider_metadata": None,
+        "transport_comparison": {
+            "verified_path": VERIFIED_PROMPT_SERIALIZATION_STRATEGY,
+            "raw_concatenation_path": "same semantic message concatenation; production transport now matches verified Phase 6G.2C tokenization/generation invocation",
+            "diagnostic_only": True,
+            "uses_study_prompts": False,
+        },
     }
     if not preflight["passed"]:
         manifest["runtime_diagnostic"] = {"runtime_error_category": "preflight_blocked", "preflight_failures": preflight["failures"]}
@@ -321,7 +353,29 @@ def run_centaur_runtime_diagnostic(repo_root: Path, output_dir: Path = DIAGNOSTI
         provider = invoke_centaur(messages, "runtime_diagnostic", max_new_tokens=max_new_tokens)
         manifest["runtime_success"] = provider.get("status") == "completed"
         manifest["provider_metadata"] = sanitize_provider_metadata(provider.get("metadata") or {})
-        manifest["runtime_diagnostic"] = {"status": provider.get("status"), "incomplete_details": provider.get("incomplete_details"), "decoded_text_preview": truncate_text(provider.get("decoded_text"), 400)}
+        metadata = provider.get("metadata") or {}
+        manifest["runtime_diagnostic"] = {
+            "status": provider.get("status"),
+            "incomplete_details": provider.get("incomplete_details"),
+            "decoded_text_preview": truncate_text(provider.get("decoded_text"), 400),
+            "decoded_text_with_special_tokens_preview": truncate_text(metadata.get("decoded_text_with_special_tokens"), 400),
+            "prompt_serialization_strategy": metadata.get("prompt_serialization_strategy"),
+            "tokenizer_invocation": metadata.get("tokenizer_invocation"),
+            "generation_invocation": metadata.get("generation_invocation"),
+            "prompt_token_count": metadata.get("prompt_token_count"),
+            "first_input_token_ids": metadata.get("first_input_token_ids"),
+            "last_input_token_ids": metadata.get("last_input_token_ids"),
+            "generated_token_ids": metadata.get("generated_token_ids"),
+            "generated_token_count": metadata.get("generated_token_count"),
+            "eos_token_id": metadata.get("eos_token_id"),
+            "bos_token_id": metadata.get("bos_token_id"),
+            "pad_token_id": metadata.get("pad_token_id"),
+            "eot_token_id": metadata.get("eot_token_id"),
+            "first_generated_token_equals_eos_or_eot": metadata.get("first_generated_token_equals_eos_or_eot"),
+            "tokenizer_chat_template_available": metadata.get("tokenizer_chat_template_available"),
+            "special_tokens_map": metadata.get("special_tokens_map"),
+            "generation_stop_interpretation": metadata.get("generation_stop_interpretation"),
+        }
     except Exception as exc:  # pragma: no cover - live RunPod diagnostic only
         manifest["runtime_diagnostic"] = centaur_exception_diagnostics(exc)
     write_json(out / "runtime_diagnostic.json", manifest)
@@ -354,6 +408,164 @@ def serialize_centaur_messages(messages: list[dict[str, str]]) -> str:
         else:
             parts.append(content)
     return "\n\n".join(part for part in parts if part).strip()
+
+
+def tokenize_centaur_prompt(tokenizer: Any, prompt_text: str) -> Any:
+    """Mirror the verified Phase 6G.2C RunPod probe transport exactly."""
+    return tokenizer(prompt_text, return_tensors="pt")["input_ids"]
+
+
+def move_tensor_to_device(value: Any, device: str) -> Any:
+    return value.to(device) if hasattr(value, "to") else value
+
+
+def build_token_diagnostics(
+    tokenizer: Any,
+    input_ids: Any,
+    generated: Any,
+    decoded_skip_special_tokens: str,
+    decoded_with_special_tokens: str,
+    max_new_tokens: int,
+) -> dict[str, Any]:
+    input_token_ids = token_ids_to_list(input_ids)
+    generated_token_ids = token_ids_to_list(generated)
+    eot_token_id = token_to_id(tokenizer, "<|eot_id|>")
+    eos_token_id = safe_int(getattr(tokenizer, "eos_token_id", None))
+    bos_token_id = safe_int(getattr(tokenizer, "bos_token_id", None))
+    pad_token_id = safe_int(getattr(tokenizer, "pad_token_id", None))
+    first_generated = generated_token_ids[0] if generated_token_ids else None
+    terminal_ids = {value for value in [eos_token_id, eot_token_id] if value is not None}
+    first_is_terminal_special = first_generated in terminal_ids if first_generated is not None else False
+    return {
+        "prompt_serialization_strategy": VERIFIED_PROMPT_SERIALIZATION_STRATEGY,
+        "message_serialization": MESSAGE_SERIALIZATION_CONTRACT,
+        "tokenizer_invocation": VERIFIED_TOKENIZER_INVOCATION,
+        "generation_invocation": VERIFIED_GENERATION_INVOCATION,
+        "uses_tokenizer_chat_template": False,
+        "manual_llama3_chat_headers_used": False,
+        "assistant_generation_header_appended": False,
+        "bos_handling": "tokenizer_default_for_raw_prompt_text",
+        "eos_eot_handling": "pad_token_id_set_to_tokenizer_eos_token_id_no_explicit_stop_sequences",
+        "prompt_token_count": len(input_token_ids),
+        "first_input_token_ids": input_token_ids[:8],
+        "last_input_token_ids": input_token_ids[-8:],
+        "generated_token_ids": generated_token_ids,
+        "generated_token_count": len(generated_token_ids),
+        "eos_token_id": eos_token_id,
+        "bos_token_id": bos_token_id,
+        "pad_token_id": pad_token_id,
+        "eot_token_id": eot_token_id,
+        "first_generated_token_equals_eos_or_eot": first_is_terminal_special,
+        "tokenizer_chat_template_available": bool(getattr(tokenizer, "chat_template", None)),
+        "special_tokens_map": dict(getattr(tokenizer, "special_tokens_map", {}) or {}),
+        "decoded_text_skip_special_tokens": decoded_skip_special_tokens,
+        "decoded_text_with_special_tokens": decoded_with_special_tokens,
+        "generation_stop_interpretation": interpret_generation_stop(generated_token_ids, terminal_ids, max_new_tokens),
+    }
+
+
+def interpret_generation_stop(generated_token_ids: list[int], terminal_ids: set[int], max_new_tokens: int) -> str:
+    if not generated_token_ids:
+        return "no_tokens_generated"
+    if generated_token_ids[0] in terminal_ids:
+        return "immediate_eos_or_eot_special_token"
+    if len(generated_token_ids) >= max_new_tokens:
+        return "max_new_tokens_reached"
+    return "completed_before_max_new_tokens"
+
+
+def token_to_id(tokenizer: Any, token: str) -> int | None:
+    converter = getattr(tokenizer, "convert_tokens_to_ids", None)
+    if not callable(converter):
+        return None
+    try:
+        value = converter(token)
+    except Exception:
+        return None
+    if value in {None, getattr(tokenizer, "unk_token_id", None)}:
+        return None
+    return safe_int(value)
+
+
+def token_ids_to_list(value: Any) -> list[int]:
+    if hasattr(value, "detach"):
+        value = value.detach()
+    if hasattr(value, "cpu"):
+        value = value.cpu()
+    if hasattr(value, "tolist"):
+        value = value.tolist()
+    if isinstance(value, tuple):
+        value = list(value)
+    if isinstance(value, list) and value and isinstance(value[0], list):
+        value = value[0]
+    if isinstance(value, list):
+        return [int(item) for item in value]
+    try:
+        return [int(item) for item in value]
+    except TypeError:
+        return []
+
+
+def safe_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def centaur_empty_response_recovery_eligible_request_ids(
+    predictions: list[dict[str, Any]],
+    attempts: list[dict[str, Any]] | None = None,
+) -> list[str]:
+    attempts_by_request: dict[str, list[dict[str, Any]]] = {}
+    for attempt in attempts or []:
+        attempts_by_request.setdefault(attempt.get("request_id"), []).append(attempt)
+    eligible = []
+    for prediction in predictions:
+        if prediction.get("final_status") != "invalid_after_repair":
+            continue
+        if prediction.get("response_schema_valid"):
+            continue
+        if (prediction.get("raw_final_response_text") or "") != "":
+            continue
+        request_attempts = attempts_by_request.get(prediction.get("request_id"), [])
+        if request_attempts and not any(
+            row.get("failure_code") == "empty_response"
+            and row.get("request_status") == "completed"
+            and (row.get("raw_response_text") or "") == ""
+            for row in request_attempts
+        ):
+            continue
+        eligible.append(prediction["request_id"])
+    return sorted(eligible)
+
+
+def build_empty_response_recovery_manifest(
+    source_output_dir: Path,
+    predictions: list[dict[str, Any]],
+    attempts: list[dict[str, Any]],
+    recovery_output_dir: Path = CENTAUR_RECOVERY_OUTPUT_DIR,
+) -> dict[str, Any]:
+    eligible_request_ids = centaur_empty_response_recovery_eligible_request_ids(predictions, attempts)
+    return {
+        "schema_version": "phase6g4d_centaur_empty_response_recovery_manifest_v1",
+        "created_at_utc": iso_now(),
+        "recovery_run_id": "phase6g4d_centaur_recovery_run_02",
+        "recovery_reason": "operational_empty_response_after_verified_transport_defect",
+        "source_run_id": RUN_ID,
+        "source_output_dir": str(source_output_dir).replace("\\", "/"),
+        "recovery_output_dir": str(recovery_output_dir).replace("\\", "/"),
+        "source_failure_records_preserved": True,
+        "writes_to_separate_namespace": True,
+        "eligibility_rule": "final_status=invalid_after_repair AND failure_code=empty_response AND empty raw response; no correctness or ground truth used",
+        "eligible_request_count": len(eligible_request_ids),
+        "eligible_request_ids": eligible_request_ids,
+        "valid_predictions_recovery_eligible": False,
+        "ground_truth_dependency": False,
+        "execute_recovery_now": False,
+    }
 
 
 def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, normalized: dict[str, Any], validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
@@ -560,7 +772,17 @@ def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch
         "guarded_batch_limit": guarded_batch_size,
         "preflight": preflight,
         "inference_parameters": inference_parameters(),
-        "message_serialization": "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes",
+        "message_serialization": MESSAGE_SERIALIZATION_CONTRACT,
+        "prompt_transport": {
+            "prompt_serialization_strategy": VERIFIED_PROMPT_SERIALIZATION_STRATEGY,
+            "tokenizer_chat_template_available": False,
+            "apply_chat_template_used": False,
+            "manual_llama3_chat_headers_used": False,
+            "assistant_generation_header_appended": False,
+            "tokenizer_invocation": VERIFIED_TOKENIZER_INVOCATION,
+            "generation_invocation": VERIFIED_GENERATION_INVOCATION,
+            "verified_source": "llm-experiments/scripts/remote/verify_runpod_centaur.py::tokenize_probe and run_optional_probe",
+        },
         "native_json_schema_support": False,
         "contains_hidden_ground_truth": False,
     }
