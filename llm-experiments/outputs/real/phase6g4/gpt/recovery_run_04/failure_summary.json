@@ -1,10 +1,42 @@
 {
   "schema_version": "phase6g4a_gpt_recovery_failure_summary_v1",
-  "blocked_by_preflight": true,
-  "failures": [
-    "openai_api_key_present",
-    "openai_api_key_has_no_leading_or_trailing_whitespace",
-    "openai_api_key_contains_no_cr_or_lf",
-    "openai_sdk_installed"
+  "blocked_by_preflight": false,
+  "failure_codes": {
+    "output_budget_exhausted": 1
+  },
+  "final_statuses": {
+    "valid_primary": 131,
+    "output_budget_exhausted": 1
+  },
+  "non_valid_recovery_predictions": [
+    {
+      "actual_returned_model": "gpt-5.5-2026-04-23",
+      "attempt_count": 1,
+      "condition": "personalised_history",
+      "exact_requested_model": "gpt-5.5",
+      "final_status": "output_budget_exhausted",
+      "formatting_repair_count": 0,
+      "max_output_tokens": 4096,
+      "model_key": "gpt",
+      "prediction_example_id": "P026__heldout__P026__trial_06",
+      "prediction_id": "phase6g4a_gpt_recovery_pred_8839874037a85f07ab73ae2b73602674",
+      "prompt_hash": "2a612d45735a873d34723b990481abe3e8d83c12c267cdc798d072f4b0244545",
+      "raw_final_response_text": "",
+      "recovery_eligibility_reason": "quota_transport_recovery",
+      "rendered_prompt_id": "P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1",
+      "request_id": "phase6g4::gpt::P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1",
+      "response_schema_valid": false,
+      "run_id": "phase6g4a_gpt_recovery_run_04",
+      "schema_version": "phase6g4a_gpt_recovery_prediction_v1",
+      "source_run03_prediction_id": "phase6g4a_gpt_pred_f29c6cb3d15ce16a3caf2ceac688dd52",
+      "terminal": true,
+      "token_usage_totals": {
+        "input_tokens": 2316,
+        "output_tokens": 4096,
+        "reasoning_tokens": 4096,
+        "total_tokens": 6412
+      },
+      "transport_retry_count": 0
+    }
   ]
 }

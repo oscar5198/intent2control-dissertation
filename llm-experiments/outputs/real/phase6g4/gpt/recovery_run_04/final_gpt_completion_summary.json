@@ -5,50 +5,50 @@
   "canonical_prediction_count": 396,
   "unique_request_count": 396,
   "status_counts": {
-    "backend_failed": 126,
-    "output_budget_exhausted": 6,
-    "valid_primary": 264
+    "backend_failed": 1,
+    "valid_primary": 395
   },
   "source_counts": {
-    "run03_non_valid_pending_or_non_valid_recovery": 132,
-    "run03_original_valid_prediction": 264
+    "run03_non_valid_pending_or_non_valid_recovery": 1,
+    "run03_original_valid_prediction": 264,
+    "run04_recovered_prediction": 131
   },
   "preserved_valid_run03_count": 264,
-  "recovered_valid_run04_count": 0,
-  "unresolved_or_non_valid_count": 132,
+  "recovered_valid_run04_count": 131,
+  "unresolved_or_non_valid_count": 1,
   "ground_truth_dependency": false,
   "recovery_summary": {
     "schema_version": "phase6g4a_gpt_recovery_execution_summary_v1",
     "run_id": "phase6g4a_gpt_recovery_run_04",
     "source_run03_id": "phase6g4a_gpt_corrected_run_03",
-    "preflight_passed": false,
+    "preflight_passed": true,
     "expected_recovery_predictions": 132,
     "guarded_batch_requested": true,
-    "guarded_batch_limit": 6,
-    "recovery_predictions_executed_this_invocation": 0,
-    "attempted_recovery_prediction_count": 0,
-    "terminal_recovery_prediction_count": 0,
-    "valid_recovery_prediction_count": 0,
-    "remaining_unresolved_recovery_predictions": 132,
+    "guarded_batch_limit": 132,
+    "recovery_predictions_executed_this_invocation": 126,
+    "attempted_recovery_prediction_count": 132,
+    "terminal_recovery_prediction_count": 132,
+    "valid_recovery_prediction_count": 131,
+    "remaining_unresolved_recovery_predictions": 0,
     "stopped_after_guarded_batch": false,
     "halted_due_quota_exhaustion": false,
-    "valid_primary_count": 0,
+    "valid_primary_count": 131,
     "valid_after_repair_count": 0,
     "backend_failure_count": 0,
-    "output_budget_exhausted_count": 0,
+    "output_budget_exhausted_count": 1,
     "quota_exhausted_count": 0,
     "invalid_after_repair_count": 0,
     "transport_retry_count": 0,
     "formatting_repair_count": 0,
     "token_usage_totals": {
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "reasoning_tokens": 0,
-      "total_tokens": 0
+      "input_tokens": 217846,
+      "output_tokens": 147522,
+      "reasoning_tokens": 138822,
+      "total_tokens": 365368
     },
-    "total_api_calls": 0,
+    "total_api_calls": 132,
     "ground_truth_dependency": false,
-    "GPT_RECOVERY_RUN_COMPLETE": false,
+    "GPT_RECOVERY_RUN_COMPLETE": true,
     "ALL_GPT_RECOVERY_PREDICTIONS_VALID": false
   }
 }
