@@ -194,18 +194,23 @@ def revalidate_existing_claude_attempts(repo_root: Path, output_dir: Path = OUTP
             "final_status": prediction["final_status"],
         })
     write_jsonl(out / "predictions.jsonl", predictions)
+    production_preflight = load_historical_production_preflight(out)
+    run_manifest = load_json(out / "run_manifest.json") if (out / "run_manifest.json").exists() else build_run_manifest(repo_root, production_preflight, 5, output_dir, run_id)
     summary = build_execution_summary(
-        load_json(out / "run_manifest.json") if (out / "run_manifest.json").exists() else build_run_manifest(repo_root, run_preflight(repo_root, output_dir), 5, output_dir, run_id),
+        run_manifest,
         [row for rows in grouped.values() for row in rows],
         predictions,
-        load_json(out / "preflight_report.json") if (out / "preflight_report.json").exists() else run_preflight(repo_root, output_dir),
+        production_preflight,
         0,
         False,
         False,
     )
+    summary["offline_revalidation_performed"] = True
+    summary["offline_revalidation_api_calls"] = 0
+    summary["production_preflight_source"] = production_preflight.get("source", "unknown")
     write_json(out / "execution_summary.json", summary)
     write_json(out / "failure_summary.json", build_failure_summary([row for rows in grouped.values() for row in rows], predictions))
-    write_report(out / "claude_production_qc_report.md", summary, load_json(out / "preflight_report.json") if (out / "preflight_report.json").exists() else run_preflight(repo_root, output_dir))
+    write_report(out / "claude_production_qc_report.md", summary, production_preflight)
     manifest = {
         "schema_version": "phase6g4b_claude_offline_revalidation_manifest_v1",
         "created_at_utc": iso_now(),
@@ -218,6 +223,9 @@ def revalidate_existing_claude_attempts(repo_root: Path, output_dir: Path = OUTP
         "predictions_recovered_from_repair_attempts": recovered_repair,
         "predictions_still_invalid": still_invalid,
         "api_calls_during_offline_recovery": 0,
+        "production_preflight_passed": production_preflight["passed"],
+        "production_preflight_source": production_preflight.get("source", "unknown"),
+        "offline_revalidation_performed": True,
         "ground_truth_dependency": False,
         "selection_rule": "choose earliest attempt that becomes schema-valid under deterministic Claude response normalisation",
         "normalization_policy": "accept bare JSON, one outer json Markdown fence, or one outer generic Markdown fence; reject prose, trailing text, multiple fences, malformed JSON, and schema-invalid JSON via existing validator",
@@ -225,6 +233,34 @@ def revalidate_existing_claude_attempts(repo_root: Path, output_dir: Path = OUTP
     }
     write_json(out / "offline_revalidation_manifest.json", manifest)
     return manifest
+
+
+def load_historical_production_preflight(out: Path) -> dict[str, Any]:
+    run_manifest_path = out / "run_manifest.json"
+    if run_manifest_path.exists():
+        run_manifest = load_json(run_manifest_path)
+        preflight = run_manifest.get("preflight")
+        if isinstance(preflight, dict) and "passed" in preflight:
+            historical = dict(preflight)
+            historical["source"] = "run_manifest.preflight"
+            return historical
+    preflight_path = out / "preflight_report.json"
+    if preflight_path.exists():
+        preflight = load_json(preflight_path)
+        if "passed" in preflight:
+            historical = dict(preflight)
+            historical["source"] = "preflight_report.json"
+            return historical
+    return {
+        "schema_version": "phase6g4b_claude_historical_preflight_unavailable_v1",
+        "passed": False,
+        "checks": {},
+        "failures": ["historical_production_preflight_unavailable"],
+        "prompt_hash_mismatches": [],
+        "duplicate_request_ids": [],
+        "source": "unavailable",
+        "ground_truth_dependency": False,
+    }
 
 
 def revalidate_attempt(attempt: dict[str, Any], response_schema: dict[str, Any]) -> dict[str, Any]:

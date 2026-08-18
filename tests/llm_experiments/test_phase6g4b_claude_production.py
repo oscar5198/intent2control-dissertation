@@ -359,6 +359,44 @@ def test_offline_revalidation_chooses_earliest_valid_and_resume_skips(monkeypatc
     assert len({row["request_id"] for row in load_jsonl(out / "predictions.jsonl")}) == 3
 
 
+def test_offline_revalidation_preserves_historical_live_preflight_and_is_idempotent(monkeypatch, tmp_path) -> None:
+    out = tmp_path / "phase6g4" / "claude"
+    out.mkdir(parents=True)
+    shard = load_json(CLAUDE_SHARD)
+    first = shard["requests"][0]
+    attempts = [make_attempt(first, "primary", fenced_response("B"), False, "invalid_json")]
+    write_jsonl_for_test(out / "attempt_log.jsonl", attempts)
+    live_preflight = fake_preflight()
+    live_preflight["passed"] = True
+    live_preflight["source_marker"] = "live_qmul_production_preflight"
+    stale_offline_preflight = dict(live_preflight)
+    stale_offline_preflight["passed"] = False
+    stale_offline_preflight["failures"] = ["anthropic_api_key_present"]
+    manifest = claude.build_run_manifest(REPO_ROOT, live_preflight, 5, out, claude.RUN_ID)
+    claude.write_json(out / "run_manifest.json", manifest)
+    claude.write_json(out / "preflight_report.json", stale_offline_preflight)
+    monkeypatch.setattr(claude, "run_preflight", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("offline revalidation must not rerun preflight")))
+
+    first_manifest = claude.revalidate_existing_claude_attempts(REPO_ROOT, output_dir=out)
+    first_predictions = (out / "predictions.jsonl").read_text(encoding="utf-8")
+    first_summary = load_json(out / "execution_summary.json")
+    second_manifest = claude.revalidate_existing_claude_attempts(REPO_ROOT, output_dir=out)
+    second_predictions = (out / "predictions.jsonl").read_text(encoding="utf-8")
+    second_summary = load_json(out / "execution_summary.json")
+
+    assert first_summary["preflight_passed"] is True
+    assert first_summary["production_preflight_source"] == "run_manifest.preflight"
+    assert first_summary["offline_revalidation_performed"] is True
+    assert first_summary["offline_revalidation_api_calls"] == 0
+    assert first_manifest["production_preflight_passed"] is True
+    assert first_manifest["production_preflight_source"] == "run_manifest.preflight"
+    assert first_manifest["api_calls_during_offline_recovery"] == 0
+    assert second_summary["preflight_passed"] is True
+    assert second_manifest["requests_revalidated"] == first_manifest["requests_revalidated"]
+    assert second_predictions == first_predictions
+    assert load_json(out / "preflight_report.json")["passed"] is False
+
+
 def test_prompt_hashes_and_no_ground_truth_or_secrets() -> None:
     preflight = load_json(PREFLIGHT)
     manifest = load_json(RUN_MANIFEST)
