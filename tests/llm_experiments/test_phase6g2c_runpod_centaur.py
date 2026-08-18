@@ -24,30 +24,37 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_pending_runpod_artifact_is_valid_but_not_verified() -> None:
+def test_runpod_artifact_has_live_metadata_but_is_not_production_verified() -> None:
     artifact = load_json(ARTIFACT)
     validation = validate_remote_artifact(ARTIFACT, "runpod")
 
     assert validation["valid"] is True
     assert validation["backend_verified"] is False
-    assert validation["execution_architectures_verified"] is False
+    assert validation["execution_architectures_verified"] is True
     assert validation["production_config_verified"] is False
-    assert artifact["RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED"] is False
+    assert artifact["RUNPOD_CENTAUR_EXECUTION_ARCHITECTURE_VERIFIED"] is True
     assert artifact["RUNPOD_CENTAUR_PRODUCTION_CONFIG_VERIFIED"] is False
     assert artifact["overall_runpod_centaur_verified"] is False
 
 
-def test_pending_centaur_identity_and_runtime_are_not_invented() -> None:
+def test_centaur_identity_runtime_and_context_match_live_evidence() -> None:
     record = load_json(ARTIFACT)["model_record"]
 
     assert record["model_key"] == "centaur"
-    assert record["deployed_model_source"] == "UNVERIFIED"
-    assert record["exact_served_id"] == "UNVERIFIED"
-    assert record["revision"] == "UNVERIFIED"
-    assert record["deployment_form"] == "UNVERIFIED"
-    assert record["runtime_versions"]["torch"] == "UNVERIFIED"
-    assert record["gpu"]["gpu_count"] == "UNVERIFIED"
-    assert "deployed_model_source" in load_json(ARTIFACT)["unresolved_items"]
+    assert record["deployed_model_source"] == "marcelbinz/Llama-3.1-Centaur-70B-adapter"
+    assert record["exact_served_id"] == "marcelbinz/Llama-3.1-Centaur-70B-adapter"
+    assert record["revision"] == "159600db8be99dc183c289923148dfd96cbd8e07"
+    assert record["base_model"] == "unsloth/Meta-Llama-3.1-70B-bnb-4bit"
+    assert record["base_revision"] == "a009b8db2439814febe725486a5ed388f12a8744"
+    assert record["deployment_form"] == "adapter"
+    assert record["runtime_versions"]["torch"] == "2.11.0+cu129"
+    assert record["runtime_versions"]["transformers"] == "5.5.0"
+    assert record["gpu"]["gpu_names"] == ["NVIDIA A100 80GB PCIe"]
+    assert record["tokenizer_chat_template"] == "absent"
+    assert record["tokenizer"]["model_max_length"] == 131072
+    assert record["context_limit"] == 32768
+    assert record["underlying_tokenizer_limit"] == 131072
+    assert load_json(ARTIFACT)["unresolved_items"] == ["model_load_health_check", "trivial_generation_probe"]
 
 
 def test_centaur_generation_policy_and_common_output_contract_are_prepared() -> None:
@@ -57,7 +64,10 @@ def test_centaur_generation_policy_and_common_output_contract_are_prepared() -> 
     assert record["generation_mode"]["do_sample"] is False
     assert record["generation_mode"]["max_new_tokens"] == 256
     assert record["structured_output_mechanism"] == "ordinary_text_generation_local_validation_preference_prediction_response_v1_one_formatting_repair"
-    assert "apply_chat_template" in record["message_serialization"]
+    assert record["message_serialization"] == "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes"
+    assert record["centaur_choice_convention_audit"]["recommendation_exists"] is True
+    assert record["centaur_choice_convention_audit"]["technically_required"] is False
+    assert record["centaur_choice_convention_audit"]["decision_for_primary_experiment"] == "retain_common_frozen_phase6d_prompt_for_cross_model_equivalence"
 
 
 def test_runpod_adapter_prepares_canonical_request_and_is_guarded(monkeypatch) -> None:
@@ -91,5 +101,9 @@ def test_runpod_verifier_does_not_reference_study_data_or_secrets() -> None:
     assert "final_prompt_data_objects" not in text
     assert "Previous listening evidence from this participant" not in text
     assert "HF_TOKEN" in text
+    assert "adapter_config.json" in text
+    assert "FastLanguageModel.from_pretrained" in text
+    assert "local_files_only=args.local_files_only" in text
+    assert "symlinks=False" in text
     assert_no_secrets(load_json(ARTIFACT))
     assert verify_prompt_package(REPO_ROOT)["PHASE6D_PROMPT_PACKAGE_FROZEN"] is True

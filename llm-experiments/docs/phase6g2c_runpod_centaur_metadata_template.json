@@ -1,43 +1,57 @@
 {
-  "deployed_model_source": "UNVERIFIED",
-  "deployment_form": "unknown",
-  "base_model": "UNVERIFIED",
-  "exact_served_id": "UNVERIFIED",
-  "revision": "UNVERIFIED",
-  "commit": "UNVERIFIED",
-  "python_executable": "UNVERIFIED",
+  "deployed_model_source": "marcelbinz/Llama-3.1-Centaur-70B-adapter",
+  "deployment_form": "adapter",
+  "base_model": "unsloth/Meta-Llama-3.1-70B-bnb-4bit",
+  "base_revision": "a009b8db2439814febe725486a5ed388f12a8744",
+  "adapter_snapshot": "/workspace/huggingface/hub/models--marcelbinz--Llama-3.1-Centaur-70B-adapter/snapshots/159600db8be99dc183c289923148dfd96cbd8e07",
+  "base_snapshot": "/workspace/huggingface/hub/models--unsloth--Meta-Llama-3.1-70B-bnb-4bit/snapshots/a009b8db2439814febe725486a5ed388f12a8744",
+  "exact_served_id": "marcelbinz/Llama-3.1-Centaur-70B-adapter",
+  "revision": "159600db8be99dc183c289923148dfd96cbd8e07",
+  "commit": "159600db8be99dc183c289923148dfd96cbd8e07",
+  "python_executable": "/workspace/unsloth_env/bin/python",
   "runtime_versions": {
-    "python": "UNVERIFIED",
-    "torch": "UNVERIFIED",
-    "transformers": "UNVERIFIED",
-    "peft": "UNVERIFIED",
-    "bitsandbytes": "UNVERIFIED",
-    "accelerate": "UNVERIFIED",
-    "requests": "UNVERIFIED",
-    "cuda": "UNVERIFIED"
+    "python": "3.12.3",
+    "torch": "2.11.0+cu129",
+    "transformers": "5.5.0",
+    "peft": "0.20.0",
+    "bitsandbytes": "0.50.0",
+    "accelerate": "1.14.0",
+    "huggingface_hub": "1.27.0",
+    "unsloth": "2026.8.15",
+    "unsloth_zoo": "2026.8.10",
+    "cuda": "12.9"
   },
   "gpu": {
-    "gpu_count": "UNVERIFIED",
-    "gpu_names": "UNVERIFIED",
-    "vram": "UNVERIFIED"
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "primary_device": "cuda:0",
+    "vram": "80GB"
   },
-  "quantisation": "UNVERIFIED",
-  "precision": "UNVERIFIED",
-  "serving_framework": "UNVERIFIED",
-  "endpoint_type": "UNVERIFIED",
+  "quantisation": "4bit_bnb",
+  "precision": "bnb_4bit_runtime_dtype_auto",
+  "serving_framework": "unsloth.FastLanguageModel",
+  "endpoint_type": "RunPod_self_hosted_adapter_runtime",
   "tokenizer": {
-    "tokenizer_class": "UNVERIFIED",
-    "chat_template_status": "UNVERIFIED",
-    "model_max_length": "UNVERIFIED",
-    "tokenizer_source": "UNVERIFIED"
+    "tokenizer_class": "TokenizersBackend",
+    "chat_template_status": "absent",
+    "model_max_length": 131072,
+    "tokenizer_source": "exact local adapter snapshot with base snapshot resolution"
   },
   "model_config": {
-    "model_architecture": "UNVERIFIED",
-    "context_limit": "UNVERIFIED",
-    "max_position_embeddings": "UNVERIFIED"
+    "model_architecture": "LlamaForCausalLM",
+    "context_limit": 32768,
+    "effective_context_limit": 32768,
+    "underlying_tokenizer_limit": 131072,
+    "max_position_embeddings": 131072,
+    "context_limit_source": "production FastLanguageModel.from_pretrained max_seq_length=32768"
   },
+  "underlying_tokenizer_limit": 131072,
   "context_compatibility": {
-    "status": "UNVERIFIED",
+    "status": "effective_context_limit_frozen_to_production_loader",
+    "effective_context_limit": 32768,
+    "underlying_tokenizer_limit": 131072,
     "maximum_real_prompt_tokens": "UNVERIFIED",
     "template_overhead_tokens": "UNVERIFIED",
     "max_new_tokens": 256
@@ -51,18 +65,21 @@
     "max_new_tokens": 256,
     "project_seed": 20260814
   },
-  "message_serialization": "tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True) if official chat template is verified",
-  "request_contract": "UNVERIFIED",
+  "system_role_behavior": "no_native_system_role_without_chat_template; deterministic_concatenation_preserves_frozen_phase6d_system_and_user_content",
+  "message_serialization": "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes",
+  "request_contract": "frozen_phase6d_messages_serialized_to_single_prompt_text_for_local_centaur_generation",
   "response_extraction_contract": "decoded_text",
   "adapter_readiness": {
-    "status": "UNVERIFIED",
+    "status": "offline_snapshot_probe_supported_rerun_required",
+    "canonical_adapter_files_modified": false,
+    "offline_resolution_strategy": "temporary adapter_config.json copy points base_model_name_or_path to exact local base snapshot",
     "notes": "No secrets, endpoint URLs with credentials, HF_TOKEN values, or RunPod API token values may be stored here."
   },
   "centaur_choice_convention_audit": {
-    "recommendation_exists": "UNVERIFIED",
-    "technically_required": "unknown",
-    "evidence_source_note": "UNVERIFIED",
-    "would_alter_frozen_phase6d_semantic_prompt": "UNVERIFIED",
-    "decision_for_primary_experiment": "retain_common_phase6d_prompt_until_technical_requirement_is_verified"
+    "recommendation_exists": true,
+    "technically_required": false,
+    "evidence_source_note": "Centaur << >> recommendation exists but is not technically required for generation.",
+    "would_alter_frozen_phase6d_semantic_prompt": true,
+    "decision_for_primary_experiment": "retain_common_frozen_phase6d_prompt_for_cross_model_equivalence"
   }
 }

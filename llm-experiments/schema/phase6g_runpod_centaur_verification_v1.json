@@ -25,6 +25,9 @@
     "deployed_model_source",
     "deployment_form",
     "base_model",
+    "base_revision",
+    "adapter_snapshot",
+    "base_snapshot",
     "execution_architecture_verified",
     "production_configuration_verified",
     "exact_served_id_verified",
@@ -44,6 +47,7 @@
     "tokenizer_chat_template",
     "model_config",
     "context_limit",
+    "underlying_tokenizer_limit",
     "context_compatibility",
     "max_output_limit",
     "generation_mode",
@@ -51,6 +55,7 @@
     "top_p_support",
     "seed_support",
     "system_role_behavior",
+    "message_serialization",
     "structured_output_mechanism",
     "health_check",
     "trivial_generation_probe",
@@ -65,7 +70,9 @@
     "recommendation_exists",
     "technically_required",
     "evidence_source_note",
-    "likely_implication_for_frozen_phase6d_package"
+    "would_alter_frozen_phase6d_semantic_prompt",
+    "decision_for_primary_experiment",
+    "methodological_blocker"
   ],
   "source_candidates_to_check": [
     "marcelbinz/Llama-3.1-Centaur-70B",
