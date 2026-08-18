@@ -13,7 +13,9 @@ if str(LLM_SRC) not in sys.path:
     sys.path.insert(0, str(LLM_SRC))
 
 from llm_experiments.inference.phase6g4c_llama import (  # noqa: E402
+    build_canonical_llama_outputs,
     prepare_backend_failed_recovery,
+    run_llama_resume_after_recovery,
     run_llama_backend_failed_recovery,
     run_llama_production,
     run_llama_runtime_diagnostic,
@@ -41,8 +43,21 @@ def main() -> int:
             "historical_source_artifacts_preserved": manifest["historical_source_artifacts_preserved"],
         }, indent=2))
         return 0
+    if args.canonical_merge:
+        manifest = build_canonical_llama_outputs(args.repo_root.resolve())
+        print(json.dumps({
+            "canonical_prediction_count": manifest["canonical_prediction_count"],
+            "superseded_backend_failed_count": manifest["superseded_backend_failed_count"],
+            "unresolved_count": manifest["unresolved_count"],
+            "canonical_source_counts": manifest["canonical_source_counts"],
+            "LLAMA_PRODUCTION_INFERENCE_COMPLETE": manifest["LLAMA_PRODUCTION_INFERENCE_COMPLETE"],
+            "ALL_LLAMA_PREDICTIONS_VALID": manifest["ALL_LLAMA_PREDICTIONS_VALID"],
+        }, indent=2))
+        return 0
     if args.recover_backend_failed:
         summary = run_llama_backend_failed_recovery(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
+    elif args.resume_after_recovery:
+        summary = run_llama_resume_after_recovery(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
     else:
         summary = run_llama_production(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
     print(json.dumps({
@@ -70,6 +85,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--diagnostic-max-new-tokens", type=int, default=8)
     parser.add_argument("--prepare-recovery", action="store_true", help="Write backend-failed recovery eligibility manifest without running inference.")
     parser.add_argument("--recover-backend-failed", action="store_true", help="Run a guarded recovery batch only for source run backend_failed slots.")
+    parser.add_argument("--canonical-merge", action="store_true", help="Build canonical Llama predictions from Run 01, recovery, and resume artifacts without inference.")
+    parser.add_argument("--resume-after-recovery", action="store_true", help="Run a guarded batch for canonical-unresolved request IDs after backend-failed recovery.")
     return parser.parse_args()
 
 

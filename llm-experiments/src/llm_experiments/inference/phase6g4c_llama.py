@@ -27,6 +27,8 @@ SCHEMA_VERSION = "phase6g4c_llama_production_inference_v1"
 OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama")
 DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_runtime_diagnostics")
 RECOVERY_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_recovery_run_02")
+CANONICAL_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_canonical")
+RESUME_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_resume_after_recovery")
 RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
 LLAMA_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_llama_shard_manifest.json")
 PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
@@ -41,6 +43,7 @@ PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 RUN_ID = "phase6g4c_llama_production_run_01"
 RECOVERY_RUN_ID = "phase6g4c_llama_backend_failed_recovery_run_02"
+RESUME_RUN_ID = "phase6g4c_llama_resume_after_recovery_run_03"
 MODEL_KEY = "llama_3_1_70b_instruct"
 EXPERIMENT_MODEL_LABEL = "Llama 3.1 70B Instruct"
 REQUEST_MODEL = "meta-llama/Llama-3.1-70B-Instruct"
@@ -130,8 +133,8 @@ def run_llama_production(
 
 
 def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR, run_mode: str = "production") -> dict[str, Any]:
-    if run_mode not in {"production", "recovery"}:
-        raise ValueError("run_mode must be 'production' or 'recovery'")
+    if run_mode not in {"production", "recovery", "resume"}:
+        raise ValueError("run_mode must be 'production', 'recovery', or 'resume'")
     prompt_verification = verify_prompt_package(repo_root)
     phase6g1 = load_json(repo_root / PHASE6G1_GATE)
     phase6g2d = load_json(repo_root / PHASE6G2D_READINESS)
@@ -175,6 +178,7 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR, run_mode: str 
         "runtime_dependencies_available": all(util.find_spec(name) for name in dependency_names),
         "output_directory_production_llama_namespace": namespace_checks["production_namespace_allowed"],
         "output_directory_llama_recovery_namespace": namespace_checks["recovery_namespace_allowed"],
+        "output_directory_llama_resume_namespace": namespace_checks["resume_namespace_allowed"],
         "no_hidden_ground_truth_loaded": not shard.get("contains_hidden_ground_truth", False),
     }
     failures = [key for key, value in checks.items() if not value]
@@ -334,19 +338,25 @@ def output_namespace_checks(repo_root: Path, output_dir: Path, run_mode: str) ->
     output_rel = repo_relative_output_path(repo_root, output_dir)
     production_rel = OUTPUT_DIR.as_posix()
     recovery_rel = RECOVERY_OUTPUT_DIR.as_posix()
+    resume_rel = RESUME_OUTPUT_DIR.as_posix()
     is_production_namespace = output_rel == production_rel
     is_recovery_namespace = output_rel == recovery_rel
+    is_resume_namespace = output_rel == resume_rel
     return {
         "run_mode": run_mode,
         "output_dir": output_rel,
         "production_namespace": production_rel,
         "recovery_namespace": recovery_rel,
+        "resume_namespace": resume_rel,
         "is_production_namespace": is_production_namespace,
         "is_recovery_namespace": is_recovery_namespace,
+        "is_resume_namespace": is_resume_namespace,
         "production_namespace_allowed": run_mode != "production" or is_production_namespace,
         "recovery_namespace_allowed": run_mode != "recovery" or is_recovery_namespace,
-        "active_namespace_allowed": (run_mode == "production" and is_production_namespace) or (run_mode == "recovery" and is_recovery_namespace),
+        "resume_namespace_allowed": run_mode != "resume" or is_resume_namespace,
+        "active_namespace_allowed": (run_mode == "production" and is_production_namespace) or (run_mode == "recovery" and is_recovery_namespace) or (run_mode == "resume" and is_resume_namespace),
         "recovery_separate_from_run01": recovery_rel != production_rel,
+        "resume_separate_from_run01": resume_rel != production_rel,
     }
 
 
@@ -562,7 +572,11 @@ def build_run_manifest(
         "schema_version": "phase6g4c_llama_run_manifest_v1",
         "run_id": run_id,
         "created_at_utc": iso_now(),
-        "run_type": "final_real_llama_3_1_70b_instruct_production_inference" if run_mode == "production" else "llama_3_1_70b_backend_failed_recovery_inference",
+        "run_type": {
+            "production": "final_real_llama_3_1_70b_instruct_production_inference",
+            "recovery": "llama_3_1_70b_backend_failed_recovery_inference",
+            "resume": "llama_3_1_70b_resume_after_recovery_inference",
+        }[run_mode],
         "run_mode": run_mode,
         "model_key": MODEL_KEY,
         "experiment_model_label": EXPERIMENT_MODEL_LABEL,
@@ -732,6 +746,210 @@ def run_llama_backend_failed_recovery(repo_root: Path, guarded_batch_size: int =
     return run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=recovery_output_dir, run_id=recovery_run_id, target_request_ids=target_ids, recovery_source=manifest, run_mode="recovery")
 
 
+def build_canonical_llama_outputs(
+    repo_root: Path,
+    production_output_dir: Path = OUTPUT_DIR,
+    recovery_output_dir: Path = RECOVERY_OUTPUT_DIR,
+    resume_output_dir: Path = RESUME_OUTPUT_DIR,
+    canonical_output_dir: Path = CANONICAL_OUTPUT_DIR,
+) -> dict[str, Any]:
+    out = repo_root / canonical_output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    shard = load_json(repo_root / LLAMA_SHARD)
+    requests = shard["requests"]
+    response_schema = load_response_schema(repo_root / RESPONSE_SCHEMA)
+    production_path = repo_root / production_output_dir / "predictions.jsonl"
+    recovery_path = repo_root / recovery_output_dir / "predictions.jsonl"
+    resume_path = repo_root / resume_output_dir / "predictions.jsonl"
+    production_predictions = load_jsonl(production_path)
+    recovery_predictions = load_jsonl(recovery_path)
+    resume_predictions = load_jsonl(resume_path)
+    assert_unique_request_ids(production_predictions, "production_run01")
+    assert_unique_request_ids(recovery_predictions, "recovery_run02")
+    assert_unique_request_ids(resume_predictions, "resume_run03")
+    production_by_id = {row["request_id"]: row for row in production_predictions}
+    recovery_by_id = {row["request_id"]: row for row in recovery_predictions}
+    resume_by_id = {row["request_id"]: row for row in resume_predictions}
+    canonical_rows: list[dict[str, Any]] = []
+    superseded: list[dict[str, Any]] = []
+    unresolved: list[str] = []
+
+    for index, request_ref in enumerate(requests):
+        request_id = request_ref["request_id"]
+        run01 = production_by_id.get(request_id)
+        recovery = recovery_by_id.get(request_id)
+        resume = resume_by_id.get(request_id)
+        selected = None
+        source = None
+        reason = None
+        if run01 and run01.get("final_status") != "backend_failed":
+            selected = run01
+            source = "production_run01"
+        elif run01 and run01.get("final_status") == "backend_failed" and is_schema_valid_prediction(recovery):
+            selected = recovery
+            source = "recovery_run02"
+            reason = "operational_backend_failure_recovery"
+            superseded.append(supersession_record(request_ref, run01, recovery, reason))
+        elif is_schema_valid_prediction(resume):
+            selected = resume
+            source = "resume_run03"
+        elif is_schema_valid_prediction(recovery) and run01 is None:
+            selected = recovery
+            source = "recovery_run02"
+
+        if selected is None:
+            unresolved.append(request_id)
+            continue
+        canonical_rows.append(canonical_prediction_row(index, request_ref, selected, source, run01, recovery, resume, reason, response_schema))
+
+    duplicate_canonical = duplicate_values([row["request_id"] for row in canonical_rows])
+    if duplicate_canonical:
+        raise ValueError(f"duplicate canonical request IDs prohibited: {duplicate_canonical}")
+    if len(canonical_rows) > len(requests):
+        raise ValueError("canonical prediction count cannot exceed frozen Llama request count")
+    manifest = canonical_merge_manifest(repo_root, canonical_output_dir, production_path, recovery_path, resume_path, canonical_rows, superseded, unresolved, requests)
+    write_jsonl(out / "canonical_predictions.jsonl", canonical_rows)
+    write_json(out / "canonical_merge_manifest.json", manifest)
+    write_json(out / "canonical_execution_summary.json", canonical_execution_summary(canonical_rows, unresolved, superseded, requests))
+    write_canonical_qc_report(out / "canonical_qc_report.md", manifest)
+    return manifest
+
+
+def run_llama_resume_after_recovery(
+    repo_root: Path,
+    guarded_batch_size: int = 5,
+    production_output_dir: Path = OUTPUT_DIR,
+    recovery_output_dir: Path = RECOVERY_OUTPUT_DIR,
+    resume_output_dir: Path = RESUME_OUTPUT_DIR,
+    canonical_output_dir: Path = CANONICAL_OUTPUT_DIR,
+) -> dict[str, Any]:
+    manifest = build_canonical_llama_outputs(repo_root, production_output_dir=production_output_dir, recovery_output_dir=recovery_output_dir, resume_output_dir=resume_output_dir, canonical_output_dir=canonical_output_dir)
+    target_ids = set(manifest["unresolved_request_ids"])
+    summary = run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=resume_output_dir, run_id=RESUME_RUN_ID, target_request_ids=target_ids, recovery_source={"canonical_merge_manifest": manifest, "source_run_id": RUN_ID, "eligible_request_count": len(target_ids), "eligibility_rule": "resume unresolved canonical Llama request IDs only"}, run_mode="resume")
+    build_canonical_llama_outputs(repo_root, production_output_dir=production_output_dir, recovery_output_dir=recovery_output_dir, resume_output_dir=resume_output_dir, canonical_output_dir=canonical_output_dir)
+    return summary
+
+
+def is_schema_valid_prediction(prediction: dict[str, Any] | None) -> bool:
+    return bool(prediction and prediction.get("response_schema_valid") is True and prediction.get("final_status") in {"valid_primary", "valid_after_repair"})
+
+
+def canonical_prediction_row(index: int, request_ref: dict[str, Any], selected: dict[str, Any], source: str, run01: dict[str, Any] | None, recovery: dict[str, Any] | None, resume: dict[str, Any] | None, reason: str | None, response_schema: dict[str, Any]) -> dict[str, Any]:
+    row = dict(selected)
+    validation = validate_response_text(row.get("normalized_final_response_text") or row.get("raw_final_response_text"), response_schema)
+    row.update({
+        "canonical_schema_version": "phase6g4c_llama_canonical_prediction_v1",
+        "canonical_request_order": index,
+        "canonical_source": source,
+        "canonical_selected_run_id": selected.get("run_id"),
+        "canonical_selection_reason": reason or "first_valid_operational_prediction",
+        "source_run01_prediction_id": (run01 or {}).get("prediction_id"),
+        "source_run01_status": (run01 or {}).get("final_status"),
+        "recovery_prediction_id": (recovery or {}).get("prediction_id"),
+        "recovery_status": (recovery or {}).get("final_status"),
+        "resume_prediction_id": (resume or {}).get("prediction_id"),
+        "resume_status": (resume or {}).get("final_status"),
+        "canonical_ground_truth_dependency": False,
+        "canonical_response_schema_valid": validation["valid"],
+        "canonical_validation_status": validation["status"],
+        "canonical_request_id_verified": row.get("request_id") == request_ref["request_id"],
+    })
+    return row
+
+
+def supersession_record(request_ref: dict[str, Any], run01: dict[str, Any], recovery: dict[str, Any], reason: str) -> dict[str, Any]:
+    return {
+        "request_id": request_ref["request_id"],
+        "source_run01_prediction_id": run01.get("prediction_id"),
+        "source_run01_status": run01.get("final_status"),
+        "recovery_prediction_id": recovery.get("prediction_id"),
+        "recovery_status": recovery.get("final_status"),
+        "replacement_reason": reason,
+    }
+
+
+def canonical_merge_manifest(repo_root: Path, canonical_output_dir: Path, production_path: Path, recovery_path: Path, resume_path: Path, canonical_rows: list[dict[str, Any]], superseded: list[dict[str, Any]], unresolved: list[str], requests: list[dict[str, Any]]) -> dict[str, Any]:
+    conditions = Counter(row["condition"] for row in canonical_rows)
+    sources = Counter(row["canonical_source"] for row in canonical_rows)
+    return {
+        "schema_version": "phase6g4c_llama_canonical_merge_manifest_v1",
+        "merge_created_at_utc": iso_now(),
+        "merge_version": "phase6g4c_llama_canonical_merge_v1",
+        "canonical_output_dir": str(canonical_output_dir).replace("\\", "/"),
+        "selection_rule": "If Run 01 was backend_failed and the same request_id has a schema-valid Recovery Run 02 prediction, use Recovery Run 02; never replace an originally valid Run 01 prediction; never use ground truth or accuracy.",
+        "source_run01_predictions_path": repo_relative_output_path(repo_root, production_path),
+        "source_run01_predictions_sha256": sha256_file(production_path) if production_path.exists() else None,
+        "source_run01_attempt_log_path": repo_relative_output_path(repo_root, production_path.parent / "attempt_log.jsonl"),
+        "source_run01_attempt_log_sha256": sha256_file(production_path.parent / "attempt_log.jsonl") if (production_path.parent / "attempt_log.jsonl").exists() else None,
+        "recovery_run02_predictions_path": repo_relative_output_path(repo_root, recovery_path),
+        "recovery_run02_predictions_sha256": sha256_file(recovery_path) if recovery_path.exists() else None,
+        "recovery_run02_attempt_log_path": repo_relative_output_path(repo_root, recovery_path.parent / "attempt_log.jsonl"),
+        "recovery_run02_attempt_log_sha256": sha256_file(recovery_path.parent / "attempt_log.jsonl") if (recovery_path.parent / "attempt_log.jsonl").exists() else None,
+        "resume_run03_predictions_path": repo_relative_output_path(repo_root, resume_path),
+        "resume_run03_predictions_sha256": sha256_file(resume_path) if resume_path.exists() else None,
+        "historical_run01_artifacts_preserved": True,
+        "recovery_run02_artifacts_preserved": True,
+        "total_frozen_request_count": len(requests),
+        "canonical_prediction_count": len(canonical_rows),
+        "superseded_backend_failed_count": len(superseded),
+        "superseded_backend_failed_slots": superseded,
+        "unresolved_count": len(unresolved),
+        "unresolved_request_ids": unresolved,
+        "canonical_source_counts": dict(sorted(sources.items())),
+        "condition_counts": dict(sorted(conditions.items())),
+        "duplicate_canonical_request_ids": duplicate_values([row["request_id"] for row in canonical_rows]),
+        "ground_truth_dependency": False,
+        "LLAMA_PRODUCTION_INFERENCE_COMPLETE": len(canonical_rows) == len(requests) and len(unresolved) == 0,
+        "ALL_LLAMA_PREDICTIONS_VALID": len(canonical_rows) == len(requests) and all(row.get("canonical_response_schema_valid") for row in canonical_rows),
+    }
+
+
+def canonical_execution_summary(canonical_rows: list[dict[str, Any]], unresolved: list[str], superseded: list[dict[str, Any]], requests: list[dict[str, Any]]) -> dict[str, Any]:
+    conditions = Counter(row["condition"] for row in canonical_rows)
+    sources = Counter(row["canonical_source"] for row in canonical_rows)
+    all_valid = len(canonical_rows) == len(requests) and all(row.get("canonical_response_schema_valid") for row in canonical_rows)
+    complete = len(canonical_rows) == len(requests) and not unresolved
+    return {
+        "schema_version": "phase6g4c_llama_canonical_execution_summary_v1",
+        "expected_predictions": len(requests),
+        "canonical_prediction_count": len(canonical_rows),
+        "unresolved_predictions": len(unresolved),
+        "superseded_backend_failed_count": len(superseded),
+        "canonical_source_counts": dict(sorted(sources.items())),
+        "non_history_count": conditions.get("non_history", 0),
+        "personalised_history_count": conditions.get("personalised_history", 0),
+        "duplicate_prediction_count": len(duplicate_values([row["request_id"] for row in canonical_rows])),
+        "condition_balance_valid": conditions.get("non_history", 0) == 198 and conditions.get("personalised_history", 0) == 198,
+        "ground_truth_dependency": False,
+        "LLAMA_PRODUCTION_INFERENCE_COMPLETE": complete,
+        "ALL_LLAMA_PREDICTIONS_VALID": all_valid,
+    }
+
+
+def write_canonical_qc_report(path: Path, manifest: dict[str, Any]) -> None:
+    lines = [
+        "# Phase 6G.4C Llama Canonical Merge QC Report",
+        "",
+        f"- Canonical predictions: `{manifest['canonical_prediction_count']}`",
+        f"- Superseded backend-failed Run 01 slots: `{manifest['superseded_backend_failed_count']}`",
+        f"- Unresolved requests: `{manifest['unresolved_count']}`",
+        f"- Source counts: `{manifest['canonical_source_counts']}`",
+        f"- Ground truth dependency: `{str(manifest['ground_truth_dependency']).lower()}`",
+        f"- `LLAMA_PRODUCTION_INFERENCE_COMPLETE`: `{str(manifest['LLAMA_PRODUCTION_INFERENCE_COMPLETE']).lower()}`",
+        f"- `ALL_LLAMA_PREDICTIONS_VALID`: `{str(manifest['ALL_LLAMA_PREDICTIONS_VALID']).lower()}`",
+        "",
+        "Historical Run 01 failures and Recovery Run 02 outputs are preserved; this is a canonical selection layer only.",
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def assert_unique_request_ids(predictions: list[dict[str, Any]], source_label: str) -> None:
+    duplicates = duplicate_values([row["request_id"] for row in predictions if row.get("request_id")])
+    if duplicates:
+        raise ValueError(f"duplicate request IDs prohibited in {source_label}: {duplicates}")
+
+
 def backend_failed_recovery_eligible_request_ids(predictions: list[dict[str, Any]]) -> list[str]:
     return sorted({row["request_id"] for row in predictions if row.get("final_status") == "backend_failed"})
 
@@ -873,6 +1091,13 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
 def append_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n")
+
+
+def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
         for row in rows:
             handle.write(json.dumps(row, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n")
 
