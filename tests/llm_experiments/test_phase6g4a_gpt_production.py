@@ -17,6 +17,8 @@ from llm_experiments.inference.registry import assert_no_secrets  # noqa: E402
 
 OUT = REPO_ROOT / gpt4a.OUTPUT_DIR
 ARCHIVE = REPO_ROOT / gpt4a.FAILED_INFRA_ARCHIVE_DIR
+DIAGNOSTIC_256 = REPO_ROOT / gpt4a.DIAGNOSTIC_256_RUN_DIR
+CONFIG_CORRECTION = REPO_ROOT / gpt4a.CONFIGURATION_CORRECTION_MANIFEST
 RUN_MANIFEST = OUT / "run_manifest.json"
 PREFLIGHT = OUT / "preflight_report.json"
 SUMMARY = OUT / "execution_summary.json"
@@ -62,12 +64,46 @@ def test_recovery_manifest_preserves_failed_infrastructure_run_provenance() -> N
     assert_no_secrets(recovery)
 
 
-def test_corrected_run_preflight_namespace_is_distinct_and_blocked_locally() -> None:
+def test_gpt_max_output_tokens_1024_and_config_correction_manifest() -> None:
+    correction = load_json(CONFIG_CORRECTION)
+    manifest = load_json(RUN_MANIFEST)
+
+    assert gpt4a.MAX_OUTPUT_TOKENS == 1024
+    assert manifest["max_output_tokens"] == 1024
+    assert correction["prior_max_output_tokens"] == 256
+    assert correction["new_max_output_tokens"] == 1024
+    assert correction["correction_type"] == "execution_compatibility_correction"
+    assert correction["scope"] == "gpt_only"
+    assert correction["guarded_validation_evidence"]["incomplete_at_exact_prior_budget_count"] == 2
+    assert correction["guarded_validation_evidence"]["completed_output_tokens"] == 151
+    assert correction["scientific_policy"]["no_human_ground_truth_inspected"] is True
+    assert correction["scientific_policy"]["no_prediction_accuracy_used"] is True
+    assert correction["inference_config_hash_prior"] != correction["inference_config_hash_new"]
+    assert_no_secrets(correction)
+
+
+def test_prompt_schema_and_model_identity_unchanged_by_budget_correction() -> None:
+    manifest = load_json(RUN_MANIFEST)
+
+    assert manifest["exact_requested_model"] == "gpt-5.5"
+    assert manifest["expected_returned_model"] == "gpt-5.5-2026-04-23"
+    assert manifest["temperature_sent"] is False
+    assert manifest["top_p_sent"] is False
+    assert manifest["seed_sent"] is False
+    assert manifest["rendered_prompt_dataset"].endswith("phase6g3_real_rendered_prompts.jsonl")
+    assert gpt4a.RESPONSE_SCHEMA.name == "preference_prediction_response_v1.json"
+    assert load_json(CONFIG_CORRECTION)["scientific_policy"]["rendered_prompts_changed"] is False
+    assert load_json(CONFIG_CORRECTION)["scientific_policy"]["response_schema_changed"] is False
+    assert load_json(CONFIG_CORRECTION)["scientific_policy"]["model_identity_changed"] is False
+    assert load_json(CONFIG_CORRECTION)["scientific_policy"]["decoding_policy_changed"] is False
+
+
+def test_corrected_run_02_preflight_namespace_is_distinct_and_blocked_locally() -> None:
     summary = load_json(SUMMARY)
     manifest = load_json(RUN_MANIFEST)
 
-    assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_01"
-    assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_01")
+    assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_02"
+    assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_02")
     assert summary["preflight_passed"] is False
     assert summary["attempted_prediction_count"] == 0
     assert summary["total_api_calls"] == 0
@@ -76,6 +112,19 @@ def test_corrected_run_preflight_namespace_is_distinct_and_blocked_locally() -> 
     assert summary["remaining_predictions"] == 396
     assert not (OUT / "attempt_log.jsonl").exists()
     assert not (OUT / "predictions.jsonl").exists()
+
+
+def test_corrected_run_01_preserved_as_256_token_diagnostic_evidence() -> None:
+    assert DIAGNOSTIC_256.exists()
+    manifest_path = DIAGNOSTIC_256 / "run_manifest.json"
+    if manifest_path.exists():
+        manifest = load_json(manifest_path)
+        assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_01"
+        assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_01")
+        assert manifest["max_output_tokens"] == 256
+    correction = load_json(CONFIG_CORRECTION)
+    assert correction["prior_run_namespace"].endswith("phase6g4/gpt/corrected_run_01")
+    assert correction["scientific_policy"]["diagnostic_256_token_run_is_final_scientific_gpt_run"] is False
 
 
 def test_guarded_batch_size_3_executes_exactly_3_prediction_units_and_resume(monkeypatch, tmp_path) -> None:
@@ -104,7 +153,7 @@ def test_guarded_batch_size_3_executes_exactly_3_prediction_units_and_resume(mon
 
     monkeypatch.setattr(gpt4a, "run_preflight", fake_preflight)
     monkeypatch.setattr(gpt4a, "invoke_openai", fake_invoke)
-    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_01"
+    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_02"
 
     first = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=3, output_dir=out, run_id="test_corrected_run")
     second = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=3, output_dir=out, run_id="test_corrected_run")
@@ -123,6 +172,52 @@ def test_guarded_batch_size_3_executes_exactly_3_prediction_units_and_resume(mon
     assert all(row["run_id"] == "test_corrected_run" for row in predictions)
 
 
+def test_incomplete_max_output_tokens_classified_without_repair(monkeypatch, tmp_path) -> None:
+    calls = {"count": 0}
+
+    def fake_preflight(repo_root: Path, output_dir: Path = gpt4a.OUTPUT_DIR) -> dict:
+        return {
+            "schema_version": "phase6g4a_gpt_preflight_v1",
+            "passed": True,
+            "checks": {},
+            "failures": [],
+            "gpt_shard_request_count": 396,
+            "condition_counts": {"non_history": 198, "personalised_history": 198},
+            "prompt_hash_mismatches": [],
+            "duplicate_request_ids": [],
+        }
+
+    def fake_invoke(messages: list[dict[str, str]], attempt_type: str) -> dict:
+        calls["count"] += 1
+        return {
+            "status": "incomplete",
+            "incomplete_details": {"reason": "max_output_tokens"},
+            "output_text": '{"predicted_preferred_mix":"C","predicted_ratings":{"A":58,"B":72,"C":80,"D":',
+            "metadata": {"model": "gpt-5.5-2026-04-23", "request_api": "OpenAI.responses.create"},
+            "usage": {"input_tokens": 10, "output_tokens": 1024, "total_tokens": 1034, "output_tokens_details": {"reasoning_tokens": 900}},
+        }
+
+    monkeypatch.setattr(gpt4a, "run_preflight", fake_preflight)
+    monkeypatch.setattr(gpt4a, "invoke_openai", fake_invoke)
+    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_02"
+
+    summary = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=1, output_dir=out, run_id="test_corrected_run_02")
+
+    attempts = load_jsonl(out / "attempt_log.jsonl")
+    predictions = load_jsonl(out / "predictions.jsonl")
+    assert calls["count"] == 1
+    assert len(attempts) == 1
+    assert attempts[0]["request_status"] == "incomplete"
+    assert attempts[0]["failure_code"] == "output_budget_exhausted"
+    assert attempts[0]["failure_category"] == "output_budget"
+    assert attempts[0]["retryable"] is False
+    assert attempts[0]["output_budget_exhausted"] is True
+    assert attempts[0]["incomplete_details"]["reason"] == "max_output_tokens"
+    assert predictions[0]["final_status"] == "output_budget_exhausted"
+    assert predictions[0]["formatting_repair_count"] == 0
+    assert summary["output_budget_exhausted_count"] == 1
+
+
 def test_gpt_shard_is_gpt_only_and_has_expected_coverage() -> None:
     shard = load_json(GPT_SHARD)
 
@@ -134,7 +229,7 @@ def test_gpt_shard_is_gpt_only_and_has_expected_coverage() -> None:
 
 
 def test_no_ground_truth_or_secrets_are_serialized() -> None:
-    for path in [RUN_MANIFEST, PREFLIGHT, SUMMARY, ARCHIVE / "recovery_manifest.json"]:
+    for path in [RUN_MANIFEST, PREFLIGHT, SUMMARY, ARCHIVE / "recovery_manifest.json", CONFIG_CORRECTION]:
         payload = load_json(path)
         assert_no_secrets(payload)
         text = json.dumps(payload).lower()
@@ -149,4 +244,5 @@ def test_qc_report_records_recovery_guardrails() -> None:
     assert "Preflight passed: `false`" in text
     assert "Guarded batch limit: `3`" in text
     assert "Predictions executed this invocation: `0`" in text
+    assert "Output-budget exhausted: `0`" in text
     assert "accuracy:" not in text.lower()

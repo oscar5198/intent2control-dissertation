@@ -27,8 +27,10 @@ from llm_experiments.prompts.prompt_spec import load_jsonl, write_json
 
 SCHEMA_VERSION = "phase6g4a_gpt_production_inference_v1"
 BASE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
-OUTPUT_DIR = BASE_OUTPUT_DIR / "corrected_run_01"
+OUTPUT_DIR = BASE_OUTPUT_DIR / "corrected_run_02"
 FAILED_INFRA_ARCHIVE_DIR = BASE_OUTPUT_DIR / "failed_infrastructure_run_01"
+DIAGNOSTIC_256_RUN_DIR = BASE_OUTPUT_DIR / "corrected_run_01"
+CONFIGURATION_CORRECTION_MANIFEST = BASE_OUTPUT_DIR / "configuration_correction_256_to_1024.json"
 RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
 GPT_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_gpt_shard_manifest.json")
 PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
@@ -40,11 +42,13 @@ RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1
 REQUEST_MODEL = "gpt-5.5"
 EXPECTED_RETURNED_MODEL = "gpt-5.5-2026-04-23"
 MODEL_KEY = "gpt"
-MAX_OUTPUT_TOKENS = 256
+PRIOR_MAX_OUTPUT_TOKENS = 256
+MAX_OUTPUT_TOKENS = 1024
 MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
-TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed"}
-CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_01"
+TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed", "output_budget_exhausted"}
+PRIOR_CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_01"
+CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_02"
 FAILED_INFRASTRUCTURE_RUN_ID = "phase6g4a_gpt_failed_infrastructure_run_01"
 
 
@@ -56,6 +60,7 @@ def run_gpt_production(
 ) -> dict[str, Any]:
     out = repo_root / output_dir
     out.mkdir(parents=True, exist_ok=True)
+    prepare_output_budget_correction(repo_root)
     preflight = run_preflight(repo_root, output_dir=output_dir)
     run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id)
     write_json(out / "run_manifest.json", run_manifest)
@@ -109,6 +114,9 @@ def prepare_infrastructure_recovery(repo_root: Path) -> dict[str, Any]:
     """Record the confirmed failed infrastructure run as separate provenance."""
     archive = repo_root / FAILED_INFRA_ARCHIVE_DIR
     archive.mkdir(parents=True, exist_ok=True)
+    existing_manifest = archive / "recovery_manifest.json"
+    if existing_manifest.exists():
+        return load_json(existing_manifest)
     shard = load_json(repo_root / GPT_SHARD)
     active_base = repo_root / BASE_OUTPUT_DIR
     files_to_preserve = [
@@ -164,6 +172,66 @@ def prepare_infrastructure_recovery(repo_root: Path) -> dict[str, Any]:
     return manifest
 
 
+def prepare_output_budget_correction(repo_root: Path) -> dict[str, Any]:
+    """Record the GPT-only execution compatibility correction from 256 to 1024."""
+    path = repo_root / CONFIGURATION_CORRECTION_MANIFEST
+    path.parent.mkdir(parents=True, exist_ok=True)
+    manifest = {
+        "schema_version": "phase6g4a_gpt_output_budget_correction_manifest_v1",
+        "created_at_utc": iso_now(),
+        "correction_type": "execution_compatibility_correction",
+        "scope": "gpt_only",
+        "prior_run_id": PRIOR_CORRECTED_RUN_ID,
+        "new_run_id": CORRECTED_RUN_ID,
+        "prior_run_namespace": str(DIAGNOSTIC_256_RUN_DIR).replace("\\", "/"),
+        "new_run_namespace": str(OUTPUT_DIR).replace("\\", "/"),
+        "prior_max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS,
+        "new_max_output_tokens": MAX_OUTPUT_TOKENS,
+        "reason": "OpenAI Responses API max_output_tokens includes reasoning tokens plus visible output tokens; 256 can truncate before required JSON is emitted.",
+        "guarded_validation_evidence": {
+            "guarded_prediction_count": 3,
+            "incomplete_at_exact_prior_budget_count": 2,
+            "completed_count": 1,
+            "prior_budget_hit_output_tokens": 256,
+            "completed_output_tokens": 151,
+            "attempt_1": {
+                "request_status": "incomplete",
+                "output_tokens": 256,
+                "reasoning_tokens": 223,
+                "validation": "invalid_json",
+            },
+            "attempt_2": {
+                "request_status": "incomplete",
+                "output_tokens": 256,
+                "reasoning_tokens": 256,
+                "validation": "missing_response",
+            },
+            "attempt_3": {
+                "request_status": "completed",
+                "output_tokens": 151,
+                "reasoning_tokens": 95,
+                "validation": "valid",
+            },
+        },
+        "scientific_policy": {
+            "diagnostic_256_token_run_is_final_scientific_gpt_run": False,
+            "no_human_ground_truth_inspected": True,
+            "no_prediction_accuracy_used": True,
+            "rendered_prompts_changed": False,
+            "response_schema_changed": False,
+            "model_identity_changed": False,
+            "decoding_policy_changed": False,
+            "evaluation_protocol_changed": False,
+            "global_max_output_policy_changed_for_other_models": False,
+        },
+        "inference_config_hash_prior": sha256_json({"model": REQUEST_MODEL, "max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted"}),
+        "inference_config_hash_new": inference_config_hash(),
+        "secret_policy": "No API key or secret value is stored.",
+    }
+    write_json(path, manifest)
+    return manifest
+
+
 def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, Any]:
     failures: list[str] = []
     prompt_verification = verify_prompt_package(repo_root)
@@ -174,7 +242,7 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
     hash_manifest = load_json(repo_root / PROMPT_HASH_MANIFEST)
     rendered = {row["rendered_prompt_id"]: row for row in load_jsonl(repo_root / RENDERED_PROMPTS)}
     requests = shard.get("requests", [])
-    output_dir_ok = str(output_dir).replace("\\", "/").endswith("phase6g4/gpt/corrected_run_01")
+    output_dir_ok = str(output_dir).replace("\\", "/").endswith("phase6g4/gpt/corrected_run_02")
     hash_mismatches = []
     prompt_hashes = {row["rendered_prompt_id"]: row["message_payload_sha256"] for row in hash_manifest["records"]}
     for row in requests:
@@ -268,10 +336,10 @@ def call_with_transport_retries(
             raw_text = None
             validation = validate_response_text(None, response_schema)
             request_status = "error"
-            provider = {"metadata": {}, "usage": None, "error": {"type": "connection_error", "message": str(exc)}}
+            provider = {"metadata": {}, "usage": None, "incomplete_details": None, "error": {"type": "connection_error", "message": str(exc)}}
             error = provider["error"]
         latency = time.perf_counter() - started
-        failure = classify_failure({"status": request_status, "error": error}, validation)
+        failure = classify_failure({"status": request_status, "error": error, "incomplete_details": provider.get("incomplete_details")}, validation)
         attempt = build_attempt_record(
             request_ref=request_ref,
             prompt_hash=prompt_hash,
@@ -308,9 +376,11 @@ def invoke_openai(messages: list[dict[str, str]], attempt_type: str) -> dict[str
         kwargs["input"] = messages[0]["content"]
     started = time.perf_counter()
     response = client.responses.create(**kwargs)
+    incomplete_details = getattr(response, "incomplete_details", None)
     return {
         "status": getattr(response, "status", "completed"),
         "output_text": response.output_text,
+        "incomplete_details": object_to_dict(incomplete_details),
         "metadata": {
             "model": getattr(response, "model", REQUEST_MODEL),
             "request_api": "OpenAI.responses.create",
@@ -353,6 +423,8 @@ def build_attempt_record(**kwargs: Any) -> dict[str, Any]:
         "started_at": kwargs["started_at"],
         "ended_at": iso_now(),
         "provider_response_metadata": metadata,
+        "incomplete_details": provider.get("incomplete_details"),
+        "output_budget_exhausted": kwargs["failure"]["failure_code"] == "output_budget_exhausted",
         "failure_code": kwargs["failure"]["failure_code"],
         "failure_category": kwargs["failure"]["failure_category"],
         "retryable": kwargs["failure"]["retryable"],
@@ -371,6 +443,8 @@ def finalize_prediction(request_ref: dict[str, Any], attempts: list[dict[str, An
         status = "valid_primary"
     elif successful:
         status = "valid_after_repair"
+    elif any(row.get("failure_code") == "output_budget_exhausted" for row in attempts):
+        status = "output_budget_exhausted"
     elif any(row["request_status"] != "completed" for row in attempts):
         status = "backend_failed"
     elif repair_attempted:
@@ -435,6 +509,7 @@ def build_execution_summary(
         "valid_after_repair_count": statuses.get("valid_after_repair", 0),
         "invalid_count": statuses.get("invalid_after_repair", 0),
         "backend_failure_count": statuses.get("backend_failed", 0),
+        "output_budget_exhausted_count": statuses.get("output_budget_exhausted", 0),
         "transport_retry_count": sum(row.get("transport_retry_count", 0) for row in predictions),
         "formatting_repair_count": sum(row.get("formatting_repair_count", 0) for row in predictions),
         "prompt_hash_mismatch_count": prompt_mismatches,
@@ -471,6 +546,7 @@ def build_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any
         "valid_after_repair_count": 0,
         "invalid_count": 0,
         "backend_failure_count": 0,
+        "output_budget_exhausted_count": 0,
         "transport_retry_count": 0,
         "formatting_repair_count": 0,
         "prompt_hash_mismatch_count": len(preflight["prompt_hash_mismatches"]),
@@ -509,6 +585,9 @@ def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch
         "top_p_sent": False,
         "seed_sent": False,
         "max_output_tokens": MAX_OUTPUT_TOKENS,
+        "prior_gpt_max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS,
+        "configuration_correction_manifest": str(CONFIGURATION_CORRECTION_MANIFEST).replace("\\", "/"),
+        "configuration_correction_classification": "GPT-only execution compatibility correction discovered during guarded production validation; not performance tuning.",
         "contains_hidden_ground_truth": False,
     }
 
@@ -520,6 +599,7 @@ def build_failure_summary(attempts: list[dict[str, Any]], predictions: list[dict
         "failure_codes": dict(Counter(row.get("failure_code") for row in attempts if row.get("failure_code"))),
         "final_statuses": dict(Counter(row["final_status"] for row in predictions)),
         "backend_failures": [row for row in predictions if row["final_status"] == "backend_failed"],
+        "output_budget_exhausted_predictions": [row for row in predictions if row["final_status"] == "output_budget_exhausted"],
         "invalid_predictions": [row for row in predictions if row["final_status"] == "invalid_after_repair"],
     }
 
@@ -545,6 +625,7 @@ def write_report(path: Path, summary: dict[str, Any], preflight: dict[str, Any])
         f"- Valid after repair: `{summary['valid_after_repair_count']}`",
         f"- Invalid: `{summary['invalid_count']}`",
         f"- Backend failures: `{summary['backend_failure_count']}`",
+        f"- Output-budget exhausted: `{summary.get('output_budget_exhausted_count', 0)}`",
         f"- Transport retries: `{summary['transport_retry_count']}`",
         f"- Formatting repairs: `{summary['formatting_repair_count']}`",
         f"- Prompt-hash mismatches: `{summary['prompt_hash_mismatch_count']}`",
@@ -568,6 +649,18 @@ def prediction_id(request_ref: dict[str, Any]) -> str:
 
 def inference_config_hash() -> str:
     return sha256_json({"model": REQUEST_MODEL, "max_output_tokens": MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted"})
+
+
+def object_to_dict(value: Any) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if hasattr(value, "model_dump"):
+        return value.model_dump()
+    if hasattr(value, "dict"):
+        return value.dict()
+    if isinstance(value, dict):
+        return value
+    return {name: getattr(value, name) for name in dir(value) if not name.startswith("_") and isinstance(getattr(value, name), (int, float, str, bool, type(None), dict))}
 
 
 def normalize_usage(usage: dict[str, Any] | None) -> dict[str, Any]:
