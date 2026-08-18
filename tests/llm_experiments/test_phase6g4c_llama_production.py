@@ -117,6 +117,49 @@ def test_blocked_local_artifacts_and_policy_fields() -> None:
     assert summary["remaining_predictions"] == 396
 
 
+def test_output_namespace_validation_is_mode_aware() -> None:
+    production = llama.run_preflight(REPO_ROOT, llama.OUTPUT_DIR, run_mode="production")
+    recovery = llama.run_preflight(REPO_ROOT, llama.RECOVERY_OUTPUT_DIR, run_mode="recovery")
+    recovery_in_production = llama.run_preflight(REPO_ROOT, llama.RECOVERY_OUTPUT_DIR, run_mode="production")
+    production_in_recovery = llama.run_preflight(REPO_ROOT, llama.OUTPUT_DIR, run_mode="recovery")
+    arbitrary_production = llama.run_preflight(REPO_ROOT, Path("llm-experiments/outputs/real/phase6g4/llama_anything"), run_mode="production")
+    arbitrary_recovery = llama.run_preflight(REPO_ROOT, Path("llm-experiments/outputs/real/phase6g4/llama_anything"), run_mode="recovery")
+
+    assert production["checks"]["output_directory_production_llama_namespace"] is True
+    assert production["output_namespace"]["active_namespace_allowed"] is True
+    assert recovery["checks"]["output_directory_llama_recovery_namespace"] is True
+    assert recovery["output_namespace"]["active_namespace_allowed"] is True
+    assert recovery["output_namespace"]["recovery_separate_from_run01"] is True
+
+    assert recovery_in_production["checks"]["output_directory_production_llama_namespace"] is False
+    assert "output_directory_production_llama_namespace" in recovery_in_production["failures"]
+    assert production_in_recovery["checks"]["output_directory_llama_recovery_namespace"] is False
+    assert "output_directory_llama_recovery_namespace" in production_in_recovery["failures"]
+    assert arbitrary_production["checks"]["output_directory_production_llama_namespace"] is False
+    assert arbitrary_recovery["checks"]["output_directory_llama_recovery_namespace"] is False
+
+
+def test_recovery_run_manifest_records_source_and_dedicated_namespace(monkeypatch, tmp_path) -> None:
+    source = tmp_path / "source_llama"
+    source.mkdir()
+    recovery_source = {
+        "source_run_id": "phase6g4c_llama_production_run_01",
+        "eligible_request_count": 5,
+        "eligibility_rule": "final_status == backend_failed only; no accuracy, scoring, or hidden ground truth",
+    }
+
+    manifest = llama.build_run_manifest(REPO_ROOT, fake_preflight(), 5, llama.RECOVERY_OUTPUT_DIR, llama.RECOVERY_RUN_ID, target_request_ids={"r1", "r2", "r3", "r4", "r5"}, recovery_source=recovery_source, run_mode="recovery")
+
+    assert manifest["run_id"] == "phase6g4c_llama_backend_failed_recovery_run_02"
+    assert manifest["run_mode"] == "recovery"
+    assert manifest["output_dir"].endswith("phase6g4/llama_recovery_run_02")
+    assert manifest["output_namespace"]["active_namespace_allowed"] is True
+    assert manifest["source_production_run_id"] == "phase6g4c_llama_production_run_01"
+    assert manifest["source_failed_request_count"] == 5
+    assert manifest["recovery_eligibility_rule"].startswith("final_status == backend_failed")
+    assert manifest["contains_hidden_ground_truth"] is False
+
+
 def test_invoke_llama_uses_frozen_local_transformers_contract(monkeypatch) -> None:
     captured: dict[str, object] = {}
 
@@ -222,7 +265,7 @@ def test_guarded_batch_resume_and_duplicate_prevention(monkeypatch, tmp_path) ->
         return valid_response()
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     first = llama.run_llama_production(REPO_ROOT, guarded_batch_size=3, output_dir=out)
@@ -291,7 +334,7 @@ def test_fenced_valid_primary_is_valid_primary_without_format_repair(monkeypatch
         return {"status": "completed", "decoded_text": fenced_response(), "metadata": {"model": llama.REQUEST_MODEL}, "usage": {"output_tokens": 22}}
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     summary = llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
@@ -316,7 +359,7 @@ def test_malformed_completed_response_gets_one_format_repair(monkeypatch, tmp_pa
         return valid_response()
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     summary = llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
@@ -344,7 +387,7 @@ def test_output_budget_exhausted_is_not_format_repaired(monkeypatch, tmp_path) -
         }
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     summary = llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
@@ -365,7 +408,7 @@ def test_model_mismatch_is_terminal_and_stops_after_mismatching_prediction(monke
         return {**valid_response(), "metadata": {"model": "wrong-local-model"}}
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     summary = llama.run_llama_production(REPO_ROOT, guarded_batch_size=3, output_dir=out)
@@ -379,7 +422,7 @@ def test_model_mismatch_is_terminal_and_stops_after_mismatching_prediction(monke
 
 def test_artifacts_do_not_serialize_secrets_or_ground_truth(monkeypatch, tmp_path) -> None:
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", lambda messages, attempt_type: valid_response())
 
     llama.run_llama_production(REPO_ROOT, guarded_batch_size=2, output_dir=out)
@@ -399,7 +442,7 @@ def test_local_exception_type_message_stage_and_category_are_preserved(monkeypat
         raise llama.LlamaRuntimeError("model_load", RuntimeError("bitsandbytes failed to load CUDA kernels"))
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     summary = llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
@@ -421,7 +464,7 @@ def test_cuda_oom_classification_is_explicit(monkeypatch, tmp_path) -> None:
         raise llama.LlamaRuntimeError("generation", RuntimeError("CUDA out of memory. Tried to allocate 2.00 GiB"))
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
@@ -438,7 +481,7 @@ def test_generic_generation_error_is_not_connection_error(monkeypatch, tmp_path)
         raise llama.LlamaRuntimeError("generation", RuntimeError("shape mismatch during cache update"))
 
     out = tmp_path / "phase6g4" / "llama"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     llama.run_llama_production(REPO_ROOT, guarded_batch_size=1, output_dir=out)
@@ -452,7 +495,7 @@ def test_generic_generation_error_is_not_connection_error(monkeypatch, tmp_path)
 
 def test_diagnostic_mode_does_not_write_production_predictions(monkeypatch, tmp_path) -> None:
     diagnostic_out = tmp_path / "llama_runtime_diagnostics"
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", lambda messages, attempt_type, max_new_tokens=8: valid_response())
 
     result = llama.run_llama_runtime_diagnostic(REPO_ROOT, output_dir=diagnostic_out, max_new_tokens=4)
@@ -473,7 +516,7 @@ def test_diagnostic_mode_writes_real_exception_information(monkeypatch, tmp_path
     def fake_invoke(messages: list[dict[str, str]], attempt_type: str, max_new_tokens: int = 8) -> dict:
         raise llama.LlamaRuntimeError("device_transfer", RuntimeError("tensor on CPU cannot move to cuda"))
 
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", fake_invoke)
 
     result = llama.run_llama_runtime_diagnostic(REPO_ROOT, output_dir=diagnostic_out, max_new_tokens=4)
@@ -532,7 +575,7 @@ def test_backend_failed_recovery_run_uses_distinct_namespace_and_no_duplicate_ta
     source_predictions = [{"request_id": eligible_ids[0], "final_status": "backend_failed"}, {"request_id": eligible_ids[1], "final_status": "backend_failed"}]
     (source / "predictions.jsonl").write_text("\n".join(json.dumps(row) for row in source_predictions) + "\n", encoding="utf-8")
     (source / "attempt_log.jsonl").write_text(json.dumps({"request_id": eligible_ids[0], "failure_code": "model_load_error"}) + "\n", encoding="utf-8")
-    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(llama, "run_preflight", lambda repo_root, output_dir=llama.OUTPUT_DIR, run_mode="production": fake_preflight())
     monkeypatch.setattr(llama, "invoke_llama", lambda messages, attempt_type: valid_response())
 
     first = llama.run_llama_backend_failed_recovery(REPO_ROOT, guarded_batch_size=1, source_output_dir=source, recovery_output_dir=recovery)

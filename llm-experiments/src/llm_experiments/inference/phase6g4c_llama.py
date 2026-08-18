@@ -75,13 +75,14 @@ def run_llama_production(
     run_id: str = RUN_ID,
     target_request_ids: set[str] | None = None,
     recovery_source: dict[str, Any] | None = None,
+    run_mode: str = "production",
 ) -> dict[str, Any]:
     if guarded_batch_size < 1:
         raise ValueError("--guarded-batch-size must be at least 1")
     out = repo_root / output_dir
     out.mkdir(parents=True, exist_ok=True)
-    preflight = run_preflight(repo_root, output_dir)
-    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id, target_request_ids=target_request_ids, recovery_source=recovery_source)
+    preflight = run_preflight(repo_root, output_dir, run_mode=run_mode)
+    run_manifest = build_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id, target_request_ids=target_request_ids, recovery_source=recovery_source, run_mode=run_mode)
     write_json(out / "run_manifest.json", run_manifest)
     if not preflight["passed"]:
         summary = build_blocked_summary(run_manifest, preflight)
@@ -128,7 +129,9 @@ def run_llama_production(
     return summary
 
 
-def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, Any]:
+def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR, run_mode: str = "production") -> dict[str, Any]:
+    if run_mode not in {"production", "recovery"}:
+        raise ValueError("run_mode must be 'production' or 'recovery'")
     prompt_verification = verify_prompt_package(repo_root)
     phase6g1 = load_json(repo_root / PHASE6G1_GATE)
     phase6g2d = load_json(repo_root / PHASE6G2D_READINESS)
@@ -149,6 +152,7 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
             hash_mismatches.append(row["request_id"])
     cache_path = Path(os.environ.get("HF_HOME", HF_HOME_FROZEN))
     dependency_names = ["torch", "transformers", "bitsandbytes", "accelerate"]
+    namespace_checks = output_namespace_checks(repo_root, output_dir, run_mode)
     checks = {
         "phase6d_prompt_package_frozen": bool(prompt_verification.get("PHASE6D_PROMPT_PACKAGE_FROZEN")),
         "phase6g1_real_data_ready": bool(phase6g1.get("REAL_PHASE6B_READY")),
@@ -169,7 +173,8 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
         "frozen_zero_shot_policy_valid": inference_config.get("common_cross_model_policy", {}).get("zero_shot") is True and inference_config.get("common_cross_model_policy", {}).get("chain_of_thought_requested") is False,
         "local_hf_cache_available": cache_path.exists(),
         "runtime_dependencies_available": all(util.find_spec(name) for name in dependency_names),
-        "output_directory_production_llama_namespace": str(output_dir).replace("\\", "/").endswith("phase6g4/llama"),
+        "output_directory_production_llama_namespace": namespace_checks["production_namespace_allowed"],
+        "output_directory_llama_recovery_namespace": namespace_checks["recovery_namespace_allowed"],
         "no_hidden_ground_truth_loaded": not shard.get("contains_hidden_ground_truth", False),
     }
     failures = [key for key, value in checks.items() if not value]
@@ -186,6 +191,8 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
         "dependency_policy": "Requires local QMUL runtime dependencies torch, transformers, bitsandbytes, accelerate; no network downloads.",
         "cache_policy": f"Uses local Hugging Face cache only; HF_HOME defaults to {HF_HOME_FROZEN}.",
         "credential_policy": "No API credential is required for the frozen local QMUL Transformers backend.",
+        "run_mode": run_mode,
+        "output_namespace": namespace_checks,
         "ground_truth_dependency": False,
     }
 
@@ -321,6 +328,36 @@ def move_model_inputs_to_device(model_inputs: dict[str, Any], device: Any) -> di
     for key, value in model_inputs.items():
         moved[key] = value.to(device) if hasattr(value, "to") else value
     return moved
+
+
+def output_namespace_checks(repo_root: Path, output_dir: Path, run_mode: str) -> dict[str, Any]:
+    output_rel = repo_relative_output_path(repo_root, output_dir)
+    production_rel = OUTPUT_DIR.as_posix()
+    recovery_rel = RECOVERY_OUTPUT_DIR.as_posix()
+    is_production_namespace = output_rel == production_rel
+    is_recovery_namespace = output_rel == recovery_rel
+    return {
+        "run_mode": run_mode,
+        "output_dir": output_rel,
+        "production_namespace": production_rel,
+        "recovery_namespace": recovery_rel,
+        "is_production_namespace": is_production_namespace,
+        "is_recovery_namespace": is_recovery_namespace,
+        "production_namespace_allowed": run_mode != "production" or is_production_namespace,
+        "recovery_namespace_allowed": run_mode != "recovery" or is_recovery_namespace,
+        "active_namespace_allowed": (run_mode == "production" and is_production_namespace) or (run_mode == "recovery" and is_recovery_namespace),
+        "recovery_separate_from_run01": recovery_rel != production_rel,
+    }
+
+
+def repo_relative_output_path(repo_root: Path, output_dir: Path) -> str:
+    output_path = Path(output_dir)
+    if output_path.is_absolute():
+        try:
+            output_path = output_path.resolve().relative_to(repo_root.resolve())
+        except ValueError:
+            return output_path.as_posix()
+    return output_path.as_posix()
 
 
 def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, normalized: dict[str, Any], validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
@@ -517,6 +554,7 @@ def build_run_manifest(
     run_id: str,
     target_request_ids: set[str] | None = None,
     recovery_source: dict[str, Any] | None = None,
+    run_mode: str = "production",
 ) -> dict[str, Any]:
     shard = load_json(repo_root / LLAMA_SHARD)
     expected_count = len(target_request_ids) if target_request_ids is not None else len(shard.get("requests", []))
@@ -524,7 +562,8 @@ def build_run_manifest(
         "schema_version": "phase6g4c_llama_run_manifest_v1",
         "run_id": run_id,
         "created_at_utc": iso_now(),
-        "run_type": "final_real_llama_3_1_70b_instruct_production_inference",
+        "run_type": "final_real_llama_3_1_70b_instruct_production_inference" if run_mode == "production" else "llama_3_1_70b_backend_failed_recovery_inference",
+        "run_mode": run_mode,
         "model_key": MODEL_KEY,
         "experiment_model_label": EXPERIMENT_MODEL_LABEL,
         "exact_backend_model_id": REQUEST_MODEL,
@@ -550,6 +589,7 @@ def build_run_manifest(
         "target_request_count": expected_count,
         "target_request_ids_sha256": sha256_json(sorted(target_request_ids)) if target_request_ids is not None else None,
         "output_dir": str(output_dir).replace("\\", "/"),
+        "output_namespace": output_namespace_checks(repo_root, output_dir, run_mode),
         "guarded_batch_requested": True,
         "guarded_batch_limit": guarded_batch_size,
         "preflight": preflight,
@@ -557,6 +597,9 @@ def build_run_manifest(
         "native_json_schema_support": False,
         "contains_hidden_ground_truth": False,
         "recovery_source": recovery_source,
+        "source_production_run_id": recovery_source.get("source_run_id") if recovery_source else None,
+        "source_failed_request_count": recovery_source.get("eligible_request_count") if recovery_source else None,
+        "recovery_eligibility_rule": recovery_source.get("eligibility_rule") if recovery_source else None,
     }
 
 
@@ -686,7 +729,7 @@ def prepare_backend_failed_recovery(repo_root: Path, source_output_dir: Path = O
 def run_llama_backend_failed_recovery(repo_root: Path, guarded_batch_size: int = 5, source_output_dir: Path = OUTPUT_DIR, recovery_output_dir: Path = RECOVERY_OUTPUT_DIR, recovery_run_id: str = RECOVERY_RUN_ID) -> dict[str, Any]:
     manifest = prepare_backend_failed_recovery(repo_root, source_output_dir, recovery_output_dir, recovery_run_id)
     target_ids = set(manifest["eligible_request_ids"])
-    return run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=recovery_output_dir, run_id=recovery_run_id, target_request_ids=target_ids, recovery_source=manifest)
+    return run_llama_production(repo_root, guarded_batch_size=guarded_batch_size, output_dir=recovery_output_dir, run_id=recovery_run_id, target_request_ids=target_ids, recovery_source=manifest, run_mode="recovery")
 
 
 def backend_failed_recovery_eligible_request_ids(predictions: list[dict[str, Any]]) -> list[str]:
