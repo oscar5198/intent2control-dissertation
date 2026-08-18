@@ -1,0 +1,10 @@
+{
+  "schema_version": "phase6g4c_llama_failure_summary_v1",
+  "blocked_by_preflight": false,
+  "failure_codes": {},
+  "final_statuses": {
+    "valid_primary": 5
+  },
+  "backend_failures": [],
+  "invalid_predictions": []
+}

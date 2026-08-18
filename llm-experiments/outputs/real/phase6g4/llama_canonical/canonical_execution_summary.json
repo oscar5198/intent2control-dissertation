@@ -1,0 +1,18 @@
+{
+  "schema_version": "phase6g4c_llama_canonical_execution_summary_v1",
+  "expected_predictions": 396,
+  "canonical_prediction_count": 396,
+  "unresolved_predictions": 0,
+  "superseded_backend_failed_count": 5,
+  "canonical_source_counts": {
+    "recovery_run02": 5,
+    "resume_run03": 391
+  },
+  "non_history_count": 198,
+  "personalised_history_count": 198,
+  "duplicate_prediction_count": 0,
+  "condition_balance_valid": true,
+  "ground_truth_dependency": false,
+  "LLAMA_PRODUCTION_INFERENCE_COMPLETE": true,
+  "ALL_LLAMA_PREDICTIONS_VALID": true
+}

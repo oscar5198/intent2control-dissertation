@@ -1,0 +1,40 @@
+{
+  "schema_version": "phase6g4c_llama_execution_summary_v1",
+  "run_id": "phase6g4c_llama_backend_failed_recovery_run_02",
+  "preflight_passed": true,
+  "exact_requested_backend_model": "meta-llama/Llama-3.1-70B-Instruct",
+  "actual_returned_models": [
+    "meta-llama/Llama-3.1-70B-Instruct"
+  ],
+  "expected_predictions": 5,
+  "guarded_batch_requested": true,
+  "guarded_batch_limit": 5,
+  "predictions_executed_this_invocation": 5,
+  "remaining_predictions": 0,
+  "stopped_after_guarded_batch": false,
+  "attempted_prediction_count": 5,
+  "terminal_prediction_count": 5,
+  "non_history_count": 3,
+  "personalised_history_count": 2,
+  "valid_primary_count": 5,
+  "valid_after_repair_count": 0,
+  "invalid_count": 0,
+  "backend_failure_count": 0,
+  "output_budget_exhausted_count": 0,
+  "model_mismatch_count": 0,
+  "transport_retry_count": 0,
+  "formatting_repair_count": 0,
+  "prompt_hash_mismatch_count": 0,
+  "duplicate_prediction_count": 0,
+  "model_identity_mismatch_count": 0,
+  "ground_truth_dependency": false,
+  "token_usage_totals": {
+    "input_tokens": null,
+    "output_tokens": 435,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "total_api_calls": 5,
+  "LLAMA_PRODUCTION_INFERENCE_COMPLETE": true,
+  "ALL_LLAMA_PREDICTIONS_VALID": true
+}

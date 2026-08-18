@@ -1,0 +1,78 @@
+{
+  "schema_version": "phase6g4c_llama_canonical_merge_manifest_v1",
+  "merge_created_at_utc": "2026-08-18T19:38:53.459312+00:00",
+  "merge_version": "phase6g4c_llama_canonical_merge_v1",
+  "canonical_output_dir": "llm-experiments/outputs/real/phase6g4/llama_canonical",
+  "selection_rule": "If Run 01 was backend_failed and the same request_id has a schema-valid Recovery Run 02 prediction, use Recovery Run 02; never replace an originally valid Run 01 prediction; never use ground truth or accuracy.",
+  "source_run01_predictions_path": "llm-experiments/outputs/real/phase6g4/llama/predictions.jsonl",
+  "source_run01_predictions_sha256": "73adf555ecaead79a30f0cd1949d12b79eb0480b617851a435193b4fdb19b66c",
+  "source_run01_attempt_log_path": "llm-experiments/outputs/real/phase6g4/llama/attempt_log.jsonl",
+  "source_run01_attempt_log_sha256": "951a5f696e3617cf9cb5ebe8027897ba8ed720bcdd358ac85c935122ec84a6f0",
+  "recovery_run02_predictions_path": "llm-experiments/outputs/real/phase6g4/llama_recovery_run_02/predictions.jsonl",
+  "recovery_run02_predictions_sha256": "4855b132ada148e1ba0858f9902ab05f631280e09755e0f6dd945f3e91fd737b",
+  "recovery_run02_attempt_log_path": "llm-experiments/outputs/real/phase6g4/llama_recovery_run_02/attempt_log.jsonl",
+  "recovery_run02_attempt_log_sha256": "692646aa38e0b219743de74111d22f7df920c8856cba824d2ca27c0aeabed908",
+  "resume_run03_predictions_path": "llm-experiments/outputs/real/phase6g4/llama_resume_after_recovery/predictions.jsonl",
+  "resume_run03_predictions_sha256": "b41a2f10a215df20d5e43530da129591118e0a86b3baf4059d375faf1ec22f6f",
+  "historical_run01_artifacts_preserved": true,
+  "recovery_run02_artifacts_preserved": true,
+  "total_frozen_request_count": 396,
+  "canonical_prediction_count": 396,
+  "superseded_backend_failed_count": 5,
+  "superseded_backend_failed_slots": [
+    {
+      "request_id": "phase6g4::llama_3_1_70b_instruct::P001__heldout__P001__trial_01__non_history__phase6d_prompt_spec_v1",
+      "source_run01_prediction_id": "phase6g4c_llama_pred_89fce81b1b4d74e8df54f477937becf1",
+      "source_run01_status": "backend_failed",
+      "recovery_prediction_id": "phase6g4c_llama_pred_89fce81b1b4d74e8df54f477937becf1",
+      "recovery_status": "valid_primary",
+      "replacement_reason": "operational_backend_failure_recovery"
+    },
+    {
+      "request_id": "phase6g4::llama_3_1_70b_instruct::P001__heldout__P001__trial_01__personalised_history__phase6d_prompt_spec_v1",
+      "source_run01_prediction_id": "phase6g4c_llama_pred_122d7081846bc43ba6c182e50d066801",
+      "source_run01_status": "backend_failed",
+      "recovery_prediction_id": "phase6g4c_llama_pred_122d7081846bc43ba6c182e50d066801",
+      "recovery_status": "valid_primary",
+      "replacement_reason": "operational_backend_failure_recovery"
+    },
+    {
+      "request_id": "phase6g4::llama_3_1_70b_instruct::P001__heldout__P001__trial_02__non_history__phase6d_prompt_spec_v1",
+      "source_run01_prediction_id": "phase6g4c_llama_pred_437118e52285fe4f4f224832d9fb8efd",
+      "source_run01_status": "backend_failed",
+      "recovery_prediction_id": "phase6g4c_llama_pred_437118e52285fe4f4f224832d9fb8efd",
+      "recovery_status": "valid_primary",
+      "replacement_reason": "operational_backend_failure_recovery"
+    },
+    {
+      "request_id": "phase6g4::llama_3_1_70b_instruct::P001__heldout__P001__trial_02__personalised_history__phase6d_prompt_spec_v1",
+      "source_run01_prediction_id": "phase6g4c_llama_pred_9945f437005790661596c22421b6a6bf",
+      "source_run01_status": "backend_failed",
+      "recovery_prediction_id": "phase6g4c_llama_pred_9945f437005790661596c22421b6a6bf",
+      "recovery_status": "valid_primary",
+      "replacement_reason": "operational_backend_failure_recovery"
+    },
+    {
+      "request_id": "phase6g4::llama_3_1_70b_instruct::P001__heldout__P001__trial_03__non_history__phase6d_prompt_spec_v1",
+      "source_run01_prediction_id": "phase6g4c_llama_pred_15251572688ab26a7884e68539b8b24a",
+      "source_run01_status": "backend_failed",
+      "recovery_prediction_id": "phase6g4c_llama_pred_15251572688ab26a7884e68539b8b24a",
+      "recovery_status": "valid_primary",
+      "replacement_reason": "operational_backend_failure_recovery"
+    }
+  ],
+  "unresolved_count": 0,
+  "unresolved_request_ids": [],
+  "canonical_source_counts": {
+    "recovery_run02": 5,
+    "resume_run03": 391
+  },
+  "condition_counts": {
+    "non_history": 198,
+    "personalised_history": 198
+  },
+  "duplicate_canonical_request_ids": [],
+  "ground_truth_dependency": false,
+  "LLAMA_PRODUCTION_INFERENCE_COMPLETE": true,
+  "ALL_LLAMA_PREDICTIONS_VALID": true
+}
