@@ -1,0 +1,57 @@
+{
+  "schema_version": "phase6g4a_gpt_output_budget_correction_manifest_v2",
+  "created_at_utc": "2026-08-18T02:37:47.613277+00:00",
+  "correction_type": "execution_compatibility_correction",
+  "scope": "gpt_only",
+  "initial_diagnostic_run_id": "phase6g4a_gpt_corrected_run_01",
+  "prior_run_id": "phase6g4a_gpt_corrected_run_02",
+  "new_run_id": "phase6g4a_gpt_corrected_run_03",
+  "initial_diagnostic_run_namespace": "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_01",
+  "prior_run_namespace": "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_02",
+  "new_run_namespace": "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_03",
+  "first_configuration_correction_manifest": "llm-experiments/outputs/real/phase6g4/gpt/configuration_correction_256_to_1024.json",
+  "initial_max_output_tokens": 256,
+  "prior_max_output_tokens": 1024,
+  "new_max_output_tokens": 4096,
+  "reason": "OpenAI Responses API max_output_tokens includes reasoning tokens plus visible output tokens; 1024 remained insufficient for one frozen GPT-5.5 personalised-history production request.",
+  "guarded_validation_evidence": {
+    "diagnostic_256_to_1024": {
+      "prior_budget": 256,
+      "new_budget": 1024,
+      "incomplete_at_exact_prior_budget_count": 2,
+      "completed_count": 1,
+      "decision_basis": "response-completion infrastructure evidence only"
+    },
+    "diagnostic_1024_to_4096": {
+      "guarded_prediction_count": 3,
+      "reached_gpt_5_5_count": 3,
+      "returned_model": "gpt-5.5-2026-04-23",
+      "valid_primary_count": 2,
+      "output_budget_exhausted_count": 1,
+      "transport_failure_count": 0,
+      "formatting_repair_count": 0,
+      "failed_condition": "personalised_history",
+      "prior_budget": 1024,
+      "new_budget": 4096,
+      "decision_basis": "response-completion infrastructure evidence only"
+    }
+  },
+  "scientific_policy": {
+    "diagnostic_256_token_run_is_final_scientific_gpt_run": false,
+    "diagnostic_1024_token_run_is_final_scientific_gpt_run": false,
+    "no_human_ground_truth_inspected": true,
+    "no_prediction_accuracy_used": true,
+    "rendered_prompts_changed": false,
+    "response_schema_changed": false,
+    "model_identity_changed": false,
+    "decoding_policy_changed": false,
+    "evaluation_protocol_changed": false,
+    "global_max_output_policy_changed_for_other_models": false,
+    "reasoning_effort_set": false,
+    "provider_native_reasoning_preserved": true
+  },
+  "inference_config_hash_initial": "2dae74e3f436f184d139f7e6fadaf46e944f83634a5836d75f4c2d367f5c06b1",
+  "inference_config_hash_prior": "3a537d2514197c92894318b0aebeab8925802bc4abdbd9619e0ff4c350b4bb61",
+  "inference_config_hash_new": "ca275d938edfe7dcb5b6d4280fcd3eacc68e4068799558ec7bd38a68763fe925",
+  "secret_policy": "No API key or secret value is stored."
+}

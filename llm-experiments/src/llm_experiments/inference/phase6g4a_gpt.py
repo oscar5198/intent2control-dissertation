@@ -27,10 +27,12 @@ from llm_experiments.prompts.prompt_spec import load_jsonl, write_json
 
 SCHEMA_VERSION = "phase6g4a_gpt_production_inference_v1"
 BASE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
-OUTPUT_DIR = BASE_OUTPUT_DIR / "corrected_run_02"
+OUTPUT_DIR = BASE_OUTPUT_DIR / "corrected_run_03"
 FAILED_INFRA_ARCHIVE_DIR = BASE_OUTPUT_DIR / "failed_infrastructure_run_01"
 DIAGNOSTIC_256_RUN_DIR = BASE_OUTPUT_DIR / "corrected_run_01"
-CONFIGURATION_CORRECTION_MANIFEST = BASE_OUTPUT_DIR / "configuration_correction_256_to_1024.json"
+DIAGNOSTIC_1024_RUN_DIR = BASE_OUTPUT_DIR / "corrected_run_02"
+FIRST_CONFIGURATION_CORRECTION_MANIFEST = BASE_OUTPUT_DIR / "configuration_correction_256_to_1024.json"
+CONFIGURATION_CORRECTION_MANIFEST = BASE_OUTPUT_DIR / "configuration_correction_1024_to_4096.json"
 RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
 GPT_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_gpt_shard_manifest.json")
 PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
@@ -42,13 +44,15 @@ RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1
 REQUEST_MODEL = "gpt-5.5"
 EXPECTED_RETURNED_MODEL = "gpt-5.5-2026-04-23"
 MODEL_KEY = "gpt"
-PRIOR_MAX_OUTPUT_TOKENS = 256
-MAX_OUTPUT_TOKENS = 1024
+INITIAL_MAX_OUTPUT_TOKENS = 256
+PRIOR_MAX_OUTPUT_TOKENS = 1024
+MAX_OUTPUT_TOKENS = 4096
 MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
 TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed", "output_budget_exhausted"}
-PRIOR_CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_01"
-CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_02"
+INITIAL_CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_01"
+PRIOR_CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_02"
+CORRECTED_RUN_ID = "phase6g4a_gpt_corrected_run_03"
 FAILED_INFRASTRUCTURE_RUN_ID = "phase6g4a_gpt_failed_infrastructure_run_01"
 
 
@@ -173,48 +177,50 @@ def prepare_infrastructure_recovery(repo_root: Path) -> dict[str, Any]:
 
 
 def prepare_output_budget_correction(repo_root: Path) -> dict[str, Any]:
-    """Record the GPT-only execution compatibility correction from 256 to 1024."""
+    """Record the final GPT-only execution compatibility correction to 4096."""
     path = repo_root / CONFIGURATION_CORRECTION_MANIFEST
     path.parent.mkdir(parents=True, exist_ok=True)
     manifest = {
-        "schema_version": "phase6g4a_gpt_output_budget_correction_manifest_v1",
+        "schema_version": "phase6g4a_gpt_output_budget_correction_manifest_v2",
         "created_at_utc": iso_now(),
         "correction_type": "execution_compatibility_correction",
         "scope": "gpt_only",
+        "initial_diagnostic_run_id": INITIAL_CORRECTED_RUN_ID,
         "prior_run_id": PRIOR_CORRECTED_RUN_ID,
         "new_run_id": CORRECTED_RUN_ID,
-        "prior_run_namespace": str(DIAGNOSTIC_256_RUN_DIR).replace("\\", "/"),
+        "initial_diagnostic_run_namespace": str(DIAGNOSTIC_256_RUN_DIR).replace("\\", "/"),
+        "prior_run_namespace": str(DIAGNOSTIC_1024_RUN_DIR).replace("\\", "/"),
         "new_run_namespace": str(OUTPUT_DIR).replace("\\", "/"),
+        "first_configuration_correction_manifest": str(FIRST_CONFIGURATION_CORRECTION_MANIFEST).replace("\\", "/"),
+        "initial_max_output_tokens": INITIAL_MAX_OUTPUT_TOKENS,
         "prior_max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS,
         "new_max_output_tokens": MAX_OUTPUT_TOKENS,
-        "reason": "OpenAI Responses API max_output_tokens includes reasoning tokens plus visible output tokens; 256 can truncate before required JSON is emitted.",
+        "reason": "OpenAI Responses API max_output_tokens includes reasoning tokens plus visible output tokens; 1024 remained insufficient for one frozen GPT-5.5 personalised-history production request.",
         "guarded_validation_evidence": {
-            "guarded_prediction_count": 3,
-            "incomplete_at_exact_prior_budget_count": 2,
-            "completed_count": 1,
-            "prior_budget_hit_output_tokens": 256,
-            "completed_output_tokens": 151,
-            "attempt_1": {
-                "request_status": "incomplete",
-                "output_tokens": 256,
-                "reasoning_tokens": 223,
-                "validation": "invalid_json",
+            "diagnostic_256_to_1024": {
+                "prior_budget": 256,
+                "new_budget": 1024,
+                "incomplete_at_exact_prior_budget_count": 2,
+                "completed_count": 1,
+                "decision_basis": "response-completion infrastructure evidence only",
             },
-            "attempt_2": {
-                "request_status": "incomplete",
-                "output_tokens": 256,
-                "reasoning_tokens": 256,
-                "validation": "missing_response",
-            },
-            "attempt_3": {
-                "request_status": "completed",
-                "output_tokens": 151,
-                "reasoning_tokens": 95,
-                "validation": "valid",
+            "diagnostic_1024_to_4096": {
+                "guarded_prediction_count": 3,
+                "reached_gpt_5_5_count": 3,
+                "returned_model": EXPECTED_RETURNED_MODEL,
+                "valid_primary_count": 2,
+                "output_budget_exhausted_count": 1,
+                "transport_failure_count": 0,
+                "formatting_repair_count": 0,
+                "failed_condition": "personalised_history",
+                "prior_budget": 1024,
+                "new_budget": 4096,
+                "decision_basis": "response-completion infrastructure evidence only",
             },
         },
         "scientific_policy": {
             "diagnostic_256_token_run_is_final_scientific_gpt_run": False,
+            "diagnostic_1024_token_run_is_final_scientific_gpt_run": False,
             "no_human_ground_truth_inspected": True,
             "no_prediction_accuracy_used": True,
             "rendered_prompts_changed": False,
@@ -223,8 +229,11 @@ def prepare_output_budget_correction(repo_root: Path) -> dict[str, Any]:
             "decoding_policy_changed": False,
             "evaluation_protocol_changed": False,
             "global_max_output_policy_changed_for_other_models": False,
+            "reasoning_effort_set": False,
+            "provider_native_reasoning_preserved": True,
         },
-        "inference_config_hash_prior": sha256_json({"model": REQUEST_MODEL, "max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted"}),
+        "inference_config_hash_initial": sha256_json({"model": REQUEST_MODEL, "max_output_tokens": INITIAL_MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted", "reasoning_effort": "omitted"}),
+        "inference_config_hash_prior": sha256_json({"model": REQUEST_MODEL, "max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted", "reasoning_effort": "omitted"}),
         "inference_config_hash_new": inference_config_hash(),
         "secret_policy": "No API key or secret value is stored.",
     }
@@ -242,7 +251,7 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
     hash_manifest = load_json(repo_root / PROMPT_HASH_MANIFEST)
     rendered = {row["rendered_prompt_id"]: row for row in load_jsonl(repo_root / RENDERED_PROMPTS)}
     requests = shard.get("requests", [])
-    output_dir_ok = str(output_dir).replace("\\", "/").endswith("phase6g4/gpt/corrected_run_02")
+    output_dir_ok = str(output_dir).replace("\\", "/").endswith("phase6g4/gpt/corrected_run_03")
     hash_mismatches = []
     prompt_hashes = {row["rendered_prompt_id"]: row["message_payload_sha256"] for row in hash_manifest["records"]}
     for row in requests:
@@ -431,6 +440,7 @@ def build_attempt_record(**kwargs: Any) -> dict[str, Any]:
         "temperature_sent": False,
         "top_p_sent": False,
         "seed_sent": False,
+        "reasoning_effort_sent": False,
         "max_output_tokens": MAX_OUTPUT_TOKENS,
     }
 
@@ -584,6 +594,7 @@ def build_run_manifest(repo_root: Path, preflight: dict[str, Any], guarded_batch
         "temperature_sent": False,
         "top_p_sent": False,
         "seed_sent": False,
+        "reasoning_effort_sent": False,
         "max_output_tokens": MAX_OUTPUT_TOKENS,
         "prior_gpt_max_output_tokens": PRIOR_MAX_OUTPUT_TOKENS,
         "configuration_correction_manifest": str(CONFIGURATION_CORRECTION_MANIFEST).replace("\\", "/"),
@@ -648,7 +659,7 @@ def prediction_id(request_ref: dict[str, Any]) -> str:
 
 
 def inference_config_hash() -> str:
-    return sha256_json({"model": REQUEST_MODEL, "max_output_tokens": MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted"})
+    return sha256_json({"model": REQUEST_MODEL, "max_output_tokens": MAX_OUTPUT_TOKENS, "temperature": "omitted", "top_p": "omitted", "reasoning_effort": "omitted"})
 
 
 def object_to_dict(value: Any) -> dict[str, Any] | None:

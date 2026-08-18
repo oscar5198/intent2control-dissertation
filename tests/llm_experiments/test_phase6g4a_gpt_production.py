@@ -18,6 +18,7 @@ from llm_experiments.inference.registry import assert_no_secrets  # noqa: E402
 OUT = REPO_ROOT / gpt4a.OUTPUT_DIR
 ARCHIVE = REPO_ROOT / gpt4a.FAILED_INFRA_ARCHIVE_DIR
 DIAGNOSTIC_256 = REPO_ROOT / gpt4a.DIAGNOSTIC_256_RUN_DIR
+DIAGNOSTIC_1024 = REPO_ROOT / gpt4a.DIAGNOSTIC_1024_RUN_DIR
 CONFIG_CORRECTION = REPO_ROOT / gpt4a.CONFIGURATION_CORRECTION_MANIFEST
 RUN_MANIFEST = OUT / "run_manifest.json"
 PREFLIGHT = OUT / "preflight_report.json"
@@ -64,20 +65,26 @@ def test_recovery_manifest_preserves_failed_infrastructure_run_provenance() -> N
     assert_no_secrets(recovery)
 
 
-def test_gpt_max_output_tokens_1024_and_config_correction_manifest() -> None:
+def test_final_gpt_max_output_tokens_4096_and_config_correction_manifest() -> None:
     correction = load_json(CONFIG_CORRECTION)
     manifest = load_json(RUN_MANIFEST)
 
-    assert gpt4a.MAX_OUTPUT_TOKENS == 1024
-    assert manifest["max_output_tokens"] == 1024
-    assert correction["prior_max_output_tokens"] == 256
-    assert correction["new_max_output_tokens"] == 1024
+    assert gpt4a.MAX_OUTPUT_TOKENS == 4096
+    assert manifest["max_output_tokens"] == 4096
+    assert correction["initial_max_output_tokens"] == 256
+    assert correction["prior_max_output_tokens"] == 1024
+    assert correction["new_max_output_tokens"] == 4096
     assert correction["correction_type"] == "execution_compatibility_correction"
     assert correction["scope"] == "gpt_only"
-    assert correction["guarded_validation_evidence"]["incomplete_at_exact_prior_budget_count"] == 2
-    assert correction["guarded_validation_evidence"]["completed_output_tokens"] == 151
+    assert correction["guarded_validation_evidence"]["diagnostic_256_to_1024"]["incomplete_at_exact_prior_budget_count"] == 2
+    assert correction["guarded_validation_evidence"]["diagnostic_1024_to_4096"]["valid_primary_count"] == 2
+    assert correction["guarded_validation_evidence"]["diagnostic_1024_to_4096"]["output_budget_exhausted_count"] == 1
+    assert correction["guarded_validation_evidence"]["diagnostic_1024_to_4096"]["transport_failure_count"] == 0
+    assert correction["guarded_validation_evidence"]["diagnostic_1024_to_4096"]["formatting_repair_count"] == 0
     assert correction["scientific_policy"]["no_human_ground_truth_inspected"] is True
     assert correction["scientific_policy"]["no_prediction_accuracy_used"] is True
+    assert correction["scientific_policy"]["provider_native_reasoning_preserved"] is True
+    assert correction["scientific_policy"]["reasoning_effort_set"] is False
     assert correction["inference_config_hash_prior"] != correction["inference_config_hash_new"]
     assert_no_secrets(correction)
 
@@ -90,6 +97,7 @@ def test_prompt_schema_and_model_identity_unchanged_by_budget_correction() -> No
     assert manifest["temperature_sent"] is False
     assert manifest["top_p_sent"] is False
     assert manifest["seed_sent"] is False
+    assert manifest["reasoning_effort_sent"] is False
     assert manifest["rendered_prompt_dataset"].endswith("phase6g3_real_rendered_prompts.jsonl")
     assert gpt4a.RESPONSE_SCHEMA.name == "preference_prediction_response_v1.json"
     assert load_json(CONFIG_CORRECTION)["scientific_policy"]["rendered_prompts_changed"] is False
@@ -98,33 +106,42 @@ def test_prompt_schema_and_model_identity_unchanged_by_budget_correction() -> No
     assert load_json(CONFIG_CORRECTION)["scientific_policy"]["decoding_policy_changed"] is False
 
 
-def test_corrected_run_02_preflight_namespace_is_distinct_and_blocked_locally() -> None:
+def test_corrected_run_03_preflight_namespace_is_distinct_and_blocked_locally() -> None:
     summary = load_json(SUMMARY)
     manifest = load_json(RUN_MANIFEST)
 
-    assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_02"
-    assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_02")
+    assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_03"
+    assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_03")
     assert summary["preflight_passed"] is False
     assert summary["attempted_prediction_count"] == 0
     assert summary["total_api_calls"] == 0
-    assert summary["guarded_batch_limit"] == 3
+    assert summary["guarded_batch_limit"] == 6
     assert summary["predictions_executed_this_invocation"] == 0
     assert summary["remaining_predictions"] == 396
     assert not (OUT / "attempt_log.jsonl").exists()
     assert not (OUT / "predictions.jsonl").exists()
 
 
-def test_corrected_run_01_preserved_as_256_token_diagnostic_evidence() -> None:
+def test_prior_diagnostic_runs_preserved_as_non_scientific_evidence() -> None:
     assert DIAGNOSTIC_256.exists()
-    manifest_path = DIAGNOSTIC_256 / "run_manifest.json"
-    if manifest_path.exists():
-        manifest = load_json(manifest_path)
-        assert manifest["run_id"] == "phase6g4a_gpt_corrected_run_01"
-        assert manifest["output_dir"].endswith("phase6g4/gpt/corrected_run_01")
-        assert manifest["max_output_tokens"] == 256
+    assert DIAGNOSTIC_1024.exists()
+    run01_manifest_path = DIAGNOSTIC_256 / "run_manifest.json"
+    run02_manifest_path = DIAGNOSTIC_1024 / "run_manifest.json"
+    if run01_manifest_path.exists():
+        run01 = load_json(run01_manifest_path)
+        assert run01["run_id"] == "phase6g4a_gpt_corrected_run_01"
+        assert run01["output_dir"].endswith("phase6g4/gpt/corrected_run_01")
+        assert run01["max_output_tokens"] == 256
+    if run02_manifest_path.exists():
+        run02 = load_json(run02_manifest_path)
+        assert run02["run_id"] == "phase6g4a_gpt_corrected_run_02"
+        assert run02["output_dir"].endswith("phase6g4/gpt/corrected_run_02")
+        assert run02["max_output_tokens"] == 1024
     correction = load_json(CONFIG_CORRECTION)
-    assert correction["prior_run_namespace"].endswith("phase6g4/gpt/corrected_run_01")
+    assert correction["initial_diagnostic_run_namespace"].endswith("phase6g4/gpt/corrected_run_01")
+    assert correction["prior_run_namespace"].endswith("phase6g4/gpt/corrected_run_02")
     assert correction["scientific_policy"]["diagnostic_256_token_run_is_final_scientific_gpt_run"] is False
+    assert correction["scientific_policy"]["diagnostic_1024_token_run_is_final_scientific_gpt_run"] is False
 
 
 def test_guarded_batch_size_3_executes_exactly_3_prediction_units_and_resume(monkeypatch, tmp_path) -> None:
@@ -153,7 +170,7 @@ def test_guarded_batch_size_3_executes_exactly_3_prediction_units_and_resume(mon
 
     monkeypatch.setattr(gpt4a, "run_preflight", fake_preflight)
     monkeypatch.setattr(gpt4a, "invoke_openai", fake_invoke)
-    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_02"
+    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_03"
 
     first = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=3, output_dir=out, run_id="test_corrected_run")
     second = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=3, output_dir=out, run_id="test_corrected_run")
@@ -199,9 +216,9 @@ def test_incomplete_max_output_tokens_classified_without_repair(monkeypatch, tmp
 
     monkeypatch.setattr(gpt4a, "run_preflight", fake_preflight)
     monkeypatch.setattr(gpt4a, "invoke_openai", fake_invoke)
-    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_02"
+    out = tmp_path / "phase6g4" / "gpt" / "corrected_run_03"
 
-    summary = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=1, output_dir=out, run_id="test_corrected_run_02")
+    summary = gpt4a.run_gpt_production(REPO_ROOT, guarded_batch_size=1, output_dir=out, run_id="test_corrected_run_03")
 
     attempts = load_jsonl(out / "attempt_log.jsonl")
     predictions = load_jsonl(out / "predictions.jsonl")
@@ -216,6 +233,40 @@ def test_incomplete_max_output_tokens_classified_without_repair(monkeypatch, tmp
     assert predictions[0]["final_status"] == "output_budget_exhausted"
     assert predictions[0]["formatting_repair_count"] == 0
     assert summary["output_budget_exhausted_count"] == 1
+
+
+def test_provider_native_reasoning_and_sampling_controls_omitted(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class FakeResponses:
+        def create(self, **kwargs):
+            captured.update(kwargs)
+            return SimpleNamespace(
+                status="completed",
+                output_text='{"predicted_preferred_mix":"A","predicted_ratings":{"A":80,"B":60,"C":55,"D":50,"E":45},"predicted_ranking":["A","B","C","D","E"]}',
+                model="gpt-5.5-2026-04-23",
+                usage={"input_tokens": 1, "output_tokens": 1, "total_tokens": 2},
+                incomplete_details=None,
+            )
+
+    class FakeClient:
+        def __init__(self):
+            self.responses = FakeResponses()
+
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=FakeClient))
+
+    result = gpt4a.invoke_openai([{"role": "system", "content": "s"}, {"role": "user", "content": "u"}], "primary")
+
+    assert result["status"] == "completed"
+    assert captured["model"] == "gpt-5.5"
+    assert captured["max_output_tokens"] == 4096
+    assert captured["instructions"] == "s"
+    assert captured["input"] == "u"
+    assert "reasoning" not in captured
+    assert "reasoning_effort" not in captured
+    assert "temperature" not in captured
+    assert "top_p" not in captured
+    assert "seed" not in captured
 
 
 def test_gpt_shard_is_gpt_only_and_has_expected_coverage() -> None:
@@ -242,7 +293,7 @@ def test_qc_report_records_recovery_guardrails() -> None:
     text = QC_REPORT.read_text(encoding="utf-8")
 
     assert "Preflight passed: `false`" in text
-    assert "Guarded batch limit: `3`" in text
+    assert "Guarded batch limit: `6`" in text
     assert "Predictions executed this invocation: `0`" in text
     assert "Output-budget exhausted: `0`" in text
     assert "accuracy:" not in text.lower()
