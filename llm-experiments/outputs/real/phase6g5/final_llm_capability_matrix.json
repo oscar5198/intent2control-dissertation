@@ -1,0 +1,51 @@
+{
+  "schema_version": "phase6g5_final_llm_capability_matrix_v1",
+  "phase": "6G.5",
+  "capabilities": {
+    "gpt": {
+      "experiment_model_label": "GPT-5.5",
+      "winner": "supported",
+      "ranking": "supported",
+      "rating_0_100": "supported"
+    },
+    "claude_sonnet": {
+      "experiment_model_label": "Claude Sonnet 5",
+      "winner": "supported",
+      "ranking": "supported",
+      "rating_0_100": "supported"
+    },
+    "llama_3_1_70b_instruct": {
+      "experiment_model_label": "Llama 3.1 70B Instruct",
+      "winner": "supported",
+      "ranking": "supported",
+      "rating_0_100": "supported"
+    },
+    "centaur": {
+      "experiment_model_label": "Centaur",
+      "winner": "supported_native_likelihood",
+      "ranking": "supported_native_likelihood",
+      "rating_0_100": "unsupported"
+    }
+  },
+  "evaluation_policy": {
+    "winner_metrics": [
+      "gpt",
+      "claude_sonnet",
+      "llama_3_1_70b_instruct",
+      "centaur"
+    ],
+    "ranking_metrics": [
+      "gpt",
+      "claude_sonnet",
+      "llama_3_1_70b_instruct",
+      "centaur"
+    ],
+    "rating_error_metrics": [
+      "gpt",
+      "claude_sonnet",
+      "llama_3_1_70b_instruct"
+    ],
+    "centaur_rating_error_exclusion_reason": "Centaur native likelihood produces winner/ranking over A-E candidates; no frozen scientifically justified mapping to 0-100 ratings exists. Exclusion is methodological and not performance-based.",
+    "ground_truth_consulted_for_capability_decision": false
+  }
+}

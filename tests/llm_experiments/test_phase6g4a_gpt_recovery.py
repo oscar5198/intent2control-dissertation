@@ -76,6 +76,56 @@ def test_run03_authoritative_counts_and_recovery_eligibility() -> None:
     assert not any(row["final_status"] == "valid_primary" and row["prediction_id"] in eligible_source_ids for row in source_predictions)
 
 
+def test_run05_exact_failed_request_identification_and_single_slot_eligibility() -> None:
+    eligibility = recovery.build_targeted_final_slot_eligibility(REPO_ROOT)
+    target = eligibility[0]
+
+    assert len(eligibility) == 1
+    assert target["request_id"] == recovery.TARGETED_FAILED_REQUEST_ID
+    assert target["rendered_prompt_id"] == recovery.TARGETED_FAILED_RENDERED_PROMPT_ID
+    assert target["source_final_status"] == "backend_failed"
+    assert target["source_run04_recovery_final_status"] == "output_budget_exhausted"
+    assert target["source_run04_attempt_failure_code"] == "output_budget_exhausted"
+    assert target["max_output_tokens"] == 8192
+    assert target["ground_truth_dependency"] is False
+
+
+def test_run05_valid_gpt_predictions_never_eligible() -> None:
+    run04_final = load_jsonl(FINAL_PREDICTIONS)
+    eligibility = recovery.build_targeted_final_slot_eligibility(REPO_ROOT)
+    eligible_requests = {row["request_id"] for row in eligibility}
+
+    assert not any(
+        row["request_id"] in eligible_requests
+        for row in run04_final
+        if row.get("final_status") in {"valid_primary", "valid_after_repair"} and row.get("response_schema_valid") is True
+    )
+
+
+def test_no_offline_valid_prediction_exists_for_run05_target_before_targeted_run() -> None:
+    run05_final = REPO_ROOT / recovery.TARGETED_OUTPUT_DIR / "final_gpt_predictions.jsonl"
+    valid_locations = recovery.find_valid_prediction_for_request(REPO_ROOT, recovery.TARGETED_FAILED_REQUEST_ID)
+    if not run05_final.exists():
+        assert valid_locations == []
+
+
+def test_prepare_run05_writes_manifest_without_api_calls(tmp_path) -> None:
+    out = tmp_path / "phase6g4" / "gpt" / "recovery_run_05"
+    recovery.prepare_gpt_targeted_final_slot_recovery(REPO_ROOT, output_dir=out)
+    manifest = load_json(out / "targeted_recovery_manifest.json")
+    summary = load_json(out / "targeted_recovery_summary.json")
+
+    assert manifest["run_id"] == "phase6g4a_gpt_targeted_recovery_run_05"
+    assert manifest["prepare_only"] is True
+    assert manifest["target_count"] == 1
+    assert manifest["target_request_id"] == recovery.TARGETED_FAILED_REQUEST_ID
+    assert manifest["max_output_tokens"] == 8192
+    assert summary["total_api_calls"] == 0
+    assert summary["attempted_recovery_prediction_count"] == 0
+    assert summary["ground_truth_dependency"] is False
+    assert_no_secrets(manifest)
+
+
 def test_recovery_manifest_and_artifacts_record_policy() -> None:
     manifest = load_json(MANIFEST)
     eligibility = load_jsonl(ELIGIBILITY)
@@ -261,11 +311,45 @@ def test_final_merge_precedence_and_ground_truth_isolation(monkeypatch, tmp_path
         assert_no_secrets(load_json(path))
 
 
-def test_run03_artifacts_remain_immutable() -> None:
-    manifest = load_json(MANIFEST)
+def test_run05_targeted_recovery_simulated_success_produces_396_valid_final(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(recovery, "run_targeted_preflight", lambda repo_root, output_dir=recovery.TARGETED_OUTPUT_DIR, require_openai_key=True: {
+        "schema_version": "phase6g4a_gpt_targeted_recovery_preflight_v1",
+        "passed": True,
+        "checks": {},
+        "failures": [],
+        "target_request_id": recovery.TARGETED_FAILED_REQUEST_ID,
+        "target_rendered_prompt_id": recovery.TARGETED_FAILED_RENDERED_PROMPT_ID,
+        "ground_truth_dependency": False,
+    })
+    monkeypatch.setattr(recovery, "invoke_openai", lambda messages, attempt_type, max_output_tokens: valid_provider_response())
+    out = tmp_path / "phase6g4" / "gpt" / "recovery_run_05"
 
-    assert sha256_file(RUN03 / "predictions.jsonl") == manifest["source_run03_predictions_sha256"]
-    assert sha256_file(RUN03 / "attempt_log.jsonl") == manifest["source_run03_attempt_log_sha256"]
+    summary = recovery.run_gpt_targeted_final_slot_recovery(REPO_ROOT, guarded_batch_size=1, output_dir=out)
+
+    final_rows = load_jsonl(out / "final_gpt_predictions.jsonl")
+    final_summary = load_json(out / "final_gpt_completion_summary.json")
+    provenance = load_jsonl(out / "final_gpt_prediction_provenance.jsonl")
+    assert summary["recovery_predictions_executed_this_invocation"] == 1
+    assert summary["ALL_GPT_TARGETED_RECOVERY_PREDICTIONS_VALID"] is True
+    assert len(final_rows) == 396
+    assert len({row["request_id"] for row in final_rows}) == 396
+    assert Counter(row["condition"] for row in final_rows) == {"non_history": 198, "personalised_history": 198}
+    assert Counter(row["final_status"] for row in final_rows) == {"valid_primary": 396}
+    assert final_summary["ALL_GPT_FINAL_PREDICTIONS_VALID"] is True
+    assert Counter(row["source_type"] for row in provenance)["run05_targeted_recovered_prediction"] == 1
+    assert Counter(row["source_type"] for row in provenance)["run04_existing_final_prediction"] == 395
+
+
+def test_run03_artifacts_remain_immutable() -> None:
+    before = {
+        "predictions": sha256_file(RUN03 / "predictions.jsonl"),
+        "attempts": sha256_file(RUN03 / "attempt_log.jsonl"),
+    }
+
+    recovery.build_targeted_final_slot_eligibility(REPO_ROOT)
+
+    assert sha256_file(RUN03 / "predictions.jsonl") == before["predictions"]
+    assert sha256_file(RUN03 / "attempt_log.jsonl") == before["attempts"]
 
 
 def sha256_file(path: Path) -> str:

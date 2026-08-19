@@ -1,6 +1,6 @@
 {
   "schema_version": "phase6g4a_gpt_targeted_recovery_preflight_v1",
-  "checked_at_utc": "2026-08-19T15:25:53.907408+00:00",
+  "checked_at_utc": "2026-08-19T18:46:44.408513+00:00",
   "passed": true,
   "checks": {
     "phase6d_prompt_package_frozen": true,
@@ -12,12 +12,16 @@
     "no_offline_valid_prediction_exists": true,
     "gpt_shard_count_valid": true,
     "output_directory_targeted_recovery_namespace": true,
-    "no_hidden_ground_truth_loaded": true
+    "no_hidden_ground_truth_loaded": true,
+    "openai_api_key_present": true,
+    "openai_api_key_has_no_leading_or_trailing_whitespace": true,
+    "openai_api_key_contains_no_cr_or_lf": true,
+    "openai_sdk_installed": true
   },
   "failures": [],
   "target_request_id": "phase6g4::gpt::P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1",
   "target_rendered_prompt_id": "P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1",
-  "require_openai_key": false,
+  "require_openai_key": true,
   "credential_policy": "OPENAI_API_KEY presence checked as boolean only when live execution is requested; secret value is never logged.",
   "ground_truth_dependency": false
 }

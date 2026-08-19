@@ -1,0 +1,9 @@
+{
+  "schema_version": "phase6g4a_gpt_recovery_failure_summary_v1",
+  "blocked_by_preflight": false,
+  "failure_codes": {},
+  "final_statuses": {
+    "valid_primary": 1
+  },
+  "non_valid_recovery_predictions": []
+}

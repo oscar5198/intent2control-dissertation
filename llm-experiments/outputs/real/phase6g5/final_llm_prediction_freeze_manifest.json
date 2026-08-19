@@ -1,0 +1,66 @@
+{
+  "schema_version": "phase6g5_final_llm_prediction_freeze_manifest_v1",
+  "created_at_utc": "2026-08-19T06:10:36.013897+00:00",
+  "phase": "6G.5",
+  "statement": "These prediction artifacts were frozen before joining held-out human outcomes or computing evaluation metrics.",
+  "total_predictions": 1584,
+  "expected_total_predictions": 1584,
+  "predictions_per_model": {
+    "gpt": 396,
+    "claude_sonnet": 396,
+    "llama_3_1_70b_instruct": 396,
+    "centaur": 396
+  },
+  "condition_counts_by_model": {
+    "gpt": {
+      "non_history": 198,
+      "personalised_history": 198
+    },
+    "claude_sonnet": {
+      "non_history": 198,
+      "personalised_history": 198
+    },
+    "llama_3_1_70b_instruct": {
+      "non_history": 198,
+      "personalised_history": 198
+    },
+    "centaur": {
+      "non_history": 198,
+      "personalised_history": 198
+    }
+  },
+  "authoritative_source_files": {
+    "gpt": "llm-experiments/outputs/real/phase6g4/gpt/recovery_run_05/final_gpt_predictions.jsonl",
+    "claude_sonnet": "llm-experiments/outputs/real/phase6g4/claude/predictions.jsonl",
+    "llama_3_1_70b_instruct": "llm-experiments/outputs/real/phase6g4/llama_canonical/canonical_predictions.jsonl",
+    "centaur": "llm-experiments/outputs/real/phase6g4/centaur_native_run_02/native_predictions.jsonl"
+  },
+  "source_hashes": {
+    "gpt": "dbce06980d1ed3c6b17a5dc4c5860e813516945c2be6cd355beba41c08d2cb1a",
+    "claude_sonnet": "4dbe7be9a0872ee1f38bde259d8747ba0dfc87a085007c8462205ca61073d685",
+    "llama_3_1_70b_instruct": "df27fcbf236a2efd5ce1bb6601e121cde1212af7689802b11dacb29010ee7e5e",
+    "centaur": "ffcdf107b3b3b183787869b20e736cbdceef58cca3fcac4f0a119eec688b5556"
+  },
+  "final_jsonl_hash": "875cf1645dafaf2dcb778b2d185d52428f6e5e7adc2b4b2b88d88ac95df3ae63",
+  "final_csv_hash": "68f9e88268459bc41d0d3aadbd04743a9f709b7ade983474bfdd0de9c6d21233",
+  "capability_matrix_hash": "bdeb1bdf9bd616bc79dfd752b3ba572d4de4a4171df2cdacf34c62b8666fc947",
+  "inventory_hash": "ff744ce1f45d8b494ec09cc9ffaa6d2eb0e4e73244606248a417b037e50a29a7",
+  "qc_summary_hash": "c0039b14968a826256b67926f3566c79b3446cc2e67b553158289346933163e2",
+  "prompt_freeze_manifest": "llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json",
+  "prompt_freeze_manifest_sha256": "e79501e7ca7287d5f48b6e444f950a4ae61fd03501d0ff963f578c544c284136",
+  "prompt_hash_manifest": "llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json",
+  "prompt_hash_manifest_sha256": "5ae3fca6a85d5b0d58c428198f5e4eb99fa93e5a1914b11c8cb381a75a9fd9a8",
+  "phase6g3_final_request_manifest": "llm-experiments/outputs/real/phase6g3/phase6g3_final_request_manifest.json",
+  "phase6g3_expected_request_count": 1584,
+  "ground_truth_dependency": false,
+  "hidden_ground_truth_loaded": false,
+  "evaluation_not_yet_performed": true,
+  "prediction_content_frozen": true,
+  "freeze_blockers": [],
+  "gates": {
+    "FINAL_LLM_PREDICTIONS_MERGED": true,
+    "FINAL_LLM_PREDICTIONS_QC_PASSED": true,
+    "FINAL_LLM_PREDICTIONS_FROZEN": true,
+    "GROUND_TRUTH_NOT_LOADED_FOR_PHASE6G5": true
+  }
+}

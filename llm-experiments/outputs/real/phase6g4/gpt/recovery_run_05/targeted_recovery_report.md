@@ -4,10 +4,10 @@
 - Target request ID: `phase6g4::gpt::P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1`
 - Target rendered prompt ID: `P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1`
 - Max output tokens: `8192`
-- Prepare only: `true`
+- Prepare only: `false`
 - Preflight passed: `true`
-- API calls recorded: `0`
-- Predictions recorded: `0`
+- API calls recorded: `1`
+- Predictions recorded: `1`
 
 Eligibility is operational only: exact unresolved GPT slot, no existing schema-valid GPT row, preserved Run 03 transport failure, and preserved Run 04 output-budget exhaustion.
 
