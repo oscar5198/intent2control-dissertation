@@ -1,0 +1,28 @@
+{
+  "schema_version": "phase6h2a_n33_model_config_v1",
+  "primary_predictive_baseline_model": "primary_acoustic",
+  "selection_reason": "Uses the established mixed-effects feature formula with episode, group, z_RMS, z_CF, z_SW, participant random intercept, and stimulus random intercept; this is closest to the frozen LLM base inputs without changing formulas based on performance.",
+  "model": {
+    "model_id": "primary_acoustic",
+    "model_label": "Primary acoustic feature baseline",
+    "role": "primary",
+    "formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+    "seed_offset": 10000
+  },
+  "auxiliary_heldout_model_available": "categorical_design",
+  "fit_method": "mcmc",
+  "sampler_settings": {
+    "draws": 500,
+    "tune": 500,
+    "chains": 2,
+    "cores": null,
+    "target_accept": 0.95,
+    "inference_method": "nutpie"
+  },
+  "checkpoint_compatibility_version": "real_heldout_mcmc_checkpoint_v2_strict_n33",
+  "metric_protocol_reference": "llm-experiments/outputs/real/phase6h1/phase6h1_metric_protocol.json",
+  "metric_protocol_hash": "a696e14b53b36c08ed7ec5fac3aae5616825717f76af22326335188cfe599879",
+  "phase6h1_metric_protocol_schema_version": "phase6h1_metric_protocol_v1",
+  "final_metrics_computed_in_this_freeze": false,
+  "predicted_score_tie_rule": "If posterior_mean_expected_rating ties exactly, predicted_tied_labels records all tied labels and predicted_preferred_mix is the alphabetically first label for deterministic serialization; tie-aware scoring remains governed by Phase 6H.1."
+}

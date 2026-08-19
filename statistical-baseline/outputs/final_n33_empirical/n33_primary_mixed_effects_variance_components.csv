@@ -1,0 +1,7 @@
+model,component,mean,hdi_3,hdi_97,sd,ess_bulk,ess_tail,r_hat
+stimulus_model,1|participant_id_sigma,12.314,8.841,15.921,1.942,878.0,1614.0,1.01
+stimulus_model,1|stimulus_id_sigma,13.46,9.018,18.434,2.586,848.0,1324.0,1.0
+stimulus_model,sigma,26.851,25.696,28.035,0.619,4725.0,2752.0,1.0
+primary_feature_model,1|participant_id_sigma,12.477,8.797,16.065,1.999,969.0,1411.0,1.01
+primary_feature_model,1|stimulus_id_sigma,11.246,7.061,16.099,2.584,1195.0,1994.0,1.0
+primary_feature_model,sigma,26.866,25.772,28.107,0.628,5690.0,2932.0,1.0

@@ -1,0 +1,37 @@
+{
+  "schema_version": "phase6h1_metric_protocol_v1",
+  "final_metrics_computed": false,
+  "primary_prediction_metric": {
+    "name": "preferred_mix_top1_accuracy",
+    "chance_level": 0.2,
+    "winner_definition": "human actual_top_tie_set derived from maximum A-E rating",
+    "tie_handling": "set_based_credit_for_top_ties",
+    "numerator": "count of scorable predictions whose predicted_preferred_mix is in actual_top_tie_set",
+    "denominator": "count of scorable joined rows for the method/condition under analysis"
+  },
+  "primary_ranking_metric": {
+    "name": "spearman_rank_correlation",
+    "human_rank_handling": "average ranks for tied human ratings",
+    "predicted_rank_handling": "explicit prediction order A-E to ranks 1..5; rating-derived predicted ties may use average ranks as a diagnostic"
+  },
+  "rating_prediction_metrics": {
+    "primary": "MAE over candidate A-E ratings",
+    "secondary": "RMSE over candidate A-E ratings",
+    "descriptive": "candidate-level correlation",
+    "applicable_models": [
+      "gpt",
+      "claude_sonnet",
+      "llama_3_1_70b_instruct",
+      "mixed_effects_predictive_baseline"
+    ],
+    "excluded_models": {
+      "centaur": "native likelihood/probability outputs are not 0-100 ratings and must not be converted into fake ratings"
+    }
+  },
+  "personalisation_metric": {
+    "comparison": "personalised_history vs non_history",
+    "unit": "paired held-out prediction_example_id within each model",
+    "statistical_design_for_later_phase": "paired within-example comparison; no significance testing in Phase 6H.1"
+  },
+  "METRIC_PROTOCOL_FROZEN": true
+}

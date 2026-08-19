@@ -1,0 +1,6 @@
+model_name,divergences,max_rhat,min_bulk_ess,min_tail_ess,max_tree_depth,tree_depth_warnings,energy_warnings,runtime_seconds,sampler,model_suite
+intercept_only,0,1.01,418.0,718.0,,0,0,20.29958378523588,explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler',stimulus
+final_stimulus,0,1.01,553.0,885.0,,0,0,12.7335683144629,explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler',stimulus
+primary_feature,0,1.01,969.0,1363.0,,0,0,23.77792428433895,bambi_pymc_nutpie,feature
+si_sensitivity,0,1.01,1028.0,1264.0,,0,0,15.5863289386034,bambi_pymc_nutpie,feature
+bounded_beta_primary_sensitivity,0,1.01,975.0,1289.0,,0,0,86.91923204064369,explicit_pymc_beta_nutpie,feature

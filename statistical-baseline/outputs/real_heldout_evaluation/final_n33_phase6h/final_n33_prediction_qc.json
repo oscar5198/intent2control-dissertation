@@ -1,0 +1,26 @@
+{
+  "schema_version": "phase6h2a_n33_prediction_qc_v1",
+  "participant_count": 33,
+  "heldout_trial_count": 198,
+  "candidate_prediction_rows": 990,
+  "trial_prediction_rows": 198,
+  "expected_candidate_prediction_rows": 990,
+  "expected_trial_prediction_rows": 198,
+  "baseline_model": "primary_acoustic",
+  "candidate_rows_per_trial": {
+    "5": 198
+  },
+  "ranking_complete": true,
+  "winner_derivation": "highest posterior_mean_expected_rating among A-E candidates",
+  "prediction_uncertainty_available": true,
+  "prediction_uncertainty_fields": [
+    "posterior_expected_sd",
+    "posterior_expected_hdi_lower",
+    "posterior_expected_hdi_upper",
+    "posterior_probability_highest"
+  ],
+  "all_mcmc_fit_pairs_complete": true,
+  "target_leakage_absent": true,
+  "phase6h1_alignment_exact": true,
+  "evaluation_metrics_computed": false
+}

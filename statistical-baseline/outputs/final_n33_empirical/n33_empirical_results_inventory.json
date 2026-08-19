@@ -1,0 +1,77 @@
+{
+  "schema_version": "phase6h2a_n33_empirical_inventory_v1",
+  "stimulus_model_location": "statistical-baseline/outputs/real_stimulus_model",
+  "feature_model_location": "statistical-baseline/outputs/real_feature_model",
+  "stimulus_formula": "rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)",
+  "feature_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+  "participant_count": 33,
+  "rating_count": 990,
+  "trial_count": 198,
+  "convergence": {
+    "participant_count": 33,
+    "observation_count": 990,
+    "trials": 198,
+    "chains": 4,
+    "posterior_draws_per_chain": 1000,
+    "tune": 1000,
+    "stimulus": {
+      "model_count": 2,
+      "samplers": [
+        "explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler'"
+      ],
+      "divergences": 0,
+      "max_rhat": 1.01,
+      "min_bulk_ess": 418.0,
+      "min_tail_ess": 718.0,
+      "warnings": 0
+    },
+    "feature": {
+      "model_count": 3,
+      "samplers": [
+        "bambi_pymc_nutpie",
+        "explicit_pymc_beta_nutpie"
+      ],
+      "divergences": 0,
+      "max_rhat": 1.01,
+      "min_bulk_ess": 969.0,
+      "min_tail_ess": 1264.0,
+      "warnings": 0
+    },
+    "stimulus_converged": true,
+    "feature_converged": true,
+    "interpretation": "The specified N=33 multilevel models converged satisfactorily and provide usable posterior estimates; this does not prove N=33 is universally ideal or conventionally powered."
+  },
+  "incomplete_marker_audit": {
+    "schema_version": "phase6h2a_incomplete_marker_audit_v1",
+    "bookkeeping_action": "Markers are classified as stale in this audit; they were not deleted.",
+    "markers": [
+      {
+        "path": "statistical-baseline/outputs/real_stimulus_model/INCOMPLETE_PENDING_QMUL_RERUN.txt",
+        "exists": true,
+        "classification": "STALE",
+        "marker_text": "This directory does not contain completed N=33 production model results yet.\n\nThe previous N=30 empirical outputs were archived under:\nstatistical-baseline/outputs/superseded_30responses_full_data_models_20260817T120000Z/\n\nRun statistical-baseline/scripts/run_real_models.py in the QMUL/Linux environment\nto regenerate the current N=33 stimulus-model outputs.",
+        "evidence": "N=33 manifest, dissertation-ready final_gate, and convergence diagnostics are present."
+      },
+      {
+        "path": "statistical-baseline/outputs/real_feature_model/INCOMPLETE_PENDING_QMUL_RERUN.txt",
+        "exists": true,
+        "classification": "STALE",
+        "marker_text": "This directory does not contain completed N=33 production model results yet.\n\nThe previous N=30 empirical outputs were archived under:\nstatistical-baseline/outputs/superseded_30responses_full_data_models_20260817T120000Z/\n\nRun statistical-baseline/scripts/run_real_models.py in the QMUL/Linux environment\nto regenerate the current N=33 feature-model, SI-sensitivity, and bounded\nsensitivity outputs.",
+        "evidence": "N=33 manifest, dissertation-ready final_gate, and convergence diagnostics are present."
+      }
+    ]
+  },
+  "fixed_effects_available": true,
+  "variance_components_available": true,
+  "icc_available": true,
+  "primary_table": "statistical-baseline/outputs/final_n33_empirical/n33_primary_mixed_effects_table.md",
+  "primary_figure": "statistical-baseline/outputs/final_n33_empirical/n33_primary_feature_coefficient_plot.png",
+  "artifact_hashes": {
+    "statistical-baseline/outputs/final_n33_empirical/n33_primary_mixed_effects_fixed_effects.csv": "29a1f79816065f8be8d8ae7f0173ce7a5fe37260dbe5acd60530d448c84c7ce2",
+    "statistical-baseline/outputs/final_n33_empirical/n33_primary_mixed_effects_variance_components.csv": "eeaa14a3feac3dc2a2dd14294cf9939025ff8d4819b1635abe3b23d1c6f98c7f",
+    "statistical-baseline/outputs/final_n33_empirical/n33_primary_mixed_effects_icc.csv": "03aa7826ebb6fc76e58a68b90b802c42ef7595ff7bc46608e48e9aed715fadac",
+    "statistical-baseline/outputs/final_n33_empirical/n33_primary_mixed_effects_convergence.csv": "c6a7183a13ae6459bb1daa8ccf085a877df74cd928d8a33880d8deb3496cb2cb",
+    "statistical-baseline/outputs/final_n33_empirical/n33_primary_mixed_effects_table.md": "38a2eb43621b50a0230a33c810e23176a3debee2f4225be878d547e817687af0",
+    "statistical-baseline/outputs/final_n33_empirical/n33_primary_feature_coefficient_plot.png": "ed55d38edf2278b7aa07a2c88a359969e157f1d27f6d28af34d1dfaa6dc7b0af"
+  }
+}

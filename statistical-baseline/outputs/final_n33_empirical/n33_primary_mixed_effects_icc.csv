@@ -1,0 +1,13 @@
+model,component,mean,hdi_3,hdi_97,sd,ess_bulk,ess_tail,r_hat
+stimulus_model,participant_variance,155.414,77.581,252.669,50.622,878.0,1614.0,1.01
+stimulus_model,stimulus_variance,187.86,72.172,328.127,75.96,848.0,1324.0,1.0
+stimulus_model,residual_variance,721.341,658.89,784.487,33.301,4725.0,2752.0,1.0
+stimulus_model,participant_ICC,0.145,0.075,0.219,0.041,911.0,1501.0,1.01
+stimulus_model,stimulus_ICC,0.173,0.082,0.279,0.055,855.0,1523.0,1.0
+stimulus_model,residual_share,0.682,0.572,0.78,0.056,796.0,1476.0,1.01
+primary_feature_model,participant_variance,159.673,70.205,250.244,53.22,969.0,1411.0,1.01
+primary_feature_model,stimulus_variance,133.158,43.33,247.011,69.321,1195.0,1994.0,1.0
+primary_feature_model,residual_variance,722.195,658.284,783.699,33.791,5690.0,2932.0,1.0
+primary_feature_model,participant_ICC,0.156,0.084,0.239,0.044,966.0,1383.0,1.01
+primary_feature_model,stimulus_ICC,0.128,0.044,0.218,0.052,1172.0,2082.0,1.0
+primary_feature_model,residual_share,0.716,0.613,0.813,0.056,1170.0,1801.0,1.0

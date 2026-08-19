@@ -1,0 +1,69 @@
+{
+  "schema_version": "phase6h1_mixed_effects_fairness_audit_v1",
+  "training_test_alignment": {
+    "llm_frozen_underlying_examples": 198,
+    "existing_heldout_baseline_underlying_examples": 180,
+    "same_heldout_targets": false,
+    "matched_existing_baseline_examples": 180,
+    "llm_examples_missing_from_existing_baseline": 18,
+    "assessment": "The frozen LLM evaluation uses the current N=33 Phase 6B universe (198 trials). The existing frozen_phase6_split mixed-effects heldout baseline uses an older N=30 universe (180 trials), so it is not a complete direct baseline for final LLM comparison.",
+    "corrected_matched_evaluation_available": "A matched N=30 subset can be constructed from the existing heldout baseline, but the fair final comparison should refit or rebuild the mixed-effects predictive baseline on the same N=33/198 held-out targets."
+  },
+  "information_alignment": {
+    "mixed_effects_model": [
+      "training participant observations excluding the held-out participant-trial target",
+      "episode/context and group predictors",
+      "stimulus random effect when stimulus is represented in training",
+      "participant random effect when participant has other training trials",
+      "acoustic predictors for the primary acoustic baseline where applicable"
+    ],
+    "llm_non_history": [
+      "frozen target context",
+      "participant metadata",
+      "candidate A-E acoustic features",
+      "no prior participant trial ratings or comments"
+    ],
+    "llm_personalised_history": [
+      "same base information as non_history",
+      "five prior/non-target participant trials with ratings and comments"
+    ],
+    "information_parity_claimed": false
+  },
+  "fairness_principle": {
+    "same_test_targets_required": true,
+    "same_winner_definition_required": true,
+    "same_ranking_target_required": true,
+    "same_rating_targets_where_supported": true,
+    "no_mixed_effects_training_on_heldout_target": true,
+    "no_llm_access_to_heldout_outcomes": true,
+    "document_information_set_differences": true
+  },
+  "existing_baseline_artifacts": {
+    "path": "statistical-baseline/outputs/real_heldout_evaluation/frozen_phase6_split",
+    "evaluation_manifest_sha256": "a6754368119d99c687d3669fad8e9ae5b260e9e12ca5da6c4cbe3310c54e0a23",
+    "real_data_source": "statistical-baseline/data/real/real_ratings_clean.csv",
+    "real_data_sha256": "c64a2310add0212e4ec9da24e173be06c7d162b064b572d5d0bd24ad617b721d",
+    "n_participants": 30,
+    "n_trials": 180,
+    "models": [
+      {
+        "model_id": "categorical_design",
+        "model_label": "Stimulus baseline",
+        "role": "primary",
+        "formula": "rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)",
+        "seed_offset": 0
+      },
+      {
+        "model_id": "primary_acoustic",
+        "model_label": "Primary acoustic feature baseline",
+        "role": "primary",
+        "formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+        "seed_offset": 10000
+      }
+    ],
+    "validation_passed": true
+  },
+  "MIXED_EFFECTS_COMPARISON_FAIRNESS_AUDITED": true,
+  "same_heldout_examples_as_llm": false,
+  "mixed_effects_refit_required_before_final_comparison": true
+}

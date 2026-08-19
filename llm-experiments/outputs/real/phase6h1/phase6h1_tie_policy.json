@@ -1,0 +1,21 @@
+{
+  "schema_version": "phase6h1_tie_policy_v1",
+  "defined_before_final_scoring": true,
+  "unique_highest_rated_mix_trials": 182,
+  "top_rating_tie_trials": 16,
+  "non_top_rating_tie_trials": 12,
+  "any_rating_tie_trials": 28,
+  "top1_policy": "set_based_credit_for_top_ties",
+  "top1_numerator": "prediction is correct when predicted_preferred_mix is a member of actual_top_tie_set",
+  "top1_denominator": "all target examples with a valid prediction and reconstructed ground truth; tied-top examples are retained",
+  "ranking_policy": "human rankings use average ranks for tied 0-100 ratings; predicted explicit rankings map to ordinal ranks 1..5 unless a model exposes tied predicted scores, in which case tied predicted scores may also use average ranks for rating-derived diagnostics",
+  "applies_identically_to": [
+    "gpt",
+    "claude_sonnet",
+    "llama_3_1_70b_instruct",
+    "centaur",
+    "mixed_effects_predictive_baseline"
+  ],
+  "alphabetic_tiebreak_for_human_truth": false,
+  "TIE_POLICY_FROZEN": true
+}

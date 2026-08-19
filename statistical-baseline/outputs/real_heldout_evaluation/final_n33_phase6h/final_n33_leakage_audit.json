@@ -1,0 +1,21 @@
+{
+  "schema_version": "phase6h2a_n33_leakage_audit_v1",
+  "target_leakage_absent": true,
+  "target_rows_in_training_max": 0,
+  "target_trial_training_rows_max": 0,
+  "training_rows_per_fold": [
+    985
+  ],
+  "participant_history_rows_retained": [
+    25
+  ],
+  "same_stimulus_other_participant_rows_retained": [
+    235,
+    250
+  ],
+  "phase6h1_alignment_count": 198,
+  "phase6h1_expected_count": 198,
+  "same_targets_as_phase6h1": true,
+  "heldout_target_ratings_removed_from_frozen_prediction_files": true,
+  "historical_source_candidate_file_contains_observed_ratings": true
+}

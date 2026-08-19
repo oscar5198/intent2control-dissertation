@@ -1,0 +1,74 @@
+{
+  "schema_version": "phase6h1_data_collection_summary_v1",
+  "dataset_contribution_statement": "The real listening-study dataset is a core empirical contribution: it supplies participant-specific, randomized five-mix ratings and comments for modelling listener/context preference variation.",
+  "participant_count": 33,
+  "participant_ids": [
+    "P001",
+    "P002",
+    "P003",
+    "P004",
+    "P005",
+    "P006",
+    "P007",
+    "P008",
+    "P009",
+    "P010",
+    "P011",
+    "P012",
+    "P013",
+    "P014",
+    "P015",
+    "P016",
+    "P017",
+    "P018",
+    "P019",
+    "P020",
+    "P021",
+    "P022",
+    "P023",
+    "P024",
+    "P025",
+    "P026",
+    "P027",
+    "P028",
+    "P029",
+    "P030",
+    "P031",
+    "P032",
+    "P033"
+  ],
+  "group_counts": {
+    "group_01": 17,
+    "group_02": 16
+  },
+  "study_design": "Each analysable participant rated five randomized candidate mixes across six participant-song-episode trials.",
+  "ratings_per_participant": 30,
+  "total_individual_mix_ratings": 990,
+  "total_trials": 198,
+  "songs": [
+    "id_like_to_know",
+    "in_the_meantime",
+    "lead_me",
+    "pouring_room"
+  ],
+  "episodes": [
+    "EDR-1",
+    "EDR-2",
+    "FM-1"
+  ],
+  "stimuli": 20,
+  "randomisation": "A-E presentation labels are trial-specific and reconstructed from the frozen Phase 6B candidate mappings.",
+  "mandatory_comments": {
+    "expected_trial_comments": 198,
+    "actual_trial_comments": 198,
+    "missing_blank_rating_row_comments": 0
+  },
+  "final_usable_observations": {
+    "participants": 33,
+    "trials": 198,
+    "candidate_rating_rows": 990
+  },
+  "heldout_prediction_examples": 198,
+  "request_condition_targets": 396,
+  "post_freeze_additional_responses_detected": false
+}

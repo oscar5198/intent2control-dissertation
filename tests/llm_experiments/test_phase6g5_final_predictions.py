@@ -5,6 +5,8 @@ import shutil
 import sys
 from pathlib import Path
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LLM_SRC = REPO_ROOT / "llm-experiments" / "src"
@@ -165,6 +167,8 @@ def test_jsonl_can_be_rebuilt_in_clean_copy_without_hidden_inputs(tmp_path: Path
 
 
 def test_phase6g5_passes_with_simulated_run05_corrected_gpt_source(monkeypatch, tmp_path: Path) -> None:
+    if (REPO_ROOT / phase6g5.GPT_TARGETED_RUN05_SOURCE["prediction_file"]).exists():
+        pytest.skip("Real GPT recovery_run_05 artifact exists; duplicate simulated recovery is intentionally blocked.")
     out = tmp_path / "phase6g4" / "gpt" / "recovery_run_05"
 
     def fake_preflight(repo_root, output_dir=gpt_recovery.TARGETED_OUTPUT_DIR, require_openai_key=True):

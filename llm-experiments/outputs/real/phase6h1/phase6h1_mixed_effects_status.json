@@ -1,0 +1,97 @@
+{
+  "schema_version": "phase6h1_mixed_effects_status_v1",
+  "central_empirical_role": "primary evidence for listener/context/stimulus preference variation, not a secondary ML baseline",
+  "stimulus_model": {
+    "manifest_path": "statistical-baseline/outputs/real_stimulus_model/real_stimulus_model_manifest.json",
+    "formula": "rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)",
+    "analysable_n": 33,
+    "rating_count": 990,
+    "trial_count": 198,
+    "final_gate": "REAL STIMULUS MODEL READY FOR DISSERTATION RESULTS SECTION",
+    "diagnostics": [
+      {
+        "model_name": "intercept_only",
+        "divergences": "0",
+        "max_rhat": "1.01",
+        "min_bulk_ess": "418.0",
+        "min_tail_ess": "718.0",
+        "max_tree_depth": "",
+        "tree_depth_warnings": "0",
+        "energy_warnings": "0",
+        "runtime_seconds": "20.299583785235882",
+        "sampler": "explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler'"
+      },
+      {
+        "model_name": "final_stimulus",
+        "divergences": "0",
+        "max_rhat": "1.01",
+        "min_bulk_ess": "553.0",
+        "min_tail_ess": "885.0",
+        "max_tree_depth": "",
+        "tree_depth_warnings": "0",
+        "energy_warnings": "0",
+        "runtime_seconds": "12.7335683144629",
+        "sampler": "explicit_pymc_nutpie_fallback_after_bambi_error: TypeError: pymc.sampling.mcmc.sample() got multiple values for keyword argument 'nuts_sampler'"
+      }
+    ]
+  },
+  "feature_model": {
+    "manifest_path": "statistical-baseline/outputs/real_feature_model/real_feature_model_manifest.json",
+    "primary_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+    "si_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + z_SI + (1 | participant_id) + (1 | stimulus_id)",
+    "bounded_sensitivity_formula": "rating_01 ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+    "analysable_n": 33,
+    "rating_count": 990,
+    "trial_count": 198,
+    "final_gate": "REAL FEATURE MODEL READY FOR DISSERTATION RESULTS SECTION",
+    "diagnostics": [
+      {
+        "model_name": "primary_feature",
+        "divergences": "0",
+        "max_rhat": "1.01",
+        "min_bulk_ess": "969.0",
+        "min_tail_ess": "1363.0",
+        "max_tree_depth": "",
+        "tree_depth_warnings": "0",
+        "energy_warnings": "0",
+        "runtime_seconds": "23.77792428433895",
+        "sampler": "bambi_pymc_nutpie"
+      },
+      {
+        "model_name": "si_sensitivity",
+        "divergences": "0",
+        "max_rhat": "1.01",
+        "min_bulk_ess": "1028.0",
+        "min_tail_ess": "1264.0",
+        "max_tree_depth": "",
+        "tree_depth_warnings": "0",
+        "energy_warnings": "0",
+        "runtime_seconds": "15.586328938603401",
+        "sampler": "bambi_pymc_nutpie"
+      },
+      {
+        "model_name": "bounded_beta_primary_sensitivity",
+        "divergences": "0",
+        "max_rhat": "1.01",
+        "min_bulk_ess": "975.0",
+        "min_tail_ess": "1289.0",
+        "max_tree_depth": "",
+        "tree_depth_warnings": "0",
+        "energy_warnings": "0",
+        "runtime_seconds": "86.91923204064369",
+        "sampler": "explicit_pymc_beta_nutpie"
+      }
+    ]
+  },
+  "convergence_qc_status": {
+    "n33_model_artifacts_present": true,
+    "diagnostics_indicate_satisfactory_convergence": true,
+    "incomplete_pending_qmul_rerun_markers_present": true,
+    "incomplete_marker_paths": [
+      "C:/Users/oscar/Documents/7. QMUL UNIVERSITY/1. Master Program/3. MSc Project/intent2control-dissertation/statistical-baseline/outputs/real_stimulus_model/INCOMPLETE_PENDING_QMUL_RERUN.txt",
+      "C:/Users/oscar/Documents/7. QMUL UNIVERSITY/1. Master Program/3. MSc Project/intent2control-dissertation/statistical-baseline/outputs/real_feature_model/INCOMPLETE_PENDING_QMUL_RERUN.txt"
+    ],
+    "phase6h1_assessment": "N=33 empirical model manifests and diagnostics are present and diagnostics look satisfactory, but stale/inconsistent INCOMPLETE_PENDING_QMUL_RERUN marker files remain and should be resolved before final dissertation conclusions."
+  },
+  "mixed_effects_refit_required_before_final_conclusions": true
+}

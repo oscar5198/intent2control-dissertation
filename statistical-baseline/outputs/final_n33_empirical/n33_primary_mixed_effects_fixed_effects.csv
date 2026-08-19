@@ -1,0 +1,12 @@
+model,term,mean,hdi_3,hdi_97,sd,ess_bulk,ess_tail,r_hat
+stimulus_model,Intercept,50.302,40.279,60.146,5.297,553.0,885.0,1.01
+stimulus_model,episode[EDR-2],2.202,-1.86,5.874,2.05,3221.0,2941.0,1.0
+stimulus_model,episode[FM-1],-6.675,-10.641,-2.893,2.044,2919.0,2859.0,1.0
+stimulus_model,group[group_02],5.995,-7.258,18.819,7.106,600.0,1035.0,1.01
+primary_feature_model,Intercept,44.8,34.622,55.207,5.437,1223.0,1550.0,1.0
+primary_feature_model,episode[EDR-2],2.231,-1.798,6.13,2.118,4337.0,3117.0,1.0
+primary_feature_model,episode[FM-1],-6.641,-10.627,-2.677,2.122,4576.0,3347.0,1.0
+primary_feature_model,group[group_02],16.766,2.029,32.145,8.083,1153.0,1363.0,1.0
+primary_feature_model,z_RMS,5.284,-0.073,10.389,2.799,1326.0,1894.0,1.0
+primary_feature_model,z_CF,-6.265,-12.443,-0.369,3.197,1317.0,1614.0,1.01
+primary_feature_model,z_SW,-2.795,-8.416,2.679,2.972,1266.0,1793.0,1.0
