@@ -12,7 +12,7 @@ LLM_SRC = REPO_ROOT / "llm-experiments" / "src"
 if str(LLM_SRC) not in sys.path:
     sys.path.insert(0, str(LLM_SRC))
 
-from llm_experiments.inference.phase6g4d_centaur import run_centaur_native_choice_diagnostic, run_centaur_production, run_centaur_runtime_diagnostic  # noqa: E402
+from llm_experiments.inference.phase6g4d_centaur import run_centaur_native_choice_diagnostic, run_centaur_native_likelihood_production, run_centaur_production, run_centaur_runtime_diagnostic  # noqa: E402
 
 
 def main() -> int:
@@ -38,6 +38,23 @@ def main() -> int:
             "protocol_compatibility": diagnostic["protocol_compatibility"],
         }, indent=2))
         return 0 if diagnostic["runtime_success"] else 1
+    if args.native_likelihood_production:
+        summary = run_centaur_native_likelihood_production(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
+        print(json.dumps({
+            "preflight_passed": summary["preflight_passed"],
+            "preflight_failures": summary.get("preflight_failures", []),
+            "guarded_batch_limit": summary["guarded_batch_limit"],
+            "predictions_executed_this_invocation": summary["predictions_executed_this_invocation"],
+            "remaining_predictions": summary["remaining_predictions"],
+            "stopped_after_guarded_batch": summary["stopped_after_guarded_batch"],
+            "attempted_prediction_count": summary["attempted_prediction_count"],
+            "terminal_prediction_count": summary["terminal_prediction_count"],
+            "valid_native_prediction_count": summary["valid_native_prediction_count"],
+            "predicted_ratings_supported": summary["predicted_ratings_supported"],
+            "CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE": summary["CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE"],
+            "ALL_CENTAUR_NATIVE_PREDICTIONS_VALID": summary["ALL_CENTAUR_NATIVE_PREDICTIONS_VALID"],
+        }, indent=2))
+        return 0 if summary["preflight_passed"] else 1
     summary = run_centaur_production(args.repo_root.resolve(), guarded_batch_size=args.guarded_batch_size)
     print(json.dumps({
         "preflight_passed": summary["preflight_passed"],
@@ -62,6 +79,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--guarded-batch-size", type=int, default=5)
     parser.add_argument("--diagnose-runtime", action="store_true", help="Run one non-study local RunPod runtime diagnostic in a separate diagnostic namespace.")
     parser.add_argument("--diagnose-native-choice", action="store_true", help="Run one non-study Centaur-native << >> choice diagnostic in a separate diagnostic namespace.")
+    parser.add_argument("--native-likelihood-production", action="store_true", help="Run guarded Centaur native A-E candidate likelihood production into the Run 02 namespace.")
     parser.add_argument("--diagnostic-max-new-tokens", type=int, default=8)
     return parser.parse_args()
 

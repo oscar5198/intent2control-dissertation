@@ -43,6 +43,20 @@ def fake_preflight() -> dict:
     }
 
 
+def fake_native_preflight() -> dict:
+    return {
+        "schema_version": "phase6g4d_centaur_native_preflight_v1",
+        "passed": True,
+        "checks": {},
+        "failures": [],
+        "centaur_shard_request_count": 396,
+        "condition_counts": {"non_history": 198, "personalised_history": 198},
+        "prompt_hash_mismatches": [],
+        "duplicate_request_ids": [],
+        "ground_truth_dependency": False,
+    }
+
+
 def valid_response() -> dict:
     return {
         "status": "completed",
@@ -193,9 +207,27 @@ def test_centaur_candidate_ranking_is_deterministic_and_does_not_fabricate_ratin
 
     assert ranked["predicted_preferred_mix"] == "B"
     assert ranked["predicted_ranking"] == ["B", "C", "A", "D", "E"]
+    assert abs(sum(ranked["candidate_probabilities"].values()) - 1.0) < 1e-12
     assert ranked["predicted_ratings"] is None
-    assert ranked["ratings_supported"] is False
+    assert ranked["predicted_ratings_supported"] is False
     assert ranked["ground_truth_dependency"] is False
+
+
+def test_native_preflight_accepts_only_native_namespace_and_marker_contract(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(centaur, "run_preflight", lambda repo_root, output_dir=centaur.OUTPUT_DIR: {**fake_preflight(), "checks": {"output_directory_production_centaur_namespace": True}})
+    monkeypatch.setattr(centaur, "native_marker_tokenization_probe", lambda: {"available": True, "valid": True, "left_marker_token_ids": [710], "right_marker_token_ids": [711]})
+    monkeypatch.setattr(centaur, "collect_gpu_metadata", lambda: {"gpu_count": 1, "gpu_names": ["NVIDIA A100 80GB PCIe"]})
+
+    accepted = centaur.run_native_preflight(REPO_ROOT, centaur.CENTAUR_NATIVE_OUTPUT_DIR)
+    rejected = centaur.run_native_preflight(REPO_ROOT, centaur.OUTPUT_DIR)
+
+    assert accepted["passed"] is True
+    assert accepted["checks"]["output_directory_native_centaur_namespace"] is True
+    assert accepted["checks"]["native_candidate_set_exact"] is True
+    assert accepted["checks"]["native_ratings_explicitly_unsupported"] is True
+    assert accepted["expected_candidate_evaluations"] == 1980
+    assert rejected["passed"] is False
+    assert "output_directory_native_centaur_namespace" in rejected["failures"]
 
 
 def test_centaur_response_normalizer_accepts_only_outer_fences() -> None:
@@ -467,7 +499,7 @@ def test_native_choice_diagnostic_is_isolated_and_records_marker_completion(monk
         centaur,
         "invoke_centaur_native_choice_prompt",
         lambda prompt_text, attempt_type, max_new_tokens=8: {
-            "status": "completed",
+            "status": "incomplete",
             "decoded_text": "A>>",
             "metadata": {
                 "model": centaur.REQUEST_MODEL,
@@ -498,6 +530,111 @@ def test_native_choice_diagnostic_is_isolated_and_records_marker_completion(monk
     assert not (diagnostic_out / "predictions.jsonl").exists()
     assert not (diagnostic_out / "attempt_log.jsonl").exists()
     assert_no_secrets(load_json(diagnostic_out / "native_choice_diagnostic.json"))
+
+
+def fake_native_scoring(scores: dict[str, float] | None = None) -> dict:
+    scores = scores or {"A": -2.0, "B": -1.0, "C": -3.0, "D": -4.0, "E": -5.0}
+    ranked = centaur.rank_centaur_candidate_scores(scores)
+    details = []
+    for candidate in centaur.CENTAUR_NATIVE_CANDIDATES:
+        details.append({
+            "candidate": candidate,
+            "candidate_token_ids": [ord(candidate)],
+            "closing_marker_token_ids": [711],
+            "token_log_likelihoods": [scores[candidate]],
+            "log_likelihood": scores[candidate],
+            "mean_token_log_likelihood": scores[candidate],
+            "closing_marker_scored": False,
+            "probability": ranked["candidate_probabilities"][candidate],
+        })
+    return {
+        "schema_version": "phase6g4d_centaur_candidate_likelihood_scores_v1",
+        "native_interface": centaur.centaur_native_interface_record(),
+        "protocol_compatibility": centaur.centaur_protocol_compatibility_record(),
+        "prompt_prefix_sha256": "0" * 64,
+        "candidate_scores": details,
+        "candidate_evaluations": 5,
+        "model_forward_passes": 1,
+        "batched_candidates_per_forward_pass": 5,
+        "scoring_definition": "conditional_log_likelihood_of_candidate_label_tokens_after_exact_left_marker_excluding_prompt_and_closing_marker_tokens",
+        "tie_breaking": "descending_summed_log_likelihood_then_A_to_E_lexical_order",
+        **ranked,
+    }
+
+
+def test_native_prediction_schema_validates_probabilities_and_no_ratings() -> None:
+    shard = load_json(CENTAUR_SHARD)
+    prediction = centaur.build_native_prediction_record(shard["requests"][0], fake_native_scoring(), centaur.CENTAUR_NATIVE_RUN_ID, 0.2)
+    validation = centaur.validate_native_prediction_record(prediction)
+
+    assert validation["valid"] is True
+    assert prediction["predicted_preferred_mix"] == "B"
+    assert prediction["predicted_ranking"] == ["B", "A", "C", "D", "E"]
+    assert set(prediction["candidate_scores"]) == set("ABCDE")
+    assert sum(row["scored_candidate_token_count"] for row in prediction["candidate_scores"].values()) == 5
+    assert all(row["closing_marker_scored"] is False for row in prediction["candidate_scores"].values())
+    assert abs(sum(row["probability"] for row in prediction["candidate_scores"].values()) - 1.0) < 1e-12
+    assert prediction["predicted_ratings_supported"] is False
+    assert prediction["predicted_ratings"] is None
+    assert prediction["ground_truth_dependency"] is False
+
+
+def test_native_likelihood_guarded_batch_resume_duplicate_prevention_and_run01_preservation(monkeypatch, tmp_path) -> None:
+    calls = {"count": 0}
+
+    def fake_score(messages: list[dict[str, str]]) -> dict:
+        calls["count"] += 1
+        return fake_native_scoring()
+
+    out = tmp_path / "phase6g4" / "centaur_native_run_02"
+    legacy_run01 = tmp_path / "phase6g4" / "centaur"
+    legacy_run01.mkdir(parents=True)
+    (legacy_run01 / "predictions.jsonl").write_text("historical\n", encoding="utf-8")
+    monkeypatch.setattr(centaur, "run_native_preflight", lambda repo_root, output_dir=centaur.CENTAUR_NATIVE_OUTPUT_DIR: fake_native_preflight())
+    monkeypatch.setattr(centaur, "invoke_centaur_native_likelihood", fake_score)
+
+    first = centaur.run_centaur_native_likelihood_production(REPO_ROOT, guarded_batch_size=5, output_dir=out)
+    second = centaur.run_centaur_native_likelihood_production(REPO_ROOT, guarded_batch_size=5, output_dir=out)
+    predictions = load_jsonl(out / "native_predictions.jsonl")
+    score_rows = load_jsonl(out / "candidate_score_log.jsonl")
+
+    assert first["predictions_executed_this_invocation"] == 5
+    assert first["remaining_predictions"] == 391
+    assert first["candidate_evaluations_this_invocation"] == 25
+    assert first["model_forward_passes_this_invocation"] == 5
+    assert second["predictions_executed_this_invocation"] == 5
+    assert second["remaining_predictions"] == 386
+    assert calls["count"] == 10
+    assert len(predictions) == 10
+    assert len(score_rows) == 50
+    assert len({row["request_id"] for row in predictions}) == 10
+    assert len({row["prediction_id"] for row in predictions}) == 10
+    assert (legacy_run01 / "predictions.jsonl").read_text(encoding="utf-8") == "historical\n"
+    assert not (legacy_run01 / "native_predictions.jsonl").exists()
+
+
+def test_native_summary_final_396_universe_and_condition_balance() -> None:
+    shard = load_json(CENTAUR_SHARD)
+    predictions = [
+        centaur.build_native_prediction_record(request, fake_native_scoring(), centaur.CENTAUR_NATIVE_RUN_ID, 0.01)
+        for request in shard["requests"]
+    ]
+    manifest = {"run_id": centaur.CENTAUR_NATIVE_RUN_ID, "guarded_batch_limit": 396}
+    summary = centaur.build_native_execution_summary(manifest, predictions, fake_native_preflight(), 386, False, 1930, 386)
+
+    assert summary["expected_predictions"] == 396
+    assert summary["attempted_prediction_count"] == 396
+    assert summary["valid_native_prediction_count"] == 396
+    assert summary["remaining_predictions"] == 0
+    assert summary["non_history_count"] == 198
+    assert summary["personalised_history_count"] == 198
+    assert summary["duplicate_prediction_count"] == 0
+    assert summary["expected_total_candidate_evaluations"] == 1980
+    assert summary["total_candidate_evaluations"] == 1980
+    assert summary["total_model_forward_passes"] == 396
+    assert summary["predicted_ratings_supported"] is False
+    assert summary["CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE"] is True
+    assert summary["ALL_CENTAUR_NATIVE_PREDICTIONS_VALID"] is True
 
 
 def test_immediate_eos_detection_from_token_diagnostics() -> None:

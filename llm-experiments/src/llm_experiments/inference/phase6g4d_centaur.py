@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -27,6 +28,7 @@ from llm_experiments.prompts.prompt_spec import write_json
 
 SCHEMA_VERSION = "phase6g4d_centaur_production_inference_v1"
 OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur")
+CENTAUR_NATIVE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_native_run_02")
 DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_runtime_diagnostics")
 RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
 CENTAUR_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_runpod_centaur_shard_manifest.json")
@@ -41,6 +43,7 @@ PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 
 RUN_ID = "phase6g4d_centaur_production_run_01"
+CENTAUR_NATIVE_RUN_ID = "phase6g4d_centaur_native_run_02"
 MODEL_KEY = "centaur"
 EXPERIMENT_MODEL_LABEL = "Centaur"
 REQUEST_MODEL = "marcelbinz/Llama-3.1-Centaur-70B-adapter"
@@ -140,6 +143,75 @@ def run_centaur_production(repo_root: Path, guarded_batch_size: int = 5, output_
     return summary
 
 
+def run_centaur_native_likelihood_production(
+    repo_root: Path,
+    guarded_batch_size: int = 5,
+    output_dir: Path = CENTAUR_NATIVE_OUTPUT_DIR,
+    run_id: str = CENTAUR_NATIVE_RUN_ID,
+) -> dict[str, Any]:
+    if guarded_batch_size < 1:
+        raise ValueError("--guarded-batch-size must be at least 1")
+    out = repo_root / output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    preflight = run_native_preflight(repo_root, output_dir)
+    run_manifest = build_native_run_manifest(repo_root, preflight, guarded_batch_size, output_dir, run_id)
+    write_json(out / "run_manifest.json", run_manifest)
+    if not preflight["passed"]:
+        summary = build_native_blocked_summary(run_manifest, preflight)
+        write_json(out / "preflight_report.json", preflight)
+        write_json(out / "execution_summary.json", summary)
+        write_json(out / "capability_matrix.json", final_model_capability_matrix())
+        write_native_report(out / "centaur_native_production_qc_report.md", summary, preflight)
+        return summary
+
+    rendered = {row["rendered_prompt_id"]: row for row in load_jsonl(repo_root / RENDERED_PROMPTS)}
+    shard = load_json(repo_root / CENTAUR_SHARD)
+    existing_predictions = load_jsonl(out / "native_predictions.jsonl")
+    completed_ids = {
+        row["request_id"]
+        for row in existing_predictions
+        if row.get("native_status") == "valid_native_likelihood_prediction"
+    }
+    executed_this_invocation = 0
+    stopped_after_guarded_batch = False
+    cumulative_forward_passes = 0
+    cumulative_candidate_evaluations = 0
+
+    for request_ref in shard["requests"]:
+        if request_ref["request_id"] in completed_ids:
+            continue
+        if executed_this_invocation >= guarded_batch_size:
+            stopped_after_guarded_batch = True
+            break
+        started = time.perf_counter()
+        scoring = invoke_centaur_native_likelihood(rendered[request_ref["rendered_prompt_id"]]["messages"])
+        latency = time.perf_counter() - started
+        prediction = build_native_prediction_record(request_ref, scoring, run_id, latency)
+        if not validate_native_prediction_record(prediction)["valid"]:
+            raise RuntimeError(f"invalid native Centaur prediction for {request_ref['request_id']}")
+        append_jsonl(out / "native_predictions.jsonl", [prediction])
+        append_jsonl(out / "candidate_score_log.jsonl", native_candidate_score_rows(prediction))
+        completed_ids.add(request_ref["request_id"])
+        executed_this_invocation += 1
+        cumulative_forward_passes += scoring.get("model_forward_passes", 0)
+        cumulative_candidate_evaluations += scoring.get("candidate_evaluations", 0)
+
+    predictions = load_jsonl(out / "native_predictions.jsonl")
+    summary = build_native_execution_summary(
+        run_manifest,
+        predictions,
+        preflight,
+        executed_this_invocation,
+        stopped_after_guarded_batch,
+        cumulative_candidate_evaluations,
+        cumulative_forward_passes,
+    )
+    write_json(out / "execution_summary.json", summary)
+    write_json(out / "capability_matrix.json", final_model_capability_matrix())
+    write_native_report(out / "centaur_native_production_qc_report.md", summary, preflight)
+    return summary
+
+
 def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, Any]:
     prompt_verification = verify_prompt_package(repo_root)
     phase6g1 = load_json(repo_root / PHASE6G1_GATE)
@@ -201,6 +273,57 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
         "credential_policy": "Frozen backend records RunPod endpoint/token env vars, but local in-pod FastLanguageModel.generate does not serialize credential values.",
         "ground_truth_dependency": False,
         "deployment_summary": deployment_summary(repo_root),
+    }
+
+
+def run_native_preflight(repo_root: Path, output_dir: Path = CENTAUR_NATIVE_OUTPUT_DIR) -> dict[str, Any]:
+    base = run_preflight(repo_root, OUTPUT_DIR)
+    shard = load_json(repo_root / CENTAUR_SHARD)
+    requests = shard.get("requests", [])
+    condition_counts = Counter(row["condition"] for row in requests)
+    marker_tokenization = native_marker_tokenization_probe()
+    gpu_metadata = collect_gpu_metadata()
+    checks = {
+        key: value
+        for key, value in base["checks"].items()
+        if key != "output_directory_production_centaur_namespace"
+    }
+    checks.update({
+        "output_directory_native_centaur_namespace": repo_relative_output_path(repo_root, output_dir) == CENTAUR_NATIVE_OUTPUT_DIR.as_posix(),
+        "original_run01_namespace_separate": CENTAUR_NATIVE_OUTPUT_DIR.as_posix() != OUTPUT_DIR.as_posix(),
+        "native_left_marker_exact": CENTAUR_LEFT_CHOICE_MARKER == " <<",
+        "native_right_marker_exact": CENTAUR_RIGHT_CHOICE_MARKER == ">>",
+        "native_candidate_set_exact": CENTAUR_NATIVE_CANDIDATES == ("A", "B", "C", "D", "E"),
+        "native_marker_tokenization_available": marker_tokenization["available"],
+        "native_marker_tokenization_valid": marker_tokenization["valid"],
+        "a100_deployment_expectation": any("A100" in str(name) for name in gpu_metadata.get("gpu_names", [])),
+        "native_ratings_explicitly_unsupported": centaur_protocol_compatibility_record()["rating_error_metrics_comparable"] is False,
+        "no_hidden_ground_truth_loaded": not shard.get("contains_hidden_ground_truth", False),
+    })
+    failures = [key for key, value in checks.items() if not value]
+    return {
+        "schema_version": "phase6g4d_centaur_native_preflight_v1",
+        "checked_at_utc": iso_now(),
+        "passed": not failures,
+        "checks": checks,
+        "failures": failures,
+        "centaur_shard_request_count": len(requests),
+        "condition_counts": dict(sorted(condition_counts.items())),
+        "prompt_hash_mismatches": base["prompt_hash_mismatches"],
+        "duplicate_request_ids": base["duplicate_request_ids"],
+        "native_marker_tokenization": marker_tokenization,
+        "gpu": gpu_metadata,
+        "native_candidate_set": list(CENTAUR_NATIVE_CANDIDATES),
+        "expected_candidate_evaluations": len(requests) * len(CENTAUR_NATIVE_CANDIDATES),
+        "expected_request_count": 396,
+        "expected_condition_counts": {"non_history": 198, "personalised_history": 198},
+        "runtime_policy": "Run inside verified RunPod /workspace/unsloth_env with local cached adapter/base snapshots only.",
+        "native_output_namespace": CENTAUR_NATIVE_OUTPUT_DIR.as_posix(),
+        "source_json_run01_namespace": OUTPUT_DIR.as_posix(),
+        "run01_preservation_policy": "Original generic-JSON Run 01 remains immutable historical interface-failure evidence.",
+        "ground_truth_dependency": False,
+        "protocol_compatibility": centaur_protocol_compatibility_record(),
+        "capability_matrix": final_model_capability_matrix(),
     }
 
 
@@ -428,7 +551,6 @@ def run_centaur_native_choice_diagnostic(
         provider = invoke_centaur_native_choice_prompt(prompt_text, "native_choice_diagnostic", max_new_tokens=max_new_tokens)
         metadata = provider.get("metadata") or {}
         native_completion = parse_native_choice_completion(provider.get("decoded_text") or "")
-        manifest["runtime_success"] = provider.get("status") == "completed"
         manifest["provider_metadata"] = sanitize_provider_metadata(metadata)
         manifest["runtime_diagnostic"] = {
             "status": provider.get("status"),
@@ -446,6 +568,7 @@ def run_centaur_native_choice_diagnostic(
             "valid_native_choice_completion": native_completion["valid_native_choice_completion"],
             "generation_stop_interpretation": metadata.get("generation_stop_interpretation"),
         }
+        manifest["runtime_success"] = native_generation_diagnostic_success(manifest["runtime_diagnostic"])
     except Exception as exc:  # pragma: no cover - live RunPod diagnostic only
         manifest["runtime_diagnostic"] = centaur_exception_diagnostics(exc)
     write_json(out / "native_choice_diagnostic.json", manifest)
@@ -505,6 +628,13 @@ def parse_native_choice_completion(decoded_text: str) -> dict[str, Any]:
         "closing_marker_observed": closing_marker_observed,
         "valid_native_choice_completion": completion_text in CENTAUR_NATIVE_CANDIDATES,
     }
+
+
+def native_generation_diagnostic_success(runtime_diagnostic: dict[str, Any]) -> bool:
+    return bool(
+        runtime_diagnostic.get("valid_native_choice_completion") is True
+        and runtime_diagnostic.get("closing_marker_observed") is True
+    )
 
 
 def centaur_native_interface_record() -> dict[str, Any]:
@@ -673,15 +803,26 @@ def build_centaur_candidate_scoring_prompts(
 
 def rank_centaur_candidate_scores(candidate_scores: dict[str, float]) -> dict[str, Any]:
     ranking = sorted(candidate_scores, key=lambda candidate: (-candidate_scores[candidate], candidate))
+    probabilities = softmax_probabilities(candidate_scores)
     return {
         "predicted_preferred_mix": ranking[0] if ranking else None,
         "predicted_ranking": ranking,
         "candidate_log_likelihoods": {candidate: candidate_scores[candidate] for candidate in ranking},
+        "candidate_probabilities": {candidate: probabilities[candidate] for candidate in ranking},
         "predicted_ratings": None,
-        "ratings_supported": False,
+        "predicted_ratings_supported": False,
         "ratings_policy": centaur_protocol_compatibility_record()["ratings_output_policy"],
         "ground_truth_dependency": False,
     }
+
+
+def softmax_probabilities(candidate_scores: dict[str, float]) -> dict[str, float]:
+    if not candidate_scores:
+        return {}
+    max_score = max(candidate_scores.values())
+    exp_scores = {candidate: math.exp(score - max_score) for candidate, score in candidate_scores.items()}
+    denominator = sum(exp_scores.values())
+    return {candidate: value / denominator for candidate, value in exp_scores.items()}
 
 
 def score_centaur_choice_candidates(
@@ -696,18 +837,28 @@ def score_centaur_choice_candidates(
         raise CentaurRuntimeError("runtime_import", exc) from exc
 
     prompt_prefix = build_centaur_native_choice_prompt(messages)
+    plans = [centaur_candidate_scoring_plan(tokenizer, prompt_prefix, candidate) for candidate in candidates]
+    full_id_rows = [plan["full_token_ids"] for plan in plans]
+    max_len = max(len(row) for row in full_id_rows)
+    pad_token_id = safe_int(getattr(tokenizer, "pad_token_id", None))
+    if pad_token_id is None:
+        pad_token_id = safe_int(getattr(tokenizer, "eos_token_id", None)) or 0
+    padded_rows = [row + [pad_token_id] * (max_len - len(row)) for row in full_id_rows]
+    attention_rows = [[1] * len(row) + [0] * (max_len - len(row)) for row in full_id_rows]
+    device = resolve_model_device(model)
+    input_ids = torch.tensor(padded_rows, device=device)
+    attention_mask = torch.tensor(attention_rows, device=device)
+    with torch.inference_mode():
+        outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+    logits = outputs.logits
     scores: dict[str, float] = {}
     details = []
-    for candidate in candidates:
-        plan = centaur_candidate_scoring_plan(tokenizer, prompt_prefix, candidate)
+    for row_index, plan in enumerate(plans):
+        candidate = plan["candidate"]
         full_ids = plan["full_token_ids"]
         scored_start = plan["scored_start"]
         scored_end = plan["scored_end"]
-        input_ids = torch.tensor([full_ids], device=resolve_model_device(model))
-        with torch.inference_mode():
-            outputs = model(input_ids=input_ids)
-        logits = outputs.logits[0]
-        log_probs = torch.nn.functional.log_softmax(logits.float(), dim=-1)
+        log_probs = torch.nn.functional.log_softmax(logits[row_index].float(), dim=-1)
         token_log_likelihoods = []
         for token_position in range(scored_start, scored_end):
             target_token_id = full_ids[token_position]
@@ -722,14 +873,23 @@ def score_centaur_choice_candidates(
             "closing_marker_scored": False,
             "token_log_likelihoods": token_log_likelihoods,
             "log_likelihood": score,
+            "mean_token_log_likelihood": score / len(token_log_likelihoods) if token_log_likelihoods else None,
         })
     ranked = rank_centaur_candidate_scores(scores)
+    probabilities = ranked["candidate_probabilities"]
+    for detail in details:
+        detail["probability"] = probabilities[detail["candidate"]]
     return {
         "schema_version": "phase6g4d_centaur_candidate_likelihood_scores_v1",
         "native_interface": centaur_native_interface_record(),
         "protocol_compatibility": centaur_protocol_compatibility_record(),
         "prompt_prefix_sha256": hashlib.sha256(prompt_prefix.encode("utf-8")).hexdigest(),
         "candidate_scores": details,
+        "candidate_evaluations": len(details),
+        "model_forward_passes": 1,
+        "batched_candidates_per_forward_pass": len(details),
+        "scoring_definition": "conditional_log_likelihood_of_candidate_label_tokens_after_exact_left_marker_excluding_prompt_and_closing_marker_tokens",
+        "tie_breaking": "descending_summed_log_likelihood_then_A_to_E_lexical_order",
         **ranked,
     }
 
@@ -896,6 +1056,311 @@ def build_empty_response_recovery_manifest(
         "ground_truth_dependency": False,
         "execute_recovery_now": False,
     }
+
+
+def invoke_centaur_native_likelihood(messages: list[dict[str, str]]) -> dict[str, Any]:
+    global _MODEL, _TOKENIZER
+    try:
+        from unsloth import FastLanguageModel  # type: ignore[import-not-found]
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("runtime_import", exc) from exc
+    if _TOKENIZER is None or _MODEL is None:
+        try:
+            adapter_path = prepare_offline_adapter_copy()
+        except Exception as exc:  # pragma: no cover
+            raise CentaurRuntimeError("adapter_config_prepare", exc) from exc
+        try:
+            _MODEL, _TOKENIZER = FastLanguageModel.from_pretrained(model_name=adapter_path, max_seq_length=MAX_SEQ_LENGTH, dtype=None, load_in_4bit=True)
+            FastLanguageModel.for_inference(_MODEL)
+        except Exception as exc:  # pragma: no cover
+            raise CentaurRuntimeError("model_load", exc) from exc
+    try:
+        return score_centaur_choice_candidates(_MODEL, _TOKENIZER, messages)
+    except CentaurRuntimeError:
+        raise
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("native_likelihood_scoring", exc) from exc
+
+
+def build_native_prediction_record(
+    request_ref: dict[str, Any],
+    scoring: dict[str, Any],
+    run_id: str,
+    latency_seconds: float,
+) -> dict[str, Any]:
+    return {
+        "schema_version": "phase6g4d_centaur_native_prediction_v1",
+        "run_id": run_id,
+        "request_id": request_ref["request_id"],
+        "prediction_id": native_prediction_id(request_ref),
+        "rendered_prompt_id": request_ref["rendered_prompt_id"],
+        "prediction_example_id": request_ref["prediction_example_id"],
+        "condition": request_ref["condition"],
+        "model_key": MODEL_KEY,
+        "experiment_model_label": EXPERIMENT_MODEL_LABEL,
+        "exact_requested_backend_model": REQUEST_MODEL,
+        "actual_returned_model": REQUEST_MODEL,
+        "model_revision": REVISION,
+        "base_model": BASE_MODEL,
+        "base_revision": BASE_REVISION,
+        "backend_key": BACKEND_KEY,
+        "backend_type": BACKEND_TYPE,
+        "prompt_hash": request_ref["prompt_hash"],
+        "inference_config_hash": native_inference_config_hash(),
+        "native_status": "valid_native_likelihood_prediction",
+        "terminal": True,
+        "predicted_preferred_mix": scoring["predicted_preferred_mix"],
+        "predicted_ranking": scoring["predicted_ranking"],
+        "candidate_scores": native_candidate_scores_by_label(scoring["candidate_scores"]),
+        "candidate_log_likelihoods": scoring["candidate_log_likelihoods"],
+        "candidate_probabilities": scoring["candidate_probabilities"],
+        "predicted_ratings_supported": False,
+        "predicted_ratings": None,
+        "ratings_policy": scoring["ratings_policy"],
+        "native_interface": scoring["native_interface"],
+        "protocol_compatibility": scoring["protocol_compatibility"],
+        "scoring_definition": scoring["scoring_definition"],
+        "tie_breaking": scoring["tie_breaking"],
+        "candidate_evaluations": scoring["candidate_evaluations"],
+        "model_forward_passes": scoring["model_forward_passes"],
+        "batched_candidates_per_forward_pass": scoring["batched_candidates_per_forward_pass"],
+        "latency_seconds": latency_seconds,
+        "ground_truth_dependency": False,
+    }
+
+
+def native_candidate_scores_by_label(candidate_scores: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        row["candidate"]: {
+            "candidate_completion_text": row["candidate"] + CENTAUR_RIGHT_CHOICE_MARKER,
+            "candidate_token_ids": row["candidate_token_ids"],
+            "token_log_probabilities": row["token_log_likelihoods"],
+            "log_likelihood": row["log_likelihood"],
+            "mean_token_log_likelihood": row["mean_token_log_likelihood"],
+            "scored_candidate_token_count": len(row["candidate_token_ids"]),
+            "closing_marker_token_ids": row["closing_marker_token_ids"],
+            "closing_marker_scored": row["closing_marker_scored"],
+            "probability": row["probability"],
+        }
+        for row in candidate_scores
+    }
+
+
+def native_candidate_score_rows(prediction: dict[str, Any]) -> list[dict[str, Any]]:
+    rows = []
+    for candidate, score in prediction["candidate_scores"].items():
+        rows.append({
+            "schema_version": "phase6g4d_centaur_native_candidate_score_v1",
+            "run_id": prediction["run_id"],
+            "request_id": prediction["request_id"],
+            "prediction_id": prediction["prediction_id"],
+            "rendered_prompt_id": prediction["rendered_prompt_id"],
+            "condition": prediction["condition"],
+            "candidate": candidate,
+            **score,
+            "ground_truth_dependency": False,
+        })
+    return rows
+
+
+def validate_native_prediction_record(prediction: dict[str, Any]) -> dict[str, Any]:
+    errors = []
+    if prediction.get("predicted_preferred_mix") not in CENTAUR_NATIVE_CANDIDATES:
+        errors.append("preferred_mix_not_in_A_E")
+    ranking = prediction.get("predicted_ranking")
+    if sorted(ranking or []) != list(CENTAUR_NATIVE_CANDIDATES):
+        errors.append("ranking_not_complete_A_E")
+    scores = prediction.get("candidate_scores") or {}
+    if set(scores) != set(CENTAUR_NATIVE_CANDIDATES):
+        errors.append("candidate_scores_not_complete_A_E")
+    probabilities = []
+    for candidate in CENTAUR_NATIVE_CANDIDATES:
+        score = scores.get(candidate) or {}
+        if not math.isfinite(float(score.get("log_likelihood", float("nan")))):
+            errors.append(f"{candidate}_log_likelihood_not_finite")
+        probability = score.get("probability")
+        if probability is None or not math.isfinite(float(probability)):
+            errors.append(f"{candidate}_probability_not_finite")
+        else:
+            probabilities.append(float(probability))
+        if score.get("scored_candidate_token_count", 0) < 1:
+            errors.append(f"{candidate}_missing_scored_tokens")
+    if probabilities and not math.isclose(sum(probabilities), 1.0, rel_tol=1e-6, abs_tol=1e-6):
+        errors.append("candidate_probabilities_do_not_sum_to_one")
+    if prediction.get("predicted_ratings_supported") is not False or prediction.get("predicted_ratings") is not None:
+        errors.append("ratings_fabricated_or_not_marked_unsupported")
+    return {"valid": not errors, "errors": errors}
+
+
+def build_native_run_manifest(
+    repo_root: Path,
+    preflight: dict[str, Any],
+    guarded_batch_size: int,
+    output_dir: Path,
+    run_id: str,
+) -> dict[str, Any]:
+    shard = load_json(repo_root / CENTAUR_SHARD)
+    return {
+        "schema_version": "phase6g4d_centaur_native_run_manifest_v1",
+        "run_id": run_id,
+        "created_at_utc": iso_now(),
+        "run_type": "final_real_centaur_native_likelihood_production_inference",
+        "source_json_run01_namespace": OUTPUT_DIR.as_posix(),
+        "source_json_run01_preserved_as_historical_interface_failure": True,
+        "native_output_namespace": str(output_dir).replace("\\", "/"),
+        "model_key": MODEL_KEY,
+        "experiment_model_label": EXPERIMENT_MODEL_LABEL,
+        "exact_backend_model_id": REQUEST_MODEL,
+        "revision": REVISION,
+        "adapter_snapshot": ADAPTER_SNAPSHOT.as_posix(),
+        "base_model": BASE_MODEL,
+        "base_revision": BASE_REVISION,
+        "base_snapshot": BASE_SNAPSHOT.as_posix(),
+        "backend_key": BACKEND_KEY,
+        "backend_type": BACKEND_TYPE,
+        "request_api": "FastLanguageModel.forward_logits",
+        "python_executable": PYTHON_EXECUTABLE,
+        "rendered_prompt_dataset": str(RENDERED_PROMPTS).replace("\\", "/"),
+        "rendered_prompt_dataset_sha256": sha256_file(repo_root / RENDERED_PROMPTS),
+        "centaur_shard_manifest": str(CENTAUR_SHARD).replace("\\", "/"),
+        "centaur_shard_sha256": sha256_file(repo_root / CENTAUR_SHARD),
+        "expected_request_count": 396,
+        "shard_request_count": len(shard.get("requests", [])),
+        "expected_candidate_evaluations": len(shard.get("requests", [])) * len(CENTAUR_NATIVE_CANDIDATES),
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": guarded_batch_size,
+        "preflight": preflight,
+        "native_interface": centaur_native_interface_record(),
+        "protocol_compatibility": centaur_protocol_compatibility_record(),
+        "candidate_set": list(CENTAUR_NATIVE_CANDIDATES),
+        "candidate_completion_syntax": {candidate: candidate + CENTAUR_RIGHT_CHOICE_MARKER for candidate in CENTAUR_NATIVE_CANDIDATES},
+        "scoring_definition": "conditional_log_likelihood_of_candidate_label_tokens_after_exact_left_marker_excluding_prompt_and_closing_marker_tokens",
+        "scoring_batching": "five_A_E_candidates_for_one_request_in_one_forward_pass",
+        "tie_breaking": "descending_summed_log_likelihood_then_A_to_E_lexical_order",
+        "contains_hidden_ground_truth": False,
+    }
+
+
+def build_native_execution_summary(
+    run_manifest: dict[str, Any],
+    predictions: list[dict[str, Any]],
+    preflight: dict[str, Any],
+    executed_this_invocation: int,
+    stopped_after_guarded_batch: bool,
+    candidate_evaluations_this_invocation: int,
+    model_forward_passes_this_invocation: int,
+) -> dict[str, Any]:
+    conditions = Counter(row["condition"] for row in predictions)
+    validations = [validate_native_prediction_record(row) for row in predictions]
+    valid_count = sum(1 for row in validations if row["valid"])
+    duplicate_prediction_count = len(duplicate_values([row["prediction_id"] for row in predictions]))
+    terminal_count = sum(1 for row in predictions if row.get("terminal"))
+    remaining = max(0, 396 - valid_count)
+    total_candidate_evaluations = sum(row.get("candidate_evaluations", 0) for row in predictions)
+    total_forward_passes = sum(row.get("model_forward_passes", 0) for row in predictions)
+    return {
+        "schema_version": "phase6g4d_centaur_native_execution_summary_v1",
+        "run_id": run_manifest["run_id"],
+        "preflight_passed": preflight["passed"],
+        "expected_predictions": 396,
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": run_manifest["guarded_batch_limit"],
+        "predictions_executed_this_invocation": executed_this_invocation,
+        "remaining_predictions": remaining,
+        "stopped_after_guarded_batch": stopped_after_guarded_batch,
+        "attempted_prediction_count": len(predictions),
+        "terminal_prediction_count": terminal_count,
+        "valid_native_prediction_count": valid_count,
+        "non_history_count": conditions.get("non_history", 0),
+        "personalised_history_count": conditions.get("personalised_history", 0),
+        "duplicate_prediction_count": duplicate_prediction_count,
+        "candidate_evaluations_this_invocation": candidate_evaluations_this_invocation,
+        "model_forward_passes_this_invocation": model_forward_passes_this_invocation,
+        "total_candidate_evaluations": total_candidate_evaluations,
+        "total_model_forward_passes": total_forward_passes,
+        "expected_total_candidate_evaluations": 396 * len(CENTAUR_NATIVE_CANDIDATES),
+        "predicted_ratings_supported": False,
+        "ground_truth_dependency": False,
+        "protocol_compatibility": centaur_protocol_compatibility_record(),
+        "CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE": len(predictions) == 396 and valid_count == 396 and duplicate_prediction_count == 0,
+        "ALL_CENTAUR_NATIVE_PREDICTIONS_VALID": len(predictions) == 396 and valid_count == 396 and duplicate_prediction_count == 0,
+    }
+
+
+def build_native_blocked_summary(run_manifest: dict[str, Any], preflight: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema_version": "phase6g4d_centaur_native_execution_summary_v1",
+        "run_id": run_manifest["run_id"],
+        "preflight_passed": False,
+        "preflight_failures": preflight["failures"],
+        "expected_predictions": 396,
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": run_manifest["guarded_batch_limit"],
+        "predictions_executed_this_invocation": 0,
+        "remaining_predictions": 396,
+        "stopped_after_guarded_batch": False,
+        "attempted_prediction_count": 0,
+        "terminal_prediction_count": 0,
+        "valid_native_prediction_count": 0,
+        "non_history_count": 0,
+        "personalised_history_count": 0,
+        "duplicate_prediction_count": 0,
+        "candidate_evaluations_this_invocation": 0,
+        "model_forward_passes_this_invocation": 0,
+        "total_candidate_evaluations": 0,
+        "total_model_forward_passes": 0,
+        "expected_total_candidate_evaluations": 396 * len(CENTAUR_NATIVE_CANDIDATES),
+        "predicted_ratings_supported": False,
+        "ground_truth_dependency": False,
+        "protocol_compatibility": centaur_protocol_compatibility_record(),
+        "CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE": False,
+        "ALL_CENTAUR_NATIVE_PREDICTIONS_VALID": False,
+    }
+
+
+def final_model_capability_matrix() -> dict[str, Any]:
+    return {
+        "schema_version": "phase6g4d_model_capability_matrix_v1",
+        "models": {
+            "gpt": {"winner": "supported", "ranking": "supported", "rating": "supported"},
+            "claude_sonnet": {"winner": "supported", "ranking": "supported", "rating": "supported"},
+            "llama_3_1_70b_instruct": {"winner": "supported", "ranking": "supported", "rating": "supported"},
+            "centaur": {
+                "winner": "supported_native_candidate_likelihood",
+                "ranking": "supported_native_candidate_likelihood",
+                "rating": "unsupported",
+            },
+        },
+        "evaluation_policy": {
+            "winner_metrics": "all_four_models",
+            "ranking_metrics": "all_four_models",
+            "rating_error_metrics": "models_with_genuine_rating_predictions_only_exclude_centaur",
+        },
+        "ground_truth_dependency": False,
+    }
+
+
+def write_native_report(path: Path, summary: dict[str, Any], preflight: dict[str, Any]) -> None:
+    lines = [
+        "# Phase 6G.4D Centaur Native Production QC Report",
+        "",
+        f"- Preflight passed: `{str(preflight['passed']).lower()}`",
+        f"- Preflight failures: `{preflight['failures']}`",
+        f"- Native output namespace: `{CENTAUR_NATIVE_OUTPUT_DIR.as_posix()}`",
+        f"- Source Run 01 preserved: `{OUTPUT_DIR.as_posix()}`",
+        f"- Candidate syntax: `A>>`, `B>>`, `C>>`, `D>>`, `E>>` after prompt suffix ` <<`",
+        f"- Scoring: `{summary.get('protocol_compatibility', {}).get('winner_accuracy_basis', '')}`",
+        f"- Attempted predictions: `{summary['attempted_prediction_count']}`",
+        f"- Remaining predictions: `{summary['remaining_predictions']}`",
+        f"- Valid native predictions: `{summary['valid_native_prediction_count']}`",
+        f"- Rating predictions supported: `{str(summary['predicted_ratings_supported']).lower()}`",
+        f"- `CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE`: `{str(summary['CENTAUR_NATIVE_PRODUCTION_INFERENCE_COMPLETE']).lower()}`",
+        f"- `ALL_CENTAUR_NATIVE_PREDICTIONS_VALID`: `{str(summary['ALL_CENTAUR_NATIVE_PREDICTIONS_VALID']).lower()}`",
+        "",
+        "No accuracy, scoring against human ground truth, GPT, Claude, or Llama execution is included.",
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def build_attempt_record(request_ref: dict[str, Any], prompt_hash: str, attempt_type: str, attempt_number: int, transport_attempt: int, request_status: str, raw_text: str | None, normalized: dict[str, Any], validation: dict[str, Any], provider: dict[str, Any], failure: dict[str, Any], latency: float, started_at: str, run_id: str) -> dict[str, Any]:
@@ -1244,6 +1709,61 @@ def inference_config_hash() -> str:
     return sha256_json({"model": REQUEST_MODEL, **inference_parameters()})
 
 
+def native_prediction_id(request_ref: dict[str, Any]) -> str:
+    stable = "::".join([request_ref["rendered_prompt_id"], MODEL_KEY, "phase6g4d_centaur_native_likelihood"])
+    return f"phase6g4d_centaur_native_pred_{hashlib.sha256(stable.encode('utf-8')).hexdigest()[:32]}"
+
+
+def native_inference_config_hash() -> str:
+    return sha256_json({
+        "model": REQUEST_MODEL,
+        "adapter_revision": REVISION,
+        "base_revision": BASE_REVISION,
+        "native_left_marker": CENTAUR_LEFT_CHOICE_MARKER,
+        "native_right_marker": CENTAUR_RIGHT_CHOICE_MARKER,
+        "candidate_set": list(CENTAUR_NATIVE_CANDIDATES),
+        "scoring_definition": "conditional_log_likelihood_candidate_label_tokens_only",
+        "predicted_ratings_supported": False,
+    })
+
+
+def native_marker_tokenization_probe() -> dict[str, Any]:
+    global _MODEL, _TOKENIZER
+    if not (ADAPTER_SNAPSHOT.exists() and BASE_SNAPSHOT.exists()):
+        return {
+            "available": False,
+            "valid": False,
+            "reason": "local_adapter_or_base_snapshot_missing",
+            "left_marker": CENTAUR_LEFT_CHOICE_MARKER,
+            "right_marker": CENTAUR_RIGHT_CHOICE_MARKER,
+        }
+    try:
+        from unsloth import FastLanguageModel  # type: ignore[import-not-found]
+
+        if _TOKENIZER is None or _MODEL is None:
+            adapter_path = prepare_offline_adapter_copy()
+            _MODEL, _TOKENIZER = FastLanguageModel.from_pretrained(model_name=adapter_path, max_seq_length=MAX_SEQ_LENGTH, dtype=None, load_in_4bit=True)
+            FastLanguageModel.for_inference(_MODEL)
+        left_ids, right_ids = centaur_choice_marker_token_ids(_TOKENIZER)
+        return {
+            "available": True,
+            "valid": bool(left_ids and right_ids),
+            "left_marker": CENTAUR_LEFT_CHOICE_MARKER,
+            "right_marker": CENTAUR_RIGHT_CHOICE_MARKER,
+            "left_marker_token_ids": left_ids,
+            "right_marker_token_ids": right_ids,
+            "candidate_set": list(CENTAUR_NATIVE_CANDIDATES),
+        }
+    except Exception as exc:  # pragma: no cover - live RunPod preflight only
+        return {
+            "available": False,
+            "valid": False,
+            "reason": sanitize_exception_message(str(exc)),
+            "left_marker": CENTAUR_LEFT_CHOICE_MARKER,
+            "right_marker": CENTAUR_RIGHT_CHOICE_MARKER,
+        }
+
+
 def ensure_named_model_inputs(model_inputs: Any) -> dict[str, Any]:
     if not hasattr(model_inputs, "keys"):
         raise TypeError("tokenizer output did not return a mapping of named model inputs")
@@ -1264,6 +1784,19 @@ def cuda_is_available() -> bool:
         return bool(torch.cuda.is_available())
     except Exception:
         return False
+
+
+def collect_gpu_metadata() -> dict[str, Any]:
+    try:
+        import torch  # type: ignore[import-not-found]
+
+        count = torch.cuda.device_count()
+        return {
+            "gpu_count": count,
+            "gpu_names": [torch.cuda.get_device_name(index) for index in range(count)],
+        }
+    except Exception:
+        return {"gpu_count": 0, "gpu_names": []}
 
 
 def is_cuda_oom(exc: BaseException) -> bool:
