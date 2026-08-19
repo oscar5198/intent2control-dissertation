@@ -1,0 +1,133 @@
+{
+  "schema_version": "phase6g4d_centaur_runtime_diagnostic_v1",
+  "created_at_utc": "2026-08-19T03:51:24.837947+00:00",
+  "diagnostic_only": true,
+  "appends_production_predictions": false,
+  "appends_production_attempt_log": false,
+  "ground_truth_dependency": false,
+  "prompt_source": "synthetic_non_study_minimal_prompt",
+  "exact_backend_model_id": "marcelbinz/Llama-3.1-Centaur-70B-adapter",
+  "revision": "159600db8be99dc183c289923148dfd96cbd8e07",
+  "base_model": "unsloth/Meta-Llama-3.1-70B-bnb-4bit",
+  "base_revision": "a009b8db2439814febe725486a5ed388f12a8744",
+  "adapter_snapshot": "/workspace/huggingface/hub/models--marcelbinz--Llama-3.1-Centaur-70B-adapter/snapshots/159600db8be99dc183c289923148dfd96cbd8e07",
+  "base_snapshot": "/workspace/huggingface/hub/models--unsloth--Meta-Llama-3.1-70B-bnb-4bit/snapshots/a009b8db2439814febe725486a5ed388f12a8744",
+  "backend_type": "runpod_centaur_adapter",
+  "request_api": "FastLanguageModel.generate",
+  "production_max_new_tokens": 256,
+  "diagnostic_max_new_tokens": 8,
+  "preflight_passed": true,
+  "preflight_failures": [],
+  "runtime_success": true,
+  "runtime_diagnostic": {
+    "status": "completed",
+    "incomplete_details": null,
+    "decoded_text_preview": "",
+    "decoded_text_with_special_tokens_preview": "<|end_of_text|>",
+    "prompt_serialization_strategy": "phase6g2c_verified_raw_prompt_text_no_chat_template",
+    "tokenizer_invocation": "tokenizer(prompt_text, return_tensors='pt')['input_ids']",
+    "generation_invocation": "model.generate(input_ids, max_new_tokens=N, do_sample=False, pad_token_id=tokenizer.eos_token_id)",
+    "prompt_token_count": 21,
+    "first_input_token_ids": [
+      128000,
+      2675,
+      527,
+      264,
+      15439,
+      15964,
+      42015,
+      13
+    ],
+    "last_input_token_ids": [
+      1665,
+      382,
+      5018,
+      8747,
+      12219,
+      3332,
+      564,
+      9388
+    ],
+    "generated_token_ids": [
+      128001
+    ],
+    "generated_token_count": 1,
+    "eos_token_id": 128001,
+    "bos_token_id": 128000,
+    "pad_token_id": 0,
+    "eot_token_id": 128009,
+    "first_generated_token_equals_eos_or_eot": true,
+    "tokenizer_chat_template_available": false,
+    "special_tokens_map": {
+      "bos_token": "<|begin_of_text|>",
+      "eos_token": "<|end_of_text|>",
+      "pad_token": "!"
+    },
+    "generation_stop_interpretation": "immediate_eos_or_eot_special_token"
+  },
+  "provider_metadata": {
+    "model": "marcelbinz/Llama-3.1-Centaur-70B-adapter",
+    "revision": "159600db8be99dc183c289923148dfd96cbd8e07",
+    "base_model": "unsloth/Meta-Llama-3.1-70B-bnb-4bit",
+    "base_revision": "a009b8db2439814febe725486a5ed388f12a8744",
+    "request_api": "FastLanguageModel.generate",
+    "attempt_type": "runtime_diagnostic",
+    "latency_seconds": 5.230580085888505,
+    "backend_type": "runpod_centaur_adapter",
+    "generated_token_count": 1,
+    "diagnostic_max_new_tokens": 8,
+    "prompt_serialization_strategy": "phase6g2c_verified_raw_prompt_text_no_chat_template",
+    "message_serialization": "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes",
+    "tokenizer_invocation": "tokenizer(prompt_text, return_tensors='pt')['input_ids']",
+    "generation_invocation": "model.generate(input_ids, max_new_tokens=N, do_sample=False, pad_token_id=tokenizer.eos_token_id)",
+    "uses_tokenizer_chat_template": false,
+    "manual_llama3_chat_headers_used": false,
+    "assistant_generation_header_appended": false,
+    "bos_handling": "tokenizer_default_for_raw_prompt_text",
+    "eos_eot_handling": "pad_token_id_set_to_tokenizer_eos_token_id_no_explicit_stop_sequences",
+    "prompt_token_count": 21,
+    "first_input_token_ids": [
+      128000,
+      2675,
+      527,
+      264,
+      15439,
+      15964,
+      42015,
+      13
+    ],
+    "last_input_token_ids": [
+      1665,
+      382,
+      5018,
+      8747,
+      12219,
+      3332,
+      564,
+      9388
+    ],
+    "generated_token_ids": [
+      128001
+    ],
+    "eos_token_id": 128001,
+    "bos_token_id": 128000,
+    "pad_token_id": 0,
+    "eot_token_id": 128009,
+    "first_generated_token_equals_eos_or_eot": true,
+    "tokenizer_chat_template_available": false,
+    "special_tokens_map": {
+      "bos_token": "<|begin_of_text|>",
+      "eos_token": "<|end_of_text|>",
+      "pad_token": "!"
+    },
+    "decoded_text_skip_special_tokens": "",
+    "decoded_text_with_special_tokens": "<|end_of_text|>",
+    "generation_stop_interpretation": "immediate_eos_or_eot_special_token"
+  },
+  "transport_comparison": {
+    "verified_path": "phase6g2c_verified_raw_prompt_text_no_chat_template",
+    "raw_concatenation_path": "same semantic message concatenation; production transport now matches verified Phase 6G.2C tokenization/generation invocation",
+    "diagnostic_only": true,
+    "uses_study_prompts": false
+  }
+}
