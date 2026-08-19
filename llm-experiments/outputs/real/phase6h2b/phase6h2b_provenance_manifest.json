@@ -1,0 +1,21 @@
+{
+  "schema_version": "phase6h2b_provenance_manifest_v1",
+  "created_at_utc": "2026-08-19T22:01:52.597309+00:00",
+  "source_hashes": {
+    "llm-experiments/outputs/real/phase6g5/final_llm_prediction_freeze_manifest.json": "3cf75b92bff8bf6807cd1e891a6db6a9306230c5de30721395db945f3e15a7d5",
+    "llm-experiments/outputs/real/phase6g5/final_llm_predictions.jsonl": "875cf1645dafaf2dcb778b2d185d52428f6e5e7adc2b4b2b88d88ac95df3ae63",
+    "llm-experiments/outputs/real/phase6h1/phase6h1_evaluation_protocol_freeze_manifest.json": "f6357de36e8ff715438158430e3160f6faca9fb0708a0616648ebd3d365f95ae",
+    "llm-experiments/outputs/real/phase6h1/phase6h1_joined_predictions_ground_truth.jsonl": "8b2e15384adb98425dd54afb779878d62c7a607f894689702f7816791dc09b98",
+    "llm-experiments/outputs/real/phase6h1/phase6h1_metric_protocol.json": "a696e14b53b36c08ed7ec5fac3aae5616825717f76af22326335188cfe599879",
+    "llm-experiments/outputs/real/phase6h1/phase6h1_tie_policy.json": "511041a3c256dc360e75b223bfebe883d2a255b06884f6f0c68cad12cd3d76e8",
+    "statistical-baseline/outputs/real_heldout_evaluation/final_n33_phase6h/final_n33_prediction_freeze_manifest.json": "3495dd48846e4fe54cf39d292616be5030ae73958158b8440479ea61fbfba65d",
+    "statistical-baseline/outputs/real_heldout_evaluation/final_n33_phase6h/final_n33_candidate_predictions.csv": "55f582b9e3b277586f6fbcee7d0f9d0a2dd606011e8f0c702092cf0a98a6dff8",
+    "statistical-baseline/outputs/real_heldout_evaluation/final_n33_phase6h/final_n33_trial_predictions.csv": "9af2720d9ad1eeca6aa5bbf74c87e61d2223ffe46f670cc89ac353d078853fc4",
+    "statistical-baseline/outputs/final_n33_empirical/n33_empirical_results_inventory.json": "db958a92b3afa85f8cbd69600ee6a01feace6ea22dccdb0744a699102af331d3"
+  },
+  "tie_policy_schema": "phase6h1_tie_policy_v1",
+  "metric_protocol_schema": "phase6h1_metric_protocol_v1",
+  "prediction_rerun": false,
+  "mixed_effects_refit": false,
+  "metric_definitions_changed_after_observing_results": false
+}

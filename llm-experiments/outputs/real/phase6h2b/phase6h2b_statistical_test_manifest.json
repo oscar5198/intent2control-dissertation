@@ -1,0 +1,172 @@
+{
+  "schema_version": "phase6h2b_statistical_test_manifest_v1",
+  "chance_tests": [
+    {
+      "method_key": "gpt__non_history",
+      "model_key": "gpt",
+      "model_label": "GPT-5.5",
+      "condition": "non_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 0.19077072692851757,
+      "p_value_bh_adjusted": 0.21461706779458226
+    },
+    {
+      "method_key": "gpt__personalised_history",
+      "model_key": "gpt",
+      "model_label": "GPT-5.5",
+      "condition": "personalised_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 1.71119099734598e-06,
+      "p_value_bh_adjusted": 5.133572992037941e-06
+    },
+    {
+      "method_key": "claude_sonnet__non_history",
+      "model_key": "claude_sonnet",
+      "model_label": "Claude Sonnet 5",
+      "condition": "non_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 0.4296901961376175,
+      "p_value_bh_adjusted": 0.4296901961376175
+    },
+    {
+      "method_key": "claude_sonnet__personalised_history",
+      "model_key": "claude_sonnet",
+      "model_label": "Claude Sonnet 5",
+      "condition": "personalised_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 1.5891303799584006e-07,
+      "p_value_bh_adjusted": 1.4302173419625606e-06
+    },
+    {
+      "method_key": "llama_3_1_70b_instruct__non_history",
+      "model_key": "llama_3_1_70b_instruct",
+      "model_label": "Llama 3.1 70B Instruct",
+      "condition": "non_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 0.059637205737805205,
+      "p_value_bh_adjusted": 0.07667640737717811
+    },
+    {
+      "method_key": "llama_3_1_70b_instruct__personalised_history",
+      "model_key": "llama_3_1_70b_instruct",
+      "model_label": "Llama 3.1 70B Instruct",
+      "condition": "personalised_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 0.029104040459566972,
+      "p_value_bh_adjusted": 0.052387272827220555
+    },
+    {
+      "method_key": "centaur__non_history",
+      "model_key": "centaur",
+      "model_label": "Centaur",
+      "condition": "non_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 0.059637205737805205,
+      "p_value_bh_adjusted": 0.07667640737717811
+    },
+    {
+      "method_key": "centaur__personalised_history",
+      "model_key": "centaur",
+      "model_label": "Centaur",
+      "condition": "personalised_history",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 0.01964680464975028,
+      "p_value_bh_adjusted": 0.04420531046193813
+    },
+    {
+      "method_key": "mixed_effects_primary_acoustic",
+      "model_key": "mixed_effects_primary_acoustic",
+      "model_label": "Mixed-effects primary acoustic",
+      "condition": "baseline",
+      "chance_accuracy": 0.2,
+      "test": "exact_one_sided_binomial_ge_chance",
+      "p_value": 1.71119099734598e-06,
+      "p_value_bh_adjusted": 5.133572992037941e-06
+    }
+  ],
+  "personalisation_mcnemar_tests": [
+    {
+      "model_key": "gpt",
+      "history_helps": 48,
+      "history_hurts": 25,
+      "mcnemar_exact_p": 0.009542211425865475
+    },
+    {
+      "model_key": "claude_sonnet",
+      "history_helps": 52,
+      "history_hurts": 22,
+      "mcnemar_exact_p": 0.0006428073490507031
+    },
+    {
+      "model_key": "llama_3_1_70b_instruct",
+      "history_helps": 19,
+      "history_hurts": 17,
+      "mcnemar_exact_p": 0.8679394004284404
+    },
+    {
+      "model_key": "centaur",
+      "history_helps": 21,
+      "history_hurts": 18,
+      "mcnemar_exact_p": 0.7492586247608415
+    }
+  ],
+  "mixed_effects_mcnemar_tests": [
+    {
+      "method_key": "gpt__non_history",
+      "llm_correct_mixed_wrong": 19,
+      "llm_wrong_mixed_correct": 42,
+      "mcnemar_exact_p": 0.004444019471066868
+    },
+    {
+      "method_key": "gpt__personalised_history",
+      "llm_correct_mixed_wrong": 34,
+      "llm_wrong_mixed_correct": 34,
+      "mcnemar_exact_p": 1.0
+    },
+    {
+      "method_key": "claude_sonnet__non_history",
+      "llm_correct_mixed_wrong": 20,
+      "llm_wrong_mixed_correct": 47,
+      "mcnemar_exact_p": 0.0013071686857636005
+    },
+    {
+      "method_key": "claude_sonnet__personalised_history",
+      "llm_correct_mixed_wrong": 41,
+      "llm_wrong_mixed_correct": 38,
+      "mcnemar_exact_p": 0.8221442424521855
+    },
+    {
+      "method_key": "llama_3_1_70b_instruct__non_history",
+      "llm_correct_mixed_wrong": 23,
+      "llm_wrong_mixed_correct": 42,
+      "mcnemar_exact_p": 0.024811974571552164
+    },
+    {
+      "method_key": "llama_3_1_70b_instruct__personalised_history",
+      "llm_correct_mixed_wrong": 33,
+      "llm_wrong_mixed_correct": 50,
+      "mcnemar_exact_p": 0.07841962481580761
+    },
+    {
+      "method_key": "centaur__non_history",
+      "llm_correct_mixed_wrong": 23,
+      "llm_wrong_mixed_correct": 42,
+      "mcnemar_exact_p": 0.024811974571552164
+    },
+    {
+      "method_key": "centaur__personalised_history",
+      "llm_correct_mixed_wrong": 28,
+      "llm_wrong_mixed_correct": 44,
+      "mcnemar_exact_p": 0.07636915467183139
+    }
+  ],
+  "multiplicity_note": "Chance-test p-values include Benjamini-Hochberg adjustment. Pairwise tests are reported as secondary descriptive evidence."
+}

@@ -1,0 +1,10 @@
+method_key,model_key,model_label,condition,correct,denominator,accuracy,ci_method,ci_low,ci_high
+gpt__non_history,gpt,GPT-5.5,non_history,45,198,0.22727272727272727,wilson_95,0.1744171935172888,0.29050938484270117
+gpt__personalised_history,gpt,GPT-5.5,personalised_history,68,198,0.3434343434343434,wilson_95,0.28083694283465904,0.4119912780757055
+claude_sonnet__non_history,claude_sonnet,Claude Sonnet 5,non_history,41,198,0.20707070707070707,wilson_95,0.15646745513880542,0.26882405495155415
+claude_sonnet__personalised_history,claude_sonnet,Claude Sonnet 5,personalised_history,71,198,0.35858585858585856,wilson_95,0.29506052329790333,0.427493998814684
+llama_3_1_70b_instruct__non_history,llama_3_1_70b_instruct,Llama 3.1 70B Instruct,non_history,49,198,0.2474747474747475,wilson_95,0.19255262284405147,0.31200902378556883
+llama_3_1_70b_instruct__personalised_history,llama_3_1_70b_instruct,Llama 3.1 70B Instruct,personalised_history,51,198,0.25757575757575757,wilson_95,0.20168506483205917,0.3226941159323763
+centaur__non_history,centaur,Centaur,non_history,49,198,0.2474747474747475,wilson_95,0.19255262284405147,0.31200902378556883
+centaur__personalised_history,centaur,Centaur,personalised_history,52,198,0.26262626262626265,wilson_95,0.20626673035351234,0.32802121747833074
+mixed_effects_primary_acoustic,mixed_effects_primary_acoustic,Mixed-effects primary acoustic,baseline,68,198,0.3434343434343434,wilson_95,0.28083694283465904,0.4119912780757055

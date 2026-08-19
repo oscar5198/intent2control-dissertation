@@ -1,0 +1,29 @@
+{
+  "schema_version": "phase6h2b_qc_summary_v1",
+  "llm_trial_rows": 1584,
+  "mixed_effects_trial_rows": 198,
+  "rating_candidate_rows": 6930,
+  "all_trial_denominators_198": true,
+  "supported_rating_denominators_990": true,
+  "centaur_rating_excluded": true,
+  "tie_policy_unchanged": true,
+  "metric_protocol_unchanged": true,
+  "same_test_targets": true,
+  "uncertainty_resampling_unit": "participant_id",
+  "prediction_rerun": false,
+  "mixed_effects_refit": false,
+  "gates": {
+    "FINAL_LLM_SCORING_COMPLETE": true,
+    "FINAL_MIXED_EFFECTS_PREDICTIVE_SCORING_COMPLETE": true,
+    "PERSONALISATION_ANALYSIS_COMPLETE": true,
+    "FAIR_LLM_MIXED_EFFECTS_COMPARISON_COMPLETE": true,
+    "CENTRAL_MIXED_EFFECTS_RESULTS_READY": true,
+    "RQ1_EVIDENCE_READY": true,
+    "RQ2_EVIDENCE_READY": true,
+    "RQ3_EVIDENCE_READY": true,
+    "RQ4_EVIDENCE_READY": true,
+    "DISSERTATION_RESULT_TABLES_READY": true,
+    "DISSERTATION_RESULT_FIGURES_READY": true,
+    "PHASE6H2B_COMPLETE": true
+  }
+}

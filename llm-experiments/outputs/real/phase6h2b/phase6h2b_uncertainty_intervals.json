@@ -1,0 +1,10 @@
+{
+  "schema_version": "phase6h2b_uncertainty_manifest_v1",
+  "top1_accuracy": "Wilson 95% confidence interval",
+  "chance_tests": "exact one-sided binomial test against p=0.20, Benjamini-Hochberg adjusted within chance-test family",
+  "ranking": "participant-level percentile bootstrap 95% CI over trial-level Spearman mean",
+  "rating": "participant-level percentile bootstrap 95% CI over candidate-level MAE/RMSE",
+  "paired_comparisons": "participant-level percentile bootstrap for paired differences; McNemar exact test for paired binary winner correctness",
+  "bootstrap_seed": 20260819,
+  "bootstrap_replicates": 2000
+}
