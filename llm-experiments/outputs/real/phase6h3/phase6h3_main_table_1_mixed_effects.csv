@@ -1,0 +1,24 @@
+Section,Model,Quantity,Estimate,95% CrI,Dissertation role
+fixed,stimulus_model,Intercept,50.302,"[40.279, 60.146]",Stimulus/context reference model
+fixed,stimulus_model,Episode: EDR-2 vs EDR-1,2.202,"[-1.860, 5.874]",Stimulus/context reference model
+fixed,stimulus_model,Episode: FM-1 vs EDR-1,-6.675,"[-10.641, -2.893]",Stimulus/context reference model
+fixed,stimulus_model,Participant group: group_02 vs group_01,5.995,"[-7.258, 18.819]",Stimulus/context reference model
+fixed,primary_feature_model,Intercept,44.800,"[34.622, 55.207]",Primary empirical fixed effect
+fixed,primary_feature_model,Episode: EDR-2 vs EDR-1,2.231,"[-1.798, 6.130]",Primary empirical fixed effect
+fixed,primary_feature_model,Episode: FM-1 vs EDR-1,-6.641,"[-10.627, -2.677]",Primary empirical fixed effect
+fixed,primary_feature_model,Participant group: group_02 vs group_01,16.766,"[2.029, 32.145]",Primary empirical fixed effect
+fixed,primary_feature_model,Acoustic feature: RMS (z),5.284,"[-0.073, 10.389]",Primary empirical fixed effect
+fixed,primary_feature_model,Acoustic feature: crest factor (z),-6.265,"[-12.443, -0.369]",Primary empirical fixed effect
+fixed,primary_feature_model,Acoustic feature: spectral width (z),-2.795,"[-8.416, 2.679]",Primary empirical fixed effect
+variance,stimulus_model,Participant random-effect SD,12.314,"[8.841, 15.921]",Model uncertainty and residual variation
+variance,stimulus_model,Stimulus random-effect SD,13.460,"[9.018, 18.434]",Model uncertainty and residual variation
+variance,stimulus_model,Residual SD,26.851,"[25.696, 28.035]",Model uncertainty and residual variation
+variance,primary_feature_model,Participant random-effect SD,12.477,"[8.797, 16.065]",Model uncertainty and residual variation
+variance,primary_feature_model,Stimulus random-effect SD,11.246,"[7.061, 16.099]",Model uncertainty and residual variation
+variance,primary_feature_model,Residual SD,26.866,"[25.772, 28.107]",Model uncertainty and residual variation
+icc,stimulus_model,Participant ICC,0.145,"[0.075, 0.219]",Preference-variation partition
+icc,stimulus_model,Stimulus ICC,0.173,"[0.082, 0.279]",Preference-variation partition
+icc,stimulus_model,Residual variance share,0.682,"[0.572, 0.780]",Preference-variation partition
+icc,primary_feature_model,Participant ICC,0.156,"[0.084, 0.239]",Preference-variation partition
+icc,primary_feature_model,Stimulus ICC,0.128,"[0.044, 0.218]",Preference-variation partition
+icc,primary_feature_model,Residual variance share,0.716,"[0.613, 0.813]",Preference-variation partition

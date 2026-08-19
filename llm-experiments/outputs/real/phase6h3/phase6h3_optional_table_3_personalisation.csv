@@ -1,0 +1,5 @@
+Model,Delta Top-1 pp,History helps,History hurts,McNemar p,Delta Spearman,Delta MAE
+GPT-5.5,11.6,48,25,0.010,0.346,-8.02
+Claude Sonnet 5,15.2,52,22,6.43e-04,0.340,-5.43
+Llama 3.1 70B,1.0,19,17,0.868,0.033,-0.87
+Centaur,1.5,21,18,0.749,0.011,N/A
