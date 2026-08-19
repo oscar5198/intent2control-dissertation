@@ -62,10 +62,19 @@ MAX_FORMAT_REPAIRS = 1
 TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed", "output_budget_exhausted", "quota_exhausted", "refusal", "model_mismatch"}
 NORMALIZER_VERSION = "phase6g4d_centaur_response_normalizer_v1"
 CENTAUR_RECOVERY_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_recovery_run_02")
+CENTAUR_NATIVE_DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_native_choice_diagnostics")
 VERIFIED_PROMPT_SERIALIZATION_STRATEGY = "phase6g2c_verified_raw_prompt_text_no_chat_template"
 VERIFIED_TOKENIZER_INVOCATION = "tokenizer(prompt_text, return_tensors='pt')['input_ids']"
 VERIFIED_GENERATION_INVOCATION = "model.generate(input_ids, max_new_tokens=N, do_sample=False, pad_token_id=tokenizer.eos_token_id)"
 MESSAGE_SERIALIZATION_CONTRACT = "deterministic_concatenation_of_frozen_phase6d_system_and_user_content_no_semantic_wording_changes"
+CENTAUR_LEFT_CHOICE_MARKER = " <<"
+CENTAUR_RIGHT_CHOICE_MARKER = ">>"
+CENTAUR_NATIVE_CANDIDATES = ("A", "B", "C", "D", "E")
+CENTAUR_NATIVE_INTERFACE_EVIDENCE = {
+    "model_card": "Centaur model card says human choices are encapsulated by << and >> and recommends adapting prompts accordingly.",
+    "test_adapter": "Official test_adapter.py computes tokenizer(' <<').input_ids[1:] and tokenizer('>>').input_ids[1:] for DataCollatorForCompletionOnlyLM boundaries.",
+    "test_adapter_full_log_likelihoods": "Official full-log-likelihood script evaluates completion-only losses over marker-delimited response spans.",
+}
 
 _TOKENIZER: Any = None
 _MODEL: Any = None
@@ -382,6 +391,67 @@ def run_centaur_runtime_diagnostic(repo_root: Path, output_dir: Path = DIAGNOSTI
     return manifest
 
 
+def run_centaur_native_choice_diagnostic(
+    repo_root: Path,
+    output_dir: Path = CENTAUR_NATIVE_DIAGNOSTIC_OUTPUT_DIR,
+    max_new_tokens: int = 8,
+) -> dict[str, Any]:
+    if max_new_tokens < 1:
+        raise ValueError("--diagnostic-max-new-tokens must be at least 1")
+    out = repo_root / output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    preflight = run_preflight(repo_root, OUTPUT_DIR)
+    messages = synthetic_native_choice_messages()
+    prompt_text = build_centaur_native_choice_prompt(messages)
+    manifest = {
+        "schema_version": "phase6g4d_centaur_native_choice_diagnostic_v1",
+        "created_at_utc": iso_now(),
+        "diagnostic_only": True,
+        "appends_production_predictions": False,
+        "appends_production_attempt_log": False,
+        "modifies_failed_run01": False,
+        "ground_truth_dependency": False,
+        "prompt_source": "synthetic_non_study_behavioral_choice_prompt",
+        "native_interface": centaur_native_interface_record(),
+        "protocol_compatibility": centaur_protocol_compatibility_record(),
+        "preflight_passed": preflight["passed"],
+        "preflight_failures": preflight["failures"],
+        "runtime_success": False,
+        "runtime_diagnostic": None,
+        "provider_metadata": None,
+    }
+    if not preflight["passed"]:
+        manifest["runtime_diagnostic"] = {"runtime_error_category": "preflight_blocked", "preflight_failures": preflight["failures"]}
+        write_json(out / "native_choice_diagnostic.json", manifest)
+        return manifest
+    try:
+        provider = invoke_centaur_native_choice_prompt(prompt_text, "native_choice_diagnostic", max_new_tokens=max_new_tokens)
+        metadata = provider.get("metadata") or {}
+        native_completion = parse_native_choice_completion(provider.get("decoded_text") or "")
+        manifest["runtime_success"] = provider.get("status") == "completed"
+        manifest["provider_metadata"] = sanitize_provider_metadata(metadata)
+        manifest["runtime_diagnostic"] = {
+            "status": provider.get("status"),
+            "incomplete_details": provider.get("incomplete_details"),
+            "decoded_text_preview": truncate_text(provider.get("decoded_text"), 400),
+            "decoded_text_with_special_tokens_preview": truncate_text(metadata.get("decoded_text_with_special_tokens"), 400),
+            "input_suffix_token_ids": metadata.get("last_input_token_ids"),
+            "left_choice_marker_token_ids": metadata.get("left_choice_marker_token_ids"),
+            "right_choice_marker_token_ids": metadata.get("right_choice_marker_token_ids"),
+            "generated_token_ids": metadata.get("generated_token_ids"),
+            "generated_token_count": metadata.get("generated_token_count"),
+            "first_generated_token_equals_eos_or_eot": metadata.get("first_generated_token_equals_eos_or_eot"),
+            "closing_marker_observed": native_completion["closing_marker_observed"],
+            "native_choice_completion_text": native_completion["completion_text"],
+            "valid_native_choice_completion": native_completion["valid_native_choice_completion"],
+            "generation_stop_interpretation": metadata.get("generation_stop_interpretation"),
+        }
+    except Exception as exc:  # pragma: no cover - live RunPod diagnostic only
+        manifest["runtime_diagnostic"] = centaur_exception_diagnostics(exc)
+    write_json(out / "native_choice_diagnostic.json", manifest)
+    return manifest
+
+
 def prepare_offline_adapter_copy() -> str:
     global _TEMP_ADAPTER_DIR
     if _TEMP_ADAPTER_DIR is not None:
@@ -410,9 +480,269 @@ def serialize_centaur_messages(messages: list[dict[str, str]]) -> str:
     return "\n\n".join(part for part in parts if part).strip()
 
 
+def synthetic_native_choice_messages() -> list[dict[str, str]]:
+    return [
+        {
+            "role": "system",
+            "content": "Synthetic diagnostic only. Predict a human choice from the listed options.",
+        },
+        {
+            "role": "user",
+            "content": "A participant sees two unlabeled boxes. Option A gives one point. Option B gives two points. Which option is the human choice?",
+        },
+    ]
+
+
+def build_centaur_native_choice_prompt(messages: list[dict[str, str]]) -> str:
+    return serialize_centaur_messages(messages).rstrip() + CENTAUR_LEFT_CHOICE_MARKER
+
+
+def parse_native_choice_completion(decoded_text: str) -> dict[str, Any]:
+    closing_marker_observed = CENTAUR_RIGHT_CHOICE_MARKER in decoded_text
+    completion_text = decoded_text.split(CENTAUR_RIGHT_CHOICE_MARKER, 1)[0].strip()
+    return {
+        "completion_text": completion_text,
+        "closing_marker_observed": closing_marker_observed,
+        "valid_native_choice_completion": completion_text in CENTAUR_NATIVE_CANDIDATES,
+    }
+
+
+def centaur_native_interface_record() -> dict[str, Any]:
+    return {
+        "left_choice_marker": CENTAUR_LEFT_CHOICE_MARKER,
+        "right_choice_marker": CENTAUR_RIGHT_CHOICE_MARKER,
+        "prompt_ends_with_left_marker": True,
+        "expected_completion": "model generates candidate choice content after left marker, optionally followed by right marker",
+        "closing_marker_stop_condition_recommended": True,
+        "eos_after_closing_marker": "not established locally; diagnostic records generated token sequence",
+        "typical_choice_values": "task-defined human choice labels or strings; Phase 6 candidate probe uses A-E labels",
+        "faithful_inference_method": "candidate_completion_log_likelihood_preferred_over_unconstrained_json_generation",
+        "evidence": CENTAUR_NATIVE_INTERFACE_EVIDENCE,
+    }
+
+
+def centaur_protocol_compatibility_record() -> dict[str, Any]:
+    return {
+        "winner_accuracy_comparable": True,
+        "winner_accuracy_basis": "A-E candidate completion likelihoods can select one preferred mix without inspecting ground truth.",
+        "ranking_metrics_comparable": True,
+        "ranking_metrics_basis": "A-E candidate completion likelihoods provide deterministic descending candidate ranking.",
+        "rating_error_metrics_comparable": False,
+        "rating_error_basis": "No frozen, scientifically justified mapping from Centaur choice likelihoods to 0-100 ratings exists in the Phase 6 protocol.",
+        "ratings_output_policy": "unsupported_for_centaur_until_user_approves_protocol_amendment_or_pre_registered_mapping",
+        "schema_equality_warning": "Forcing JSON ratings from Centaur free generation would be scientifically misleading after immediate-EOS evidence.",
+        "ground_truth_dependency": False,
+    }
+
+
+def invoke_centaur_native_choice_prompt(prompt_text: str, attempt_type: str, max_new_tokens: int = 8) -> dict[str, Any]:
+    global _MODEL, _TOKENIZER
+    try:
+        import torch  # type: ignore[import-not-found]
+        from unsloth import FastLanguageModel  # type: ignore[import-not-found]
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("runtime_import", exc) from exc
+    if _TOKENIZER is None or _MODEL is None:
+        try:
+            adapter_path = prepare_offline_adapter_copy()
+        except Exception as exc:  # pragma: no cover
+            raise CentaurRuntimeError("adapter_config_prepare", exc) from exc
+        try:
+            _MODEL, _TOKENIZER = FastLanguageModel.from_pretrained(model_name=adapter_path, max_seq_length=MAX_SEQ_LENGTH, dtype=None, load_in_4bit=True)
+            FastLanguageModel.for_inference(_MODEL)
+        except Exception as exc:  # pragma: no cover
+            raise CentaurRuntimeError("model_load", exc) from exc
+    started = time.perf_counter()
+    try:
+        input_ids = tokenize_centaur_prompt(_TOKENIZER, prompt_text)
+        left_marker_ids, right_marker_ids = centaur_choice_marker_token_ids(_TOKENIZER)
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("tokenizer", exc) from exc
+    try:
+        input_ids = move_tensor_to_device(input_ids, "cuda")
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("device_transfer", exc) from exc
+    try:
+        with torch.inference_mode():
+            outputs = _MODEL.generate(input_ids, max_new_tokens=max_new_tokens, do_sample=False, pad_token_id=_TOKENIZER.eos_token_id)
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("generation", exc) from exc
+    try:
+        prompt_length = input_ids.shape[-1]
+        generated = outputs[0][prompt_length:]
+        decoded = _TOKENIZER.decode(generated, skip_special_tokens=True)
+        decoded_with_special_tokens = _TOKENIZER.decode(generated, skip_special_tokens=False)
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("decode", exc) from exc
+    generated_token_count = len(generated) if hasattr(generated, "__len__") else None
+    status = "incomplete" if generated_token_count == max_new_tokens else "completed"
+    token_diagnostics = build_token_diagnostics(_TOKENIZER, input_ids, generated, decoded, decoded_with_special_tokens, max_new_tokens)
+    return {
+        "status": status,
+        "decoded_text": decoded,
+        "metadata": {
+            "model": REQUEST_MODEL,
+            "revision": REVISION,
+            "base_model": BASE_MODEL,
+            "base_revision": BASE_REVISION,
+            "request_api": REQUEST_API,
+            "attempt_type": attempt_type,
+            "latency_seconds": time.perf_counter() - started,
+            "backend_type": BACKEND_TYPE,
+            "native_interface": centaur_native_interface_record(),
+            "left_choice_marker_token_ids": left_marker_ids,
+            "right_choice_marker_token_ids": right_marker_ids,
+            **token_diagnostics,
+        },
+        "usage": {"input_tokens": token_diagnostics["prompt_token_count"], "output_tokens": generated_token_count, "total_tokens": token_diagnostics["prompt_token_count"] + generated_token_count} if generated_token_count is not None else None,
+        "incomplete_details": {"reason": "max_output_tokens"} if status == "incomplete" else None,
+    }
+
+
 def tokenize_centaur_prompt(tokenizer: Any, prompt_text: str) -> Any:
     """Mirror the verified Phase 6G.2C RunPod probe transport exactly."""
     return tokenizer(prompt_text, return_tensors="pt")["input_ids"]
+
+
+def tokenizer_input_ids(tokenizer: Any, text: str) -> list[int]:
+    encoded = tokenizer(text)
+    if hasattr(encoded, "input_ids"):
+        return [int(value) for value in encoded.input_ids]
+    if isinstance(encoded, dict) and "input_ids" in encoded:
+        return token_ids_to_list(encoded["input_ids"])
+    raise TypeError("tokenizer did not return input_ids")
+
+
+def centaur_choice_marker_token_ids(tokenizer: Any) -> tuple[list[int], list[int]]:
+    return (
+        tokenizer_input_ids(tokenizer, CENTAUR_LEFT_CHOICE_MARKER)[1:],
+        tokenizer_input_ids(tokenizer, CENTAUR_RIGHT_CHOICE_MARKER)[1:],
+    )
+
+
+def centaur_candidate_completion_token_ids(tokenizer: Any, candidate: str) -> dict[str, Any]:
+    if candidate not in CENTAUR_NATIVE_CANDIDATES:
+        raise ValueError(f"unsupported Centaur native candidate: {candidate}")
+    candidate_only = tokenizer_input_ids(tokenizer, candidate)[1:]
+    with_closing = tokenizer_input_ids(tokenizer, candidate + CENTAUR_RIGHT_CHOICE_MARKER)[1:]
+    return {
+        "candidate": candidate,
+        "candidate_token_ids": candidate_only,
+        "closing_marker_token_ids": with_closing[len(candidate_only):],
+        "scored_token_count": len(candidate_only),
+        "closing_marker_scored": False,
+    }
+
+
+def centaur_candidate_scoring_plan(tokenizer: Any, prompt_prefix: str, candidate: str) -> dict[str, Any]:
+    token_info = centaur_candidate_completion_token_ids(tokenizer, candidate)
+    prefix_ids = tokenizer_input_ids(tokenizer, prompt_prefix)
+    full_ids = tokenizer_input_ids(tokenizer, prompt_prefix + candidate + CENTAUR_RIGHT_CHOICE_MARKER)
+    scored_start = len(prefix_ids)
+    scored_end = scored_start + len(token_info["candidate_token_ids"])
+    return {
+        "candidate": candidate,
+        "prefix_token_ids": prefix_ids,
+        "full_token_ids": full_ids,
+        "candidate_token_ids": token_info["candidate_token_ids"],
+        "closing_marker_token_ids": token_info["closing_marker_token_ids"],
+        "scored_start": scored_start,
+        "scored_end": scored_end,
+        "scored_token_indices": list(range(scored_start, scored_end)),
+        "closing_marker_scored": False,
+    }
+
+
+def build_centaur_candidate_scoring_prompts(
+    messages: list[dict[str, str]],
+    candidates: tuple[str, ...] = CENTAUR_NATIVE_CANDIDATES,
+) -> list[dict[str, str]]:
+    prompt_prefix = build_centaur_native_choice_prompt(messages)
+    return [
+        {
+            "candidate": candidate,
+            "prompt_prefix": prompt_prefix,
+            "completion_text": candidate + CENTAUR_RIGHT_CHOICE_MARKER,
+            "full_text": prompt_prefix + candidate + CENTAUR_RIGHT_CHOICE_MARKER,
+            "scored_span": "candidate_content_only_between_left_and_right_markers",
+            "ground_truth_dependency": False,
+        }
+        for candidate in candidates
+    ]
+
+
+def rank_centaur_candidate_scores(candidate_scores: dict[str, float]) -> dict[str, Any]:
+    ranking = sorted(candidate_scores, key=lambda candidate: (-candidate_scores[candidate], candidate))
+    return {
+        "predicted_preferred_mix": ranking[0] if ranking else None,
+        "predicted_ranking": ranking,
+        "candidate_log_likelihoods": {candidate: candidate_scores[candidate] for candidate in ranking},
+        "predicted_ratings": None,
+        "ratings_supported": False,
+        "ratings_policy": centaur_protocol_compatibility_record()["ratings_output_policy"],
+        "ground_truth_dependency": False,
+    }
+
+
+def score_centaur_choice_candidates(
+    model: Any,
+    tokenizer: Any,
+    messages: list[dict[str, str]],
+    candidates: tuple[str, ...] = CENTAUR_NATIVE_CANDIDATES,
+) -> dict[str, Any]:
+    try:
+        import torch  # type: ignore[import-not-found]
+    except Exception as exc:  # pragma: no cover
+        raise CentaurRuntimeError("runtime_import", exc) from exc
+
+    prompt_prefix = build_centaur_native_choice_prompt(messages)
+    scores: dict[str, float] = {}
+    details = []
+    for candidate in candidates:
+        plan = centaur_candidate_scoring_plan(tokenizer, prompt_prefix, candidate)
+        full_ids = plan["full_token_ids"]
+        scored_start = plan["scored_start"]
+        scored_end = plan["scored_end"]
+        input_ids = torch.tensor([full_ids], device=resolve_model_device(model))
+        with torch.inference_mode():
+            outputs = model(input_ids=input_ids)
+        logits = outputs.logits[0]
+        log_probs = torch.nn.functional.log_softmax(logits.float(), dim=-1)
+        token_log_likelihoods = []
+        for token_position in range(scored_start, scored_end):
+            target_token_id = full_ids[token_position]
+            token_log_likelihoods.append(float(log_probs[token_position - 1, target_token_id].detach().cpu()))
+        score = sum(token_log_likelihoods)
+        scores[candidate] = score
+        details.append({
+            "candidate": candidate,
+            "candidate_token_ids": plan["candidate_token_ids"],
+            "closing_marker_token_ids": plan["closing_marker_token_ids"],
+            "scored_token_indices": plan["scored_token_indices"],
+            "closing_marker_scored": False,
+            "token_log_likelihoods": token_log_likelihoods,
+            "log_likelihood": score,
+        })
+    ranked = rank_centaur_candidate_scores(scores)
+    return {
+        "schema_version": "phase6g4d_centaur_candidate_likelihood_scores_v1",
+        "native_interface": centaur_native_interface_record(),
+        "protocol_compatibility": centaur_protocol_compatibility_record(),
+        "prompt_prefix_sha256": hashlib.sha256(prompt_prefix.encode("utf-8")).hexdigest(),
+        "candidate_scores": details,
+        **ranked,
+    }
+
+
+def resolve_model_device(model: Any) -> str:
+    if hasattr(model, "device"):
+        return str(model.device)
+    device_map = getattr(model, "hf_device_map", None)
+    if isinstance(device_map, dict):
+        for value in device_map.values():
+            if isinstance(value, str) and value not in {"cpu", "disk"}:
+                return value
+    return "cuda"
 
 
 def move_tensor_to_device(value: Any, device: str) -> Any:

@@ -116,11 +116,86 @@ def test_centaur_serialization_preserves_frozen_message_content_without_chat_tem
     assert centaur.serialize_centaur_messages(messages) == "system text\n\nuser text"
 
 
+def test_centaur_native_choice_prompt_adds_marker_without_changing_semantic_context() -> None:
+    messages = [{"role": "system", "content": "system text"}, {"role": "user", "content": "user text"}]
+    semantic = centaur.serialize_centaur_messages(messages)
+    native = centaur.build_centaur_native_choice_prompt(messages)
+
+    assert semantic == "system text\n\nuser text"
+    assert native == "system text\n\nuser text <<"
+    assert native.removesuffix(centaur.CENTAUR_LEFT_CHOICE_MARKER) == semantic
+
+
+def test_centaur_native_interface_records_official_marker_format_and_protocol_limits() -> None:
+    interface = centaur.centaur_native_interface_record()
+    compatibility = centaur.centaur_protocol_compatibility_record()
+
+    assert interface["left_choice_marker"] == " <<"
+    assert interface["right_choice_marker"] == ">>"
+    assert interface["prompt_ends_with_left_marker"] is True
+    assert interface["closing_marker_stop_condition_recommended"] is True
+    assert interface["faithful_inference_method"] == "candidate_completion_log_likelihood_preferred_over_unconstrained_json_generation"
+    assert "tokenizer(' <<').input_ids[1:]" in interface["evidence"]["test_adapter"]
+    assert compatibility["winner_accuracy_comparable"] is True
+    assert compatibility["ranking_metrics_comparable"] is True
+    assert compatibility["rating_error_metrics_comparable"] is False
+    assert compatibility["ground_truth_dependency"] is False
+
+
 def test_centaur_verified_transport_contract_has_no_chat_template_or_manual_headers() -> None:
     assert centaur.VERIFIED_PROMPT_SERIALIZATION_STRATEGY == "phase6g2c_verified_raw_prompt_text_no_chat_template"
     assert centaur.VERIFIED_TOKENIZER_INVOCATION == "tokenizer(prompt_text, return_tensors='pt')['input_ids']"
     assert centaur.VERIFIED_GENERATION_INVOCATION.startswith("model.generate(input_ids")
     assert "apply_chat_template" not in centaur.VERIFIED_TOKENIZER_INVOCATION
+
+
+def test_centaur_marker_tokenization_and_scoring_span_excludes_closing_marker() -> None:
+    class Encoded:
+        def __init__(self, ids: list[int]):
+            self.input_ids = ids
+
+    class FakeTokenizer:
+        def __call__(self, text: str):
+            mapping = {
+                " <<": [1, 710],
+                ">>": [1, 711],
+                "A": [1, 800],
+                "A>>": [1, 800, 711],
+                "context <<": [1, 10, 710],
+                "context <<A>>": [1, 10, 710, 800, 711],
+            }
+            return Encoded(mapping[text])
+
+    left, right = centaur.centaur_choice_marker_token_ids(FakeTokenizer())
+    plan = centaur.centaur_candidate_scoring_plan(FakeTokenizer(), "context <<", "A")
+
+    assert left == [710]
+    assert right == [711]
+    assert plan["candidate_token_ids"] == [800]
+    assert plan["closing_marker_token_ids"] == [711]
+    assert plan["scored_token_indices"] == [3]
+    assert plan["closing_marker_scored"] is False
+
+
+def test_centaur_native_completion_parser_detects_closing_marker_and_valid_choice() -> None:
+    parsed = centaur.parse_native_choice_completion("A>> trailing text")
+    missing = centaur.parse_native_choice_completion("free prose")
+
+    assert parsed["completion_text"] == "A"
+    assert parsed["closing_marker_observed"] is True
+    assert parsed["valid_native_choice_completion"] is True
+    assert missing["closing_marker_observed"] is False
+    assert missing["valid_native_choice_completion"] is False
+
+
+def test_centaur_candidate_ranking_is_deterministic_and_does_not_fabricate_ratings() -> None:
+    ranked = centaur.rank_centaur_candidate_scores({"A": -2.0, "B": -1.0, "C": -1.0, "D": -3.0, "E": -4.0})
+
+    assert ranked["predicted_preferred_mix"] == "B"
+    assert ranked["predicted_ranking"] == ["B", "C", "A", "D", "E"]
+    assert ranked["predicted_ratings"] is None
+    assert ranked["ratings_supported"] is False
+    assert ranked["ground_truth_dependency"] is False
 
 
 def test_centaur_response_normalizer_accepts_only_outer_fences() -> None:
@@ -383,6 +458,46 @@ def test_diagnostic_mode_is_isolated_and_can_succeed_with_mock(monkeypatch, tmp_
     assert not (diagnostic_out / "predictions.jsonl").exists()
     assert not (diagnostic_out / "attempt_log.jsonl").exists()
     assert_no_secrets(load_json(diagnostic_out / "runtime_diagnostic.json"))
+
+
+def test_native_choice_diagnostic_is_isolated_and_records_marker_completion(monkeypatch, tmp_path) -> None:
+    diagnostic_out = tmp_path / "centaur_native_choice_diagnostics"
+    monkeypatch.setattr(centaur, "run_preflight", lambda repo_root, output_dir=centaur.OUTPUT_DIR: fake_preflight())
+    monkeypatch.setattr(
+        centaur,
+        "invoke_centaur_native_choice_prompt",
+        lambda prompt_text, attempt_type, max_new_tokens=8: {
+            "status": "completed",
+            "decoded_text": "A>>",
+            "metadata": {
+                "model": centaur.REQUEST_MODEL,
+                "last_input_token_ids": [10, 710],
+                "left_choice_marker_token_ids": [710],
+                "right_choice_marker_token_ids": [711],
+                "generated_token_ids": [800, 711],
+                "generated_token_count": 2,
+                "first_generated_token_equals_eos_or_eot": False,
+                "decoded_text_with_special_tokens": "A>>",
+                "generation_stop_interpretation": "completed_before_max_new_tokens",
+            },
+            "usage": {"output_tokens": 2},
+        },
+    )
+
+    result = centaur.run_centaur_native_choice_diagnostic(REPO_ROOT, output_dir=diagnostic_out, max_new_tokens=8)
+
+    assert result["diagnostic_only"] is True
+    assert result["runtime_success"] is True
+    assert result["ground_truth_dependency"] is False
+    assert result["runtime_diagnostic"]["left_choice_marker_token_ids"] == [710]
+    assert result["runtime_diagnostic"]["right_choice_marker_token_ids"] == [711]
+    assert result["runtime_diagnostic"]["closing_marker_observed"] is True
+    assert result["runtime_diagnostic"]["valid_native_choice_completion"] is True
+    assert result["protocol_compatibility"]["rating_error_metrics_comparable"] is False
+    assert (diagnostic_out / "native_choice_diagnostic.json").exists()
+    assert not (diagnostic_out / "predictions.jsonl").exists()
+    assert not (diagnostic_out / "attempt_log.jsonl").exists()
+    assert_no_secrets(load_json(diagnostic_out / "native_choice_diagnostic.json"))
 
 
 def test_immediate_eos_detection_from_token_diagnostics() -> None:
