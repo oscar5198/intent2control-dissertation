@@ -42,7 +42,9 @@ from llm_experiments.prompts.prompt_spec import write_json
 BASE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
 SOURCE_RUN03_DIR = BASE_OUTPUT_DIR / "corrected_run_03"
 OUTPUT_DIR = BASE_OUTPUT_DIR / "recovery_run_04"
+TARGETED_OUTPUT_DIR = BASE_OUTPUT_DIR / "recovery_run_05"
 RECOVERY_RUN_ID = "phase6g4a_gpt_recovery_run_04"
+TARGETED_RECOVERY_RUN_ID = "phase6g4a_gpt_targeted_recovery_run_05"
 SOURCE_RUN03_ID = "phase6g4a_gpt_corrected_run_03"
 RECOVERY_MANIFEST = OUTPUT_DIR / "recovery_manifest.json"
 RECOVERY_ELIGIBILITY = OUTPUT_DIR / "recovery_eligibility.jsonl"
@@ -52,6 +54,9 @@ FINAL_GPT_COMPLETION_SUMMARY = OUTPUT_DIR / "final_gpt_completion_summary.json"
 FINAL_GPT_QC_REPORT = OUTPUT_DIR / "final_gpt_qc_report.md"
 CONNECTION_RECOVERY_MAX_OUTPUT_TOKENS = 4096
 OUTPUT_BUDGET_RECOVERY_MAX_OUTPUT_TOKENS = 8192
+TARGETED_FAILED_REQUEST_ID = "phase6g4::gpt::P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1"
+TARGETED_FAILED_RENDERED_PROMPT_ID = "P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1"
+TARGETED_RECOVERY_MAX_OUTPUT_TOKENS = OUTPUT_BUDGET_RECOVERY_MAX_OUTPUT_TOKENS
 MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
 TERMINAL_RECOVERY_STATUSES = {
@@ -62,6 +67,68 @@ TERMINAL_RECOVERY_STATUSES = {
     "output_budget_exhausted",
     "quota_exhausted",
 }
+
+
+def prepare_gpt_targeted_final_slot_recovery(repo_root: Path, output_dir: Path = TARGETED_OUTPUT_DIR, run_id: str = TARGETED_RECOVERY_RUN_ID) -> dict[str, Any]:
+    out = repo_root / output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    eligibility = build_targeted_final_slot_eligibility(repo_root)
+    preflight = run_targeted_preflight(repo_root, output_dir, require_openai_key=False)
+    manifest = build_targeted_recovery_manifest(repo_root, preflight, eligibility, output_dir, run_id, prepare_only=True)
+    write_jsonl(out / "targeted_recovery_eligibility.jsonl", eligibility)
+    write_json(out / "targeted_recovery_manifest.json", manifest)
+    write_json(out / "targeted_preflight_report.json", preflight)
+    write_json(out / "targeted_recovery_summary.json", build_targeted_recovery_summary(manifest, [], [], preflight, 0, False, prepare_only=True))
+    write_targeted_recovery_report(out / "targeted_recovery_report.md", manifest, preflight, [], [])
+    return manifest
+
+
+def run_gpt_targeted_final_slot_recovery(
+    repo_root: Path,
+    guarded_batch_size: int = 1,
+    output_dir: Path = TARGETED_OUTPUT_DIR,
+    run_id: str = TARGETED_RECOVERY_RUN_ID,
+) -> dict[str, Any]:
+    if guarded_batch_size != 1:
+        raise ValueError("Run 05 targeted GPT recovery must use --guarded-batch-size 1")
+    out = repo_root / output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    eligibility = build_targeted_final_slot_eligibility(repo_root)
+    preflight = run_targeted_preflight(repo_root, output_dir, require_openai_key=True)
+    manifest = build_targeted_recovery_manifest(repo_root, preflight, eligibility, output_dir, run_id, prepare_only=False)
+    write_jsonl(out / "targeted_recovery_eligibility.jsonl", eligibility)
+    write_json(out / "targeted_recovery_manifest.json", manifest)
+    write_json(out / "targeted_preflight_report.json", preflight)
+    if not preflight["passed"]:
+        summary = build_targeted_recovery_summary(manifest, [], [], preflight, 0, False, prepare_only=False)
+        write_json(out / "targeted_recovery_summary.json", summary)
+        write_targeted_final_merge_artifacts(repo_root, out, [], summary)
+        write_targeted_recovery_report(out / "targeted_recovery_report.md", manifest, preflight, [], [])
+        return summary
+
+    existing_predictions = load_jsonl(out / "predictions.jsonl")
+    if any(row.get("final_status") in TERMINAL_RECOVERY_STATUSES for row in existing_predictions):
+        executed_this_invocation = 0
+        predictions = existing_predictions
+        attempts = load_jsonl(out / "attempt_log.jsonl")
+    else:
+        response_schema = load_response_schema(repo_root / RESPONSE_SCHEMA)
+        rendered = {row["rendered_prompt_id"]: row for row in load_jsonl(repo_root / RENDERED_PROMPTS)}
+        attempts = load_jsonl(out / "attempt_log.jsonl")
+        prediction_attempts = execute_recovery_prediction(eligibility[0], rendered[TARGETED_FAILED_RENDERED_PROMPT_ID], response_schema, run_id)
+        attempts.extend(prediction_attempts)
+        append_jsonl(out / "attempt_log.jsonl", prediction_attempts)
+        prediction = finalize_recovery_prediction(eligibility[0], prediction_attempts, run_id)
+        append_jsonl(out / "predictions.jsonl", [prediction])
+        predictions = load_jsonl(out / "predictions.jsonl")
+        executed_this_invocation = 1
+
+    summary = build_targeted_recovery_summary(manifest, attempts, predictions, preflight, executed_this_invocation, False, prepare_only=False)
+    write_json(out / "targeted_recovery_summary.json", summary)
+    write_json(out / "failure_summary.json", build_failure_summary(attempts, predictions))
+    write_targeted_final_merge_artifacts(repo_root, out, predictions, summary)
+    write_targeted_recovery_report(out / "targeted_recovery_report.md", manifest, preflight, attempts, predictions)
+    return summary
 
 
 def run_gpt_recovery(repo_root: Path, guarded_batch_size: int = 6, output_dir: Path = OUTPUT_DIR, run_id: str = RECOVERY_RUN_ID) -> dict[str, Any]:
@@ -220,6 +287,114 @@ def build_recovery_eligibility(repo_root: Path) -> list[dict[str, Any]]:
     if Counter(row["recovery_eligibility_reason"] for row in eligible) != {"quota_transport_recovery": 126, "output_budget_recovery": 6}:
         raise AssertionError("Unexpected Run 04 recovery reason counts")
     return eligible
+
+
+def build_targeted_final_slot_eligibility(repo_root: Path) -> list[dict[str, Any]]:
+    run04_final = load_jsonl(repo_root / FINAL_GPT_PREDICTIONS)
+    run04_recovery_predictions = load_jsonl(repo_root / OUTPUT_DIR / "predictions.jsonl")
+    run04_recovery_attempts = load_jsonl(repo_root / OUTPUT_DIR / "attempt_log.jsonl")
+    shard = load_json(repo_root / GPT_SHARD)
+    requests_by_id = {row["request_id"]: row for row in shard["requests"]}
+    source_rows = [row for row in run04_final if row.get("request_id") == TARGETED_FAILED_REQUEST_ID]
+    if len(source_rows) != 1:
+        raise AssertionError(f"Expected exactly one unresolved GPT final row for {TARGETED_FAILED_REQUEST_ID}")
+    source = source_rows[0]
+    valid_elsewhere = find_valid_prediction_for_request(repo_root, TARGETED_FAILED_REQUEST_ID)
+    if valid_elsewhere:
+        raise AssertionError(f"Offline-valid GPT prediction already exists for target request: {valid_elsewhere}")
+    recovery_rows = [row for row in run04_recovery_predictions if row.get("request_id") == TARGETED_FAILED_REQUEST_ID]
+    attempts = [row for row in run04_recovery_attempts if row.get("request_id") == TARGETED_FAILED_REQUEST_ID]
+    if len(recovery_rows) != 1 or recovery_rows[0].get("final_status") != "output_budget_exhausted":
+        raise AssertionError("Targeted recovery requires the preserved Run 04 output_budget_exhausted diagnostic")
+    if len(attempts) != 1 or attempts[0].get("failure_code") != "output_budget_exhausted":
+        raise AssertionError("Targeted recovery requires the Run 04 output_budget_exhausted attempt evidence")
+    request = requests_by_id[TARGETED_FAILED_REQUEST_ID]
+    verify_prediction_against_shard(source, request)
+    if source.get("final_status") != "backend_failed" or source.get("response_schema_valid") is not False:
+        raise AssertionError("Targeted recovery is only eligible for the single unresolved backend_failed final GPT slot")
+    valid_final_count = sum(1 for row in run04_final if row.get("final_status") in {"valid_primary", "valid_after_repair"} and row.get("response_schema_valid") is True)
+    if valid_final_count != 395 or len(run04_final) != 396:
+        raise AssertionError("Run 04 final GPT source must contain 395 valid rows plus one unresolved slot")
+    return [{
+        "schema_version": "phase6g4a_gpt_targeted_recovery_eligibility_v1",
+        "recovery_unit_id": "phase6g4a_gpt_targeted_recovery_unit_" + hashlib.sha256(TARGETED_FAILED_REQUEST_ID.encode("utf-8")).hexdigest()[:32],
+        "recovery_prediction_id": "phase6g4a_gpt_targeted_recovery_pred_" + hashlib.sha256(f"{TARGETED_RECOVERY_RUN_ID}::{TARGETED_FAILED_REQUEST_ID}".encode("utf-8")).hexdigest()[:32],
+        "source_run03_id": SOURCE_RUN03_ID,
+        "source_run03_prediction_id": source["source_run03_prediction_id"],
+        "source_run04_id": RECOVERY_RUN_ID,
+        "source_run04_recovery_prediction_id": recovery_rows[0]["prediction_id"],
+        "source_run04_recovery_final_status": recovery_rows[0]["final_status"],
+        "source_run04_attempt_failure_code": attempts[0]["failure_code"],
+        "source_run04_attempt_max_output_tokens": attempts[0]["max_output_tokens"],
+        "source_run04_attempt_token_usage": attempts[0]["token_usage"],
+        "source_final_prediction_id": source["prediction_id"],
+        "source_final_status": source["final_status"],
+        "recovery_eligibility_reason": "single_unresolved_final_slot_after_run04_output_budget_exhausted",
+        "request_id": source["request_id"],
+        "prediction_example_id": source["prediction_example_id"],
+        "condition": source["condition"],
+        "rendered_prompt_id": source["rendered_prompt_id"],
+        "prompt_hash": source["prompt_hash"],
+        "model_key": MODEL_KEY,
+        "exact_requested_model": REQUEST_MODEL,
+        "expected_returned_model": EXPECTED_RETURNED_MODEL,
+        "response_schema_version": request["response_schema_version"],
+        "max_output_tokens": TARGETED_RECOVERY_MAX_OUTPUT_TOKENS,
+        "ground_truth_dependency": False,
+    }]
+
+
+def find_valid_prediction_for_request(repo_root: Path, request_id: str) -> list[str]:
+    valid_locations = []
+    for path in (repo_root / BASE_OUTPUT_DIR).rglob("*.jsonl"):
+        for row in load_jsonl(path):
+            if row.get("request_id") != request_id:
+                continue
+            if row.get("response_schema_valid") is True and row.get("final_status") in {"valid_primary", "valid_after_repair"}:
+                valid_locations.append(str(path.relative_to(repo_root)).replace("\\", "/"))
+                break
+    return sorted(valid_locations)
+
+
+def run_targeted_preflight(repo_root: Path, output_dir: Path = TARGETED_OUTPUT_DIR, require_openai_key: bool = True) -> dict[str, Any]:
+    failures: list[str] = []
+    prompt_verification = verify_prompt_package(repo_root)
+    shard = load_json(repo_root / GPT_SHARD)
+    key_state = inspect_openai_api_key()
+    eligibility = build_targeted_final_slot_eligibility(repo_root)
+    output_dir_normalized = str(output_dir).replace("\\", "/")
+    checks = {
+        "phase6d_prompt_package_frozen": bool(prompt_verification.get("PHASE6D_PROMPT_PACKAGE_FROZEN")),
+        "phase6g3_prompt_freeze_ready": bool(load_json(repo_root / "llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json").get("REAL_PRODUCTION_PROMPTS_FROZEN")),
+        "target_request_id_exact": eligibility[0]["request_id"] == TARGETED_FAILED_REQUEST_ID,
+        "target_rendered_prompt_id_exact": eligibility[0]["rendered_prompt_id"] == TARGETED_FAILED_RENDERED_PROMPT_ID,
+        "target_count_exactly_one": len(eligibility) == 1,
+        "target_max_output_tokens_8192": eligibility[0]["max_output_tokens"] == TARGETED_RECOVERY_MAX_OUTPUT_TOKENS,
+        "no_offline_valid_prediction_exists": not find_valid_prediction_for_request(repo_root, TARGETED_FAILED_REQUEST_ID),
+        "gpt_shard_count_valid": len(shard.get("requests", [])) == 396,
+        "output_directory_targeted_recovery_namespace": output_dir_normalized.endswith("phase6g4/gpt/recovery_run_05"),
+        "no_hidden_ground_truth_loaded": not shard.get("contains_hidden_ground_truth", False),
+    }
+    if require_openai_key:
+        checks.update({
+            "openai_api_key_present": key_state["present"],
+            "openai_api_key_has_no_leading_or_trailing_whitespace": key_state["has_no_leading_or_trailing_whitespace"],
+            "openai_api_key_contains_no_cr_or_lf": key_state["contains_no_cr_or_lf"],
+            "openai_sdk_installed": bool(util.find_spec("openai")),
+        })
+    failures = [key for key, value in checks.items() if not value]
+    return {
+        "schema_version": "phase6g4a_gpt_targeted_recovery_preflight_v1",
+        "checked_at_utc": iso_now(),
+        "passed": not failures,
+        "checks": checks,
+        "failures": failures,
+        "target_request_id": TARGETED_FAILED_REQUEST_ID,
+        "target_rendered_prompt_id": TARGETED_FAILED_RENDERED_PROMPT_ID,
+        "require_openai_key": require_openai_key,
+        "credential_policy": "OPENAI_API_KEY presence checked as boolean only when live execution is requested; secret value is never logged.",
+        "ground_truth_dependency": False,
+    }
 
 
 def verify_prediction_against_shard(prediction: dict[str, Any], request: dict[str, Any]) -> None:
@@ -538,6 +713,172 @@ def write_final_merge_artifacts(repo_root: Path, out: Path, eligibility: list[di
     write_jsonl(out / "final_gpt_prediction_provenance.jsonl", provenance_rows)
     write_json(out / "final_gpt_completion_summary.json", build_final_completion_summary(final_rows, provenance_rows, recovery_summary))
     write_final_report(out / "final_gpt_qc_report.md", final_rows, provenance_rows, recovery_summary)
+
+
+def build_targeted_recovery_manifest(
+    repo_root: Path,
+    preflight: dict[str, Any],
+    eligibility: list[dict[str, Any]],
+    output_dir: Path,
+    run_id: str,
+    prepare_only: bool,
+) -> dict[str, Any]:
+    target = eligibility[0]
+    return {
+        "schema_version": "phase6g4a_gpt_targeted_recovery_manifest_v1",
+        "created_at_utc": iso_now(),
+        "run_id": run_id,
+        "prepare_only": prepare_only,
+        "source_run03_id": SOURCE_RUN03_ID,
+        "source_run04_id": RECOVERY_RUN_ID,
+        "source_run04_final_predictions": str(FINAL_GPT_PREDICTIONS).replace("\\", "/"),
+        "source_run04_final_predictions_sha256": sha256_file(repo_root / FINAL_GPT_PREDICTIONS),
+        "source_run04_predictions_sha256": sha256_file(repo_root / OUTPUT_DIR / "predictions.jsonl"),
+        "source_run04_attempt_log_sha256": sha256_file(repo_root / OUTPUT_DIR / "attempt_log.jsonl"),
+        "frozen_prompt_dataset": str(RENDERED_PROMPTS).replace("\\", "/"),
+        "frozen_prompt_dataset_sha256": sha256_file(repo_root / RENDERED_PROMPTS),
+        "gpt_shard_manifest": str(GPT_SHARD).replace("\\", "/"),
+        "gpt_shard_manifest_sha256": sha256_file(repo_root / GPT_SHARD),
+        "output_dir": str(output_dir).replace("\\", "/"),
+        "target_count": len(eligibility),
+        "target_request_id": target["request_id"],
+        "target_rendered_prompt_id": target["rendered_prompt_id"],
+        "target_prompt_hash": target["prompt_hash"],
+        "source_run03_prediction_id": target["source_run03_prediction_id"],
+        "source_run04_recovery_prediction_id": target["source_run04_recovery_prediction_id"],
+        "source_run04_recovery_final_status": target["source_run04_recovery_final_status"],
+        "source_run04_attempt_failure_code": target["source_run04_attempt_failure_code"],
+        "max_output_tokens": target["max_output_tokens"],
+        "exact_requested_model": REQUEST_MODEL,
+        "expected_returned_model": EXPECTED_RETURNED_MODEL,
+        "response_schema_version": "preference_prediction_response_v1",
+        "reasoning_policy": "provider_native_reasoning; no reasoning.effort, no chain-of-thought request, no reasoning summaries",
+        "temperature_sent": False,
+        "top_p_sent": False,
+        "seed_sent": False,
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": 1,
+        "guarded_batch_semantics": "execute exactly the one unresolved final GPT slot if it is not already terminal in Run 05",
+        "operational_recovery_rationale": "Eligibility is based only on exact request identity, schema validity absence, preserved Run 03 transport failure, and preserved Run 04 output-budget exhaustion; no human outcomes or accuracy are consulted.",
+        "preflight": preflight,
+        "no_ground_truth_dependency": True,
+    }
+
+
+def build_targeted_recovery_summary(
+    manifest: dict[str, Any],
+    attempts: list[dict[str, Any]],
+    predictions: list[dict[str, Any]],
+    preflight: dict[str, Any],
+    executed_this_invocation: int,
+    stopped_after_guarded_batch: bool,
+    prepare_only: bool,
+) -> dict[str, Any]:
+    statuses = Counter(row["final_status"] for row in predictions)
+    valid_count = statuses.get("valid_primary", 0) + statuses.get("valid_after_repair", 0)
+    terminal_count = sum(1 for row in predictions if row.get("terminal"))
+    return {
+        "schema_version": "phase6g4a_gpt_targeted_recovery_summary_v1",
+        "run_id": manifest["run_id"],
+        "prepare_only": prepare_only,
+        "source_run04_id": RECOVERY_RUN_ID,
+        "preflight_passed": preflight["passed"],
+        "expected_recovery_predictions": 1,
+        "guarded_batch_requested": True,
+        "guarded_batch_limit": 1,
+        "recovery_predictions_executed_this_invocation": executed_this_invocation,
+        "attempted_recovery_prediction_count": len(predictions),
+        "terminal_recovery_prediction_count": terminal_count,
+        "valid_recovery_prediction_count": valid_count,
+        "remaining_unresolved_recovery_predictions": max(0, 1 - valid_count),
+        "stopped_after_guarded_batch": stopped_after_guarded_batch,
+        "status_counts": dict(sorted(statuses.items())),
+        "target_request_id": manifest["target_request_id"],
+        "target_rendered_prompt_id": manifest["target_rendered_prompt_id"],
+        "total_api_calls": len(attempts),
+        "token_usage_totals": sum_usage(attempts),
+        "ground_truth_dependency": False,
+        "GPT_TARGETED_RECOVERY_READY": preflight["passed"] and len(predictions) == 0 if prepare_only else None,
+        "GPT_TARGETED_RECOVERY_COMPLETE": valid_count == 1,
+        "ALL_GPT_TARGETED_RECOVERY_PREDICTIONS_VALID": len(predictions) == 1 and valid_count == 1,
+    }
+
+
+def write_targeted_final_merge_artifacts(repo_root: Path, out: Path, targeted_predictions: list[dict[str, Any]], targeted_summary: dict[str, Any]) -> None:
+    run04_final = load_jsonl(repo_root / FINAL_GPT_PREDICTIONS)
+    valid_target = next((row for row in targeted_predictions if row.get("final_status") in {"valid_primary", "valid_after_repair"} and row.get("response_schema_valid") is True), None)
+    final_rows = []
+    provenance_rows = []
+    for source in run04_final:
+        if source["request_id"] == TARGETED_FAILED_REQUEST_ID and valid_target is not None:
+            final = dict(valid_target)
+            source_type = "run05_targeted_recovered_prediction"
+            selected_run_id = TARGETED_RECOVERY_RUN_ID
+        else:
+            final = dict(source)
+            source_type = "run04_existing_final_prediction"
+            selected_run_id = source.get("run_id")
+        final_rows.append(final)
+        provenance_rows.append({
+            "schema_version": "phase6g4a_gpt_targeted_final_prediction_provenance_v1",
+            "request_id": source["request_id"],
+            "canonical_prediction_slot_id": source.get("source_run03_prediction_id") or source["prediction_id"],
+            "selected_prediction_id": final["prediction_id"],
+            "selected_run_id": selected_run_id,
+            "source_type": source_type,
+            "run04_selected_prediction_id": source["prediction_id"],
+            "run04_final_status": source["final_status"],
+            "run05_targeted_recovery_prediction_id": valid_target.get("prediction_id") if source["request_id"] == TARGETED_FAILED_REQUEST_ID and valid_target else None,
+            "merge_precedence": "Run 04 final predictions are preserved except the exact unresolved target slot, which is filled only by a schema-valid Run 05 targeted recovery prediction.",
+        })
+    if len(final_rows) != 396 or len({row["request_id"] for row in final_rows}) != 396:
+        raise AssertionError("Run 05 final GPT merge must contain exactly one row per frozen request")
+    write_jsonl(out / "final_gpt_predictions.jsonl", final_rows)
+    write_jsonl(out / "final_gpt_prediction_provenance.jsonl", provenance_rows)
+    write_json(out / "final_gpt_completion_summary.json", build_targeted_final_completion_summary(final_rows, provenance_rows, targeted_summary))
+
+
+def build_targeted_final_completion_summary(final_rows: list[dict[str, Any]], provenance_rows: list[dict[str, Any]], targeted_summary: dict[str, Any]) -> dict[str, Any]:
+    statuses = Counter(row["final_status"] for row in final_rows)
+    sources = Counter(row["source_type"] for row in provenance_rows)
+    valid_count = statuses.get("valid_primary", 0) + statuses.get("valid_after_repair", 0)
+    return {
+        "schema_version": "phase6g4a_gpt_targeted_final_completion_summary_v1",
+        "source_run04_id": RECOVERY_RUN_ID,
+        "targeted_recovery_run_id": TARGETED_RECOVERY_RUN_ID,
+        "canonical_prediction_count": len(final_rows),
+        "unique_request_count": len({row["request_id"] for row in final_rows}),
+        "status_counts": dict(sorted(statuses.items())),
+        "source_counts": dict(sorted(sources.items())),
+        "valid_prediction_count": valid_count,
+        "unresolved_or_non_valid_count": len(final_rows) - valid_count,
+        "target_request_id": TARGETED_FAILED_REQUEST_ID,
+        "ground_truth_dependency": False,
+        "targeted_recovery_summary": targeted_summary,
+        "GPT_FINAL_PREDICTIONS_COMPLETE": len(final_rows) == 396 and valid_count == 396,
+        "ALL_GPT_FINAL_PREDICTIONS_VALID": len(final_rows) == 396 and valid_count == 396,
+    }
+
+
+def write_targeted_recovery_report(path: Path, manifest: dict[str, Any], preflight: dict[str, Any], attempts: list[dict[str, Any]], predictions: list[dict[str, Any]]) -> None:
+    lines = [
+        "# Phase 6G.4A GPT Targeted Recovery Run 05 Report",
+        "",
+        f"- Run ID: `{manifest['run_id']}`",
+        f"- Target request ID: `{manifest['target_request_id']}`",
+        f"- Target rendered prompt ID: `{manifest['target_rendered_prompt_id']}`",
+        f"- Max output tokens: `{manifest['max_output_tokens']}`",
+        f"- Prepare only: `{str(manifest['prepare_only']).lower()}`",
+        f"- Preflight passed: `{str(preflight['passed']).lower()}`",
+        f"- API calls recorded: `{len(attempts)}`",
+        f"- Predictions recorded: `{len(predictions)}`",
+        "",
+        "Eligibility is operational only: exact unresolved GPT slot, no existing schema-valid GPT row, preserved Run 03 transport failure, and preserved Run 04 output-budget exhaustion.",
+        "",
+        "No scoring, human ground truth, Claude, Llama, or Centaur execution is included.",
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def build_unresolved_final_record(source: dict[str, Any], unit: dict[str, Any]) -> dict[str, Any]:

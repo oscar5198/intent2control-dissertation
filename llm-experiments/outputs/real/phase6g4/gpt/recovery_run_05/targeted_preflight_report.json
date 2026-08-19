@@ -1,0 +1,23 @@
+{
+  "schema_version": "phase6g4a_gpt_targeted_recovery_preflight_v1",
+  "checked_at_utc": "2026-08-19T15:25:53.907408+00:00",
+  "passed": true,
+  "checks": {
+    "phase6d_prompt_package_frozen": true,
+    "phase6g3_prompt_freeze_ready": true,
+    "target_request_id_exact": true,
+    "target_rendered_prompt_id_exact": true,
+    "target_count_exactly_one": true,
+    "target_max_output_tokens_8192": true,
+    "no_offline_valid_prediction_exists": true,
+    "gpt_shard_count_valid": true,
+    "output_directory_targeted_recovery_namespace": true,
+    "no_hidden_ground_truth_loaded": true
+  },
+  "failures": [],
+  "target_request_id": "phase6g4::gpt::P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1",
+  "target_rendered_prompt_id": "P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1",
+  "require_openai_key": false,
+  "credential_policy": "OPENAI_API_KEY presence checked as boolean only when live execution is requested; secret value is never logged.",
+  "ground_truth_dependency": false
+}
