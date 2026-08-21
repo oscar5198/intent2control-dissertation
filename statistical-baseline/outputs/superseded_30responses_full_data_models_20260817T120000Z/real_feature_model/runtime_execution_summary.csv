@@ -1,4 +1,0 @@
-model_name,formula,draws,tune,chains,target_accept,seed,sampler,runtime_seconds
-primary_feature,rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id),1000,1000,4,0.95,20260817,bambi_pymc_nutpie,30.696776600001613
-si_sensitivity,rating ~ episode + group + z_RMS + z_CF + z_SW + z_SI + (1 | participant_id) + (1 | stimulus_id),1000,1000,4,0.95,20260817,bambi_pymc_nutpie,22.92678110001725
-bounded_beta_primary_sensitivity,rating_01 ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id),1000,1000,4,0.95,20260817,explicit_pymc_beta_nutpie,61.75255860001198

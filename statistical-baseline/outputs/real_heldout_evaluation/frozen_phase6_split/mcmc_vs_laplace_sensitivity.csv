@@ -1,2 +1,0 @@
-comparison,status,reason,mcmc_completed_fold_model_pairs,laplace_completed_fold_model_pairs
-mcmc_vs_laplace_identical_fold_subset,not_available,MCMC smoke attempts did not complete in the local no-C++ PyTensor environment; final execution used one consistent Laplace approximation across all frozen Phase 6 targets.,0,360

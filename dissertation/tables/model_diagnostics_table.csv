@@ -1,3 +1,0 @@
-model,formula,chains,tune,draws,divergences,max_rhat,min_ess,rmse,coverage
-Categorical stimulus baseline,rating ~ episode * stimulus_id + (1 | participant_id),4,1000,1000,0,1.012,498.7,2.1659,0.95
-Feature interaction baseline,rating ~ episode + z_RMS + z_CF + z_SW + z_SI + episode:z_SW + episode:z_SI + (1 | participant_id),4,1000,1000,0,1.01,345.0,1.9458,0.8

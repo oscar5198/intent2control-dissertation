@@ -24,22 +24,22 @@ from llm_experiments.prompts.prompt_spec import write_json
 
 
 SCHEMA_VERSION = "phase6g4c_llama_production_inference_v1"
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama")
-DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_runtime_diagnostics")
-RECOVERY_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_recovery_run_02")
-CANONICAL_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_canonical")
-RESUME_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/llama_resume_after_recovery")
-RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
-LLAMA_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_llama_shard_manifest.json")
-PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
-PHASE6G3_FREEZE = Path("llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json")
-PHASE6G2D_READINESS = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_readiness.json")
-PHASE6G2D_MODEL_REGISTRY = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_model_registry.json")
-PHASE6G2D_BACKEND_REGISTRY = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_backend_registry.json")
-PHASE6G2D_INFERENCE_CONFIG = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_inference_config.json")
+OUTPUT_DIR = Path("llm-experiments/outputs/final/model-predictions/source/llama-3-1-70b-instruct")
+DIAGNOSTIC_OUTPUT_DIR = OUTPUT_DIR / "diagnostics"
+RECOVERY_OUTPUT_DIR = OUTPUT_DIR / "recovery"
+CANONICAL_OUTPUT_DIR = OUTPUT_DIR
+RESUME_OUTPUT_DIR = OUTPUT_DIR / "resume"
+RENDERED_PROMPTS = Path("llm-experiments/outputs/final/rendered-prompts/rendered_final_prompts.jsonl")
+LLAMA_SHARD = Path("llm-experiments/outputs/final/rendered-prompts/llama_request_shard_manifest.json")
+PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/final/rendered-prompts/prompt_hash_manifest.json")
+PHASE6G3_FREEZE = Path("llm-experiments/outputs/final/rendered-prompts/prompt_freeze_manifest.json")
+PHASE6G2D_READINESS = Path("llm-experiments/outputs/final/inference-config/readiness.json")
+PHASE6G2D_MODEL_REGISTRY = Path("llm-experiments/outputs/final/inference-config/model_registry.json")
+PHASE6G2D_BACKEND_REGISTRY = Path("llm-experiments/outputs/final/inference-config/backend_registry.json")
+PHASE6G2D_INFERENCE_CONFIG = Path("llm-experiments/outputs/final/inference-config/inference_config.json")
 PHASE6E_MODEL_REGISTRY = Path("llm-experiments/config/phase6e_model_registry_v1.json")
 PHASE6E_BACKEND_REGISTRY = Path("llm-experiments/config/phase6e_backend_registry_v1.json")
-PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_gate.json")
+PHASE6G1_GATE = Path("llm-experiments/outputs/final/prompt-data/readiness_gate.json")
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 RUN_ID = "phase6g4c_llama_production_run_01"
 RECOVERY_RUN_ID = "phase6g4c_llama_backend_failed_recovery_run_02"

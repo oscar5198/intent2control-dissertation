@@ -1,8 +1,0 @@
-# Phase 6H.3 Research Question Answer Matrix
-
-| RQ | Evidence base | Dissertation-ready answer |
-| --- | --- | --- |
-| RQ1: How do listener/context and acoustic variables explain mix ratings? | N=33 mixed-effects models; 990 ratings; participant and stimulus random effects; primary feature model. | Ratings vary materially by episode, group, participant, stimulus, and acoustic descriptors. FM-1 is lower than EDR-1 in both models; crest factor is negatively associated with ratings in the primary feature model, while participant and stimulus variance remain substantial. |
-| RQ2: Can models predict held-out preferred mixes? | Frozen 198-trial held-out target set with set-based Top-1 tie credit. Best personalised LLM: Claude Sonnet 5 at 35.9%; mixed-effects baseline: 34.3%. | Prediction is possible above the 20% chance reference for selected personalised conditions and the matched mixed-effects baseline, but performance remains modest in absolute terms. |
-| RQ3: Does participant history help LLM prediction? | Paired history vs non-history comparisons across 198 examples per LLM. | Participant history substantially improves GPT-5.5 and Claude Sonnet 5, with smaller and not clearly reliable gains for Llama 3.1 70B and Centaur. |
-| RQ4: How do LLMs compare with the empirical mixed-effects predictor? | Same 198 held-out examples, identical Top-1 tie policy, paired McNemar comparisons. | The mixed-effects baseline is the strongest ranking model. Personalised GPT-5.5 matches its Top-1 point estimate and personalised Claude is slightly higher numerically, but neither differs detectably from the mixed-effects baseline on Top-1. |

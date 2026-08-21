@@ -97,14 +97,14 @@ def test_metric_applicability_and_centaur_rating_exclusion(tmp_path: Path) -> No
     assert all(row["predicted_ratings"] is None for row in centaur_rows)
 
 
-def test_mixed_effects_fairness_audit_identifies_n30_baseline_mismatch(tmp_path: Path) -> None:
+def test_mixed_effects_fairness_audit_uses_final_n33_baseline(tmp_path: Path) -> None:
     result = build_tmp(tmp_path)
     audit = result["fairness_audit"]
 
     assert audit["training_test_alignment"]["llm_frozen_underlying_examples"] == 198
-    assert audit["training_test_alignment"]["existing_heldout_baseline_underlying_examples"] == 180
-    assert audit["same_heldout_examples_as_llm"] is False
-    assert audit["mixed_effects_refit_required_before_final_comparison"] is True
+    assert audit["training_test_alignment"]["existing_heldout_baseline_underlying_examples"] == 198
+    assert audit["same_heldout_examples_as_llm"] is True
+    assert audit["mixed_effects_refit_required_before_final_comparison"] is False
     assert audit["information_alignment"]["information_parity_claimed"] is False
 
 

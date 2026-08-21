@@ -1,165 +1,70 @@
-# Python bytecode and caches
+# Python caches
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 .pytest_cache/
 
-# Virtual environments and local configuration
+# Local environments and secrets
 .venv/
 venv/
 env/
 .env
+.env.*
+!.env.example
 
-# Conda environments
-.conda/
-conda-meta/
-envs/
-
-# Jupyter
+# Jupyter/runtime state
 .ipynb_checkpoints/
 .jupyter/
 
-# Data and generated artefacts
-data/raw/*
-data/processed/*
-results/*
-experiments/*
-outputs/*
-bibliography/papers/*
-*.nc
-
-# Curated synthetic analysis inputs used by the dissertation notebooks
-!data/processed/synthetic/
-data/processed/synthetic/**
-!data/processed/synthetic/**/
-!data/processed/synthetic/**/*.csv
-
-# Curated lightweight outputs used for dissertation review and reproducibility
-!outputs/final_stimuli/
-outputs/final_stimuli/**
-!outputs/final_stimuli/**/
-!outputs/final_stimuli/**/*.csv
-!outputs/final_stimuli/**/*.json
-!outputs/final_stimuli/**/*.md
-
-!outputs/statistical_baseline/
-outputs/statistical_baseline/**
-!outputs/statistical_baseline/**/
-!outputs/statistical_baseline/**/*.csv
-!outputs/statistical_baseline/**/*.json
-!outputs/statistical_baseline/**/*.md
-!outputs/statistical_baseline/**/*.png
-!outputs/statistical_baseline/**/*.txt
-
-!outputs/stimulus_selection/
-outputs/stimulus_selection/**
-!outputs/stimulus_selection/**/
-!outputs/stimulus_selection/**/*.csv
-!outputs/stimulus_selection/**/*.json
-!outputs/stimulus_selection/**/*.md
-!outputs/stimulus_selection/**/*.pdf
-!outputs/stimulus_selection/**/*.png
-!outputs/stimulus_selection/**/*.py
-
-# Keep placeholder files for empty tracked directories
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!results/.gitkeep
-!experiments/.gitkeep
-!outputs/.gitkeep
-!bibliography/papers/.gitkeep
-
-# Audio assets and corpora should be stored outside git unless explicitly curated
-*.wav
-*.mp3
-*.flac
-*.aiff
-*.aif
-!study-interface/frontend/assets/audio/
-!study-interface/frontend/assets/audio/experimental/
-!study-interface/frontend/assets/audio/experimental/**/
-!study-interface/frontend/assets/audio/experimental/**/*.wav
-!study-interface/frontend/assets/audio/pre-experiment-normalized/
-!study-interface/frontend/assets/audio/pre-experiment-normalized/**/
-!study-interface/frontend/assets/audio/pre-experiment-normalized/**/*.wav
-!study-interface/frontend/assets/audio/study-stimuli/
-!study-interface/frontend/assets/audio/study-stimuli/**/
-!study-interface/frontend/assets/audio/study-stimuli/**/*.md
-!study-interface/frontend/assets/audio/study-stimuli/**/*.wav
-!study-interface/frontend-6mix/assets/audio/
-!study-interface/frontend-6mix/assets/audio/pre-study-listening-task-audios/
-!study-interface/frontend-6mix/assets/audio/pre-study-listening-task-audios/**/
-!study-interface/frontend-6mix/assets/audio/pre-study-listening-task-audios/**/*.wav
-!study-interface/frontend-6mix/assets/audio/study-stimuli/
-!study-interface/frontend-6mix/assets/audio/study-stimuli/README.md
-!study-interface/frontend-6mix/assets/audio/study-stimuli/listening-setup/
-!study-interface/frontend-6mix/assets/audio/study-stimuli/listening-setup/**/*.wav
-!study-interface/frontend-6mix/assets/audio/study-stimuli/main-study/
-!study-interface/frontend-6mix/assets/audio/study-stimuli/main-study/**/
-!study-interface/frontend-6mix/assets/audio/study-stimuli/main-study/**/*.wav
-!study-interface/frontend-6mix/assets/audio/study-stimuli/practice-trial/
-!study-interface/frontend-6mix/assets/audio/study-stimuli/practice-trial/**/
-!study-interface/frontend-6mix/assets/audio/study-stimuli/practice-trial/**/*.wav
-!study-interface/frontend-5mix/assets/audio/
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/**/
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/segment_1/Match_DU-H_42-48sec.wav
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/segment_1/Nonmatch_UCP-A2_42-48sec.wav
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/segment_1/Reference_DU-H_42-48sec.wav
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/segment_2/Match_DU-H_54-60sec.wav
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/segment_2/Nonmatch_UCP-A1_54-60sec.wav
-!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/segment_2/Reference_DU-H_54-60sec.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/
-!study-interface/frontend-5mix/assets/audio/study-stimuli/README.md
-!study-interface/frontend-5mix/assets/audio/study-stimuli/listening-setup/
-!study-interface/frontend-5mix/assets/audio/study-stimuli/listening-setup/setup_test_audio.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/**/
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/du_d.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/du_e.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/mcg_pro2.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l4.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s1.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s2.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s3.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s5.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s7.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_h.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_i.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_k.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_b.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_pro.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_pro1.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_r.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_t.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_v.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_x.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/coldstar/
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/coldstar/cns_5.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/coldstar/cns_a.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/coldstar/cns_b.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/coldstar/cns_c.wav
-!study-interface/frontend-5mix/assets/audio/study-stimuli/practice-trial/coldstar/cns_pro.wav
-
-# Curated supervisor review package audio is intentionally versioned.
-!outputs/stimulus_selection/07_supervisor_review_package/Main_Study_Candidates/**/*.wav
-!outputs/stimulus_selection/07_supervisor_review_package/Backup_Candidates/**/*.wav
-
-# Exclude duplicate artifacts produced by an abandoned local copy attempt.
-outputs/stimulus_selection/07_supervisor_review_package/archive/duplicate_nested_copy_attempt_2026-08-03/
-
-# Logs and temporary files
+# Local/generated scratch areas
+tmp/
 *.log
 *.tmp
 *.temp
-tmp/
+*.bak
+*.swp
+*.swo
+~$*
 
-# OS and editor files
+# Local databases and response exports
+*.sqlite
+*.sqlite3
+*.db
+responses/
+uploads/
+logs/
+exports/
+vendor/
+node_modules/
+study-interface/data/
+study-interface/exports/
+study-interface/responses/
+study-interface/uploads/
+study-interface/logs/
+
+# Generated heavy model traces
+*.nc
+
+# Office/editor/OS files
 .DS_Store
 Thumbs.db
 Desktop.ini
 .vscode/
 .idea/
+
+# Audio is ignored by default; final study audio is explicitly curated.
+*.wav
+*.mp3
+*.flac
+*.aiff
+*.aif
+!study-interface/frontend-5mix/assets/audio/pre-study-listening-task-audios/**/*.wav
+!study-interface/frontend-5mix/assets/audio/study-stimuli/**/*.wav
+!study-interface/frontend-5mix/assets/audio/study-stimuli/README.md
+
+# Submission-facing curated data/results remain versionable.
+!data/README.md
+!data/processed/
+!data/processed/*_final.csv
+!results/README.md
+!results/statistical/**
+!results/llm/**

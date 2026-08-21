@@ -35,7 +35,7 @@ READY_GATE_NAME = "READY_FOR_LLM_INFERENCE"
 INTEGRATION_SCHEMA_VERSION = "phase6b5_synthetic_integration_v1"
 DEFAULT_SOURCE_FIXTURE = Path("llm-experiments/fixtures/synthetic/phase6b1_five_mix_netlify_export.csv")
 DEFAULT_STIMULI = Path("study-interface/frontend-5mix/config/stimuli.json")
-DEFAULT_FEATURES = Path("statistical-baseline/outputs/feature_exploration/final_20_stimulus_feature_table.csv")
+DEFAULT_FEATURES = Path("statistical-modeling/outputs/acoustic-features/final_20_stimulus_feature_table.csv")
 DEFAULT_OUTPUT_DIR = Path("llm-experiments/outputs/synthetic/phase6b5")
 
 EXPECTED_STRUCTURAL_COUNTS = {

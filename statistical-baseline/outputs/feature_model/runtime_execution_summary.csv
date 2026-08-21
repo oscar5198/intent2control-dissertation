@@ -1,4 +1,0 @@
-model,formula,runtime_seconds,draws,tune,chains,cores,target_accept,random_seed,inference_method
-intercept_only,rating ~ 1 + (1 | participant_id) + (1 | stimulus_id),10.02857799991034,1000,1000,4,1,0.95,44,nutpie
-primary_feature,rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id),8.64018869982101,1000,1000,4,1,0.95,44,nutpie
-si_sensitivity,rating ~ episode + group + z_RMS + z_CF + z_SW + z_SI + (1 | participant_id) + (1 | stimulus_id),8.988711199956015,1000,1000,4,1,0.95,44,nutpie

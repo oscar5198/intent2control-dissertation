@@ -1,111 +1,161 @@
-﻿# Intent2Control with Controllable Intent Strength
+# Individual Listener Preferences for Music Mixes Across Listening Contexts: Statistical Analysis and Personalised LLM Prediction
 
-This repository contains the MSc dissertation project **Intent2Control with
-Controllable Intent Strength**. The current work centres on an online listening
-study that tests how semantic listening contexts relate to listener preference
-for alternative music mixes.
+This repository contains the supporting material for Oscar Alejandro Gallegos Villarreal's MSc dissertation. The project studies listener-centred preference for alternative professional music mixes across controlled listening contexts.
 
-## Active Final Listening Study
+The submitted study collected 990 mix-preference ratings across 198 participant-trial targets from 33 participants. Each participant heard two of four songs, with five professionally produced mixes per song, under three functional listening contexts: Enjoyment, Relaxation-Distraction, and Focus-Motivation. Ratings were given on a 0-100 scale, with one comparative free-text comment per trial.
 
-The live study is the five-mix interface in:
+The analysis has two linked parts. Bayesian multilevel models quantify context, listener, stimulus, and acoustic associations in the human ratings. Four large language models are then evaluated on held-out preferred-mix prediction, both without participant history and with personalised prior-trial ratings/comments from the same listener.
 
-`study-interface/frontend-5mix/`
+## Research Questions
 
-The active Netlify form is `listening-study-5mix`. While the study is live, do
-not rename this folder or change its stimulus configuration, audio paths,
-runtime A-E randomisation, trial randomisation, form fields, or response JSON
-structure without a separate deployment plan.
+RQ1: How do listener, context, stimulus, and acoustic factors relate to preference ratings for alternative music mixes?
 
-Active songs and selected mixes:
+RQ2: Can large language models predict an individual listener's preferred music mix on a held-out trial?
 
-| Group | Song | Five selected mixes |
+RQ3: Does participant history, defined as ratings and qualitative comments from the same listener's previous trials, improve held-out LLM preference prediction?
+
+RQ4: How do personalised LLM predictions compare with a matched mixed-effects predictive model?
+
+## Repository Map
+
+| Folder | Purpose |
+| --- | --- |
+| `data/` | Submission-minimised participant, rating, trial-preference, and LLM prompt-data tables. |
+| `dissertation/` | Submitted dissertation PDF and final dissertation figures. |
+| `experimental-design/` | Final stimulus-selection rationale, source evidence, generator, and final five-mix traceability. |
+| `study-interface/` | Static Netlify five-mix listening interface, configuration documentation, and response-conversion notes. |
+| `statistical-modeling/` | Bayesian mixed-effects scripts, acoustic-feature verification, held-out mixed-effects evaluation, and compact statistical outputs. |
+| `llm-experiments/` | Final prompt package, rendered prompts, model runners, consolidated predictions, and LLM evaluation code. |
+| `results/` | Compact examiner-facing statistical and LLM result tables/figures. |
+| `tests/` | Lightweight validation tests for the retained interface, stimulus package, statistical finalisation, and LLM pipeline. |
+
+## Study Design
+
+- Participants: 33.
+- Group split: 17 participants in `group_01`, 16 in `group_02`.
+- Songs: 4, with 2 songs allocated to each participant group.
+- Final stimuli: 20 song-mix stimuli, 5 mixes per song.
+- Contexts: Enjoyment, Relaxation-Distraction, Focus-Motivation.
+- Trials: 6 per participant, giving 198 held-out preference targets.
+- Ratings: 990 candidate-level 0-100 ratings.
+- Comments: one comparative free-text comment per trial.
+- Presentation: anonymous A-E labels, per-trial label-to-mix mapping, and trial/song/context randomisation recorded for reconstruction.
+
+Final group allocation:
+
+| Group | Songs | Five selected mixes |
 | --- | --- | --- |
 | `group_01` | Lead Me | DU-D, DU-E, PXL-L1, PXL-L4, McG-pro2 |
 | `group_01` | I'd Like To Know | PXL-S3, PXL-S5, PXL-S1, PXL-S2, PXL-S7 |
 | `group_02` | In The Meantime | QUT-B, DU-H, DU-I, DU-K, QUT-pro |
 | `group_02` | Pouring Room | McG-R, McG-T, McG-X, McG-pro1, McG-V |
 
-The obsolete three-mix and six-mix frontend folders were removed locally. The
-current five-mix frontend remains the source of truth for the live interface.
-
-## Repository Map
+## Reproducibility Map
 
 ```text
-intent2control-dissertation/
-|-- data/                    # Raw and processed data areas
-|-- study-interface/          # Live five-mix frontend, docs, export scripts
-|-- results/                  # Reserved for final reported outputs
-|-- outputs/                  # Reproducible/generated analysis outputs
-|-- stimulus-selection/       # Top-level guide to selection code and evidence
-|-- src/stimulus_selection/   # Reusable stimulus-selection source code
-|-- configs/                  # Pipeline configuration
-|-- statistical-baseline/     # Guide to baseline notebooks and outputs
-|-- llm-experiments/          # Planned LLM evaluation protocol and checks
-|-- dissertation/             # Dissertation drafts, figures, and tables
-|-- tests/                    # Stimulus-selection and interface validation
-|-- bibliography/             # Reference PDFs and bibliography material
-`-- README.md
+study interface
+-> curated data
+-> statistical modeling
+-> LLM prompt data
+-> LLM predictions
+-> evaluation
+-> results
 ```
 
-## Stimulus Selection
+Primary retained entry points:
 
-Reusable code lives in `src/stimulus_selection/`, with configuration in
-`configs/stimulus_selection.yaml`.
+```powershell
+python data\scripts\convert_netlify_responses.py --help
+python experimental-design\stimulus-selection\final-selection\five-mix-selection-review-20260806\generate_five_mix_review.py
+python statistical-modeling\scripts\fit_final_models.py
+python statistical-modeling\scripts\evaluate_heldout_predictions.py
+python statistical-modeling\scripts\freeze_final_statistical_results.py
+python llm-experiments\scripts\build_final_prompt_data.py --write-manifest
+python llm-experiments\scripts\render_final_prompts.py
+python llm-experiments\scripts\consolidate_final_predictions.py
+```
 
-The final five-mix selection evidence is in:
+The final LLM scoring function is currently retained as an internal module function rather than a wrapper script:
 
-`outputs/stimulus_selection/11_five_mix_selection_review_20260806/`
+```powershell
+$env:PYTHONPATH = "llm-experiments/src"
+python -c "from pathlib import Path; from llm_experiments.evaluation.phase6h2b_final_scoring import run_phase6h2b_final_scoring; run_phase6h2b_final_scoring(Path('.'))"
+python -m llm_experiments.evaluation.phase6h3_results_synthesis
+```
 
-Start with `stimulus-selection/README.md` and
-`outputs/stimulus_selection/README.md` for the current provenance map. Some
-folders with older names are intentionally retained because the final five-mix
-traceability files still reference them, especially
-`outputs/stimulus_selection/09_six_mix_proposals/` and shared material under
-`outputs/stimulus_selection/08_backup_song_expansion/`.
+Do not run model-fitting, LLM inference, or external-verification commands during routine repository inspection unless explicitly intending to reproduce those stages.
 
-## Statistical Baseline
+## Statistical Modeling
 
-The statistical baseline work is documented from `statistical-baseline/README.md`.
-The notebooks, synthetic baseline data, and generated outputs are consolidated
-under `statistical-baseline/`.
+The retained empirical models use Bayesian multilevel regression over the curated candidate-level ratings in `data/processed/ratings_final.csv`.
 
-This area includes Bambi/PyMC/ArviZ modelling, participant random-effect models,
-episode-by-stimulus models, acoustic-feature models, sample-size simulations,
-posterior winner calculations, and final evaluation support.
+Main stimulus model:
+
+```text
+rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)
+```
+
+Primary acoustic-feature model:
+
+```text
+rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)
+```
+
+The modeling scripts and retained outputs are in `statistical-modeling/`. Compact reported statistical results are copied to `results/statistical/`.
 
 ## LLM Experiments
 
-Planned personalised LLM prediction work is organised under `llm-experiments/`.
-The current evaluation protocol and environment-testing notebook are preserved
-there. Human-response comparisons and final model results should not be treated
-as complete until the experiment has been run and frozen.
+The final evaluated models are:
 
-## Data, Results, And Responses
+- GPT-5.5
+- Claude Sonnet 5
+- Llama 3.1 70B Instruct
+- Centaur
 
-Raw/source datasets, processed data, participant exports, and generated results
-should stay separated. Do not commit raw participant exports or modify response
-data without a separate anonymisation and retention decision.
+The two prompt conditions are:
 
-Response interpretation for the active study depends on Netlify JSON fields such
-as `mix_mapping_json`, `presentation_order_json`, `responses_json`, and
-`actual_mix_id`. Use:
+- `non_history`: target context, participant metadata, candidate acoustic features, and A-E candidates only.
+- `personalised_history`: the same target information plus eligible prior-trial ratings and comments from the same participant.
 
-`study-interface/scripts/netlify_forms_to_long_csv_with_mix_ids.py`
+The frozen prompt template and manifest retain historical internal version names because their filenames and hashes are part of provenance:
 
-## Validation
+- `llm-experiments/prompts/phase6d_prompt_template_v1.json`
+- `llm-experiments/prompts/phase6d_prompt_package_manifest.json`
 
-Useful validation entry points include:
+Final predictions are retained in `llm-experiments/outputs/final/model-predictions/`. Final scoring artifacts are in `llm-experiments/outputs/final/evaluation/`, with compact examiner-facing copies in `results/llm/`.
 
-```powershell
-python study-interface\scripts\validate_frontend_5mix.py
-python -m pytest tests\study_interface tests\stimulus_selection
-```
+## Final Results
 
-The five-mix validator checks stimulus IDs, real mix IDs, audio existence, group
-assignment, and the absence of obsolete donor audio from the active frontend.
+Headline retained values:
 
-## Dissertation And References
+- Stimulus model ICCs: participant 0.145; stimulus 0.173.
+- Primary acoustic-feature model ICCs: participant 0.156; stimulus 0.128.
+- Matched primary acoustic mixed-effects Top-1 accuracy: 34.3%.
+- GPT-5.5 personalised-history Top-1 accuracy: 34.3%.
+- Claude Sonnet 5 personalised-history Top-1 accuracy: 35.9%.
 
-Dissertation drafts, figures, and tables live in `dissertation/`. Reference PDFs
-and bibliography material remain in `bibliography/` because they have not been
-proven redundant.
+The full result pack is in `results/`, while detailed source outputs remain in `statistical-modeling/outputs/` and `llm-experiments/outputs/final/`.
+
+## External Execution Environments
+
+Local inspection and most validation do not require credentials. Full reproduction has external requirements:
+
+- GPT-5.5 requires OpenAI-compatible provider/API access in the configured runtime.
+- Claude Sonnet 5 requires Anthropic-compatible provider/API access in the configured runtime.
+- Llama 3.1 70B Instruct requires the QMUL/local GPU and Hugging Face environment used for the final run.
+- Centaur requires RunPod or an equivalent GPU environment with the retained adapter/base-model configuration.
+
+Environment notes are in `ENVIRONMENTS.md`. Dependency specifications are in `requirements-statistical.txt` and `requirements-llm.txt`; these are reproducibility specifications, not exact lockfiles.
+
+## Known Reproducibility Limits
+
+- The final study interface is static and reproducible from `study-interface/frontend-5mix/`, but the live Netlify deployment and form dashboard are external.
+- The acoustic notebook verifies/reconstructs the final 20-stimulus feature table from retained feature evidence; it is not a complete raw-WAV-to-feature extraction archive.
+- Full LLM inference depends on provider, QMUL, and RunPod infrastructure that is not contained in this repository.
+- Credentials, raw Netlify exports, and unnecessary operational participant metadata are intentionally not committed.
+
+## Dissertation
+
+Submitted paper:
+
+`dissertation/OscarGallegos_PG_Project_Dissertation.pdf`

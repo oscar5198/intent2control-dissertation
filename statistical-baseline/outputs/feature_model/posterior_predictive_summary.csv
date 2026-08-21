@@ -1,8 +1,0 @@
-metric,value
-observed_mean,68.65152844022862
-posterior_predictive_mean,68.66055501166566
-observed_sd,12.100056074105625
-posterior_predictive_sd,12.152221337635622
-ppc_below_0,0.0
-ppc_above_100,0.004311666666666667
-ppc_outside_0_100,0.004311666666666667

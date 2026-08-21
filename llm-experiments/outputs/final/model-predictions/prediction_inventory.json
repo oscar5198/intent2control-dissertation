@@ -1,0 +1,121 @@
+{
+  "schema_version": "phase6g5_final_llm_prediction_inventory_v1",
+  "phase": "6G.5",
+  "authoritative_sources": {
+    "gpt": {
+      "model_key": "gpt",
+      "experiment_model_label": "GPT-5.5",
+      "exact_model_identifier": "gpt-5.5",
+      "deployment_revision": "gpt-5.5-2026-04-23",
+      "base_model": null,
+      "base_revision": null,
+      "authoritative_prediction_file": "llm-experiments/outputs/final/model-predictions/source/gpt-5-5/predictions.jsonl",
+      "authoritative_summary_file": "llm-experiments/outputs/final/model-predictions/source/gpt-5-5/execution_summary.json",
+      "source_run_ids": [
+        "phase6g4a_gpt_recovery_run_04",
+        "phase6g4a_gpt_targeted_recovery_run_05"
+      ],
+      "prediction_count": 396,
+      "condition_counts": {
+        "non_history": 198,
+        "personalised_history": 198
+      },
+      "recovery_or_canonicalization": "run04_final_predictions_plus_run05_single_slot_targeted_recovery",
+      "ratings_supported": true,
+      "source_status": "final_authoritative_after_targeted_run05",
+      "source_file_sha256": "dbce06980d1ed3c6b17a5dc4c5860e813516945c2be6cd355beba41c08d2cb1a",
+      "summary_file_sha256": "e8bdef4c61467a4169d09e03d9cb6350a8f19b93d88e52d592fdcaf4fa222b07",
+      "source_summary_status_counts": {
+        "valid_primary": 396
+      },
+      "source_summary_ground_truth_dependency": false
+    },
+    "claude_sonnet": {
+      "model_key": "claude_sonnet",
+      "experiment_model_label": "Claude Sonnet 5",
+      "exact_model_identifier": "claude-sonnet-5",
+      "deployment_revision": "claude-sonnet-5",
+      "base_model": null,
+      "base_revision": null,
+      "authoritative_prediction_file": "llm-experiments/outputs/final/model-predictions/source/claude-sonnet-5/predictions.jsonl",
+      "authoritative_summary_file": "llm-experiments/outputs/final/model-predictions/source/claude-sonnet-5/execution_summary.json",
+      "source_run_ids": [
+        "phase6g4b_claude_production_run_01"
+      ],
+      "prediction_count": 396,
+      "condition_counts": {
+        "non_history": 198,
+        "personalised_history": 198
+      },
+      "recovery_or_canonicalization": "offline_revalidation_preserved_primary_and_repair_provenance",
+      "ratings_supported": true,
+      "source_status": "final_authoritative",
+      "source_file_sha256": "4dbe7be9a0872ee1f38bde259d8747ba0dfc87a085007c8462205ca61073d685",
+      "summary_file_sha256": "c785314e73aff376ac6aae10aaa82ef39ec301260821eee9099efdc3d149b17d",
+      "source_summary_status_counts": null,
+      "source_summary_ground_truth_dependency": false
+    },
+    "llama_3_1_70b_instruct": {
+      "model_key": "llama_3_1_70b_instruct",
+      "experiment_model_label": "Llama 3.1 70B Instruct",
+      "exact_model_identifier": "meta-llama/Llama-3.1-70B-Instruct",
+      "deployment_revision": "1605565b47bb9346c5515c34102e054115b4f98b",
+      "base_model": null,
+      "base_revision": null,
+      "authoritative_prediction_file": "llm-experiments/outputs/final/model-predictions/source/llama-3-1-70b-instruct/predictions.jsonl",
+      "authoritative_summary_file": "llm-experiments/outputs/final/model-predictions/source/llama-3-1-70b-instruct/execution_summary.json",
+      "source_run_ids": [
+        "phase6g4c_llama_backend_failed_recovery_run_02",
+        "phase6g4c_llama_resume_after_recovery_run_03"
+      ],
+      "prediction_count": 396,
+      "condition_counts": {
+        "non_history": 198,
+        "personalised_history": 198
+      },
+      "recovery_or_canonicalization": "canonical_merge_from_recovery_run02_and_resume_run03",
+      "ratings_supported": true,
+      "source_status": "final_authoritative",
+      "source_file_sha256": "df27fcbf236a2efd5ce1bb6601e121cde1212af7689802b11dacb29010ee7e5e",
+      "summary_file_sha256": "d4a873f037d9496f33b025b202397d681ec932f45c52fc82bcb1b9275a3c3760",
+      "source_summary_status_counts": null,
+      "source_summary_ground_truth_dependency": false
+    },
+    "centaur": {
+      "model_key": "centaur",
+      "experiment_model_label": "Centaur",
+      "exact_model_identifier": "marcelbinz/Llama-3.1-Centaur-70B-adapter",
+      "deployment_revision": "159600db8be99dc183c289923148dfd96cbd8e07",
+      "base_model": "unsloth/Meta-Llama-3.1-70B-bnb-4bit",
+      "base_revision": "a009b8db2439814febe725486a5ed388f12a8744",
+      "authoritative_prediction_file": "llm-experiments/outputs/final/model-predictions/source/centaur/predictions.jsonl",
+      "authoritative_summary_file": "llm-experiments/outputs/final/model-predictions/source/centaur/execution_summary.json",
+      "source_run_ids": [
+        "phase6g4d_centaur_native_run_02"
+      ],
+      "prediction_count": 396,
+      "condition_counts": {
+        "non_history": 198,
+        "personalised_history": 198
+      },
+      "recovery_or_canonicalization": "native_candidate_likelihood_run02_supersedes_generic_json_run01",
+      "ratings_supported": false,
+      "source_status": "final_authoritative",
+      "source_file_sha256": "ffcdf107b3b3b183787869b20e736cbdceef58cca3fcac4f0a119eec688b5556",
+      "summary_file_sha256": "1e39e7ff3e36b52bc8d1d293d1bbec67f61b7bb745809bb4aae60c37c057396f",
+      "source_summary_status_counts": null,
+      "source_summary_ground_truth_dependency": false
+    }
+  },
+  "excluded_superseded_sources": [
+    "llm-experiments/outputs/real/phase6g4/gpt/failed_infrastructure_run_01",
+    "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_01",
+    "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_02",
+    "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_03 superseded only where recovery_run_04 supplied a valid recovered prediction",
+    "llm-experiments/outputs/real/phase6g4/llama original backend-failed production slots superseded by llama_canonical",
+    "llm-experiments/outputs/real/phase6g4/centaur generic JSON run 01 superseded by centaur_native_run_02"
+  ],
+  "ground_truth_dependency": false,
+  "evaluation_not_yet_performed": true,
+  "qc_passed": true
+}

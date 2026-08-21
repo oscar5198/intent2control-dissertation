@@ -233,7 +233,7 @@ Primary prompts must not include:
 - audio filename/path;
 - actual mix names or source engineer labels;
 - sensitivity-only `z_SI`;
-- statistical-baseline predictions;
+- statistical-modeling predictions;
 - few-shot demonstrations;
 - researcher-authored acoustic preference priors.
 

@@ -1,0 +1,418 @@
+{
+  "schema_version": "real_heldout_evaluation_v1",
+  "notebook": "statistical-modeling/notebooks/_09_real_heldout_evaluation.ipynb",
+  "output_dir": "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation",
+  "phase6_split_source": "llm-experiments/llm_evaluation_protocol.md",
+  "phase6_split_source_sha256": "a3c8f6a258f95d51d0e268e4a7ff0d2df44652c6d1c7770eb382e99454cef5fa",
+  "real_data_source": "statistical-modeling/data/real/real_ratings_clean.csv",
+  "real_data_sha256": "cb9089289c3fa5e0dbd843d8dc12fe233e6122a3d35c4cf74f81b0a052208a46",
+  "cleaning_manifest_sha256": "35e3181131d6fe63ed9c8c261ec4564ce4fdfe6af0d39d099c9643ea154c953f",
+  "raw_sha256": "5bab388fbf564e0caf5c1ca8a5a722bf8d517e23c018e48375d076e75dba0bdd",
+  "split_rule": "leave-one-trial-out participant-trial; all five candidate rows excluded together",
+  "phase6_split_audit": {
+    "analysable_participant_count": 33,
+    "expected_heldout_target_trials_according_to_phase6": 198,
+    "source_paths_containing_frozen_split_logic": [
+      "llm-experiments/llm_evaluation_protocol.md",
+      "llm-experiments/src/llm_experiments/data/examples.py",
+      "llm-experiments/src/llm_experiments/data/targets.py",
+      "llm-experiments/src/llm_experiments/data/prompt_data.py"
+    ],
+    "concrete_real_phase6_manifest_found": false,
+    "concrete_real_phase6_manifest_paths": [],
+    "every_real_participant_has_exactly_one_heldout_target": false,
+    "target_trials_per_participant_min": 6,
+    "target_trials_per_participant_max": 6,
+    "previous_180_trial_evaluation_differs_from_frozen_phase6": false,
+    "previous_180_trial_evaluation_assessment": "Matches the frozen Phase 6 implementation because the authoritative builder emits every eligible participant-trial target; no concrete real one-target-per-participant manifest was found.",
+    "exact_participant_target_trial_ids": {
+      "P001": [
+        "P001__trial_01",
+        "P001__trial_02",
+        "P001__trial_03",
+        "P001__trial_04",
+        "P001__trial_05",
+        "P001__trial_06"
+      ],
+      "P002": [
+        "P002__trial_01",
+        "P002__trial_02",
+        "P002__trial_03",
+        "P002__trial_04",
+        "P002__trial_05",
+        "P002__trial_06"
+      ],
+      "P003": [
+        "P003__trial_01",
+        "P003__trial_02",
+        "P003__trial_03",
+        "P003__trial_04",
+        "P003__trial_05",
+        "P003__trial_06"
+      ],
+      "P004": [
+        "P004__trial_01",
+        "P004__trial_02",
+        "P004__trial_03",
+        "P004__trial_04",
+        "P004__trial_05",
+        "P004__trial_06"
+      ],
+      "P005": [
+        "P005__trial_01",
+        "P005__trial_02",
+        "P005__trial_03",
+        "P005__trial_04",
+        "P005__trial_05",
+        "P005__trial_06"
+      ],
+      "P006": [
+        "P006__trial_01",
+        "P006__trial_02",
+        "P006__trial_03",
+        "P006__trial_04",
+        "P006__trial_05",
+        "P006__trial_06"
+      ],
+      "P007": [
+        "P007__trial_01",
+        "P007__trial_02",
+        "P007__trial_03",
+        "P007__trial_04",
+        "P007__trial_05",
+        "P007__trial_06"
+      ],
+      "P008": [
+        "P008__trial_01",
+        "P008__trial_02",
+        "P008__trial_03",
+        "P008__trial_04",
+        "P008__trial_05",
+        "P008__trial_06"
+      ],
+      "P009": [
+        "P009__trial_01",
+        "P009__trial_02",
+        "P009__trial_03",
+        "P009__trial_04",
+        "P009__trial_05",
+        "P009__trial_06"
+      ],
+      "P010": [
+        "P010__trial_01",
+        "P010__trial_02",
+        "P010__trial_03",
+        "P010__trial_04",
+        "P010__trial_05",
+        "P010__trial_06"
+      ],
+      "P011": [
+        "P011__trial_01",
+        "P011__trial_02",
+        "P011__trial_03",
+        "P011__trial_04",
+        "P011__trial_05",
+        "P011__trial_06"
+      ],
+      "P012": [
+        "P012__trial_01",
+        "P012__trial_02",
+        "P012__trial_03",
+        "P012__trial_04",
+        "P012__trial_05",
+        "P012__trial_06"
+      ],
+      "P013": [
+        "P013__trial_01",
+        "P013__trial_02",
+        "P013__trial_03",
+        "P013__trial_04",
+        "P013__trial_05",
+        "P013__trial_06"
+      ],
+      "P014": [
+        "P014__trial_01",
+        "P014__trial_02",
+        "P014__trial_03",
+        "P014__trial_04",
+        "P014__trial_05",
+        "P014__trial_06"
+      ],
+      "P015": [
+        "P015__trial_01",
+        "P015__trial_02",
+        "P015__trial_03",
+        "P015__trial_04",
+        "P015__trial_05",
+        "P015__trial_06"
+      ],
+      "P016": [
+        "P016__trial_01",
+        "P016__trial_02",
+        "P016__trial_03",
+        "P016__trial_04",
+        "P016__trial_05",
+        "P016__trial_06"
+      ],
+      "P017": [
+        "P017__trial_01",
+        "P017__trial_02",
+        "P017__trial_03",
+        "P017__trial_04",
+        "P017__trial_05",
+        "P017__trial_06"
+      ],
+      "P018": [
+        "P018__trial_01",
+        "P018__trial_02",
+        "P018__trial_03",
+        "P018__trial_04",
+        "P018__trial_05",
+        "P018__trial_06"
+      ],
+      "P019": [
+        "P019__trial_01",
+        "P019__trial_02",
+        "P019__trial_03",
+        "P019__trial_04",
+        "P019__trial_05",
+        "P019__trial_06"
+      ],
+      "P020": [
+        "P020__trial_01",
+        "P020__trial_02",
+        "P020__trial_03",
+        "P020__trial_04",
+        "P020__trial_05",
+        "P020__trial_06"
+      ],
+      "P021": [
+        "P021__trial_01",
+        "P021__trial_02",
+        "P021__trial_03",
+        "P021__trial_04",
+        "P021__trial_05",
+        "P021__trial_06"
+      ],
+      "P022": [
+        "P022__trial_01",
+        "P022__trial_02",
+        "P022__trial_03",
+        "P022__trial_04",
+        "P022__trial_05",
+        "P022__trial_06"
+      ],
+      "P023": [
+        "P023__trial_01",
+        "P023__trial_02",
+        "P023__trial_03",
+        "P023__trial_04",
+        "P023__trial_05",
+        "P023__trial_06"
+      ],
+      "P024": [
+        "P024__trial_01",
+        "P024__trial_02",
+        "P024__trial_03",
+        "P024__trial_04",
+        "P024__trial_05",
+        "P024__trial_06"
+      ],
+      "P025": [
+        "P025__trial_01",
+        "P025__trial_02",
+        "P025__trial_03",
+        "P025__trial_04",
+        "P025__trial_05",
+        "P025__trial_06"
+      ],
+      "P026": [
+        "P026__trial_01",
+        "P026__trial_02",
+        "P026__trial_03",
+        "P026__trial_04",
+        "P026__trial_05",
+        "P026__trial_06"
+      ],
+      "P027": [
+        "P027__trial_01",
+        "P027__trial_02",
+        "P027__trial_03",
+        "P027__trial_04",
+        "P027__trial_05",
+        "P027__trial_06"
+      ],
+      "P028": [
+        "P028__trial_01",
+        "P028__trial_02",
+        "P028__trial_03",
+        "P028__trial_04",
+        "P028__trial_05",
+        "P028__trial_06"
+      ],
+      "P029": [
+        "P029__trial_01",
+        "P029__trial_02",
+        "P029__trial_03",
+        "P029__trial_04",
+        "P029__trial_05",
+        "P029__trial_06"
+      ],
+      "P030": [
+        "P030__trial_01",
+        "P030__trial_02",
+        "P030__trial_03",
+        "P030__trial_04",
+        "P030__trial_05",
+        "P030__trial_06"
+      ],
+      "P031": [
+        "P031__trial_01",
+        "P031__trial_02",
+        "P031__trial_03",
+        "P031__trial_04",
+        "P031__trial_05",
+        "P031__trial_06"
+      ],
+      "P032": [
+        "P032__trial_01",
+        "P032__trial_02",
+        "P032__trial_03",
+        "P032__trial_04",
+        "P032__trial_05",
+        "P032__trial_06"
+      ],
+      "P033": [
+        "P033__trial_01",
+        "P033__trial_02",
+        "P033__trial_03",
+        "P033__trial_04",
+        "P033__trial_05",
+        "P033__trial_06"
+      ]
+    }
+  },
+  "checkpoint_compatibility_version": "real_heldout_mcmc_checkpoint_v2_strict_n33",
+  "target_manifest_sha256": "eede3f8f27e9eae8d1916af4fbac4b7717cec7d07924258f38063bf03f14cf96",
+  "n_participants": 33,
+  "n_trials": 198,
+  "n_candidate_rows": 990,
+  "model_fit_count": 396,
+  "group_split": {
+    "group_01": 17,
+    "group_02": 16
+  },
+  "n_tied_human_trials": 16,
+  "models": [
+    {
+      "model_id": "categorical_design",
+      "model_label": "Stimulus baseline",
+      "role": "primary",
+      "formula": "rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)",
+      "seed_offset": 0
+    },
+    {
+      "model_id": "primary_acoustic",
+      "model_label": "Primary acoustic feature baseline",
+      "role": "primary",
+      "formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+      "seed_offset": 10000
+    }
+  ],
+  "implementation_note": {
+    "full_data_inference": "Bambi/PyMC",
+    "heldout_repeated_evaluation": "explicit PyMC",
+    "equivalence": "The explicit PyMC held-out models implement the same additive fixed-effect and random-intercept structures as the full-data Bambi formulas.",
+    "stimulus_formula": "rating ~ episode + group + (1 | participant_id) + (1 | stimulus_id)",
+    "feature_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+    "treatment_coding": "Reference levels are the first sorted levels present in the training/target union; for the canonical N=33 data this matches Bambi reference coding with EDR-1 and group_01 as references.",
+    "random_effects": "Participant and stimulus effects are normal varying intercepts with shared HalfNormal scale parameters; no random slopes, interactions, song random effect, or group random effect are included."
+  },
+  "sampler_settings": {
+    "draws": 500,
+    "tune": 500,
+    "chains": 2,
+    "cores": null,
+    "target_accept": 0.95,
+    "inference_method": "nutpie"
+  },
+  "inference_method": "mcmc",
+  "sampler": "nutpie",
+  "chains": 2,
+  "tune": 500,
+  "draws": 500,
+  "target_accept": 0.95,
+  "parallel_folds": 4,
+  "requested_fold_ids": null,
+  "executed_fit_method": "mcmc",
+  "approximation_settings": null,
+  "compatible_hash": "14041cb7d1829711c8c7d45781f79939166414c151b807bf518934dbf289f457",
+  "completion_status": {
+    "complete": true,
+    "expected_fold_model_pairs": 396,
+    "compatible_completed_fold_model_pairs": 396,
+    "target_count": 198,
+    "participant_count": 33,
+    "missing_required_new_participants": [],
+    "require_full_n33": true,
+    "both_models_for_every_target": true,
+    "all_fit_status_complete": true,
+    "all_fit_method_matches": true,
+    "all_leakage_checks_pass": true
+  },
+  "validation_passed": true,
+  "fit_status_counts": {
+    "convergence_warning": 384,
+    "fit_ok": 12
+  },
+  "fit_method_counts": {
+    "mcmc": 396
+  },
+  "mcmc_vs_laplace_sensitivity": {
+    "comparison": "mcmc_vs_laplace_identical_fold_subset",
+    "status": "official_mcmc_executed",
+    "reason": "Official held-out evaluation executed with MCMC; Laplace outputs are not part of this run.",
+    "mcmc_completed_fold_model_pairs": 396,
+    "laplace_completed_fold_model_pairs": 0
+  },
+  "draw_level_winner_tie_rule": "split posterior winning probability equally across candidates tied for maximum expected rating in a draw",
+  "final_winner_rule": "largest posterior winning probability; exact equal maximum probabilities flagged as predicted_tie",
+  "outputs": [
+    "bootstrap_model_comparison.csv",
+    "candidate_predictions.csv",
+    "feature_model_metrics.csv",
+    "fit_method_audit.csv",
+    "fold_diagnostics.csv",
+    "frozen_target_manifest.csv",
+    "heldout_split_manifest.csv",
+    "leakage_audit.csv",
+    "mcmc_vs_laplace_sensitivity.csv",
+    "metrics_by_episode.csv",
+    "metrics_by_group.csv",
+    "metrics_by_song.csv",
+    "model_comparison.csv",
+    "official_n33_target_validation.csv",
+    "output_validation.csv",
+    "participant_level_metrics.csv",
+    "phase6_frozen_split_audit.json",
+    "phase6_split_source_audit.csv",
+    "runtime_summary.csv",
+    "stimulus_model_metrics.csv",
+    "trial_predictions.csv"
+  ],
+  "current_reproducibility_sources": {
+    "schema_version": "current_heldout_sources_v1",
+    "ratings": "data/processed/ratings_final.csv",
+    "participants": "data/processed/participants_final.csv",
+    "trial_preferences": "data/processed/trial_preferences_final.csv",
+    "feature_table": "statistical-modeling/outputs/acoustic-features/final_20_stimulus_feature_table.csv",
+    "heldout_split": "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/heldout_split_manifest.csv",
+    "leakage_audit": "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/leakage_audit.csv",
+    "trial_predictions": "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/trial_predictions.csv",
+    "historical_source_fields_preserved": [
+      "real_data_source",
+      "raw_sha256",
+      "cleaning_manifest_sha256"
+    ]
+  }
+}

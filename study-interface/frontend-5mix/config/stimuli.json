@@ -5,10 +5,10 @@
   "replacementRequiredBeforePilot": false,
   "notes": "Five-mix isolated frontend using the Phase 2 recommended set. Red To Blue is replaced by I'd Like To Know. Participant-facing pages show Song A/Song B and Version A-Version E labels only. Final perceptual acceptance of the selected mixes remains subject to Oscar listening confirmation.",
   "sourceMetadata": {
-    "fiveMixSelectionReview": "outputs/stimulus_selection/11_five_mix_selection_review_20260806/recommended_five_mix_selections.csv",
-    "fiveMixSelectionReport": "outputs/stimulus_selection/11_five_mix_selection_review_20260806/five_mix_selection_summary.md",
-    "sixMixSourceConfig": "study-interface/frontend-6mix/config/stimuli.json",
-    "backupSongReviewPackage": "outputs/stimulus_selection/08_backup_song_expansion/08_supervisor_review_package",
+    "fiveMixSelectionReview": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv",
+    "fiveMixSelectionReport": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/five_mix_selection_report.md",
+    "finalFiveMixSelectionSource": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv",
+    "backupSongReviewPackage": "experimental-design/stimulus-selection/final-selection/source-evidence/backup_review",
     "frontendImplementationDate": "2026-08-06"
   },
   "versionLabels": [
@@ -77,7 +77,7 @@
           "originalMixName": "DU-D",
           "originalDatasetFilename": "DU-D.mp3",
           "sourceFilename": "DU-D_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Lead Me\\DU-D_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/du_d.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -103,8 +103,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "PXL-L4",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -120,7 +120,7 @@
           "originalMixName": "DU-E",
           "originalDatasetFilename": "DU-E.mp3",
           "sourceFilename": "DU-E_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Lead Me\\DU-E_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/du_e.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -146,8 +146,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "PXL-L1",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -163,7 +163,7 @@
           "originalMixName": "PXL-L1",
           "originalDatasetFilename": "PXL-L1.mp3",
           "sourceFilename": "PXL-L1_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Lead Me\\PXL-L1_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l1.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -190,7 +190,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "DU-E",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -206,7 +206,7 @@
           "originalMixName": "PXL-L4",
           "originalDatasetFilename": "PXL-L4.mp3",
           "sourceFilename": "PXL-L4_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Lead Me\\PXL-L4_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/pxl_l4.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -233,7 +233,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening / rating bridge",
             "fiveMixNearestSelectedNeighbour": "DU-D",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -249,7 +249,7 @@
           "originalMixName": "McG-pro2",
           "originalDatasetFilename": "McG-pro2.mp3",
           "sourceFilename": "McG-pro2_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Lead Me\\McG-pro2_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_a_lead_me/mcg_pro2.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -276,7 +276,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening",
             "fiveMixNearestSelectedNeighbour": "PXL-L1",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -291,11 +291,11 @@
         "minimumCorrelation": null,
         "automaticResult": "FAIL",
         "overallRecommendation": "ACCEPT_WITH_NOTE",
-        "source": "outputs/stimulus_selection/09_six_mix_proposals/alignment_review/six_mix_alignment_summary.csv",
+        "source": "experimental-design/stimulus-selection/final-selection/source-evidence/six_alignment/six_mix_alignment_summary.csv",
         "manualReviewNote": "Do not change source timing; keep manual review note for supervisor package.",
-        "sixMixOrder": "DU-D|DU-E|QUT-F|PXL-L1|PXL-L4|McG-pro2",
+        "sourceCandidateOrder": "DU-D|DU-E|QUT-F|PXL-L1|PXL-L4|McG-pro2",
         "fiveMixOrder": "DU-D|DU-E|PXL-L1|PXL-L4|McG-pro2",
-        "fiveMixSelectionSource": "outputs/stimulus_selection/11_five_mix_selection_review_20260806/recommended_five_mix_selections.csv"
+        "fiveMixSelectionSource": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv"
       }
     },
     {
@@ -318,7 +318,7 @@
           "originalMixName": "PXL-S3",
           "originalDatasetFilename": "PXL-S3.mp3",
           "sourceFilename": "PXL-S3_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\08_backup_song_expansion\\08_supervisor_review_package\\audio\\I'd Like To Know\\Similar Ratings\\PXL-S3_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s3.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -328,7 +328,7 @@
             "targetIntegratedLufs": -20.8,
             "technicalQcStatus": "clear technical pool QC; PASS alignment for both source triplets",
             "validationStatus": "PASS_WITH_PHASE_2_LISTENING_CONFIRMATION_REQUIRED",
-            "frontendAudioSource": "backup_supervisor_review_union",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "PXL-S2",
             "fiveMixNearestSelectedNeighbourDistance": "1.36762958502",
@@ -347,7 +347,7 @@
           "originalMixName": "PXL-S5",
           "originalDatasetFilename": "PXL-S5.mp3",
           "sourceFilename": "PXL-S5_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\08_backup_song_expansion\\08_supervisor_review_package\\audio\\I'd Like To Know\\Similar Ratings\\PXL-S5_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s5.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -357,7 +357,7 @@
             "targetIntegratedLufs": -20.8,
             "technicalQcStatus": "clear technical pool QC; PASS alignment for both source triplets",
             "validationStatus": "PASS_WITH_PHASE_2_LISTENING_CONFIRMATION_REQUIRED",
-            "frontendAudioSource": "backup_supervisor_review_union",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "PXL-S7",
             "fiveMixNearestSelectedNeighbourDistance": "1.97772901106",
@@ -376,7 +376,7 @@
           "originalMixName": "PXL-S1",
           "originalDatasetFilename": "PXL-S1.mp3",
           "sourceFilename": "PXL-S1_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\08_backup_song_expansion\\08_supervisor_review_package\\audio\\I'd Like To Know\\Similar Ratings\\PXL-S1_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s1.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -386,7 +386,7 @@
             "targetIntegratedLufs": -20.8,
             "technicalQcStatus": "clear technical pool QC; PASS alignment for both source triplets",
             "validationStatus": "PASS_WITH_PHASE_2_LISTENING_CONFIRMATION_REQUIRED",
-            "frontendAudioSource": "backup_supervisor_review_union",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening / rating bridge",
             "fiveMixNearestSelectedNeighbour": "PXL-S7",
             "fiveMixNearestSelectedNeighbourDistance": "1.59744017638",
@@ -405,7 +405,7 @@
           "originalMixName": "PXL-S2",
           "originalDatasetFilename": "PXL-S2.mp3",
           "sourceFilename": "PXL-S2_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\08_backup_song_expansion\\08_supervisor_review_package\\audio\\I'd Like To Know\\Wide Ratings\\PXL-S2_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s2.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -415,7 +415,7 @@
             "targetIntegratedLufs": -20.8,
             "technicalQcStatus": "clear technical pool QC; PASS alignment for both source triplets",
             "validationStatus": "PASS_WITH_PHASE_2_LISTENING_CONFIRMATION_REQUIRED",
-            "frontendAudioSource": "backup_supervisor_review_union",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "PXL-S3",
             "fiveMixNearestSelectedNeighbourDistance": "1.36762958502",
@@ -434,7 +434,7 @@
           "originalMixName": "PXL-S7",
           "originalDatasetFilename": "PXL-S7.mp3",
           "sourceFilename": "PXL-S7_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\08_backup_song_expansion\\08_supervisor_review_package\\audio\\I'd Like To Know\\Wide Ratings\\PXL-S7_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_01/song_b_id_like_to_know/pxl_s7.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -444,7 +444,7 @@
             "targetIntegratedLufs": -20.8,
             "technicalQcStatus": "clear technical pool QC; PASS alignment for both source triplets",
             "validationStatus": "PASS_WITH_PHASE_2_LISTENING_CONFIRMATION_REQUIRED",
-            "frontendAudioSource": "backup_supervisor_review_union",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening",
             "fiveMixNearestSelectedNeighbour": "PXL-S2",
             "fiveMixNearestSelectedNeighbourDistance": "1.52980290766",
@@ -461,7 +461,7 @@
         "overallRecommendation": "ACCEPT_WITH_NOTE",
         "manualReviewNote": "Per Phase 2 package: final perceptual acceptance still requires Oscar listening confirmation.",
         "fiveMixOrder": "PXL-S3|PXL-S5|PXL-S1|PXL-S2|PXL-S7",
-        "fiveMixSelectionSource": "outputs/stimulus_selection/11_five_mix_selection_review_20260806/recommended_five_mix_selections.csv"
+        "fiveMixSelectionSource": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv"
       }
     },
     {
@@ -484,7 +484,7 @@
           "originalMixName": "QUT-B",
           "originalDatasetFilename": "QUT-B.mp3",
           "sourceFilename": "QUT-B_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\In The Meantime\\QUT-B_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_b.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -510,8 +510,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening / rating bridge",
             "fiveMixNearestSelectedNeighbour": "DU-K",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -527,7 +527,7 @@
           "originalMixName": "DU-H",
           "originalDatasetFilename": "DU-H.mp3",
           "sourceFilename": "DU-H_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\In The Meantime\\DU-H_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_h.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -553,8 +553,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "DU-K",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -570,7 +570,7 @@
           "originalMixName": "DU-I",
           "originalDatasetFilename": "DU-I.mp3",
           "sourceFilename": "DU-I_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\In The Meantime\\DU-I_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_i.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -596,8 +596,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "DU-K",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -613,7 +613,7 @@
           "originalMixName": "DU-K",
           "originalDatasetFilename": "DU-K.mp3",
           "sourceFilename": "DU-K_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\In The Meantime\\DU-K_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/du_k.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -640,7 +640,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening",
             "fiveMixNearestSelectedNeighbour": "DU-I",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -656,7 +656,7 @@
           "originalMixName": "QUT-pro",
           "originalDatasetFilename": "QUT-pro.mp3",
           "sourceFilename": "QUT-pro_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\In The Meantime\\QUT-pro_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_a_in_the_meantime/qut_pro.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -683,7 +683,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "DU-I",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -698,11 +698,11 @@
         "minimumCorrelation": null,
         "automaticResult": "FAIL",
         "overallRecommendation": "ACCEPT_WITH_NOTE",
-        "source": "outputs/stimulus_selection/09_six_mix_proposals/alignment_review/six_mix_alignment_summary.csv",
+        "source": "experimental-design/stimulus-selection/final-selection/source-evidence/six_alignment/six_mix_alignment_summary.csv",
         "manualReviewNote": "Do not change source timing; keep manual review note for supervisor package.",
-        "sixMixOrder": "QUT-B|DU-H|DU-I|DU-K|QUT-pro|DU-N",
+        "sourceCandidateOrder": "QUT-B|DU-H|DU-I|DU-K|QUT-pro|DU-N",
         "fiveMixOrder": "QUT-B|DU-H|DU-I|DU-K|QUT-pro",
-        "fiveMixSelectionSource": "outputs/stimulus_selection/11_five_mix_selection_review_20260806/recommended_five_mix_selections.csv"
+        "fiveMixSelectionSource": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv"
       }
     },
     {
@@ -725,7 +725,7 @@
           "originalMixName": "McG-R",
           "originalDatasetFilename": "McG-R.mp3",
           "sourceFilename": "McG-R_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Pouring Room\\McG-R_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_r.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -752,7 +752,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "McG-pro1",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -768,7 +768,7 @@
           "originalMixName": "McG-T",
           "originalDatasetFilename": "McG-T.mp3",
           "sourceFilename": "McG-T_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Pouring Room\\McG-T_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_t.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -795,7 +795,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "McG-X",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -811,7 +811,7 @@
           "originalMixName": "McG-X",
           "originalDatasetFilename": "McG-X.mp3",
           "sourceFilename": "McG-X_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Pouring Room\\McG-X_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_x.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -838,7 +838,7 @@
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
             "fadeUpdate": "corrected_5_ms_boundary_fades_2026-08-04",
-            "frontendAudioSource": "approved_three_mix_frontend_overlap",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "similar-rating subset",
             "fiveMixNearestSelectedNeighbour": "McG-T",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -854,7 +854,7 @@
           "originalMixName": "McG-pro1",
           "originalDatasetFilename": "McG-pro1.mp3",
           "sourceFilename": "McG-pro1_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Pouring Room\\McG-pro1_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_pro1.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -880,8 +880,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening",
             "fiveMixNearestSelectedNeighbour": "McG-V",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -897,7 +897,7 @@
           "originalMixName": "McG-V",
           "originalDatasetFilename": "McG-V.mp3",
           "sourceFilename": "McG-V_28sec.wav",
-          "sourcePath": "C:\\Users\\oscar\\Documents\\7. QMUL UNIVERSITY\\1. Master Program\\3. MSc Project\\intent2control-dissertation\\outputs\\stimulus_selection\\09_six_mix_proposals\\review_audio\\Pouring Room\\McG-V_28sec.wav",
+          "sourcePath": null,
           "audioPath": "assets/audio/study-stimuli/main-study/group_02/song_b_pouring_room/mcg_v.wav",
           "technicalMetadata": {
             "format": "wav",
@@ -923,8 +923,8 @@
             "boundaryClickQcFlag": "PASS",
             "technicalQcStatus": "PASS_WITH_ALIGNMENT_NOTE",
             "validationStatus": "PASS",
-            "fadeUpdate": "six_mix_latest_5_ms_boundary_fades_2026-08-05",
-            "frontendAudioSource": "six_mix_review_audio",
+            "fadeUpdate": "final_five_mix_boundary_fades_2026-08-05",
+            "frontendAudioSource": "frontend_5mix_study_audio",
             "fiveMixSelectionRole": "range-broadening / rating bridge",
             "fiveMixNearestSelectedNeighbour": "McG-pro1",
             "fiveMixManualListeningConfirmationRequired": "yes"
@@ -939,11 +939,11 @@
         "minimumCorrelation": null,
         "automaticResult": "FAIL",
         "overallRecommendation": "ACCEPT_WITH_NOTE",
-        "source": "outputs/stimulus_selection/09_six_mix_proposals/alignment_review/six_mix_alignment_summary.csv",
+        "source": "experimental-design/stimulus-selection/final-selection/source-evidence/six_alignment/six_mix_alignment_summary.csv",
         "manualReviewNote": "Do not change source timing; keep manual review note for supervisor package.",
-        "sixMixOrder": "McG-R|McG-T|McG-X|McG-pro1|McG-U|McG-V",
+        "sourceCandidateOrder": "McG-R|McG-T|McG-X|McG-pro1|McG-U|McG-V",
         "fiveMixOrder": "McG-R|McG-T|McG-X|McG-pro1|McG-V",
-        "fiveMixSelectionSource": "outputs/stimulus_selection/11_five_mix_selection_review_20260806/recommended_five_mix_selections.csv"
+        "fiveMixSelectionSource": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv"
       }
     }
   ],

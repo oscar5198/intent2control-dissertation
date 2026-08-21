@@ -38,7 +38,7 @@ Provider adapters must preserve the semantic prompt package exactly:
 
 Adapters must not inject demonstrations, examples, hidden instructions,
 provider-specific rationales, summaries of participant history, additional
-features, extra metadata fields, target outcomes, statistical-baseline
+features, extra metadata fields, target outcomes, statistical-modeling
 predictions, or candidate hints into primary inference requests.
 
 ## Structured Output

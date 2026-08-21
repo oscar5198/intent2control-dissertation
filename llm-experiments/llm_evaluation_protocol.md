@@ -8,7 +8,7 @@ Status: Phase 6A protocol freeze for the planned LLM evaluation. These decisions
 
 This document freezes the methodological design for evaluating whether LLMs can predict an individual listener's preferred music mix on a held-out trial. It is intended to reduce researcher degrees of freedom before inspecting final human listening-study outcomes.
 
-This protocol covers only the LLM evaluation design. It does not train models, query LLMs, analyse participant results, modify the dissertation text, or modify the statistical-baseline models.
+This protocol covers only the LLM evaluation design. It does not train models, query LLMs, analyse participant results, modify the dissertation text, or modify the statistical-modeling models.
 
 The active study design is:
 
@@ -24,7 +24,8 @@ The active study design is:
 
 The listening episodes are fixed experimental context conditions. They are not treated as evidence that the study tests generalisation across arbitrary natural-language contexts.
 
-Older three-mix, group-level, or generic mix-quality framings are superseded by this participant-level held-out-trial protocol.
+Generic mix-quality framings are superseded by this participant-level
+held-out-trial protocol.
 
 ## 2. Protocol Freeze
 
@@ -42,7 +43,10 @@ The following Phase 6A.4 decisions are frozen before final participant-result an
 - primary acoustic descriptors: `z_RMS`, `z_CF`, and `z_SW`;
 - sensitivity acoustic descriptor: `z_SI` only as a secondary/sensitivity descriptor.
 
-The protocol remains implementation-ready but does not freeze model-specific API identifiers, exact temperature values, prompt wording, or provider-specific structured-output mechanics. Those belong to Phase 6B/6C.
+The final implementation freezes prompt wording, schemas, model registry,
+inference configuration, rendered prompts, and retained predictions under
+`llm-experiments/outputs/final/`. This protocol is retained as methodological
+evidence for the evaluation design.
 
 ## 3. Primary Prediction Task
 
@@ -114,7 +118,9 @@ The model receives exactly the same target information as the non-history condit
 
 The purpose of this contrast is to test whether prior listener-specific behavioural evidence improves prediction relative to target context, acoustic features, and permitted participant metadata alone.
 
-Additional narrower information ablations may be run only as secondary analyses relevant to RQ5. They must not replace the two principal conditions or be presented as the primary confirmatory comparison.
+Additional narrower information ablations may be run only as secondary
+exploratory analyses. They must not replace the two principal conditions or be
+presented as the primary confirmatory comparison.
 
 ## 7. Allowed Inputs
 
@@ -133,7 +139,7 @@ Allowed personalised-history input information:
 - prior comparative comments;
 - acoustic descriptors and anonymous candidate information needed to interpret those prior preferences.
 
-Disallowed prompt information includes unnecessary original mix names, filenames, source engineer labels, internal selection roles, historical stimulus-selection ratings, and statistical-baseline predictions unless a later approved implementation note documents a non-leaking reason. The default is not to show these identifiers to the LLM.
+Disallowed prompt information includes unnecessary original mix names, filenames, source engineer labels, internal selection roles, historical stimulus-selection ratings, and statistical-modeling predictions unless a later approved implementation note documents a non-leaking reason. The default is not to show these identifiers to the LLM.
 
 ## 8. Acoustic Descriptors and Participant Metadata
 
@@ -143,11 +149,13 @@ The primary acoustic descriptor set is frozen as:
 - `z_CF`: standardised crest-factor/dynamic-profile proxy;
 - `z_SW`: standardised stereo-width proxy.
 
-These are the repository-supported primary scalar predictors in the current statistical-baseline feature evidence.
+These are the repository-supported primary scalar predictors in the current statistical-modeling feature evidence.
 
 `z_SI` is frozen as sensitivity-only. Repository evidence treats stereo imbalance as complete but QC-oriented, not part of the primary feature model. Bark-band or Bark/PCA descriptors are not part of the primary LLM input because the repository does not currently define a globally valid final-20 prompt-ready representation.
 
-Feature wording, serialization format, rounding precision, and whether values are shown as numbers or short neutral descriptors are deferred to Phase 6B prompt implementation. The underlying primary feature variables are not deferred.
+Feature wording, serialization format, and rounding precision are frozen in the
+final prompt package under `llm-experiments/prompts/` and rendered prompt
+artifacts under `llm-experiments/outputs/final/rendered-prompts/`.
 
 Permitted participant metadata must be collected independently of target-trial outcomes and used consistently across both principal conditions if included. Based on the current five-mix questionnaire schema, eligible background metadata fields are:
 
@@ -170,7 +178,7 @@ For target trial `t`, the prompt/input must never contain:
 4. target-trial ranking derived from human ratings;
 5. any feature, label, summary, statistic, or variable derived from target-trial human outcomes;
 6. any textual description that directly or indirectly reveals which candidate was preferred in the target trial;
-7. statistical-baseline predictions for that target trial.
+7. statistical-modeling predictions for that target trial.
 
 Legitimate target-trial information exists independently of the participant's response, such as target context, anonymous A-E candidate labels, and precomputed acoustic descriptors.
 
@@ -296,7 +304,11 @@ The evaluation must report invalid-output rates by model and information conditi
 
 ## 16. Inference and Repeated-Run Principle
 
-The primary evaluation uses fixed low-variance inference settings where supported. Exact model-specific parameters, such as temperature, seed, top-p, structured-output mode, maximum output tokens, model identifier, endpoint, and access date, will be frozen in Phase 6B/6C when model implementations are configured.
+The primary evaluation uses fixed low-variance inference settings where
+supported. Model-specific parameters, model identifiers, structured-output
+settings, and retained backend metadata are recorded in
+`llm-experiments/outputs/final/inference-config/` and the model-specific run
+manifests under `llm-experiments/outputs/final/model-predictions/source/`.
 
 Evaluation principles frozen now:
 
@@ -331,7 +343,7 @@ For the primary categorical task, derive an equivalent baseline preferred-mix pr
 
 Because multiple targets come from the same participant, uncertainty and comparison methods must account for clustering/repeated measures. Recommended reporting includes participant-cluster bootstrap confidence intervals and paired participant-level comparisons between conditions/models.
 
-The existing statistical baseline is not modified or refit in this task. If the current baseline implementation cannot yet produce exactly matched leave-one-trial-out participant-trial predictions, that is an implementation gap for a later phase, not a reason to change the frozen LLM target.
+The existing statistical modeling is not modified or refit in this task. If the current baseline implementation cannot yet produce exactly matched leave-one-trial-out participant-trial predictions, that is an implementation gap for a later phase, not a reason to change the frozen LLM target.
 
 ## 19. Reporting Hierarchy
 
@@ -350,7 +362,7 @@ Secondary reporting may include:
 
 - MAE/RMSE of predicted ratings;
 - tie-aware ranking agreement;
-- information ablations relevant to RQ5;
+- exploratory information ablations, if separately justified;
 - invalid-output rates;
 - output-consistency diagnostics;
 - optional repeated-run/model-stability analysis;
@@ -358,30 +370,16 @@ Secondary reporting may include:
 
 Exploratory or secondary analyses must not be presented as the primary hypothesis test.
 
-## 20. Deferred Phase 6B/6C Implementation Details
+## 20. Final Implementation Artifacts
 
-The following decisions are intentionally deferred:
+The final implementation artifacts are:
 
-- exact prompt wording and field order;
-- descriptor rounding precision and verbal gloss format;
-- exact JSON Schema or provider-specific structured-output declaration;
-- exact LLM providers, model identifiers, endpoints, access dates, and inference parameters;
-- exact storage layout for rendered prompts, raw responses, parsed outputs, and logs;
-- exact baseline implementation needed for aligned leave-one-trial-out predictions;
-- exact participant-cluster bootstrap or paired-comparison implementation;
-- any optional RQ5 ablation design;
-- any optional repeated-run stability design;
-- whether post-task metadata can be justified for secondary sensitivity analysis.
+- prompt template, package manifest, and prompt specification in `llm-experiments/prompts/`;
+- rendered prompts and request manifests in `llm-experiments/outputs/final/rendered-prompts/`;
+- model and backend configuration in `llm-experiments/outputs/final/inference-config/`;
+- consolidated predictions in `llm-experiments/outputs/final/model-predictions/`;
+- held-out ground truth, scoring metrics, chance tests, and model comparisons in `llm-experiments/outputs/final/evaluation/`;
+- compact examiner-facing copies in `results/llm/`.
 
-## 21. Repository Conflicts Noted
-
-The current five-mix frontend documentation and configuration supersede older three-mix and six-mix materials for this protocol.
-
-Relevant conflicts found:
-
-- `study-interface/README.md` still describes an older three-mix design.
-- The earlier LLM protocol described three alternatives A-C, group-level targets, and a 1/3 chance baseline.
-- `outputs/stimulus_selection/09_current_frontend_integration/README.md` marks its three-mix frontend integration state as historical and superseded.
-- `study-interface/frontend-5mix/README.md`, `study-interface/frontend-5mix/config/stimuli.json`, and `study-interface/frontend-5mix/config/study-config.json` document the active five-mix design with A-E labels, six trials per participant, 30 ratings per participant, and randomised per-trial version mapping.
-
-Because this task is documentation-only, older files were inspected but not changed.
+Internal filenames retain historical version identifiers where those identifiers
+are part of frozen hashes, tests, or provenance.

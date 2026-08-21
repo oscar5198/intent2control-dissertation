@@ -21,9 +21,9 @@ from llm_experiments.inference.configuration import production_preflight  # noqa
 OUTPUT_DIR = REPO_ROOT / "llm-experiments" / "outputs"
 READINESS_JSON = OUTPUT_DIR / "phase6g0_final_execution_readiness.json"
 REPORT_MD = OUTPUT_DIR / "phase6g0_reconciliation_report.md"
-FINAL_BASELINE_DIR = REPO_ROOT / "statistical-baseline" / "outputs" / "real_heldout_evaluation" / "mcmc_phase6_split"
-FINAL_DATA_DIR = REPO_ROOT / "statistical-baseline" / "data" / "real"
-PHASE6F_SCHEMA = REPO_ROOT / "statistical-baseline" / "schema" / "phase6f_evaluation_ready_baseline_prediction_schema.csv"
+FINAL_BASELINE_DIR = REPO_ROOT / "statistical-modeling" / "outputs" / "real_heldout_evaluation" / "mcmc_phase6_split"
+FINAL_DATA_DIR = REPO_ROOT / "statistical-modeling" / "data" / "real"
+PHASE6F_SCHEMA = REPO_ROOT / "statistical-modeling" / "schema" / "phase6f_evaluation_ready_baseline_prediction_schema.csv"
 PHASE6B_REAL_DIR = REPO_ROOT / "llm-experiments" / "outputs" / "real" / "phase6b"
 PHASE6E2_SUMMARY = REPO_ROOT / "llm-experiments" / "outputs" / "synthetic" / "phase6e2" / "phase6e2_summary.json"
 PHASE6E_PRIMARY_CONFIG = REPO_ROOT / "llm-experiments" / "config" / "phase6e_primary_inference_config_v1.json"
@@ -76,9 +76,9 @@ def build_state() -> dict[str, Any]:
     return {
         "schema_version": "phase6g0_final_execution_readiness_v1",
         "run_type": "repository_reconciliation_only",
-        "phase3_final_models_complete": final_dataset_locked and (REPO_ROOT / "statistical-baseline" / "outputs" / "real_stimulus_model").exists() and (REPO_ROOT / "statistical-baseline" / "outputs" / "real_feature_model").exists(),
+        "phase3_final_models_complete": final_dataset_locked and (REPO_ROOT / "statistical-modeling" / "outputs" / "real_stimulus_model").exists() and (REPO_ROOT / "statistical-modeling" / "outputs" / "real_feature_model").exists(),
         "phase3_final_heldout_predictions_complete": bool(manifest["completion_status"]["complete"] and manifest["validation_passed"]),
-        "authoritative_baseline_source": "statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split",
+        "authoritative_baseline_source": "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation",
         "authoritative_baseline_source_type": "final_empirical_phase3_mcmc_leave_one_trial_out",
         "baseline_phase6_alignment_valid": baseline_alignment["valid"],
         "baseline_phase6f_ready_export_present": False,
@@ -89,13 +89,13 @@ def build_state() -> dict[str, Any]:
         "principal_baseline_comparator": "both_predefined_primary",
         "principal_baseline_comparator_status": "both categorical_design and primary_acoustic are retained as primary/predefined; no single comparator selected from empirical performance.",
         "final_dataset_locked": final_dataset_locked,
-        "final_dataset_source": "statistical-baseline/data/real/raw/listening_preference_responses_33_immutable.xlsx",
+        "final_dataset_source": "statistical-modeling/data/real/raw/listening_preference_responses_33_immutable.xlsx",
         "final_dataset_sha256": data_manifest["raw_provenance"]["sha256"],
         "final_dataset_participant_count": int(data_summary["final_recommended_analysable_n"]),
         "final_dataset_rating_rows": int(data_summary["final_analysable_rating_rows"]),
         "real_phase6b_outputs_ready": real_phase6b_outputs_ready,
         "real_phase6b_output_dir_checked": repo_rel(PHASE6B_REAL_DIR),
-        "real_phase6b_next_input": "statistical-baseline/data/real/raw/listening_preference_responses_33_immutable.xlsx or an exact CSV export of its listening-study-5mix sheet",
+        "real_phase6b_next_input": "statistical-modeling/data/real/raw/listening_preference_responses_33_immutable.xlsx or an exact CSV export of its listening-study-5mix sheet",
         "real_phase6b_next_command": "If exported as CSV: python llm-experiments/scripts/build_analysis_ready_dataset.py --input <final_netlify_export.csv> --output-dir llm-experiments/outputs/real/phase6b/phase6b1 ; then run build_preference_targets.py, build_prediction_examples.py, and build_prompt_data_objects.py on those outputs.",
         "phase6d_prompt_package_verified": bool(prompt_preflight.get("PHASE6D_PROMPT_PACKAGE_FROZEN") and prompt_preflight.get("artifact_hashes_valid") and prompt_preflight.get("reference_prompt_hashes_valid")),
         "phase6d_prompt_package_version": prompt_preflight.get("package_version"),
@@ -261,15 +261,15 @@ def inspected_files() -> list[str]:
         "llm-experiments/config/phase6e_model_registry_v1.json",
         "llm-experiments/config/phase6e_backend_registry_v1.json",
         "llm-experiments/config/phase6e_primary_inference_config_v1.json",
-        "statistical-baseline/README.md",
-        "statistical-baseline/data/real/real_cleaning_manifest.json",
-        "statistical-baseline/data/real/real_data_summary.csv",
-        "statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split/evaluation_manifest.json",
-        "statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split/trial_predictions.csv",
-        "statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split/candidate_predictions.csv",
-        "statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split/fold_diagnostics.csv",
-        "statistical-baseline/outputs/real_heldout_evaluation/mcmc_phase6_split/leakage_audit.csv",
-        "statistical-baseline/schema/phase6f_evaluation_ready_baseline_prediction_schema.csv",
+        "statistical-modeling/README.md",
+        "statistical-modeling/data/real/real_cleaning_manifest.json",
+        "statistical-modeling/data/real/real_data_summary.csv",
+        "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/evaluation_manifest.json",
+        "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/trial_predictions.csv",
+        "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/candidate_predictions.csv",
+        "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/fold_diagnostics.csv",
+        "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/leakage_audit.csv",
+        "statistical-modeling/schema/phase6f_evaluation_ready_baseline_prediction_schema.csv",
     ]
     return paths
 

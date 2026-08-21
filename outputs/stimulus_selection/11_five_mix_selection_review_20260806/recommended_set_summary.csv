@@ -1,5 +1,0 @@
-song,selected_mixes,minimum_pairwise_distance,median_pairwise_distance,maximum_pairwise_distance,rating_range,similar_rating_subset,range_broadening_mixes,selection_source
-Lead Me,DU-D|DU-E|PXL-L1|PXL-L4|McG-pro2,2.51973487833,3.19132996589,3.49499417947,0.25885199708999995,DU-D|DU-E|PXL-L1,PXL-L4|McG-pro2,six_mix_proposals_union
-In The Meantime,QUT-B|DU-H|DU-I|DU-K|QUT-pro,2.10556575572,3.39419507544,5.56099797932,0.448325994554,DU-H|DU-I|QUT-pro,DU-K|QUT-B,six_mix_proposals_union
-Pouring Room,McG-R|McG-T|McG-X|McG-pro1|McG-V,1.69525800496,2.1478566173,3.07136962966,0.4258082975790001,McG-R|McG-T|McG-X,McG-V|McG-pro1,six_mix_proposals_union
-I'd Like To Know,PXL-S3|PXL-S5|PXL-S1|PXL-S2|PXL-S7,1.36762958502,2.190067924005,3.48430981082,0.246210387232,PXL-S3|PXL-S5|PXL-S2,PXL-S1|PXL-S7,backup_supervisor_review_union

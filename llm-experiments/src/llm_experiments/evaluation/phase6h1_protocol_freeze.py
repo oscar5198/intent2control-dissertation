@@ -12,25 +12,26 @@ from typing import Any
 from llm_experiments.inference.records import canonical_json, portable_artifact_path, sha256_file, write_json_atomic, write_jsonl
 
 
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6h1")
-PHASE6B_DIR = Path("llm-experiments/outputs/real/phase6b")
-PHASE6G3_DIR = Path("llm-experiments/outputs/real/phase6g3")
-PHASE6G5_DIR = Path("llm-experiments/outputs/real/phase6g5")
-REAL_DATA_DIR = Path("statistical-baseline/data/real")
-REAL_STIMULUS_MODEL_DIR = Path("statistical-baseline/outputs/real_stimulus_model")
-REAL_FEATURE_MODEL_DIR = Path("statistical-baseline/outputs/real_feature_model")
-REAL_HELDOUT_DIR = Path("statistical-baseline/outputs/real_heldout_evaluation/frozen_phase6_split")
+OUTPUT_DIR = Path("llm-experiments/outputs/final/evaluation")
+PROMPT_DATA_DIR = Path("llm-experiments/outputs/final/prompt-data")
+RENDERED_PROMPTS_DIR = Path("llm-experiments/outputs/final/rendered-prompts")
+MODEL_PREDICTIONS_DIR = Path("llm-experiments/outputs/final/model-predictions")
+REAL_DATA_DIR = Path("data/processed")
+REAL_METADATA_DIR = Path("statistical-modeling/data/real")
+REAL_STIMULUS_MODEL_DIR = Path("statistical-modeling/outputs/stimulus-model")
+REAL_FEATURE_MODEL_DIR = Path("statistical-modeling/outputs/feature-model")
+REAL_HELDOUT_DIR = Path("statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation")
 
-PREDICTION_EXAMPLES = PHASE6B_DIR / "final_prediction_examples.jsonl"
-PROMPT_DATA_OBJECTS = PHASE6B_DIR / "final_prompt_data_objects.jsonl"
-TRIAL_GROUND_TRUTH = PHASE6B_DIR / "final_trial_ground_truth_targets.csv"
-PHASE6B_MANIFEST = PHASE6B_DIR / "phase6g1_real_phase6b_manifest.json"
-PHASE6G3_FREEZE = PHASE6G3_DIR / "phase6g3_freeze_manifest.json"
-PHASE6G5_PREDICTIONS = PHASE6G5_DIR / "final_llm_predictions.jsonl"
-PHASE6G5_FREEZE = PHASE6G5_DIR / "final_llm_prediction_freeze_manifest.json"
-REAL_DATA_SUMMARY = REAL_DATA_DIR / "real_data_summary.csv"
-REAL_RATINGS = REAL_DATA_DIR / "real_ratings_clean.csv"
-REAL_PARTICIPANTS = REAL_DATA_DIR / "real_participants_clean.csv"
+PREDICTION_EXAMPLES = PROMPT_DATA_DIR / "heldout_prediction_examples.jsonl"
+PROMPT_DATA_OBJECTS = PROMPT_DATA_DIR / "final_prompt_dataset.jsonl"
+TRIAL_GROUND_TRUTH = PROMPT_DATA_DIR / "heldout_targets.csv"
+PHASE6B_MANIFEST = PROMPT_DATA_DIR / "prompt_data_manifest.json"
+PHASE6G3_FREEZE = RENDERED_PROMPTS_DIR / "prompt_freeze_manifest.json"
+PHASE6G5_PREDICTIONS = MODEL_PREDICTIONS_DIR / "llm_heldout_predictions.jsonl"
+PHASE6G5_FREEZE = MODEL_PREDICTIONS_DIR / "prediction_freeze_manifest.json"
+REAL_DATA_SUMMARY = REAL_METADATA_DIR / "real_data_summary.csv"
+REAL_RATINGS = REAL_DATA_DIR / "ratings_final.csv"
+REAL_PARTICIPANTS = REAL_DATA_DIR / "participants_final.csv"
 
 LABELS = ("A", "B", "C", "D", "E")
 CONDITIONS = ("non_history", "personalised_history")
@@ -62,18 +63,18 @@ def build_phase6h1_protocol_freeze(repo_root: Path, output_dir: Path = OUTPUT_DI
     qc = build_qc_report_data(repo_root, ground_truth, joined, pairs, tie_policy, metric_protocol, fairness_audit, phase6b_manifest, phase6g3_freeze, phase6g5_freeze)
 
     paths = {
-        "ground_truth_jsonl": out / "phase6h1_ground_truth_heldout.jsonl",
-        "ground_truth_csv": out / "phase6h1_ground_truth_heldout.csv",
-        "joined_jsonl": out / "phase6h1_joined_predictions_ground_truth.jsonl",
-        "joined_csv": out / "phase6h1_joined_predictions_ground_truth.csv",
-        "pair_manifest": out / "phase6h1_personalisation_pair_manifest.json",
-        "tie_policy": out / "phase6h1_tie_policy.json",
-        "metric_protocol": out / "phase6h1_metric_protocol.json",
-        "fairness_audit": out / "phase6h1_mixed_effects_fairness_audit.json",
-        "mixed_status": out / "phase6h1_mixed_effects_status.json",
-        "data_summary": out / "phase6h1_data_collection_summary.json",
-        "freeze_manifest": out / "phase6h1_evaluation_protocol_freeze_manifest.json",
-        "qc_report": out / "phase6h1_qc_report.md",
+        "ground_truth_jsonl": out / "heldout_ground_truth.jsonl",
+        "ground_truth_csv": out / "heldout_ground_truth.csv",
+        "joined_jsonl": out / "predictions_with_ground_truth.jsonl",
+        "joined_csv": out / "predictions_with_ground_truth.csv",
+        "pair_manifest": out / "personalisation_pair_manifest.json",
+        "tie_policy": out / "tie_policy.json",
+        "metric_protocol": out / "metric_protocol.json",
+        "fairness_audit": out / "mixed_effects_fairness_audit.json",
+        "mixed_status": out / "mixed_effects_status.json",
+        "data_summary": out / "data_collection_summary.json",
+        "freeze_manifest": out / "evaluation_protocol_manifest.json",
+        "qc_report": out / "evaluation_protocol_qc_report.md",
     }
 
     write_jsonl(paths["ground_truth_jsonl"], ground_truth)
@@ -317,8 +318,8 @@ def build_fairness_audit(repo_root: Path, ground_truth: list[dict[str, Any]], ph
             "same_heldout_targets": llm_examples == old_examples,
             "matched_existing_baseline_examples": len(matched_old),
             "llm_examples_missing_from_existing_baseline": len(missing_old),
-            "assessment": "The frozen LLM evaluation uses the current N=33 Phase 6B universe (198 trials). The existing frozen_phase6_split mixed-effects heldout baseline uses an older N=30 universe (180 trials), so it is not a complete direct baseline for final LLM comparison.",
-            "corrected_matched_evaluation_available": "A matched N=30 subset can be constructed from the existing heldout baseline, but the fair final comparison should refit or rebuild the mixed-effects predictive baseline on the same N=33/198 held-out targets.",
+            "assessment": "The frozen LLM evaluation uses the current N=33 universe (198 trials). The retained mixed-effects heldout evaluation is the current final statistical baseline for those targets.",
+            "corrected_matched_evaluation_available": "No stale N=30 matching correction is part of the final supporting-material chain.",
         },
         "information_alignment": {
             "mixed_effects_model": [
@@ -521,7 +522,7 @@ def build_freeze_manifest(
     phase6g3_freeze: dict[str, Any],
     phase6g5_freeze: dict[str, Any],
 ) -> dict[str, Any]:
-    existing = repo_root / output_dir / "phase6h1_evaluation_protocol_freeze_manifest.json"
+    existing = repo_root / output_dir / "evaluation_protocol_manifest.json"
     created_at = load_json(existing).get("created_at_utc") if existing.exists() else datetime.now(timezone.utc).isoformat()
     source_paths = [
         PREDICTION_EXAMPLES,
@@ -569,7 +570,7 @@ def build_freeze_manifest(
         "artifact_hashes": {
             portable_artifact_path(path): sha256_file(path)
             for path in paths.values()
-            if path.name not in {"phase6h1_evaluation_protocol_freeze_manifest.json", "phase6h1_qc_report.md"} and path.exists()
+            if path.name not in {"evaluation_protocol_manifest.json", "evaluation_protocol_qc_report.md"} and path.exists()
         },
         "gates": qc["gates"],
     }

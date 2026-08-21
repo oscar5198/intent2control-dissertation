@@ -661,7 +661,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--features",
         type=Path,
-        default=Path("statistical-baseline/outputs/feature_exploration/final_20_stimulus_feature_table.csv"),
+        default=Path("statistical-modeling/outputs/acoustic-features/final_20_stimulus_feature_table.csv"),
         help="Canonical final-20 acoustic feature table.",
     )
     parser.add_argument("--output-dir", required=True, type=Path, help="Directory for generated analysis-ready outputs.")

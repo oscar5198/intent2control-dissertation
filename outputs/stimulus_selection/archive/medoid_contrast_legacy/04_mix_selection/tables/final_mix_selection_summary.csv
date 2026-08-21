@@ -1,5 +1,0 @@
-artist,song,representative_original_mix_name,representative_mix_id,contrast_1_original_mix_name,contrast_1_mix_id,contrast_2_original_mix_name,contrast_2_mix_id,minimum_pairwise_distance,mean_pairwise_distance,unique_institution_count,stability_score,manual_listening_required,notes
-Broken Crank,Red To Blue,McG-A,mix_e2654ec905ad,McG-B,mix_7ac13e0b6376,McG-F,mix_dcc6aef84d67,1.90107445204,2.02376227096,1,0.69696969697,true,mix_7ac13e0b6376
-Fredy V,In The Meantime,UCP-A4,mix_efdedc0a36e7,DU-J,mix_22efc79c8253,QUT-B,mix_c7bdcba64775,4.01760870438,5.39329692158,3,0.848484848485,true,mix_22efc79c8253; mix_c7bdcba64775
-The DoneFors,Lead Me,McG-A,mix_9346b5d4ade2,PXL-L1,mix_d5b28dfc8a93,DU-D,mix_f1f7973e5bac,2.5765061173,2.85864759339,3,0.727272727273,true,mix_d5b28dfc8a93; mix_f1f7973e5bac
-The DoneFors,Pouring Room,McG-Q,mix_0ddb25d6180b,McG-pro1,mix_132e75f34470,McG-X,mix_cbf8555ee2b2,1.91632161813,2.01213224466,1,0.727272727273,false,No selected pathological outlier detected by robust diagnostics.

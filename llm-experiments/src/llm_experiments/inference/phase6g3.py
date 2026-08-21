@@ -23,16 +23,16 @@ from llm_experiments.prompts.validate_conditions import build_condition_integrit
 
 
 SCHEMA_VERSION = "phase6g3_real_prompt_freeze_v1"
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g3")
-PROMPT_DATA = Path("llm-experiments/outputs/real/phase6b/final_prompt_data_objects.jsonl")
-PHASE6G1_MANIFEST = Path("llm-experiments/outputs/real/phase6b/phase6g1_real_phase6b_manifest.json")
-PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_gate.json")
-PHASE6G2D_DIR = Path("llm-experiments/outputs/real/phase6g2d")
-MODEL_REGISTRY = PHASE6G2D_DIR / "phase6g2d_final_model_registry.json"
-BACKEND_REGISTRY = PHASE6G2D_DIR / "phase6g2d_final_backend_registry.json"
-INFERENCE_CONFIG = PHASE6G2D_DIR / "phase6g2d_final_inference_config.json"
-CAPABILITY_MATRIX = PHASE6G2D_DIR / "phase6g2d_final_capability_matrix.json"
-READINESS_6G2D = PHASE6G2D_DIR / "phase6g2d_final_readiness.json"
+OUTPUT_DIR = Path("llm-experiments/outputs/final/rendered-prompts")
+PROMPT_DATA = Path("llm-experiments/outputs/final/prompt-data/final_prompt_dataset.jsonl")
+PHASE6G1_MANIFEST = Path("llm-experiments/outputs/final/prompt-data/prompt_data_manifest.json")
+PHASE6G1_GATE = Path("llm-experiments/outputs/final/prompt-data/readiness_gate.json")
+INFERENCE_CONFIG_DIR = Path("llm-experiments/outputs/final/inference-config")
+MODEL_REGISTRY = INFERENCE_CONFIG_DIR / "model_registry.json"
+BACKEND_REGISTRY = INFERENCE_CONFIG_DIR / "backend_registry.json"
+INFERENCE_CONFIG = INFERENCE_CONFIG_DIR / "inference_config.json"
+CAPABILITY_MATRIX = INFERENCE_CONFIG_DIR / "capability_matrix.json"
+READINESS_6G2D = INFERENCE_CONFIG_DIR / "readiness.json"
 MAX_OUTPUT_TOKENS = 256
 MODEL_KEYS = ["gpt", "claude_sonnet", "llama_3_1_70b_instruct", "centaur"]
 QMUL_MODEL_KEYS = ["gpt", "claude_sonnet", "llama_3_1_70b_instruct"]
@@ -73,7 +73,7 @@ def freeze_phase6g3(repo_root: Path) -> dict[str, Any]:
     source_rows = sorted(load_jsonl(prompt_data_path), key=lambda row: row["condition_object_id"])
     rendered_first = render_rows(source_rows)
     rendered_second = render_rows(source_rows)
-    rendered_path = output_dir / "phase6g3_real_rendered_prompts.jsonl"
+    rendered_path = output_dir / "rendered_final_prompts.jsonl"
     write_jsonl(rendered_path, rendered_first)
 
     deterministic_audit = build_deterministic_audit(rendered_first, rendered_second)
@@ -104,18 +104,24 @@ def freeze_phase6g3(repo_root: Path) -> dict[str, Any]:
     )
     report = render_report(freeze_manifest, size_audit, context_audit, request_manifest, shard_manifests)
 
-    write_json(output_dir / "phase6g3_prompt_hash_manifest.json", hash_manifest)
+    write_json(output_dir / "prompt_hash_manifest.json", hash_manifest)
     write_json(output_dir / "phase6g3_condition_integrity_audit.json", condition_audit)
     write_json(output_dir / "phase6g3_leakage_audit.json", leakage_audit)
     write_json(output_dir / "phase6g3_prompt_size_audit.json", size_audit)
     write_json(output_dir / "phase6g3_context_compatibility_audit.json", context_audit)
     write_json(output_dir / "phase6g3_deterministic_rendering_audit.json", deterministic_audit)
-    write_json(output_dir / "phase6g3_final_request_manifest.json", request_manifest)
+    write_json(output_dir / "request_manifest.json", request_manifest)
     for name, manifest in shard_manifests.items():
-        write_json(output_dir / f"phase6g3_{name}_shard_manifest.json", manifest)
-    (output_dir / "phase6g3_final_report.md").write_text(report, encoding="utf-8")
+        output_name = {
+            "qmul_gpt": "gpt_request_shard_manifest.json",
+            "qmul_claude": "claude_request_shard_manifest.json",
+            "qmul_llama": "llama_request_shard_manifest.json",
+            "qmul_all": "qmul_all_request_shard_manifest.json",
+            "runpod_centaur": "centaur_request_shard_manifest.json",
+        }[name]
+        write_json(output_dir / output_name, manifest)
     freeze_manifest["artifact_hashes"] = hash_phase6g3_artifacts(repo_root)
-    write_json(output_dir / "phase6g3_freeze_manifest.json", freeze_manifest)
+    write_json(output_dir / "prompt_freeze_manifest.json", freeze_manifest)
     return freeze_manifest
 
 
@@ -291,7 +297,7 @@ def build_request_manifest(rendered: list[dict[str, Any]], hash_manifest: dict[s
     return {
         "schema_version": "phase6g3_final_request_manifest_v1",
         "status": "planned_not_run",
-        "rendered_prompt_dataset": str(OUTPUT_DIR / "phase6g3_real_rendered_prompts.jsonl").replace("\\", "/"),
+        "rendered_prompt_dataset": str(OUTPUT_DIR / "rendered_final_prompts.jsonl").replace("\\", "/"),
         "request_count": len(requests),
         "model_condition_coverage": coverage,
         "contains_llm_predictions": False,
@@ -400,20 +406,19 @@ def build_freeze_manifest(**kwargs: Any) -> dict[str, Any]:
 
 def hash_phase6g3_artifacts(repo_root: Path) -> dict[str, str]:
     artifact_names = [
-        "phase6g3_real_rendered_prompts.jsonl",
-        "phase6g3_prompt_hash_manifest.json",
+        "rendered_final_prompts.jsonl",
+        "prompt_hash_manifest.json",
         "phase6g3_condition_integrity_audit.json",
         "phase6g3_leakage_audit.json",
         "phase6g3_prompt_size_audit.json",
         "phase6g3_context_compatibility_audit.json",
         "phase6g3_deterministic_rendering_audit.json",
-        "phase6g3_final_request_manifest.json",
-        "phase6g3_qmul_gpt_shard_manifest.json",
-        "phase6g3_qmul_claude_shard_manifest.json",
-        "phase6g3_qmul_llama_shard_manifest.json",
-        "phase6g3_qmul_all_shard_manifest.json",
-        "phase6g3_runpod_centaur_shard_manifest.json",
-        "phase6g3_final_report.md",
+        "request_manifest.json",
+        "gpt_request_shard_manifest.json",
+        "claude_request_shard_manifest.json",
+        "llama_request_shard_manifest.json",
+        "qmul_all_request_shard_manifest.json",
+        "centaur_request_shard_manifest.json",
     ]
     hashes = {}
     for name in artifact_names:

@@ -27,19 +27,19 @@ from llm_experiments.prompts.prompt_spec import write_json
 
 
 SCHEMA_VERSION = "phase6g4d_centaur_production_inference_v1"
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur")
-CENTAUR_NATIVE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_native_run_02")
-DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_runtime_diagnostics")
-RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
-CENTAUR_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_runpod_centaur_shard_manifest.json")
-PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
-PHASE6G3_FREEZE = Path("llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json")
-PHASE6G2D_READINESS = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_readiness.json")
-PHASE6G2D_MODEL_REGISTRY = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_model_registry.json")
-PHASE6G2D_BACKEND_REGISTRY = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_backend_registry.json")
-PHASE6G2D_CAPABILITY_MATRIX = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_capability_matrix.json")
-PHASE6G2D_INFERENCE_CONFIG = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_inference_config.json")
-PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_gate.json")
+OUTPUT_DIR = Path("llm-experiments/outputs/final/model-predictions/source/centaur")
+CENTAUR_NATIVE_OUTPUT_DIR = OUTPUT_DIR
+DIAGNOSTIC_OUTPUT_DIR = OUTPUT_DIR / "diagnostics"
+RENDERED_PROMPTS = Path("llm-experiments/outputs/final/rendered-prompts/rendered_final_prompts.jsonl")
+CENTAUR_SHARD = Path("llm-experiments/outputs/final/rendered-prompts/centaur_request_shard_manifest.json")
+PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/final/rendered-prompts/prompt_hash_manifest.json")
+PHASE6G3_FREEZE = Path("llm-experiments/outputs/final/rendered-prompts/prompt_freeze_manifest.json")
+PHASE6G2D_READINESS = Path("llm-experiments/outputs/final/inference-config/readiness.json")
+PHASE6G2D_MODEL_REGISTRY = Path("llm-experiments/outputs/final/inference-config/model_registry.json")
+PHASE6G2D_BACKEND_REGISTRY = Path("llm-experiments/outputs/final/inference-config/backend_registry.json")
+PHASE6G2D_CAPABILITY_MATRIX = Path("llm-experiments/outputs/final/inference-config/capability_matrix.json")
+PHASE6G2D_INFERENCE_CONFIG = Path("llm-experiments/outputs/final/inference-config/inference_config.json")
+PHASE6G1_GATE = Path("llm-experiments/outputs/final/prompt-data/readiness_gate.json")
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 
 RUN_ID = "phase6g4d_centaur_production_run_01"
@@ -64,8 +64,8 @@ MAX_TRANSPORT_RETRIES = 2
 MAX_FORMAT_REPAIRS = 1
 TERMINAL_STATUSES = {"valid_primary", "valid_after_repair", "invalid_after_repair", "backend_failed", "output_budget_exhausted", "quota_exhausted", "refusal", "model_mismatch"}
 NORMALIZER_VERSION = "phase6g4d_centaur_response_normalizer_v1"
-CENTAUR_RECOVERY_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_recovery_run_02")
-CENTAUR_NATIVE_DIAGNOSTIC_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/centaur_native_choice_diagnostics")
+CENTAUR_RECOVERY_OUTPUT_DIR = OUTPUT_DIR / "recovery"
+CENTAUR_NATIVE_DIAGNOSTIC_OUTPUT_DIR = OUTPUT_DIR / "native-choice-diagnostics"
 VERIFIED_PROMPT_SERIALIZATION_STRATEGY = "phase6g2c_verified_raw_prompt_text_no_chat_template"
 VERIFIED_TOKENIZER_INVOCATION = "tokenizer(prompt_text, return_tensors='pt')['input_ids']"
 VERIFIED_GENERATION_INVOCATION = "model.generate(input_ids, max_new_tokens=N, do_sample=False, pad_token_id=tokenizer.eos_token_id)"

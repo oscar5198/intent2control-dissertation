@@ -1,9 +1,0 @@
-check,passed,observed,expected
-expected_number_of_rows,True,1200,1200
-exactly_30_ratings_per_participant,True,[30],30
-exactly_2_songs_per_participant,True,[2],2
-exactly_3_mixes_per_trial,True,[3],3
-group_song_assignments_correct,True,"{'Group_1': ['Song_1', 'Song_2'], 'Group_2': ['Song_3', 'Song_4']}","{'Group_1': ['Song_1', 'Song_2'], 'Group_2': ['Song_3', 'Song_4']}"
-ratings_between_0_and_100,True,all within bounds,0 <= rating <= 100
-mandatory_comments_non_null,True,all present,non-null and non-empty
-presentation_order_is_1_to_3,True,all trials checked,"[1, 2, 3]"

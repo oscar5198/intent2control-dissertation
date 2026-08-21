@@ -1,9 +1,0 @@
-synthetic_label,model_key,condition,strict_top1_accuracy
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,centaur,non_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,centaur,personalised_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,claude_sonnet,non_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,claude_sonnet,personalised_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,gpt,non_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,gpt,personalised_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,llama_3_1_70b_instruct,non_history,0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,llama_3_1_70b_instruct,personalised_history,0

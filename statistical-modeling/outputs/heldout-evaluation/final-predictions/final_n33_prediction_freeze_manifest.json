@@ -1,0 +1,36 @@
+{
+  "schema_version": "phase6h2a_n33_prediction_freeze_manifest_v1",
+  "created_at_utc": "2026-08-19T21:48:06.669903+00:00",
+  "n_participants": 33,
+  "heldout_trials": 198,
+  "candidate_predictions": 990,
+  "trial_predictions": 198,
+  "source_data_hash": "cb9089289c3fa5e0dbd843d8dc12fe233e6122a3d35c4cf74f81b0a052208a46",
+  "split_hash": "0c351ad4fcca70cd661bd93074ddb7a64a6321e58778fc586c450d4ef23f9bc2",
+  "model_formula": "rating ~ episode + group + z_RMS + z_CF + z_SW + (1 | participant_id) + (1 | stimulus_id)",
+  "model_fit_artifact_hashes": {
+    "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/candidate_predictions.csv": "edf498c561d7fc4d4ce13ee7a01f2dcb15688b76102c3fecc20fadff50d9f2e7",
+    "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/trial_predictions.csv": "f00d2e080f47173d313aef69180851ea14b35cde1a9c1a6eb8000daabc149090",
+    "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/heldout_split_manifest.csv": "d71295b34f60521910102723acef6f653b3bf04a594927c3383c49335d15fa6b",
+    "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/evaluation_manifest.json": "aa6261dc735804e60e2bed73ddee53bb805891aef88ef64911365942600f4af4",
+    "statistical-modeling/outputs/heldout-evaluation/mcmc-evaluation/leakage_audit.csv": "0271546529352056d42f09670eaffa8012fbc98494e59ddd81fef00ecc70a344",
+    "llm-experiments/outputs/real/phase6h1/phase6h1_metric_protocol.json": "a696e14b53b36c08ed7ec5fac3aae5616825717f76af22326335188cfe599879",
+    "llm-experiments/outputs/real/phase6h1/phase6h1_ground_truth_heldout.csv": "2f2edf671f5b31482a0cac71fad37b63e4cd5aa6682b30ccd2a525ca710925ab"
+  },
+  "prediction_hashes": {
+    "statistical-modeling/outputs/heldout-evaluation/final-predictions/final_n33_candidate_predictions.csv": "55f582b9e3b277586f6fbcee7d0f9d0a2dd606011e8f0c702092cf0a98a6dff8",
+    "statistical-modeling/outputs/heldout-evaluation/final-predictions/final_n33_trial_predictions.csv": "9af2720d9ad1eeca6aa5bbf74c87e61d2223ffe46f670cc89ac353d078853fc4"
+  },
+  "target_leakage_absent": true,
+  "evaluation_metrics_not_computed": true,
+  "prediction_content_frozen": true,
+  "gates": {
+    "N33_HELDOUT_SPLIT_MATCHES_PHASE6H1": true,
+    "N33_HELDOUT_TARGET_LEAKAGE_ABSENT": true,
+    "N33_HELDOUT_MODEL_READY": true,
+    "N33_HELDOUT_990_CANDIDATE_PREDICTIONS_COMPLETE": true,
+    "N33_HELDOUT_198_TRIAL_PREDICTIONS_COMPLETE": true,
+    "N33_HELDOUT_PREDICTIONS_FROZEN": true,
+    "MIXED_EFFECTS_LLM_FAIR_COMPARISON_READY": true
+  }
+}

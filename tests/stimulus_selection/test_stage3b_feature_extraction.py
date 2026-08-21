@@ -10,7 +10,7 @@ import numpy as np
 import yaml
 from scipy.io import wavfile
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "experimental-design" / "stimulus-selection" / "src"))
 
 from stimulus_selection.config import load_config
 from stimulus_selection.feature_extraction import (

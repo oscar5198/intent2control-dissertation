@@ -1,7 +1,0 @@
-This directory does not contain completed N=33 production model results yet.
-
-The previous N=30 empirical outputs were archived under:
-statistical-baseline/outputs/superseded_30responses_full_data_models_20260817T120000Z/
-
-Run statistical-baseline/scripts/run_real_models.py in the QMUL/Linux environment
-to regenerate the current N=33 stimulus-model outputs.

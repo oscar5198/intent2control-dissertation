@@ -1,0 +1,10 @@
+method_key,model_key,model_label,condition,denominator,mean_spearman,median_spearman,sd_spearman,ci_method,ci_low,ci_high
+gpt__non_history,gpt,GPT-5.5,non_history,198,-0.020824936936127334,0.0,0.5173196193704378,participant_bootstrap_percentile_95,-0.07994815274315722,0.038177333570591984
+gpt__personalised_history,gpt,GPT-5.5,personalised_history,198,0.3250987693555631,0.4,0.4954350276872358,participant_bootstrap_percentile_95,0.22427180180401726,0.4216018675014839
+claude_sonnet__non_history,claude_sonnet,Claude Sonnet 5,non_history,198,-0.09153041690161741,-0.0763523138347365,0.479285415549392,participant_bootstrap_percentile_95,-0.1591891657783898,-0.022066291887411493
+claude_sonnet__personalised_history,claude_sonnet,Claude Sonnet 5,personalised_history,198,0.24803263964439282,0.3,0.46731736412121483,participant_bootstrap_percentile_95,0.1762626844773514,0.31589209595711415
+llama_3_1_70b_instruct__non_history,llama_3_1_70b_instruct,Llama 3.1 70B Instruct,non_history,198,0.005746900673927717,0.0,0.47379298366853473,participant_bootstrap_percentile_95,-0.059399640294773806,0.06992296118430358
+llama_3_1_70b_instruct__personalised_history,llama_3_1_70b_instruct,Llama 3.1 70B Instruct,personalised_history,198,0.03895885033254484,0.025649458802128853,0.47580094970058573,participant_bootstrap_percentile_95,-0.028988599380003522,0.1090586630626155
+centaur__non_history,centaur,Centaur,non_history,198,0.001963317723918036,0.0,0.4844776456340546,participant_bootstrap_percentile_95,-0.0578133737197859,0.0645711927637263
+centaur__personalised_history,centaur,Centaur,personalised_history,198,0.013068311819521885,0.0,0.4738673443525306,participant_bootstrap_percentile_95,-0.051140703232046635,0.07511628312159138
+mixed_effects_primary_acoustic,mixed_effects_primary_acoustic,Mixed-effects primary acoustic,baseline,198,0.3471627749498119,0.45445192696913866,0.4749901331269874,participant_bootstrap_percentile_95,0.23414767492947064,0.45355308577518844

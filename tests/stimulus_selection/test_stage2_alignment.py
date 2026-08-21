@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import shutil
 import subprocess
@@ -11,11 +11,11 @@ import numpy as np
 from scipy import signal
 from scipy.io import wavfile
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "experimental-design" / "stimulus-selection" / "src"))
 
 from stimulus_selection.alignment import MixAudio, _estimate_lag, _is_human_primary, _mono, _select_candidates
 from stimulus_selection.audio_decode import DecodedAudio, decode_audio, ensure_sample_rate
-from stimulus_selection.config import AlignmentConfig, ExcerptSelectionConfig, SelectionConfig
+from stimulus_selection.config import AlignmentConfig, AudioBoundaryProcessingConfig, ExcerptSelectionConfig, SelectionConfig
 
 
 def _config(tmp_path: Path) -> SelectionConfig:
@@ -35,6 +35,7 @@ def _config(tmp_path: Path) -> SelectionConfig:
         fade_seconds=0.1,
         alignment=AlignmentConfig("mono", 11025, 2.0, 0.70, True, True, True),
         excerpt_selection=ExcerptSelectionConfig(3, 0.25, 0.5, 0.5, 0.50, True),
+        audio_boundary_processing=AudioBoundaryProcessingConfig("2.0", "2026-08-04", True, 5.0, 5.0, "half_cosine", True, "preserve_raw_level", "preserve_existing_target", 28.0, 44100, True),
         analysis_excerpt_root=tmp_path / "analysis excerpts",
         preview_excerpt_root=tmp_path / "preview excerpts",
     )

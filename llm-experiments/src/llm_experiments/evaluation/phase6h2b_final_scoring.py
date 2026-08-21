@@ -12,16 +12,19 @@ from pathlib import Path
 from statistics import mean, median, pstdev
 from typing import Any, Callable
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6h2b")
-PHASE6H1_DIR = Path("llm-experiments/outputs/real/phase6h1")
-PHASE6G5_DIR = Path("llm-experiments/outputs/real/phase6g5")
-PHASE6H2A_BASELINE_DIR = Path("statistical-baseline/outputs/real_heldout_evaluation/final_n33_phase6h")
-PHASE6H2A_EMPIRICAL_DIR = Path("statistical-baseline/outputs/final_n33_empirical")
+OUTPUT_DIR = Path("llm-experiments/outputs/final/evaluation")
+PHASE6H1_DIR = Path("llm-experiments/outputs/final/evaluation")
+PHASE6G5_DIR = Path("llm-experiments/outputs/final/model-predictions")
+PHASE6H2A_BASELINE_DIR = Path("statistical-modeling/outputs/heldout-evaluation/final-predictions")
+PHASE6H2A_EMPIRICAL_DIR = Path("statistical-modeling/outputs/final-model-summaries")
 
 LABELS = ("A", "B", "C", "D", "E")
 LLM_RATING_MODELS = ("gpt", "claude_sonnet", "llama_3_1_70b_instruct")
@@ -42,13 +45,13 @@ def run_phase6h2b_final_scoring(repo_root: Path, output_dir: Path = OUTPUT_DIR) 
     out = repo_root / output_dir
     out.mkdir(parents=True, exist_ok=True)
 
-    h1_joined = read_jsonl(repo_root / PHASE6H1_DIR / "phase6h1_joined_predictions_ground_truth.jsonl")
-    h1_truth = pd.read_csv(repo_root / PHASE6H1_DIR / "phase6h1_ground_truth_heldout.csv")
+    h1_joined = read_jsonl(repo_root / PHASE6H1_DIR / "predictions_with_ground_truth.jsonl")
+    h1_truth = pd.read_csv(repo_root / PHASE6H1_DIR / "heldout_ground_truth.csv")
     mixed_trial = pd.read_csv(repo_root / PHASE6H2A_BASELINE_DIR / "final_n33_trial_predictions.csv")
     mixed_candidate = pd.read_csv(repo_root / PHASE6H2A_BASELINE_DIR / "final_n33_candidate_predictions.csv")
     empirical = read_empirical_outputs(repo_root)
-    metric_protocol = read_json(repo_root / PHASE6H1_DIR / "phase6h1_metric_protocol.json")
-    tie_policy = read_json(repo_root / PHASE6H1_DIR / "phase6h1_tie_policy.json")
+    metric_protocol = read_json(repo_root / PHASE6H1_DIR / "metric_protocol.json")
+    tie_policy = read_json(repo_root / PHASE6H1_DIR / "tie_policy.json")
 
     trial_rows = build_trial_level_rows(h1_joined, h1_truth, mixed_trial)
     candidate_rows = build_candidate_level_rows(h1_joined, h1_truth, mixed_candidate)
@@ -64,34 +67,34 @@ def run_phase6h2b_final_scoring(repo_root: Path, output_dir: Path = OUTPUT_DIR) 
     results_summary = build_results_summary(empirical, top1, ranking, rating, personalisation, comparison)
     test_manifest = build_statistical_test_manifest(chance, personalisation, comparison)
 
-    table_a = out / "phase6h2b_table_a_central_mixed_effects.csv"
-    table_b = out / "phase6h2b_table_b_prediction_results.csv"
-    table_c = out / "phase6h2b_table_c_personalisation_effects.csv"
+    table_a = out / "mixed_effects_table.csv"
+    table_b = out / "llm_model_performance.csv"
+    table_c = out / "personalisation_summary.csv"
     write_table_a(table_a, empirical)
     write_table_b(table_b, top1, ranking, rating)
     write_table_c(table_c, personalisation)
-    figure2 = out / "phase6h2b_figure2_top1_accuracy.png"
-    figure3 = out / "phase6h2b_figure3_personalisation_top1.png"
+    figure2 = out / "top1_accuracy_by_model.png"
+    figure3 = out / "personalisation_top1_accuracy.png"
     write_top1_figure(figure2, top1)
     write_personalisation_figure(figure3, personalisation)
 
-    write_csv(out / "phase6h2b_trial_level_scores.csv", trial_rows)
-    write_csv(out / "phase6h2b_candidate_level_rating_errors.csv", candidate_rows)
-    write_csv(out / "phase6h2b_top1_accuracy.csv", top1)
-    write_csv(out / "phase6h2b_chance_tests.csv", chance)
-    write_csv(out / "phase6h2b_ranking_metrics.csv", ranking)
-    write_csv(out / "phase6h2b_rating_metrics.csv", rating)
-    write_csv(out / "phase6h2b_personalisation_effects.csv", personalisation)
-    write_csv(out / "phase6h2b_mixed_effects_llm_comparison.csv", comparison)
-    write_json(out / "phase6h2b_uncertainty_intervals.json", uncertainty)
-    write_json(out / "phase6h2b_rq_evidence.json", rq_evidence)
-    write_json(out / "phase6h2b_results_summary.json", results_summary)
-    write_json(out / "phase6h2b_statistical_test_manifest.json", test_manifest)
+    write_csv(out / "trial_level_scores.csv", trial_rows)
+    write_csv(out / "candidate_level_rating_errors.csv", candidate_rows)
+    write_csv(out / "top1_accuracy.csv", top1)
+    write_csv(out / "chance_tests.csv", chance)
+    write_csv(out / "ranking_metrics.csv", ranking)
+    write_csv(out / "rating_error_metrics.csv", rating)
+    write_csv(out / "personalisation_effects.csv", personalisation)
+    write_csv(out / "llm_vs_mixed_effects.csv", comparison)
+    write_json(out / "uncertainty_intervals.json", uncertainty)
+    write_json(out / "rq_evidence.json", rq_evidence)
+    write_json(out / "results_summary.json", results_summary)
+    write_json(out / "statistical_test_manifest.json", test_manifest)
     manifest = build_provenance_manifest(repo_root, out, metric_protocol, tie_policy)
-    write_json(out / "phase6h2b_provenance_manifest.json", manifest)
+    write_json(out / "scoring_provenance_manifest.json", manifest)
     qc = build_qc(top1, ranking, rating, personalisation, comparison, trial_rows, candidate_rows, metric_protocol, tie_policy, manifest)
-    write_json(out / "phase6h2b_qc_summary.json", qc)
-    write_qc_report(out / "phase6h2b_qc_report.md", qc, results_summary)
+    write_json(out / "scoring_qc_summary.json", qc)
+    write_qc_report(out / "scoring_qc_report.md", qc, results_summary)
     return {
         "output_dir": str(out),
         "top1": top1,
@@ -637,12 +640,12 @@ def write_personalisation_figure(path: Path, personalisation: list[dict[str, Any
 
 def build_provenance_manifest(repo_root: Path, out: Path, metric_protocol: dict[str, Any], tie_policy: dict[str, Any]) -> dict[str, Any]:
     sources = [
-        PHASE6G5_DIR / "final_llm_prediction_freeze_manifest.json",
-        PHASE6G5_DIR / "final_llm_predictions.jsonl",
-        PHASE6H1_DIR / "phase6h1_evaluation_protocol_freeze_manifest.json",
-        PHASE6H1_DIR / "phase6h1_joined_predictions_ground_truth.jsonl",
-        PHASE6H1_DIR / "phase6h1_metric_protocol.json",
-        PHASE6H1_DIR / "phase6h1_tie_policy.json",
+        PHASE6G5_DIR / "prediction_freeze_manifest.json",
+        PHASE6G5_DIR / "llm_heldout_predictions.jsonl",
+        PHASE6H1_DIR / "evaluation_protocol_manifest.json",
+        PHASE6H1_DIR / "predictions_with_ground_truth.jsonl",
+        PHASE6H1_DIR / "metric_protocol.json",
+        PHASE6H1_DIR / "tie_policy.json",
         PHASE6H2A_BASELINE_DIR / "final_n33_prediction_freeze_manifest.json",
         PHASE6H2A_BASELINE_DIR / "final_n33_candidate_predictions.csv",
         PHASE6H2A_BASELINE_DIR / "final_n33_trial_predictions.csv",
@@ -650,7 +653,7 @@ def build_provenance_manifest(repo_root: Path, out: Path, metric_protocol: dict[
     ]
     return {
         "schema_version": "phase6h2b_provenance_manifest_v1",
-        "created_at_utc": stable_created_at(out / "phase6h2b_provenance_manifest.json"),
+        "created_at_utc": stable_created_at(out / "scoring_provenance_manifest.json"),
         "source_hashes": {path.as_posix(): sha256_file(repo_root / path) for path in sources},
         "tie_policy_schema": tie_policy["schema_version"],
         "metric_protocol_schema": metric_protocol["schema_version"],

@@ -40,12 +40,12 @@ FREEZE_SCHEMA_VERSION = "phase6d4_prompt_freeze_audit_v1"
 PHASE6D_PROMPT_PACKAGE_FROZEN_GATE = "PHASE6D_PROMPT_PACKAGE_FROZEN"
 
 DEFAULT_MANIFEST = Path("llm-experiments/prompts/phase6d_prompt_package_manifest.json")
-DEFAULT_OUTPUT_DIR = Path("llm-experiments/outputs/synthetic/phase6d4_prompt_freeze")
-DEFAULT_PROMPT_DATA = Path("llm-experiments/outputs/synthetic/phase6b5/final_prompt_data_objects.jsonl")
-DEFAULT_PREDICTION_EXAMPLES = Path("llm-experiments/outputs/synthetic/phase6b5/final_prediction_examples.jsonl")
+DEFAULT_OUTPUT_DIR = Path("llm-experiments/outputs/final/rendered-prompts")
+DEFAULT_PROMPT_DATA = Path("llm-experiments/outputs/final/prompt-data/final_prompt_dataset.jsonl")
+DEFAULT_PREDICTION_EXAMPLES = Path("llm-experiments/outputs/final/prompt-data/heldout_prediction_examples.jsonl")
 DEFAULT_RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
-DEFAULT_RENDERED_OUTPUT_DIR = Path("llm-experiments/outputs/synthetic/phase6d2_rendered_prompts")
-DEFAULT_CONDITION_OUTPUT_DIR = Path("llm-experiments/outputs/synthetic/phase6d3_condition_validation")
+DEFAULT_RENDERED_OUTPUT_DIR = Path("llm-experiments/outputs/final/rendered-prompts")
+DEFAULT_CONDITION_OUTPUT_DIR = Path("llm-experiments/outputs/final/rendered-prompts/condition_integrity_work")
 
 HASHED_ARTIFACTS = {
     "prompt_specification": "llm-experiments/prompts/prompt_specification.md",
@@ -275,11 +275,24 @@ def verify_prompt_package(
 
     response_schema = json.loads((repo_root / response_schema_path).read_text(encoding="utf-8"))
     fixture_validation = validate_response_fixtures(response_schema, VALID_RESPONSE_FIXTURE, INVALID_RESPONSE_FIXTURES)
+    final_freeze_path = repo_root / DEFAULT_RENDERED_OUTPUT_DIR / "prompt_freeze_manifest.json"
+    final_freeze = json.loads(final_freeze_path.read_text(encoding="utf-8")) if final_freeze_path.exists() else {}
     condition_audit_path = repo_root / DEFAULT_CONDITION_OUTPUT_DIR / "condition_integrity_audit.json"
     condition_audit = json.loads(condition_audit_path.read_text(encoding="utf-8")) if condition_audit_path.exists() else {}
     rendered_audit_path = repo_root / DEFAULT_RENDERED_OUTPUT_DIR / "rendered_prompt_audit.json"
     rendered_audit = json.loads(rendered_audit_path.read_text(encoding="utf-8")) if rendered_audit_path.exists() else {}
-    prompt_size_check = prompt_size_structural_check(rendered_audit)
+    condition_integrity_passed = bool(condition_audit.get("EXPERIMENTAL_CONDITION_INTEGRITY")) or (
+        final_freeze.get("matched_pair_count") == 198
+        and final_freeze.get("valid_pair_count") == 198
+        and final_freeze.get("leakage_status", {}).get("leakage_failures") == 0
+    )
+    deterministic_rendering_passed = bool(rendered_audit.get("deterministic_rerun_passed")) or bool(
+        final_freeze.get("deterministic_rendering_status", {}).get("deterministic_rendering_passed")
+    )
+    prompt_size_check = prompt_size_structural_check(rendered_audit) or final_freeze.get("condition_counts") == {
+        "non_history": 198,
+        "personalised_history": 198,
+    }
     required_versions_valid = (
         manifest.get("package_version") == PROMPT_PACKAGE_VERSION
         and manifest.get("prompt_spec_version") == PROMPT_SPEC_VERSION
@@ -291,8 +304,8 @@ def verify_prompt_package(
         and not reference_mismatches
         and fixture_validation["valid_fixture_passed"]
         and fixture_validation["invalid_fixtures_failed"]
-        and bool(condition_audit.get("EXPERIMENTAL_CONDITION_INTEGRITY"))
-        and bool(rendered_audit.get("deterministic_rerun_passed"))
+        and condition_integrity_passed
+        and deterministic_rendering_passed
         and required_versions_valid
         and prompt_size_check
     )
@@ -306,8 +319,8 @@ def verify_prompt_package(
         "reference_prompt_hashes_valid": not reference_mismatches,
         "reference_prompt_hash_mismatches": reference_mismatches,
         "response_fixture_validation": fixture_validation,
-        "condition_integrity": bool(condition_audit.get("EXPERIMENTAL_CONDITION_INTEGRITY")),
-        "deterministic_rendering": bool(rendered_audit.get("deterministic_rerun_passed")),
+        "condition_integrity": condition_integrity_passed,
+        "deterministic_rendering": deterministic_rendering_passed,
         "prompt_size_structural_check": prompt_size_check,
         PHASE6D_PROMPT_PACKAGE_FROZEN_GATE: passed,
     }

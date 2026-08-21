@@ -3,10 +3,9 @@
 The deployed static frontend submits the final listening-study response to Netlify Forms.
 
 Current live study note: the active final interface is the five-mix frontend in
-`study-interface/frontend-5mix/`. Earlier three-mix and six-mix interface
-folders have been removed locally, but the response-reconstruction workflow
-below remains relevant to the current five-mix Netlify export because it
-preserves `actual_mix_id` and runtime A-E mappings.
+`study-interface/frontend-5mix/`. The response-reconstruction workflow below
+preserves `actual_mix_id` and runtime A-E mappings for the current five-mix
+Netlify export.
 
 ## Configuration
 
@@ -114,13 +113,16 @@ Before launch, export pilot/test submissions from Netlify, confirm `study_versio
 
 ## Long-format analysis
 
-Use:
+Use the retained data-pipeline converter:
 
 ```bash
-python study-interface/scripts/netlify_forms_to_long_csv.py netlify-export.csv long-format.csv
+python data/scripts/convert_netlify_responses.py --help
 ```
 
-The script parses `responses_json`, preserves participant-level fields, writes a long-format CSV, and creates a validation report beside the output. Do not run it on or commit real participant data.
+The script parses `responses_json`, preserves the participant-level fields
+needed for reconstruction, writes analysis-ready outputs, and creates validation
+reports. Do not run it on or commit raw real participant exports unless a
+separate approved anonymisation and retention policy says otherwise.
 
 ## Metadata Export With Mix IDs
 
@@ -129,9 +131,9 @@ The current five-mix form `listening-study-5mix` stores enough researcher-facing
 The analysis-ready processing utility is:
 
 ```cmd
-python "study-interface\scripts\netlify_forms_to_long_csv_with_mix_ids.py" ^
-  --input "outputs\study_data_checks\listening-study-5mix.csv" ^
-  --output-dir "outputs\study_data_checks"
+python "data\scripts\convert_netlify_responses.py" ^
+  --input "<local-netlify-export.csv>" ^
+  --output-dir "<local-output-directory>"
 ```
 
 It writes:

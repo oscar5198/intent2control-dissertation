@@ -1,3 +1,0 @@
-prediction_example_id,baseline_model,fit_status,protocol_version,inference_mode,seed,chains,draws,tune,target_accept,sampling_backend,runtime_seconds,target_exclusion_validated,training_row_count,divergences,max_rhat,min_bulk_ess,min_tail_ess,message
-SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_01,categorical_design,convergence_warning,phase6c_baseline_prediction_v1,smoke_test,42,1,5,5,0.95,default,9.361456099999486,True,54,0,,2.4082399653118496,2.4082399653118496,
-SYNTHETIC_PHASE6B1_P001__heldout__SYNTHETIC_PHASE6B1_P001__trial_01,primary_acoustic,convergence_warning,phase6c_baseline_prediction_v1,smoke_test,44,1,5,5,0.95,default,5.904405600000246,True,54,0,,2.4082399653118496,2.4082399653118496,

@@ -9,7 +9,7 @@ from pathlib import Path
 import torch
 import yaml
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "experimental-design" / "stimulus-selection" / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from stimulus_selection.config import load_config

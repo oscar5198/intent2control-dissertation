@@ -1,4 +1,0 @@
-model,fold_model_fits,total_runtime_seconds_this_run,sum_fit_runtime_seconds
-all,360,34.38605890001054,4.803522800182691
-categorical_design,180,,2.3825404001690913
-primary_acoustic,180,,2.4209824000135995

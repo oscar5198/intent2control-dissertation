@@ -1,4 +1,0 @@
-candidate_additions,resulting_versions,minimum_distance,median_distance,mean_distance,maximum_distance,selected
-CNS-D + CNS-5,CNS-A|CNS-B|CNS-C|CNS-D|CNS-5,2.349970,4.053078,4.458897,7.470136,no
-CNS-D + CNS-pro,CNS-A|CNS-B|CNS-C|CNS-D|CNS-pro,2.349970,3.724356,3.844593,5.488090,no
-CNS-5 + CNS-pro,CNS-A|CNS-B|CNS-C|CNS-5|CNS-pro,3.237227,5.288402,4.987353,7.470136,yes

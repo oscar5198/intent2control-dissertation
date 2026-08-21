@@ -39,7 +39,7 @@ from llm_experiments.prompts.render import render_format_repair
 from llm_experiments.prompts.prompt_spec import write_json
 
 
-BASE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
+BASE_OUTPUT_DIR = Path("llm-experiments/outputs/final/model-predictions/source/gpt-5-5")
 SOURCE_RUN03_DIR = BASE_OUTPUT_DIR / "corrected_run_03"
 OUTPUT_DIR = BASE_OUTPUT_DIR / "recovery_run_04"
 TARGETED_OUTPUT_DIR = BASE_OUTPUT_DIR / "recovery_run_05"
@@ -211,7 +211,7 @@ def run_preflight(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, A
     key_state = inspect_openai_api_key()
     checks = {
         "phase6d_prompt_package_frozen": bool(prompt_verification.get("PHASE6D_PROMPT_PACKAGE_FROZEN")),
-        "phase6g3_prompt_freeze_ready": bool(load_json(repo_root / "llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json").get("REAL_PRODUCTION_PROMPTS_FROZEN")),
+        "phase6g3_prompt_freeze_ready": bool(load_json(repo_root / "llm-experiments/outputs/final/rendered-prompts/prompt_freeze_manifest.json").get("REAL_PRODUCTION_PROMPTS_FROZEN")),
         "source_run03_id_valid": source_manifest.get("run_id") == SOURCE_RUN03_ID and source_summary.get("run_id") == SOURCE_RUN03_ID,
         "source_run03_count_valid": len(source_predictions) == 396 and source_summary.get("attempted_prediction_count") == 396,
         "source_run03_status_counts_valid": statuses == {"valid_primary": 264, "backend_failed": 126, "output_budget_exhausted": 6},
@@ -365,7 +365,7 @@ def run_targeted_preflight(repo_root: Path, output_dir: Path = TARGETED_OUTPUT_D
     output_dir_normalized = str(output_dir).replace("\\", "/")
     checks = {
         "phase6d_prompt_package_frozen": bool(prompt_verification.get("PHASE6D_PROMPT_PACKAGE_FROZEN")),
-        "phase6g3_prompt_freeze_ready": bool(load_json(repo_root / "llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json").get("REAL_PRODUCTION_PROMPTS_FROZEN")),
+        "phase6g3_prompt_freeze_ready": bool(load_json(repo_root / "llm-experiments/outputs/final/rendered-prompts/prompt_freeze_manifest.json").get("REAL_PRODUCTION_PROMPTS_FROZEN")),
         "target_request_id_exact": eligibility[0]["request_id"] == TARGETED_FAILED_REQUEST_ID,
         "target_rendered_prompt_id_exact": eligibility[0]["rendered_prompt_id"] == TARGETED_FAILED_RENDERED_PROMPT_ID,
         "target_count_exactly_one": len(eligibility) == 1,

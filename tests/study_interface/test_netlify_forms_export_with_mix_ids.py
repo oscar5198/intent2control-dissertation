@@ -4,11 +4,11 @@ import json
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "study-interface" / "scripts" / "netlify_forms_to_long_csv_with_mix_ids.py"
+SCRIPT_PATH = Path(__file__).resolve().parents[2] / "data" / "scripts" / "convert_netlify_responses.py"
 
 
 def load_converter():
-    spec = importlib.util.spec_from_file_location("netlify_forms_to_long_csv_with_mix_ids", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("convert_netlify_responses", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -68,7 +68,7 @@ def test_raw_netlify_export_writes_response_metadata_and_validation_report(tmp_p
             {
                 "study_id": "synthetic_study",
                 "study_version": "synthetic_v1",
-                "schema_version": "six_mix_netlify_forms_v1",
+                "schema_version": "five_mix_netlify_forms_v1",
                 "stimulus_configuration_version": "synthetic_config_v1",
                 "submission_status": "completed",
                 "group_id": "group_synthetic",
@@ -119,7 +119,7 @@ def test_long_format_fallback_flags_missing_raw_netlify_json(tmp_path):
             {
                 "study_id": "synthetic_study",
                 "study_version": "synthetic_v1",
-                "schema_version": "six_mix_netlify_forms_v1",
+                "schema_version": "five_mix_netlify_forms_v1",
                 "stimulus_configuration_version": "synthetic_config_v1",
                 "group_id": "group_synthetic",
                 "started_at": "2026-08-06T00:00:00Z",

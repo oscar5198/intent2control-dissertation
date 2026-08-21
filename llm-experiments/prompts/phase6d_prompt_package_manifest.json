@@ -159,7 +159,7 @@
     },
     "freeze_module": {
       "path": "llm-experiments/src/llm_experiments/prompts/freeze_package.py",
-      "sha256": "eb96aad799388be65a60e165f5c04fa11177353c14b55079709fb88049bb7d99"
+      "sha256": "db1a808bcf5744b75053573ade6f9d3490ab189d9bd89df5a117edb302b4bfc5"
     },
     "provider_adapter_boundary": {
       "path": "llm-experiments/prompts/phase6e_provider_adapter_boundary.md",
@@ -168,12 +168,12 @@
   },
   "reference_prompt_hashes": {
     "non_history_system_message_sha256": "243e97941c4357cc4a841575ff8a64d71de69b3f12f74c75004fa98239f52cd0",
-    "non_history_user_message_sha256": "1e13c66417a6d258fc9fb5fb5d450b985945129c79f2e263031d5179c8a858b4",
-    "non_history_rendered_prompt_object_sha256": "5905415381d4056a2a130d342fdcd82955085b9bb40dda4988a7b8e14cd03984",
+    "non_history_user_message_sha256": "c775a35cf9f669be20d9f6f95d04b5d1a0264d3975734be671a752ba4b1522c4",
+    "non_history_rendered_prompt_object_sha256": "04492439f6c453ba43ab55895cc27c2ce93eead736a6aeafe0a35c4bc1495644",
     "personalised_history_system_message_sha256": "243e97941c4357cc4a841575ff8a64d71de69b3f12f74c75004fa98239f52cd0",
-    "personalised_history_user_message_sha256": "58910e8450a7c42f9db8d342fda0dcbe4514ee4f55e090e409e51f9b2ab3d936",
-    "personalised_history_rendered_prompt_object_sha256": "00ddbe2689bdc8394f1875c366792e4837a59ed61bb840f9973f11524edeab08",
-    "reference_prompt_pair_sha256": "5c8be2c51c17a499c990f490694a8d23bf976303b7be184627e189de72ecaf32"
+    "personalised_history_user_message_sha256": "1140563dac98dc6537a551307bb87d4c1f2d1298435331785e1a57efe7b3b3b8",
+    "personalised_history_rendered_prompt_object_sha256": "8d05a87dfee2bab033ea522ecd28793080df9b2fcfefc55e02d6af5843787ba0",
+    "reference_prompt_pair_sha256": "3e70988894342588a2e78a48211e886b9eb3ba23c961e381d72d8ced52398b58"
   },
   "freeze_gate": "PHASE6D_PROMPT_PACKAGE_FROZEN"
 }

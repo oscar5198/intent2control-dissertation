@@ -1,77 +1,83 @@
 # Study Interface
 
-This folder contains the foundation for a web-based listening study interface for the MSc dissertation project, *Intent2Control with Controllable Intent Strength*.
+This folder contains the final static five-mix listening-study interface used
+for the MSc dissertation. It is a plain HTML/CSS/JavaScript frontend deployed
+to Netlify with Netlify Forms response storage.
 
-The interface will support a contextual listening study in which anonymous participants compare and rate music mix versions. It currently contains the documentation foundation and the early framework-free frontend scaffold.
+## Final Design
 
-## Dissertation context
+- Two participant groups.
+- Four final songs, two assigned to each group.
+- Five anonymous mix versions per song, shown as A-E within each trial.
+- Three listening contexts: Enjoyment (`EDR-1`), Relaxation-Distraction
+  (`EDR-2`), and Focus-Motivation (`FM-1`).
+- Six main-study trials per participant.
+- 0-100 ratings for each presented mix.
+- One comparative comment per trial.
+- Netlify form submission using `listening-study-5mix` and
+  `five_mix_netlify_forms_v1`.
 
-The wider dissertation investigates semantic audio control: mapping natural-language mixing intentions to audio processing parameters such as equalisation, compression, and reverberation. This study interface will be used to collect listening preference data for evaluating mix versions in contextual scenarios.
+## Final Interface
 
-## High-level participant flow
+The participant-facing interface is:
 
-The intended participant flow is:
+```text
+frontend-5mix/
+```
 
-1. Landing page.
-2. Study Information and Consent.
-3. Listening setup.
-4. Audio screening.
-5. Instructions.
-6. Practice trial.
-7. Main Study transition.
-8. Six experimental listening tasks.
-9. Post-task questionnaire.
-10. Demographic questionnaire.
-11. Review and final submission.
-12. Completion page.
+Important files:
 
-## Experimental structure
+- `frontend-5mix/index.html`
+- `frontend-5mix/pages/`
+- `frontend-5mix/css/`
+- `frontend-5mix/js/`
+- `frontend-5mix/config/stimuli.json`
+- `frontend-5mix/config/scenarios.json`
+- `frontend-5mix/config/study-config.json`
+- `frontend-5mix/js/randomisation.js`
+- `frontend-5mix/js/netlify-submission.js`
 
-Participants are randomly assigned to one of two experimental groups.
+The local interface can be opened from `frontend-5mix/index.html` or served by
+any static web server from `frontend-5mix/`. No Node build step is required.
 
-Each group evaluates two music excerpts across three contextual listening episodes. Each episode contains both assigned excerpts, producing six experimental listening tasks per participant.
+## Audio and Mapping
 
-Each trial contains one music excerpt presented as three mix versions. These mixes are shown to participants using neutral labels: Version A, Version B, and Version C. Each mix is rated using a continuous 0-100 preference scale, with one required comparative comment field for the trial. Participants may replay audio as many times as they wish.
+The 20 final main-study WAV files are under:
 
-The estimated study duration is 15-20 minutes. The main-study target sample is approximately 40-50 participants, with a pilot-study target sample of 6-8 participants.
+```text
+frontend-5mix/assets/audio/study-stimuli/main-study/
+```
 
-## Frozen Experimental Design
+Practice, setup, and pre-study screening audio used by the final runtime remain
+under `frontend-5mix/assets/audio/`. The active stimulus IDs, real mix IDs,
+anonymous A-E presentation mapping, and local audio paths are defined in
+`frontend-5mix/config/stimuli.json`. The context text is defined in
+`frontend-5mix/config/scenarios.json`; global study settings are defined in
+`frontend-5mix/config/study-config.json`.
 
-- Two experimental groups.
-- Two music excerpts per group.
-- Three contextual listening episodes.
-- Six experimental listening tasks per participant.
-- Three mix versions per trial.
-- Eighteen mix preference ratings per participant.
-- Six required comparative trial comments per participant.
+## Response Conversion
 
-## Participant Materials
+Runtime submission code remains in:
 
-The approved Participant Information Sheet and consent form are stored under `docs/participant-materials/`. Participant-facing PDF copies are stored under `frontend/assets/documents/`. Those approved documents are the authoritative source for participant-facing wording. Interface text must continue to be checked against them before final release.
+```text
+frontend-5mix/js/netlify-submission.js
+```
 
-## Practice Trial Audio
+The final offline Netlify export converter belongs to the data pipeline:
 
-The Practice Trial uses an independent real song excerpt from the Mix Evaluation Dataset. This practice song is intentionally separate from all four experimental songs and is shown to participants only as `Practice song` with neutral Version A, Version B, and Version C labels.
+```text
+../data/scripts/convert_netlify_responses.py
+```
 
-## Hosting and backend status
+The retained interface validator is:
 
-The final hosting and backend technology are still to be confirmed with QMUL. The application must eventually be deployable on QMUL-managed infrastructure, but no framework, package manager, backend, or database has been selected yet.
+```text
+scripts/validate_frontend_5mix.py
+```
 
-## Repository safety
+## Data Interpretation
 
-Do not commit:
-
-- Participant data.
-- Audio stimuli.
-- Secrets or real environment files.
-- Local databases.
-- Exported datasets.
-- Logs or uploaded files.
-
-Research audio may not be licensed for public distribution, so files inside `frontend/assets/audio/` are ignored except for `.gitkeep`.
-
-## Current status
-
-Current status: Phase 2B frontend scaffold.
-
-Implemented participant-facing pages currently cover the full static frontend flow through completion for development testing. No backend, generated participant data, real credentials, or deployment configuration have been added.
+Participant responses are reconstructable because the form submission preserves
+`mix_mapping_json`, `presentation_order_json`, `responses_json`, and stable
+`actual_mix_id` / `stimulus_id` fields. The raw Netlify export should be kept
+outside Git unless a separate approved retention/anonymisation decision is made.

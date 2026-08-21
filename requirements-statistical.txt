@@ -1,0 +1,14 @@
+# Statistical-analysis environment for the final dissertation workflow.
+# Version ranges are intentionally conservative because exact local versions
+# were not retained in project manifests.
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+arviz>=0.16
+bambi>=0.13
+pymc>=5.0
+xarray>=2023.0
+nutpie>=0.13
+ipykernel>=6.0
+jupyter>=1.0

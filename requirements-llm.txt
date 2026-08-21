@@ -1,0 +1,17 @@
+# LLM prompt, inference, consolidation, and evaluation environment.
+# Provider and model packages are only needed when running the corresponding
+# production runners; final retained predictions can be evaluated without API
+# calls or GPU inference.
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+jsonschema>=4.0
+openai>=1.0
+anthropic>=0.34
+transformers>=4.43
+torch>=2.2
+accelerate>=0.30
+bitsandbytes>=0.43
+huggingface_hub>=0.23
+unsloth; platform_system == "Linux"

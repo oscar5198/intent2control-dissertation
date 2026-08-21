@@ -61,7 +61,7 @@ def test_trial_level_spearman_and_average_rank_ties() -> None:
 
 
 def test_mae_and_rmse_candidate_level(scored: dict) -> None:
-    candidate = pd.read_csv(Path(scored["output_dir"]) / "phase6h2b_candidate_level_rating_errors.csv")
+    candidate = pd.read_csv(Path(scored["output_dir"]) / "candidate_level_rating_errors.csv")
     row = candidate[candidate["method_key"].eq("gpt__non_history")].iloc[0]
 
     assert row["absolute_error"] == abs(row["predicted_rating"] - row["actual_rating"])
@@ -108,8 +108,8 @@ def test_frozen_input_hashes_and_no_prediction_mutation(scored: dict) -> None:
     manifest = scored["manifest"]
     assert manifest["prediction_rerun"] is False
     assert manifest["mixed_effects_refit"] is False
-    assert manifest["source_hashes"]["llm-experiments/outputs/real/phase6g5/final_llm_predictions.jsonl"] == phase6h2b.sha256_file(REPO_ROOT / "llm-experiments/outputs/real/phase6g5/final_llm_predictions.jsonl")
-    assert manifest["source_hashes"]["statistical-baseline/outputs/real_heldout_evaluation/final_n33_phase6h/final_n33_candidate_predictions.csv"] == phase6h2b.sha256_file(REPO_ROOT / "statistical-baseline/outputs/real_heldout_evaluation/final_n33_phase6h/final_n33_candidate_predictions.csv")
+    assert manifest["source_hashes"]["llm-experiments/outputs/final/model-predictions/llm_heldout_predictions.jsonl"] == phase6h2b.sha256_file(REPO_ROOT / "llm-experiments/outputs/final/model-predictions/llm_heldout_predictions.jsonl")
+    assert manifest["source_hashes"]["statistical-modeling/outputs/heldout-evaluation/final-predictions/final_n33_candidate_predictions.csv"] == phase6h2b.sha256_file(REPO_ROOT / "statistical-modeling/outputs/heldout-evaluation/final-predictions/final_n33_candidate_predictions.csv")
 
 
 def test_rq_evidence_mapping_and_qc_gates(scored: dict) -> None:
@@ -124,11 +124,11 @@ def test_rq_evidence_mapping_and_qc_gates(scored: dict) -> None:
 def test_table_and_figure_outputs_exist(scored: dict) -> None:
     out = Path(scored["output_dir"])
     for name in [
-        "phase6h2b_table_a_central_mixed_effects.csv",
-        "phase6h2b_table_b_prediction_results.csv",
-        "phase6h2b_table_c_personalisation_effects.csv",
-        "phase6h2b_figure2_top1_accuracy.png",
-        "phase6h2b_figure3_personalisation_top1.png",
+        "mixed_effects_table.csv",
+        "llm_model_performance.csv",
+        "personalisation_summary.csv",
+        "top1_accuracy_by_model.png",
+        "personalisation_top1_accuracy.png",
     ]:
         assert (out / name).exists()
         assert (out / name).stat().st_size > 0

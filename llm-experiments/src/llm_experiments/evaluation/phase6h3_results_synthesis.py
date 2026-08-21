@@ -16,10 +16,10 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6h3")
-PHASE6H1_DIR = Path("llm-experiments/outputs/real/phase6h1")
-PHASE6H2B_DIR = Path("llm-experiments/outputs/real/phase6h2b")
-PHASE6H2A_EMPIRICAL_DIR = Path("statistical-baseline/outputs/final_n33_empirical")
+OUTPUT_DIR = Path("results")
+PHASE6H1_DIR = Path("llm-experiments/outputs/final/evaluation")
+PHASE6H2B_DIR = Path("llm-experiments/outputs/final/evaluation")
+PHASE6H2A_EMPIRICAL_DIR = Path("statistical-modeling/outputs/final-model-summaries")
 
 
 def run_phase6h3_results_synthesis(repo_root: Path, output_dir: Path = OUTPUT_DIR) -> dict[str, Any]:
@@ -48,18 +48,18 @@ def run_phase6h3_results_synthesis(repo_root: Path, output_dir: Path = OUTPUT_DI
 
 def load_sources(repo_root: Path) -> dict[str, Any]:
     return {
-        "h1_summary": read_json(repo_root / PHASE6H1_DIR / "phase6h1_data_collection_summary.json"),
-        "h1_protocol": read_json(repo_root / PHASE6H1_DIR / "phase6h1_metric_protocol.json"),
-        "h1_tie_policy": read_json(repo_root / PHASE6H1_DIR / "phase6h1_tie_policy.json"),
+        "h1_summary": read_json(repo_root / PHASE6H1_DIR / "data_collection_summary.json"),
+        "h1_protocol": read_json(repo_root / PHASE6H1_DIR / "metric_protocol.json"),
+        "h1_tie_policy": read_json(repo_root / PHASE6H1_DIR / "tie_policy.json"),
         "h2a_inventory": read_json(repo_root / PHASE6H2A_EMPIRICAL_DIR / "n33_empirical_results_inventory.json"),
-        "mixed_effects": read_csv(repo_root / PHASE6H2B_DIR / "phase6h2b_table_a_central_mixed_effects.csv"),
-        "prediction": read_csv(repo_root / PHASE6H2B_DIR / "phase6h2b_table_b_prediction_results.csv"),
-        "personalisation": read_csv(repo_root / PHASE6H2B_DIR / "phase6h2b_table_c_personalisation_effects.csv"),
-        "personalisation_full": read_csv(repo_root / PHASE6H2B_DIR / "phase6h2b_personalisation_effects.csv"),
-        "chance": read_csv(repo_root / PHASE6H2B_DIR / "phase6h2b_chance_tests.csv"),
-        "comparison": read_csv(repo_root / PHASE6H2B_DIR / "phase6h2b_mixed_effects_llm_comparison.csv"),
-        "h2b_manifest": read_json(repo_root / PHASE6H2B_DIR / "phase6h2b_provenance_manifest.json"),
-        "h2b_qc": read_json(repo_root / PHASE6H2B_DIR / "phase6h2b_qc_summary.json"),
+        "mixed_effects": read_csv(repo_root / PHASE6H2B_DIR / "mixed_effects_table.csv"),
+        "prediction": read_csv(repo_root / PHASE6H2B_DIR / "llm_model_performance.csv"),
+        "personalisation": read_csv(repo_root / PHASE6H2B_DIR / "personalisation_summary.csv"),
+        "personalisation_full": read_csv(repo_root / PHASE6H2B_DIR / "personalisation_effects.csv"),
+        "chance": read_csv(repo_root / PHASE6H2B_DIR / "chance_tests.csv"),
+        "comparison": read_csv(repo_root / PHASE6H2B_DIR / "llm_vs_mixed_effects.csv"),
+        "h2b_manifest": read_json(repo_root / PHASE6H2B_DIR / "scoring_provenance_manifest.json"),
+        "h2b_qc": read_json(repo_root / PHASE6H2B_DIR / "scoring_qc_summary.json"),
     }
 
 
@@ -202,7 +202,7 @@ def write_figure_recommendations(repo_root: Path, out: Path) -> list[dict[str, s
         {
             "figure_id": "Figure 2",
             "recommended_placement": "Main Results, Held-Out Mix Preference Prediction",
-            "source": PHASE6H2B_DIR / "phase6h2b_figure2_top1_accuracy.png",
+            "source": PHASE6H2B_DIR / "top1_accuracy_by_model.png",
             "output": out / "phase6h3_figure2_top1_accuracy.png",
             "caption": "Held-out preferred-mix Top-1 accuracy with Wilson 95% intervals for LLM conditions and the matched mixed-effects predictive baseline.",
             "role": "main",
@@ -210,7 +210,7 @@ def write_figure_recommendations(repo_root: Path, out: Path) -> list[dict[str, s
         {
             "figure_id": "Supplementary Figure S1",
             "recommended_placement": "Appendix or supplementary results",
-            "source": PHASE6H2B_DIR / "phase6h2b_figure3_personalisation_top1.png",
+            "source": PHASE6H2B_DIR / "personalisation_top1_accuracy.png",
             "output": out / "phase6h3_supplementary_figure_personalisation_top1.png",
             "caption": "Within-model change in Top-1 accuracy when participant history is supplied.",
             "role": "appendix",
@@ -389,21 +389,21 @@ def build_qc(repo_root: Path, output_dir: Path, tables: dict[str, str], figures:
     out = repo_root / output_dir
     required = [*tables.values(), *(figure["phase6h3_path"] for figure in figures), *markdown.values()]
     source_paths = [
-        PHASE6H1_DIR / "phase6h1_data_collection_summary.json",
-        PHASE6H1_DIR / "phase6h1_metric_protocol.json",
-        PHASE6H1_DIR / "phase6h1_tie_policy.json",
-        PHASE6H2B_DIR / "phase6h2b_table_a_central_mixed_effects.csv",
-        PHASE6H2B_DIR / "phase6h2b_table_b_prediction_results.csv",
-        PHASE6H2B_DIR / "phase6h2b_table_c_personalisation_effects.csv",
-        PHASE6H2B_DIR / "phase6h2b_personalisation_effects.csv",
-        PHASE6H2B_DIR / "phase6h2b_chance_tests.csv",
-        PHASE6H2B_DIR / "phase6h2b_mixed_effects_llm_comparison.csv",
-        PHASE6H2B_DIR / "phase6h2b_provenance_manifest.json",
-        PHASE6H2B_DIR / "phase6h2b_qc_summary.json",
+        PHASE6H1_DIR / "data_collection_summary.json",
+        PHASE6H1_DIR / "metric_protocol.json",
+        PHASE6H1_DIR / "tie_policy.json",
+        PHASE6H2B_DIR / "mixed_effects_table.csv",
+        PHASE6H2B_DIR / "llm_model_performance.csv",
+        PHASE6H2B_DIR / "personalisation_summary.csv",
+        PHASE6H2B_DIR / "personalisation_effects.csv",
+        PHASE6H2B_DIR / "chance_tests.csv",
+        PHASE6H2B_DIR / "llm_vs_mixed_effects.csv",
+        PHASE6H2B_DIR / "scoring_provenance_manifest.json",
+        PHASE6H2B_DIR / "scoring_qc_summary.json",
         PHASE6H2A_EMPIRICAL_DIR / "n33_empirical_results_inventory.json",
         PHASE6H2A_EMPIRICAL_DIR / "n33_primary_feature_coefficient_plot.png",
-        PHASE6H2B_DIR / "phase6h2b_figure2_top1_accuracy.png",
-        PHASE6H2B_DIR / "phase6h2b_figure3_personalisation_top1.png",
+        PHASE6H2B_DIR / "top1_accuracy_by_model.png",
+        PHASE6H2B_DIR / "personalisation_top1_accuracy.png",
     ]
     gates = {
         "PHASE6H3_RESULTS_SYNTHESIS_COMPLETE": True,

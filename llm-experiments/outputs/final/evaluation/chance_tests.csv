@@ -1,0 +1,10 @@
+method_key,model_key,model_label,condition,chance_accuracy,test,p_value,p_value_bh_adjusted
+gpt__non_history,gpt,GPT-5.5,non_history,0.2,exact_one_sided_binomial_ge_chance,0.19077072692851757,0.21461706779458226
+gpt__personalised_history,gpt,GPT-5.5,personalised_history,0.2,exact_one_sided_binomial_ge_chance,1.71119099734598e-06,5.133572992037941e-06
+claude_sonnet__non_history,claude_sonnet,Claude Sonnet 5,non_history,0.2,exact_one_sided_binomial_ge_chance,0.4296901961376175,0.4296901961376175
+claude_sonnet__personalised_history,claude_sonnet,Claude Sonnet 5,personalised_history,0.2,exact_one_sided_binomial_ge_chance,1.5891303799584006e-07,1.4302173419625606e-06
+llama_3_1_70b_instruct__non_history,llama_3_1_70b_instruct,Llama 3.1 70B Instruct,non_history,0.2,exact_one_sided_binomial_ge_chance,0.059637205737805205,0.07667640737717811
+llama_3_1_70b_instruct__personalised_history,llama_3_1_70b_instruct,Llama 3.1 70B Instruct,personalised_history,0.2,exact_one_sided_binomial_ge_chance,0.029104040459566972,0.052387272827220555
+centaur__non_history,centaur,Centaur,non_history,0.2,exact_one_sided_binomial_ge_chance,0.059637205737805205,0.07667640737717811
+centaur__personalised_history,centaur,Centaur,personalised_history,0.2,exact_one_sided_binomial_ge_chance,0.01964680464975028,0.04420531046193813
+mixed_effects_primary_acoustic,mixed_effects_primary_acoustic,Mixed-effects primary acoustic,baseline,0.2,exact_one_sided_binomial_ge_chance,1.71119099734598e-06,5.133572992037941e-06

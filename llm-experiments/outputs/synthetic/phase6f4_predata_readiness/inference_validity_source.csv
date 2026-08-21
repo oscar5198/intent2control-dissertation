@@ -1,9 +1,0 @@
-synthetic_label,model_key,condition,expected_requests,valid_primary,valid_after_repair,invalid_after_repair,backend_failures,repairs_used,transport_retries,completion_coverage
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,centaur,non_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,centaur,personalised_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,claude_sonnet,non_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,claude_sonnet,personalised_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,gpt,non_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,gpt,personalised_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,llama_3_1_70b_instruct,non_history,11,11,0,0,0,0,0,1.0
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,llama_3_1_70b_instruct,personalised_history,11,11,0,0,0,0,0,1.0

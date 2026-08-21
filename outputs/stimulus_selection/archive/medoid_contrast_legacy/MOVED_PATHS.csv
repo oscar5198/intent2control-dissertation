@@ -1,4 +1,0 @@
-former_path,archived_path,reason
-outputs/stimulus_selection/04_mix_selection,outputs/stimulus_selection/archive/medoid_contrast_legacy/04_mix_selection,Earlier representative/contrast acoustic selection superseded by corrected acoustic candidate pools plus rating stratification.
-outputs/stimulus_selection/06_final_summaries,outputs/stimulus_selection/archive/medoid_contrast_legacy/06_final_summaries,Earlier final summaries derived from representative/contrast outputs superseded by active frontend manifest/configuration.
-outputs/final_stimuli,outputs/stimulus_selection/archive/medoid_contrast_legacy/final_stimuli,Earlier loudness-normalised representative/contrast final-stimuli package superseded by active frontend integrated WAVs.

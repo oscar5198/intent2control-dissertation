@@ -1,9 +1,0 @@
-mixer_institution_code,institution_name,institution_category,institution_confidence,metadata_source,is_system_generated
-MG,MixGenius,automated_system,high,relationship_tables,true
-CNS,Conservatoire National Supérieur de Musique et de Danse de Paris,university_or_institution,high,relationship_tables,false
-DU,Dalarna University,university_or_institution,high,relationship_tables,false
-McG,McGill University,university_or_institution,high,relationship_tables,false
-PXL,PXL University College,university_or_institution,high,relationship_tables,false
-QUT,Queensland University of Technology,university_or_institution,high,relationship_tables,false
-UCP,Universidade Católica Portuguesa,university_or_institution,high,relationship_tables,false
-UH,University of Huddersfield,university_or_institution,high,relationship_tables,false

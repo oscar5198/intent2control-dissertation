@@ -1,0 +1,319 @@
+dataset_root: C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset
+relationship_tables_root: C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset/mix_evaluation_relationship_tables
+public_audio_root: C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset/MixEvaluation/audio
+output_root: experimental-design/stimulus-selection/supporting-analysis
+minimum_duration_seconds: 20
+require_stereo: true
+target_sample_rate: 44100
+target_excerpt_seconds: 28.0
+fade_seconds: 0.005
+audio_boundary_processing:
+  methodology_version: "2.0"
+  supervisor_revision_date: "2026-08-04"
+  fade_required: true
+  fade_in_ms: 5.0
+  fade_out_ms: 5.0
+  fade_shape: "half_cosine"
+  apply_identically_to_all_versions: true
+  candidate_review_loudness_policy: "preserve_raw_level"
+  final_stimulus_loudness_policy: "preserve_existing_target"
+  exact_duration_seconds: 28.0
+  target_sample_rate: 44100
+  deterministic: true
+alignment:
+  analysis_downmix: mono
+  coarse_sample_rate: 11025
+  maximum_expected_offset_seconds: 2.0
+  minimum_alignment_confidence: 0.7
+  use_onset_envelope: true
+  use_chroma_fallback: true
+  use_waveform_correlation_for_refinement: true
+excerpt_selection:
+  candidate_count: 5
+  activity_hop_seconds: 0.25
+  avoid_first_seconds: 3.0
+  avoid_last_seconds: 3.0
+  minimum_activity_quantile: 0.5
+  prefer_vocal_drums_bass_region: true
+analysis_excerpt_root: experimental-design/stimulus-selection/supporting-analysis/02_excerpt_selection/diagnostics/analysis_excerpts
+preview_excerpt_root: experimental-design/stimulus-selection/supporting-analysis/02_excerpt_selection/diagnostics/excerpt_previews
+allowed_extensions:
+- .mp3
+- .wav
+- .aif
+- .aiff
+- .flac
+institution_system_codes:
+- MG
+- AUTO
+- Robot
+primary_candidate_songs:
+- artist: The DoneFors
+  song: Lead Me
+- artist: Fredy V
+  song: In The Meantime
+approved_excerpts:
+- artist: The DoneFors
+  song: Lead Me
+  aligned_start_seconds: 9.573107
+  aligned_end_seconds: 37.573107
+  selected_candidate_rank: 1
+  selection_method: automatic_source_aware
+  reviewer: automated pipeline
+  review_notes: source-aware score balances raw-track activity, simultaneous vocal/bass/drums
+    coverage, cross-mix variation, boundary stability and alignment confidence; final
+    score 0.989286, confidence 0.907197.
+- artist: Fredy V
+  song: In The Meantime
+  aligned_start_seconds: 35.300431
+  aligned_end_seconds: 63.300431
+  selected_candidate_rank: 1
+  selection_method: automatic_source_aware
+  reviewer: automated pipeline
+  review_notes: source-aware score balances raw-track activity, simultaneous vocal/bass/drums
+    coverage, cross-mix variation, boundary stability and alignment confidence; final
+    score 0.972500, confidence 0.853055.
+- artist: Broken Crank
+  song: Red To Blue
+  aligned_start_seconds: 3.005442
+  aligned_end_seconds: 31.005442
+  selected_candidate_rank: 4
+  selection_method: automatic_source_aware
+  reviewer: automated pipeline
+  review_notes: source-aware score balances raw-track activity, simultaneous vocal/bass/drums
+    coverage, cross-mix variation, boundary stability and alignment confidence; final
+    score 0.911071, confidence 0.829669.
+- artist: The DoneFors
+  song: Pouring Room
+  aligned_start_seconds: 23.020408
+  aligned_end_seconds: 51.020408
+  selected_candidate_rank: 2
+  selection_method: automatic_proxy_source_aware
+  reviewer: automated pipeline
+  review_notes: automatic proxy-based source-aware selection from aligned public mixes;
+    no local stems/raw tracks found; final score 0.685714, confidence 0.739246.
+selected_songs:
+- artist: The DoneFors
+  song: Lead Me
+  selection_status: approved
+  institution_basis: multi_institution
+- artist: Fredy V
+  song: In The Meantime
+  selection_status: approved
+  institution_basis: multi_institution
+- artist: Broken Crank
+  song: Red To Blue
+  selection_status: proposed
+  institution_basis: single_institution_fallback
+- artist: The DoneFors
+  song: Pouring Room
+  selection_status: proposed
+  institution_basis: single_institution_fallback
+proposed_groups:
+  group_a:
+  - The DoneFors - Lead Me
+  - Broken Crank - Red To Blue
+  group_b:
+  - Fredy V - In The Meantime
+  - The DoneFors - Pouring Room
+mix_selection:
+  scalar_features:
+  - rms_mean
+  - crest_factor_mean
+  - stereo_width
+  - stereo_imbalance
+  bark_variance_threshold: 0.95
+  primary_distance: euclidean
+  equal_block_weighting: true
+  include_medoid_in_primary_triplet: true
+  avoid_near_duplicates: true
+  require_manual_review_for_flagged_outliers: true
+  deterministic_seed: 42
+mix_selection_v2:
+  methodology_version: "2.0"
+  status: "candidate_pool_generation"
+  scalar_features:
+  - rms_mean
+  - crest_factor_mean
+  - stereo_width
+  qc_only_features:
+  - stereo_imbalance
+  bark_variance_threshold: 0.95
+  primary_distance: "euclidean"
+  equal_block_weighting: true
+  deterministic_seed: 42
+  candidate_pool:
+    Lead Me: 20
+    In The Meantime: 20
+    Red To Blue: "all_valid"
+    Pouring Room: "all_valid"
+  expected_retained_counts:
+    Lead Me: 37
+    In The Meantime: 36
+    Red To Blue: 10
+    Pouring Room: 9
+  stereo_imbalance_qc:
+    enabled: true
+    use_absolute_value: true
+    review_threshold_method: "robust_within_song"
+    exclude_automatically: false
+backup_song_expansion:
+  methodology_version: "1.0"
+  status: "supervisor_review_candidates"
+  exclude_main_songs: true
+  number_of_backup_songs: 4
+  target_excerpt_seconds: 28.0
+  output_root: "experimental-design/stimulus-selection/supporting-analysis/08_backup_song_expansion"
+  excluded_main_songs:
+    - artist: The DoneFors
+      song: Lead Me
+    - artist: Fredy V
+      song: In The Meantime
+    - artist: Broken Crank
+      song: Red To Blue
+    - artist: The DoneFors
+      song: Pouring Room
+  diversity_features:
+    scalar:
+      - rms_mean
+      - crest_factor_mean
+      - stereo_width
+    spectral:
+      - bark_mid_01_to_24
+      - bark_side_01_to_24
+    qc_only:
+      - stereo_imbalance
+  acoustic_method:
+    robust_scaling: "within_song_median_iqr"
+    bark_pca_variance_threshold: 0.95
+    block_weighting: "equal_scalar_and_bark"
+    distance: "combined_euclidean"
+    candidate_pool_selection: "deterministic_farthest_point"
+  rating_method:
+    source: "mix_evaluation_relationship_tables/data/evaluations.csv"
+    join_key: "mix_id"
+    scope: "within_song"
+    minimum_rating_count_warning: 5
+  selected_backup_songs:
+    - artist: The Districts
+      song: Vermont
+    - artist: Filthybird
+      song: "I'd Like To Know"
+    - artist: Torres
+      song: New Skin
+    - artist: Dawn Langstroth
+      song: No Prize
+ratings_integration:
+  methodology_version: "1.0"
+  canonical_source:
+    evaluations_csv: "C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset/mix_evaluation_relationship_tables/data/evaluations.csv"
+    schema_md: "C:/Users/oscar/OneDrive/Public share - Mix Eval Dataset/mix_evaluation_relationship_tables/SCHEMA.md"
+  rating_column: "preference_score_0_1"
+  join_key: "mix_id"
+  analysis_scope: "within_song"
+  preserve_unrated_mixes: true
+  self_rating_policy: "inspect_and_report"
+  aggregation:
+    mean: true
+    median: true
+    standard_deviation: true
+    interquartile_range: true
+    minimum: true
+    maximum: true
+    standard_error: true
+    confidence_interval_95: true
+  minimum_rating_count_warning: 5
+  expected_retained_counts:
+    Lead Me: 37
+    In The Meantime: 36
+    Red To Blue: 10
+    Pouring Room: 9
+  deterministic: true
+rating_stratification:
+  methodology_version: "1.0"
+  status: "supervisor_recommendations"
+  acoustic_distance_source: "experimental-design/stimulus-selection/supporting-analysis/04_mix_selection_v2/tables/pairwise_distances_v2.csv"
+  candidate_pool_source: "experimental-design/stimulus-selection/supporting-analysis/04_mix_selection_v2/tables/acoustic_candidate_pool.csv"
+  ratings_source: "experimental-design/stimulus-selection/supporting-analysis/05_ratings_integration/tables/mix_preference_rating_summary_within_song.csv"
+  acoustic_weight: 0.8
+  rating_weight: 0.2
+  qc_review_penalty: 0.05
+  qc_caution_penalty: 0.025
+  top_n_per_condition: 10
+  prefer_unique_mixes_across_conditions: true
+  deterministic: true
+six_mix_proposals:
+  methodology_version: "1.0"
+  status: "proposal_for_pilot_and_supervisor_review"
+  source: "union_of_similar_and_wide_triplets"
+  songs:
+    - "Lead Me"
+    - "In The Meantime"
+    - "Red To Blue"
+    - "Pouring Room"
+  mixes_per_song: 6
+  require_no_overlap_between_conditions: true
+  diversity_features:
+    scalar:
+      - rms_mean
+      - crest_factor_mean
+      - stereo_width
+    spectral:
+      - bark_mid
+      - bark_side
+    qc_only:
+      - stereo_imbalance
+  loudness_target_lufs: -20.8
+  fade_in_ms: 5.0
+  fade_out_ms: 5.0
+  fade_shape: "half_cosine"
+  exact_duration_seconds: 28.0
+  sample_rate: 44100
+  bit_depth: 24
+  alignment_verification: true
+  technical_qc_required: true
+  frontend_implementation: false
+  deterministic_seed: 42
+stage4_review:
+  status: "approved"
+  reviewer: "Oscar"
+  reviewed_at: "2026-07-25T20:19:42+01:00"
+  notes: "All 12 selected mixes were manually reviewed and accepted as technically suitable."
+display_naming:
+  primary_mix_identifier: "original_dataset_filename"
+  audio_excerpt_suffix: "_28sec"
+  preview_suffix: "_28sec_preview"
+  include_internal_mix_id_in_reports: false
+  retain_internal_mix_id_in_tables: true
+output_layout:
+  root: "experimental-design/stimulus-selection/supporting-analysis"
+  dataset_selection:
+    root: "01_dataset_and_song_selection"
+    tables: "01_dataset_and_song_selection/tables"
+    reports: "01_dataset_and_song_selection/reports"
+  excerpt_selection:
+    root: "02_excerpt_selection"
+    tables: "02_excerpt_selection/tables"
+    reports: "02_excerpt_selection/reports"
+    previews: "02_excerpt_selection/approved_excerpt_previews"
+    diagnostics: "02_excerpt_selection/diagnostics"
+  feature_extraction:
+    root: "03_feature_extraction"
+    tables: "03_feature_extraction/tables"
+    reports: "03_feature_extraction/reports"
+    diagnostics: "03_feature_extraction/feature_diagnostics"
+  mix_selection:
+    root: "04_mix_selection"
+    tables: "04_mix_selection/tables"
+    reports: "04_mix_selection/reports"
+    diagnostics: "04_mix_selection/selection_diagnostics"
+    previews: "04_mix_selection/selected_mix_review_previews"
+  manual_review:
+    root: "05_manual_review"
+    tables: "05_manual_review/tables"
+    instructions: "05_manual_review/instructions"
+  summaries:
+    root: "06_final_summaries"
+  provenance:
+    root: "logs_and_provenance"
+

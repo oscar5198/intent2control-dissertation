@@ -1,8 +1,0 @@
-{
-  "schema_version": "phase6g4a_gpt_failure_summary_v1",
-  "blocked_by_preflight": true,
-  "failures": [
-    "openai_api_key_present",
-    "openai_sdk_installed"
-  ]
-}

@@ -1,5 +1,0 @@
-source_path,source_type,finding,sha256
-llm-experiments/llm_evaluation_protocol.md,protocol_document,States leave-one-trial-out participant-trial evaluation with up to six target predictions per participant.,a3c8f6a258f95d51d0e268e4a7ff0d2df44652c6d1c7770eb382e99454cef5fa
-llm-experiments/src/llm_experiments/data/examples.py,implementation,build_prediction_examples iterates over sorted trial_targets and emits an example for every target_eligible trial.,bd4cf6900804b2c97513fdd8449321ff941c47677c04cab41a353c627ace1c68
-llm-experiments/src/llm_experiments/data/targets.py,implementation,build_trial_ground_truth marks structurally valid five-candidate rated trials as target_eligible; no one-target-per-participant selector is present.,ccaf901cd0630ace6a720b547896d4bac45ee022b283fd15a749fb97b5a12392
-llm-experiments/src/llm_experiments/data/prompt_data.py,implementation,Prompt-data objects consume all trusted prediction examples and do not subsample target trials.,543aa12d4527eddbcbe945d4b159edcefc21d8c1d8a023beeae2cf7d8a8cc810

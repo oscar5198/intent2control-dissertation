@@ -1,3 +1,0 @@
-artist,song,reference_mix_id,retained_mix_count,excluded_mix_count,common_aligned_start_seconds,common_aligned_end_seconds,common_overlap_seconds,target_excerpt_seconds,sufficient_overlap,minimum_alignment_confidence,notes
-Fredy V,In The Meantime,mix_13f0eed08780,36,0,1.050431,74.538481,73.488050,28.000000,true,0.700000,reference selected near median duration/common sample rate: QUT-A; durations updated from decoded waveform frame counts
-The DoneFors,Lead Me,mix_271852ba8676,37,1,0.073107,79.925587,79.852480,28.000000,true,0.700000,reference selected near median duration/common sample rate: DU-E; durations updated from decoded waveform frame counts

@@ -1,3 +1,0 @@
-synthetic_label,baseline_model,expected_fits,completed_fits,convergence_warnings,failed_fits,missing_fits,a_e_completeness_failures,probability_validation_failures,alignment_status,smoke_subset_mode
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,categorical_design,2,2,1,0,0,0,0,PASS,partial
-SYNTHETIC / MOCK - NOT SCIENTIFIC RESULTS,primary_acoustic,2,2,1,0,0,0,0,PASS,partial

@@ -15,11 +15,11 @@ from llm_experiments.inference.records import canonical_json, portable_artifact_
 
 
 SCHEMA_VERSION = "phase6g5_final_llm_prediction_package_v1"
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g5")
-PHASE6G3_DIR = Path("llm-experiments/outputs/real/phase6g3")
-PROMPT_HASH_MANIFEST = PHASE6G3_DIR / "phase6g3_prompt_hash_manifest.json"
-PHASE6G3_FREEZE_MANIFEST = PHASE6G3_DIR / "phase6g3_freeze_manifest.json"
-PHASE6G3_REQUEST_MANIFEST = PHASE6G3_DIR / "phase6g3_final_request_manifest.json"
+OUTPUT_DIR = Path("llm-experiments/outputs/final/model-predictions")
+RENDERED_PROMPTS_DIR = Path("llm-experiments/outputs/final/rendered-prompts")
+PROMPT_HASH_MANIFEST = RENDERED_PROMPTS_DIR / "prompt_hash_manifest.json"
+PHASE6G3_FREEZE_MANIFEST = RENDERED_PROMPTS_DIR / "prompt_freeze_manifest.json"
+PHASE6G3_REQUEST_MANIFEST = RENDERED_PROMPTS_DIR / "request_manifest.json"
 
 EXPECTED_MODELS = ("gpt", "claude_sonnet", "llama_3_1_70b_instruct", "centaur")
 EXPECTED_MODEL_COUNT = 396
@@ -33,8 +33,8 @@ FINAL_SOURCES: dict[str, dict[str, Any]] = {
         "experiment_model_label": "GPT-5.5",
         "exact_model_identifier": "gpt-5.5",
         "deployment_revision": "gpt-5.5-2026-04-23",
-        "prediction_file": Path("llm-experiments/outputs/real/phase6g4/gpt/recovery_run_04/final_gpt_predictions.jsonl"),
-        "summary_file": Path("llm-experiments/outputs/real/phase6g4/gpt/recovery_run_04/final_gpt_completion_summary.json"),
+        "prediction_file": Path("llm-experiments/outputs/final/model-predictions/source/gpt-5-5/predictions.jsonl"),
+        "summary_file": Path("llm-experiments/outputs/final/model-predictions/source/gpt-5-5/execution_summary.json"),
         "source_run_ids": ["phase6g4a_gpt_corrected_run_03", "phase6g4a_gpt_recovery_run_04"],
         "recovery_or_canonicalization": "run03_valid_predictions_plus_run04_recovery_merge",
         "ratings_supported": True,
@@ -44,8 +44,8 @@ FINAL_SOURCES: dict[str, dict[str, Any]] = {
         "experiment_model_label": "Claude Sonnet 5",
         "exact_model_identifier": "claude-sonnet-5",
         "deployment_revision": "claude-sonnet-5",
-        "prediction_file": Path("llm-experiments/outputs/real/phase6g4/claude/predictions.jsonl"),
-        "summary_file": Path("llm-experiments/outputs/real/phase6g4/claude/execution_summary.json"),
+        "prediction_file": Path("llm-experiments/outputs/final/model-predictions/source/claude-sonnet-5/predictions.jsonl"),
+        "summary_file": Path("llm-experiments/outputs/final/model-predictions/source/claude-sonnet-5/execution_summary.json"),
         "source_run_ids": ["phase6g4b_claude_production_run_01"],
         "recovery_or_canonicalization": "offline_revalidation_preserved_primary_and_repair_provenance",
         "ratings_supported": True,
@@ -55,8 +55,8 @@ FINAL_SOURCES: dict[str, dict[str, Any]] = {
         "experiment_model_label": "Llama 3.1 70B Instruct",
         "exact_model_identifier": "meta-llama/Llama-3.1-70B-Instruct",
         "deployment_revision": "1605565b47bb9346c5515c34102e054115b4f98b",
-        "prediction_file": Path("llm-experiments/outputs/real/phase6g4/llama_canonical/canonical_predictions.jsonl"),
-        "summary_file": Path("llm-experiments/outputs/real/phase6g4/llama_canonical/canonical_execution_summary.json"),
+        "prediction_file": Path("llm-experiments/outputs/final/model-predictions/source/llama-3-1-70b-instruct/predictions.jsonl"),
+        "summary_file": Path("llm-experiments/outputs/final/model-predictions/source/llama-3-1-70b-instruct/execution_summary.json"),
         "source_run_ids": ["phase6g4c_llama_backend_failed_recovery_run_02", "phase6g4c_llama_resume_after_recovery_run_03"],
         "recovery_or_canonicalization": "canonical_merge_from_recovery_run02_and_resume_run03",
         "ratings_supported": True,
@@ -68,8 +68,8 @@ FINAL_SOURCES: dict[str, dict[str, Any]] = {
         "deployment_revision": "159600db8be99dc183c289923148dfd96cbd8e07",
         "base_model": "unsloth/Meta-Llama-3.1-70B-bnb-4bit",
         "base_revision": "a009b8db2439814febe725486a5ed388f12a8744",
-        "prediction_file": Path("llm-experiments/outputs/real/phase6g4/centaur_native_run_02/native_predictions.jsonl"),
-        "summary_file": Path("llm-experiments/outputs/real/phase6g4/centaur_native_run_02/execution_summary.json"),
+        "prediction_file": Path("llm-experiments/outputs/final/model-predictions/source/centaur/predictions.jsonl"),
+        "summary_file": Path("llm-experiments/outputs/final/model-predictions/source/centaur/execution_summary.json"),
         "source_run_ids": ["phase6g4d_centaur_native_run_02"],
         "recovery_or_canonicalization": "native_candidate_likelihood_run02_supersedes_generic_json_run01",
         "ratings_supported": False,
@@ -81,8 +81,8 @@ GPT_TARGETED_RUN05_SOURCE = {
     "experiment_model_label": "GPT-5.5",
     "exact_model_identifier": "gpt-5.5",
     "deployment_revision": "gpt-5.5-2026-04-23",
-    "prediction_file": Path("llm-experiments/outputs/real/phase6g4/gpt/recovery_run_05/final_gpt_predictions.jsonl"),
-    "summary_file": Path("llm-experiments/outputs/real/phase6g4/gpt/recovery_run_05/final_gpt_completion_summary.json"),
+    "prediction_file": Path("llm-experiments/outputs/final/model-predictions/source/gpt-5-5/predictions.jsonl"),
+    "summary_file": Path("llm-experiments/outputs/final/model-predictions/source/gpt-5-5/execution_summary.json"),
     "source_run_ids": ["phase6g4a_gpt_recovery_run_04", "phase6g4a_gpt_targeted_recovery_run_05"],
     "recovery_or_canonicalization": "run04_final_predictions_plus_run05_single_slot_targeted_recovery",
     "ratings_supported": True,
@@ -127,13 +127,13 @@ def build_phase6g5_final_predictions(repo_root: Path, output_dir: Path = OUTPUT_
     capability_matrix = build_capability_matrix()
     inventory = build_inventory(inventory_sources, qc_summary)
 
-    prediction_path = out / "final_llm_predictions.jsonl"
-    csv_path = out / "final_llm_predictions.csv"
-    capability_path = out / "final_llm_capability_matrix.json"
-    inventory_path = out / "final_llm_prediction_inventory.json"
-    qc_json_path = out / "final_llm_qc_summary.json"
-    manifest_path = out / "final_llm_prediction_freeze_manifest.json"
-    report_path = out / "final_llm_qc_report.md"
+    prediction_path = out / "llm_heldout_predictions.jsonl"
+    csv_path = out / "llm_heldout_predictions.csv"
+    capability_path = out / "capability_matrix.json"
+    inventory_path = out / "prediction_inventory.json"
+    qc_json_path = out / "prediction_qc_summary.json"
+    manifest_path = out / "prediction_freeze_manifest.json"
+    report_path = out / "prediction_qc_report.md"
 
     write_jsonl(prediction_path, merged_rows)
     write_predictions_csv(csv_path, merged_rows)
@@ -337,12 +337,9 @@ def build_inventory(sources: dict[str, dict[str, Any]], qc_summary: dict[str, An
         "phase": "6G.5",
         "authoritative_sources": sources,
         "excluded_superseded_sources": [
-            "llm-experiments/outputs/real/phase6g4/gpt/failed_infrastructure_run_01",
-            "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_01",
-            "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_02",
-            "llm-experiments/outputs/real/phase6g4/gpt/corrected_run_03 superseded only where recovery_run_04 supplied a valid recovered prediction",
-            "llm-experiments/outputs/real/phase6g4/llama original backend-failed production slots superseded by llama_canonical",
-            "llm-experiments/outputs/real/phase6g4/centaur generic JSON run 01 superseded by centaur_native_run_02",
+            "superseded GPT failed, corrected, and recovery batches removed after final GPT-5.5 predictions were frozen",
+            "superseded Llama backend-failed and resume batches removed after canonical final predictions were frozen",
+            "superseded Centaur generic JSON run removed after native final predictions were frozen",
         ],
         "ground_truth_dependency": False,
         "evaluation_not_yet_performed": True,
@@ -407,7 +404,7 @@ def build_freeze_manifest(
     qc_summary: dict[str, Any],
     request_manifest: dict[str, Any],
 ) -> dict[str, Any]:
-    existing_path = repo_root / output_dir / "final_llm_prediction_freeze_manifest.json"
+    existing_path = repo_root / output_dir / "prediction_freeze_manifest.json"
     created_at = None
     if existing_path.exists():
         try:

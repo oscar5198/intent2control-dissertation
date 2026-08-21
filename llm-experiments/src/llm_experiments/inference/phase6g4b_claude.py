@@ -23,13 +23,13 @@ from llm_experiments.prompts.prompt_spec import write_json
 
 
 SCHEMA_VERSION = "phase6g4b_claude_production_inference_v1"
-OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/claude")
-RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
-CLAUDE_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_claude_shard_manifest.json")
-PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
-PHASE6G3_FREEZE = Path("llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json")
-PHASE6G2D_READINESS = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_readiness.json")
-PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_gate.json")
+OUTPUT_DIR = Path("llm-experiments/outputs/final/model-predictions/source/claude-sonnet-5")
+RENDERED_PROMPTS = Path("llm-experiments/outputs/final/rendered-prompts/rendered_final_prompts.jsonl")
+CLAUDE_SHARD = Path("llm-experiments/outputs/final/rendered-prompts/claude_request_shard_manifest.json")
+PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/final/rendered-prompts/prompt_hash_manifest.json")
+PHASE6G3_FREEZE = Path("llm-experiments/outputs/final/rendered-prompts/prompt_freeze_manifest.json")
+PHASE6G2D_READINESS = Path("llm-experiments/outputs/final/inference-config/readiness.json")
+PHASE6G1_GATE = Path("llm-experiments/outputs/final/prompt-data/readiness_gate.json")
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 RUN_ID = "phase6g4b_claude_production_run_01"
 MODEL_KEY = "claude"

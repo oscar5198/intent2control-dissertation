@@ -26,10 +26,10 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def test_final_source_selection_points_to_authoritative_phase6g4_artifacts() -> None:
-    assert phase6g5.FINAL_SOURCES["gpt"]["prediction_file"].as_posix().endswith("gpt/recovery_run_04/final_gpt_predictions.jsonl")
-    assert phase6g5.FINAL_SOURCES["claude_sonnet"]["prediction_file"].as_posix().endswith("claude/predictions.jsonl")
-    assert phase6g5.FINAL_SOURCES["llama_3_1_70b_instruct"]["prediction_file"].as_posix().endswith("llama_canonical/canonical_predictions.jsonl")
-    assert phase6g5.FINAL_SOURCES["centaur"]["prediction_file"].as_posix().endswith("centaur_native_run_02/native_predictions.jsonl")
+    assert phase6g5.FINAL_SOURCES["gpt"]["prediction_file"].as_posix().endswith("source/gpt-5-5/predictions.jsonl")
+    assert phase6g5.FINAL_SOURCES["claude_sonnet"]["prediction_file"].as_posix().endswith("source/claude-sonnet-5/predictions.jsonl")
+    assert phase6g5.FINAL_SOURCES["llama_3_1_70b_instruct"]["prediction_file"].as_posix().endswith("source/llama-3-1-70b-instruct/predictions.jsonl")
+    assert phase6g5.FINAL_SOURCES["centaur"]["prediction_file"].as_posix().endswith("source/centaur/predictions.jsonl")
 
 
 def test_source_counts_are_396_each_with_expected_condition_balance() -> None:
@@ -53,18 +53,8 @@ def test_build_outputs_merge_1584_rows_and_detect_current_gpt_unresolved_blocker
     assert qc["duplicate_model_canonical_request_key_count"] == 0
     assert qc["GROUND_TRUTH_NOT_LOADED_FOR_PHASE6G5"] is True
     assert qc["evaluation_metrics_computed"] is False
-    if (REPO_ROOT / phase6g5.GPT_TARGETED_RUN05_SOURCE["prediction_file"]).exists():
-        assert qc["FINAL_LLM_PREDICTIONS_QC_PASSED"] is True
-        assert result["freeze_manifest"]["gates"]["FINAL_LLM_PREDICTIONS_FROZEN"] is True
-    else:
-        assert any(
-            error.get("model_key") == "gpt"
-            and error.get("canonical_request_key") == "P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1"
-            and error.get("check") in {"prediction_payload_parse", "source_terminal_status"}
-            for error in qc["errors"]
-        )
-        assert result["freeze_manifest"]["gates"]["FINAL_LLM_PREDICTIONS_QC_PASSED"] is False
-        assert result["freeze_manifest"]["gates"]["FINAL_LLM_PREDICTIONS_FROZEN"] is False
+    assert qc["FINAL_LLM_PREDICTIONS_QC_PASSED"] is True
+    assert result["freeze_manifest"]["gates"]["FINAL_LLM_PREDICTIONS_FROZEN"] is True
     assert result["freeze_manifest"]["gates"]["FINAL_LLM_PREDICTIONS_MERGED"] is True
 
 
@@ -74,12 +64,6 @@ def test_builded_prediction_rows_have_valid_capability_flags_except_known_gpt_bl
     valid_mixes = set("ABCDE")
 
     for row in rows:
-        if (
-            not (REPO_ROOT / phase6g5.GPT_TARGETED_RUN05_SOURCE["prediction_file"]).exists()
-            and row["model_key"] == "gpt"
-            and row["canonical_request_key"] == "P026__heldout__P026__trial_06__personalised_history__phase6d_prompt_spec_v1"
-        ):
-            continue
         assert row["predicted_preferred_mix"] in valid_mixes
         assert sorted(row["predicted_ranking"]) == sorted(valid_mixes)
         if row["model_key"] == "centaur":

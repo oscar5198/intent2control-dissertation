@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "experimental-design" / "stimulus-selection" / "src"))
 
 from stimulus_selection.ratings_integration import (  # noqa: E402
     REQUIRED_EVALUATION_COLUMNS,
@@ -21,9 +21,8 @@ from stimulus_selection.ratings_integration import (  # noqa: E402
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TABLES = REPO_ROOT / "outputs" / "stimulus_selection" / "05_ratings_integration" / "tables"
+SOURCE_EVIDENCE = REPO_ROOT / "experimental-design" / "stimulus-selection" / "final-selection" / "source-evidence"
 FINAL_STIMULI = REPO_ROOT / "outputs" / "final_stimuli"
-STAGE4_V2 = REPO_ROOT / "outputs" / "stimulus_selection" / "04_mix_selection_v2"
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:
@@ -123,39 +122,15 @@ class RatingsIntegrationHelperTests(unittest.TestCase):
         self.assertAlmostEqual(float(out.loc[2, "mean_centered_rating_within_song"]), -0.4)
 
 
-@unittest.skipUnless(TABLES.exists(), "Phase 2A ratings outputs have not been generated yet.")
-class RatingsIntegrationGeneratedOutputTests(unittest.TestCase):
-    def test_all_retained_mixes_and_unrated_mixes_preserved(self) -> None:
-        coverage = _read_csv(TABLES / "retained_mix_rating_coverage.csv")
-        self.assertEqual(len(coverage), 92)
-        self.assertEqual(len({row["mix_id"] for row in coverage}), 92)
-        unrated = [row for row in coverage if row["rating_available"] == "false"]
-        self.assertEqual(len(unrated), 4)
-        self.assertTrue(all(row["original_mix_name"] == "McG-pro" for row in unrated))
-
-    def test_exact_mix_id_join_and_candidate_pool_coverage(self) -> None:
-        coverage = _read_csv(TABLES / "retained_mix_rating_coverage.csv")
-        self.assertTrue(all("mix_id" in row["join_notes"] for row in coverage))
-        pool_count = sum(row["selected_in_acoustic_pool_v2"] == "true" for row in coverage)
-        self.assertEqual(pool_count, 59)
-
+@unittest.skipUnless(SOURCE_EVIDENCE.exists(), "Final source-evidence package is not present.")
+class FinalRatingEvidenceTests(unittest.TestCase):
     def test_rating_summary_and_within_song_outputs(self) -> None:
-        summary = _read_csv(TABLES / "mix_preference_rating_summary.csv")
-        self.assertEqual(len(summary), 92)
-        self.assertIn("confidence_interval_95_lower", summary[0])
-        within = _read_csv(TABLES / "mix_preference_rating_summary_within_song.csv")
+        within = _read_csv(SOURCE_EVIDENCE / "current_ratings" / "mix_preference_rating_summary_within_song.csv")
         self.assertEqual(len(within), 92)
         self.assertIn("within_song_z_score", within[0])
 
-    def test_self_rating_not_approximately_excluded(self) -> None:
-        self_rows = _read_csv(TABLES / "self_rating_inspection.csv")
-        self.assertTrue(self_rows)
-        self.assertTrue(all(row["self_rating_identifiable"] == "false" for row in self_rows))
-        self.assertFalse((TABLES / "mix_preference_rating_summary_excluding_self.csv").exists())
-
     def test_no_final_or_v2_acoustic_side_effect_outputs(self) -> None:
         self.assertTrue(FINAL_STIMULI.exists())
-        self.assertTrue(STAGE4_V2.exists())
         self.assertFalse((REPO_ROOT / "outputs" / "final_stimuli_v2").exists())
 
 

@@ -26,20 +26,20 @@ from llm_experiments.prompts.prompt_spec import load_jsonl, write_json
 
 
 SCHEMA_VERSION = "phase6g4a_gpt_production_inference_v1"
-BASE_OUTPUT_DIR = Path("llm-experiments/outputs/real/phase6g4/gpt")
+BASE_OUTPUT_DIR = Path("llm-experiments/outputs/final/model-predictions/source/gpt-5-5")
 OUTPUT_DIR = BASE_OUTPUT_DIR / "corrected_run_03"
 FAILED_INFRA_ARCHIVE_DIR = BASE_OUTPUT_DIR / "failed_infrastructure_run_01"
 DIAGNOSTIC_256_RUN_DIR = BASE_OUTPUT_DIR / "corrected_run_01"
 DIAGNOSTIC_1024_RUN_DIR = BASE_OUTPUT_DIR / "corrected_run_02"
 FIRST_CONFIGURATION_CORRECTION_MANIFEST = BASE_OUTPUT_DIR / "configuration_correction_256_to_1024.json"
 CONFIGURATION_CORRECTION_MANIFEST = BASE_OUTPUT_DIR / "configuration_correction_1024_to_4096.json"
-RENDERED_PROMPTS = Path("llm-experiments/outputs/real/phase6g3/phase6g3_real_rendered_prompts.jsonl")
-GPT_SHARD = Path("llm-experiments/outputs/real/phase6g3/phase6g3_qmul_gpt_shard_manifest.json")
-PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/real/phase6g3/phase6g3_prompt_hash_manifest.json")
-PHASE6G3_FREEZE = Path("llm-experiments/outputs/real/phase6g3/phase6g3_freeze_manifest.json")
-PHASE6G2D_READINESS = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_readiness.json")
-PHASE6G2D_INFERENCE_CONFIG = Path("llm-experiments/outputs/real/phase6g2d/phase6g2d_final_inference_config.json")
-PHASE6G1_GATE = Path("llm-experiments/outputs/real/phase6b/production_readiness_gate.json")
+RENDERED_PROMPTS = Path("llm-experiments/outputs/final/rendered-prompts/rendered_final_prompts.jsonl")
+GPT_SHARD = Path("llm-experiments/outputs/final/rendered-prompts/gpt_request_shard_manifest.json")
+PROMPT_HASH_MANIFEST = Path("llm-experiments/outputs/final/rendered-prompts/prompt_hash_manifest.json")
+PHASE6G3_FREEZE = Path("llm-experiments/outputs/final/rendered-prompts/prompt_freeze_manifest.json")
+PHASE6G2D_READINESS = Path("llm-experiments/outputs/final/inference-config/readiness.json")
+PHASE6G2D_INFERENCE_CONFIG = Path("llm-experiments/outputs/final/inference-config/inference_config.json")
+PHASE6G1_GATE = Path("llm-experiments/outputs/final/prompt-data/readiness_gate.json")
 RESPONSE_SCHEMA = Path("llm-experiments/schema/preference_prediction_response_v1.json")
 REQUEST_MODEL = "gpt-5.5"
 EXPECTED_RETURNED_MODEL = "gpt-5.5-2026-04-23"
