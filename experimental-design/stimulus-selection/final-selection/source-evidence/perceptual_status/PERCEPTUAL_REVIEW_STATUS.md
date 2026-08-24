@@ -1,5 +1,7 @@
 # Perceptual Review Status
 
+Supersession note (2026-08-24): This file records an earlier triplet-level perceptual-review state and is retained as provenance. It does not define the final deployed five-mix stimulus set. The final deployed 20-stimulus set is defined by `study-interface/frontend-5mix/config/stimuli.json` and `experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv`; those stimuli are represented in the final N=33 analysis summary with 20 stimuli, 198 participant-song-episode trials, and 990 ratings. This note does not add undocumented supervisor approval; it clarifies that the pending triplet status below is historical rather than the active study definition.
+
 Current status: technically integrated; perceptual approval pending.
 
 The active frontend triplets must not be treated as definitively approved for perceptual quality. Informal researcher listening found that several selected mixes, particularly in Wide Ratings sets, sounded subjectively poor or production-unbalanced. This observation does not automatically invalidate the algorithmic selection, but it means final perceptual quality screening by the researcher and supervisor is required before final study deployment.

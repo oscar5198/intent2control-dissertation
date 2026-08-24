@@ -4,7 +4,7 @@ This repository contains the supporting material for Oscar Alejandro Gallegos Vi
 
 The submitted study collected 990 mix-preference ratings across 198 participant-trial targets from 33 participants. Each participant heard two of four songs, with five professionally produced mixes per song, under three functional listening contexts: Enjoyment, Relaxation-Distraction, and Focus-Motivation. Ratings were given on a 0-100 scale, with one comparative free-text comment per trial.
 
-The analysis has two linked parts. Bayesian multilevel models quantify context, listener, stimulus, and acoustic associations in the human ratings. Four large language models are then evaluated on held-out preferred-mix prediction, both without participant history and with personalised prior-trial ratings/comments from the same listener.
+The analysis has two linked parts. Bayesian multilevel models quantify context, listener, stimulus, and acoustic associations in the human ratings. Four large language models are then evaluated on held-out preferred-mix prediction, both without participant history and with participant history from the same listener.
 
 ## Research Questions
 
@@ -12,7 +12,7 @@ RQ1: How do listener, context, stimulus, and acoustic factors relate to preferen
 
 RQ2: Can large language models predict an individual listener's preferred music mix on a held-out trial?
 
-RQ3: Does participant history, defined as ratings and qualitative comments from the same listener's previous trials, improve held-out LLM preference prediction?
+RQ3: Does participant history, defined as ratings and qualitative comments from the same listener's other non-target trials, improve held-out LLM preference prediction?
 
 RQ4: How do personalised LLM predictions compare with a matched mixed-effects predictive model?
 
@@ -115,7 +115,7 @@ The final evaluated models are:
 The two prompt conditions are:
 
 - `non_history`: target context, participant metadata, candidate acoustic features, and A-E candidates only.
-- `personalised_history`: the same target information plus eligible prior-trial ratings and comments from the same participant.
+- `personalised_history`: the same target information plus participant-history ratings and comments from the same participant's other non-target trials.
 
 The frozen prompt template and manifest retain historical internal version names because their filenames and hashes are part of provenance:
 

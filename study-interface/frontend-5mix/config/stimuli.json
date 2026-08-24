@@ -3,7 +3,7 @@
   "developmentOnly": false,
   "developmentLabel": "Five-mix experimental trial",
   "replacementRequiredBeforePilot": false,
-  "notes": "Five-mix isolated frontend using the Phase 2 recommended set. Red To Blue is replaced by I'd Like To Know. Participant-facing pages show Song A/Song B and Version A-Version E labels only. Final perceptual acceptance of the selected mixes remains subject to Oscar listening confirmation.",
+  "notes": "Five-mix isolated frontend using the Phase 2 recommended set. Red To Blue is replaced by I'd Like To Know. Participant-facing pages show Song A/Song B and Version A-Version E labels only. Historical perceptual-review notes are retained as provenance; this config defines the final deployed five-mix stimulus set used for the N=33 analysis.",
   "sourceMetadata": {
     "fiveMixSelectionReview": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/recommended_five_mix_selections.csv",
     "fiveMixSelectionReport": "experimental-design/stimulus-selection/final-selection/five-mix-selection-review-20260806/five_mix_selection_report.md",

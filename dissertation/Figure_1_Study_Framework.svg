@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1250" viewBox="0 0 1200 1250">
+<style>
+.box{fill:#f8fbff;stroke:#4f91d8;stroke-width:1.4}.major{fill:#eef7ff;stroke:#4f91d8;stroke-width:1.4}
+.line{stroke:#4f91d8;stroke-width:1.3;fill:none}.divider{stroke:#bfd6ec;stroke-width:.75}
+.title{font-family:"Times New Roman",serif;font-size:20px;font-weight:bold;fill:#1265ad}
+.body{font-family:"Times New Roman",serif;font-size:15px;fill:#222}.small{font-family:"Times New Roman",serif;font-size:14px;fill:#222}
+.head{font-family:"Times New Roman",serif;font-size:14px;font-weight:bold;fill:#222}.note{font-family:"Times New Roman",serif;font-size:13px;font-style:italic;fill:#777}
+</style>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#4f91d8"/></marker></defs>
+<rect class="major" x="330" y="20" width="540" height="55" rx="5"/><text class="title" x="600" y="53" text-anchor="middle">Functional Listening Context</text>
+<rect class="box" x="135" y="105" width="230" height="42" rx="4"/><rect class="box" x="485" y="105" width="230" height="42" rx="4"/><rect class="box" x="835" y="105" width="230" height="42" rx="4"/>
+<text class="body" x="250" y="131" text-anchor="middle">Enjoyment</text><text class="body" x="600" y="131" text-anchor="middle">Relaxation–Distraction</text><text class="body" x="950" y="131" text-anchor="middle">Focus–Motivation</text>
+<path class="line" d="M250 147V175H600M600 147V175M950 147V175H600V200" marker-end="url(#a)"/>
+<rect class="major" x="315" y="205" width="570" height="145" rx="5"/><text class="title" x="600" y="235" text-anchor="middle">Listening Trial</text>
+<g class="body" text-anchor="middle"><circle class="box" cx="500" cy="270" r="14"/><text x="500" y="275">A</text><circle class="box" cx="550" cy="270" r="14"/><text x="550" y="275">B</text><circle class="box" cx="600" cy="270" r="14"/><text x="600" y="275">C</text><circle class="box" cx="650" cy="270" r="14"/><text x="650" y="275">D</text><circle class="box" cx="700" cy="270" r="14"/><text x="700" y="275">E</text></g>
+<text class="body" x="600" y="310" text-anchor="middle">Five Mix Alternatives in Randomised Order</text><text class="body" x="600" y="337" text-anchor="middle">0–100 Preference Ratings  •  One Comparative Free-Text Comment</text>
+<path class="line" d="M600 350V385" marker-end="url(#a)"/>
+<rect class="major" x="320" y="390" width="560" height="78" rx="5"/><text class="title" x="600" y="421" text-anchor="middle">Listener-Preference Dataset</text><text class="body" x="600" y="451" text-anchor="middle">33 Participants  •  990 Ratings  •  198 Comments</text>
+<path class="line" d="M485 468V505H270V535" marker-end="url(#a)"/><path class="line" d="M715 468V505H930V535" marker-end="url(#a)"/>
+<rect class="major" x="45" y="540" width="450" height="58" rx="5"/><rect class="major" x="705" y="540" width="450" height="58" rx="5"/>
+<text class="title" x="270" y="575" text-anchor="middle">Bayesian Multilevel Analysis</text><text class="title" x="930" y="575" text-anchor="middle">Held-Out LLM Prediction</text>
+<path class="line" d="M270 598V625H145V645" marker-end="url(#a)"/><path class="line" d="M270 625H430V645" marker-end="url(#a)"/>
+<rect class="box" x="20" y="650" width="250" height="250" rx="5"/><rect class="box" x="290" y="650" width="280" height="250" rx="5"/>
+<text class="title" x="145" y="681" text-anchor="middle">Reference Model</text><text class="title" x="430" y="681" text-anchor="middle">Acoustic-Feature Model</text>
+<line class="divider" x1="145" y1="705" x2="145" y2="882"/><line class="divider" x1="430" y1="705" x2="430" y2="882"/>
+<text class="head" x="82" y="728" text-anchor="middle">Fixed Predictors</text><text class="head" x="207" y="728" text-anchor="middle">Random Intercepts</text>
+<text class="body" x="82" y="770" text-anchor="middle">Episode</text><text class="body" x="82" y="810" text-anchor="middle">Group</text><text class="body" x="207" y="770" text-anchor="middle">Participant</text><text class="body" x="207" y="810" text-anchor="middle">Stimulus</text>
+<text class="head" x="360" y="728" text-anchor="middle">Fixed Predictors</text><text class="head" x="500" y="728" text-anchor="middle">Random Intercepts</text>
+<text class="small" x="360" y="762" text-anchor="middle">Episode</text><text class="small" x="360" y="792" text-anchor="middle">Group</text><text class="small" x="360" y="822" text-anchor="middle">RMS</text><text class="small" x="360" y="852" text-anchor="middle">CF</text><text class="small" x="360" y="882" text-anchor="middle">SW</text><text class="body" x="500" y="770" text-anchor="middle">Participant</text><text class="body" x="500" y="810" text-anchor="middle">Stimulus</text>
+<path class="line" d="M930 598V625H760V645" marker-end="url(#a)"/><path class="line" d="M930 625H1045V645" marker-end="url(#a)"/>
+<rect class="box" x="630" y="650" width="260" height="250" rx="5"/><rect class="box" x="910" y="650" width="270" height="250" rx="5"/>
+<text class="title" x="760" y="681" text-anchor="middle">Without Participant History</text><text class="title" x="1045" y="681" text-anchor="middle">With Participant History</text>
+<line class="divider" x1="760" y1="705" x2="760" y2="882"/><line class="divider" x1="1045" y1="705" x2="1045" y2="882"/>
+<text class="head" x="695" y="728" text-anchor="middle">Base Inputs</text><text class="head" x="825" y="728" text-anchor="middle">Non-Target Trials</text>
+<text class="body" x="695" y="770" text-anchor="middle">Context</text><text class="body" x="695" y="810" text-anchor="middle">Acoustics</text><text class="body" x="695" y="850" text-anchor="middle">Participant</text><text class="body" x="695" y="872" text-anchor="middle">Metadata</text>
+<text class="head" x="977" y="728" text-anchor="middle">Base Inputs</text><text class="head" x="1112" y="728" text-anchor="middle">Non-Target Trials</text>
+<text class="body" x="977" y="770" text-anchor="middle">Context</text><text class="body" x="977" y="810" text-anchor="middle">Acoustics</text><text class="body" x="977" y="850" text-anchor="middle">Participant</text><text class="body" x="977" y="872" text-anchor="middle">Metadata</text><text class="body" x="1112" y="770" text-anchor="middle">Ratings</text><text class="body" x="1112" y="810" text-anchor="middle">Comments</text>
+<path class="line" d="M145 900V925H295M430 900V925H295V945" marker-end="url(#a)"/><rect class="box" x="80" y="950" width="430" height="75" rx="5"/><text class="title" x="295" y="980" text-anchor="middle">Statistical Outputs</text><text class="body" x="295" y="1008" text-anchor="middle">Posterior Effects  •  Variance Components  •  ICCs</text>
+<path class="line" d="M760 900V925H905M1045 900V925H905V945" marker-end="url(#a)"/><rect class="box" x="680" y="950" width="450" height="75" rx="5"/><text class="title" x="905" y="980" text-anchor="middle">Four LLMs</text><text class="small" x="905" y="1008" text-anchor="middle">GPT-5.5  •  Claude Sonnet 5  •  Llama 3.1 70B  •  Centaur</text>
+<path class="line" d="M295 1025V1060H600M905 1025V1060H600V1085" marker-end="url(#a)"/><rect class="major" x="355" y="1090" width="490" height="85" rx="5"/><text class="title" x="600" y="1123" text-anchor="middle">Prediction Performance Evaluation</text><text class="body" x="600" y="1153" text-anchor="middle">Top-1 Preferred Mix  •  Ranking  •  Rating Error</text>
+<text class="note" x="600" y="1215" text-anchor="middle">Target-Trial Responses Withheld in Every Prediction Condition</text>
+</svg>
